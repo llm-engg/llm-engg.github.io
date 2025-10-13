@@ -1,0 +1,142 @@
+Theme,Weeks,Topics
+LLM Foundations I,1.1,Orientation,"Transformer architecture: attention, FFNs, positional and token embeddings, layer norm etc
+         
+Architectural Variants: Encoder-decoder vs. decoder-only transformers (e.g., BERT vs. GPT) ",Attention Visualization,Code walkthrough Transformer implmentation,,
+,1.2,Transformer Architecture - GPT 1 and 2,,LLM Visualization,"GPT-2 implementation, Training",,
+,2.1,"Tokenization, Pretraining objectives","Tokenization, GPT 2 implementation and Training Loop",Tokenization playground,Pretrain a tiny LM,,
+,2.2,Mixture of Experts,"Sparse models: MoE (Mixture of Experts), routing, load balancing",code walkthrough of MOE implementation,MOE inference vs dense inference,,
+,,,,,,,
+LLM Foundation II,3.1,"Case studies : State-of-the-art open-source LLM architectures (GPT OSS, Qwen, Gemma)","Qwen Next, GPT OSS, Gemma, DeepSeek, Mixtral, SmolLM","Modern LLM case study, Recent architecture sheet","Compare configs and forward passes of LLaMA, Mistral, and Qwen using Hugging Face models. Visualize differences in architecture (e.g., attention heads, layer norms).",,
+,3.2,Scaing Laws,Emergent properties etc,"Zero shot examples, In context learning",,,
+,,,,,,,
+GPU Basics,4.1,GPU architecture deep dive,"SMs (Streaming Multiprocessors), warps, threads. memory hierarchy,","Compare AMD GPUs, ROCm","Write a simple CUDA kernel (vector add, matrix multiply) and benchmark vs PyTorch. Explore GPU profiling tools (nvprof, Nsight).",,
+,4.2,"Parallelism: Muti GPU, Multi Node","CUDA programming fundamentals: kernels,  streams
+Profiling LLMs: Nsight Systems, PyTorch Profiler, memory vs compute bound
+Multi-GPU communication: NCCL, all-reduce, ring-allgather",,,,
+,,,,,,,
+,4.3,On-Prem Hardware Stack Deep Dive,"GPU selection guide (NVIDIA vs. AMD for LLMs), NVLink vs. PCIe, CPU-GPU memory hierarchy  
+Building cost-effective clusters: 10G/25G networking, RAID-Z for dataset storage  ","FLOPS for training DeepSeek/GPT 5, MFU, TCO etc",Case study on large GPU cluster,,
+,,,,,,,
+,,,,,,,
+Optimizing Inference,5.1,Inference Math and Bottlenecks,"Forward pass math,  Key bottlenecks (KV Cache, Batch size vs throughput vs latency, GPU utilization)
+Inference vs Training",PyTorch Profiler to track memory vs compute bottlenecks,Explore Hugging Face Hub & inference APIs,,
+,5.2,Efficient Attention & KV Caching,"
+Optimizing attention: FlashAttention, Memory-efficient kernels
+Custom CUDA ops for tokenizers, sampling, KV cache management","Baseline: Run Gemma-2B or GPT-2 small in fp16. Measure latency & memory.
+
+Enable KV caching → compare speed.
+
+Try FlashAttention (via PyTorch 2.1+ or xFormers)",Serve a model with vLLM,,
+,,,,,,,
+Efficient Inference & Quantization,6.1,Quantization Fundamentals,"Quantization: PTQ (post-training), QAT (quantization-aware training)
+INT8, INT4, FP8, AWQ, GPTQ, GGUF quantization formats
+","ollama, llama.cpp
+Open router, litellm, ","Quantize a model with GPTQ (HF AutoGPTQ or bitsandbytes).
+
+Compare fp16, int8, int4 inference (tokens/sec, VRAM use, perplexity).",,
+,6.2,Quantization Continued,"Quantization-induced errors & hallucinations.
+Kernel fusion (matmul + bias + activation fused).",Explore hallucinations induced by quantized model,,,
+,7.1,Inference Engines and Mutli GPU,"vLLM (continuous batching, PagedAttention), TensorRT-LLM (NVIDIA kernels, GPU fusion).
+
+Hugging Face TGI (production ready), llama.cpp (CPU/offload efficiency).
+
+Multi-GPU serving: tensor parallelism, pipeline parallelism.
+
+CPU/GPU offload tradeoffs.","Case : deploying DeepSeek model on 100 GPUs, ","Benchmark vLLM vs HF TGI on the same model.
+deploy a model on multi GPU using vLLM",,
+,,,,,,,
+,7.2,"Router Models & Cascade Inference
+
+Case study : Serving large models","Router models, cascade inference, fallbacks — cost vs quality curves
+
+Large Model Serving (DeepSeek / Kimi K2)
+
+Prefill server (big batches → maximize GPU FLOPs).
+
+Decode server (low-latency streaming, many concurrent sessions).
+
+Scheduling/orchestration across nodes.
+
+Cost/performance tradeoffs (dedicated A100/H100 for prefill, smaller GPUs for decode).",Demo: Small Phi-3 → Large Llama 3 cascade with confidence thresholding,,,
+,,,,,,,
+Fine-Tuning Fundamentals,8.1,Full Fine-Tuning vs. PEFT — When to Use Each  ,"Data Curation -> Instruction Tuning -> Preference Alignment -> Evaluation.
+Full finetuning vs parameter-efficient methods: LoRA, QLoRA, DoRA, IA³
+Infra: FSDP, DeepSpeed, Megatron, Axolotl
+
+Catastrophic forgetting",,Fine-tune SMOL-LM3 on a simple instruction-following task.,,
+,8.2,Data & Instruction Tuning,"Dataset engineering: prompt formatting, domain corpora, instruction tuning
+
+Synthetic data generation: Self-Instruct, Evol-Instruct, model distillation
+
+Domain-specific finetuning (biomedical, code copilots, legal)",Explore datasets,generate synthetic preference pairs,,
+,,,,,,,
+,9.1,"Instruction tuning & alignment (RLHF, DPO, RL-free)","RLHF, DPO, KTO, ORPO — alignment techniques for business safety & tone
+When to choose PPO vs DPO vs GRPO for business safety, tone, cost
+
+",Explore a preference dataset like Anthropic/hh-rlhf,Take the SFT model from previous and align it using DPO,,
+,9.2,More RL,,,,,
+,,,,,,,
+Reasoning,10.1,Reasoning & Chain-of-Thought,"CoT datasets and supervision strategies
+Self-consistency & Tree-of-Thought reasoning
+Fine-tuning for reasoning tasks (math, logic, code)","Show impact on reasoning accuracy (e.g., GSM8k or simple coding/math tasks)",,,
+,,,,,,,
+,10.2,"CoT, Tree-of-Thought, Self-Consistency — Prompt Engineering as Code","Convert reasoning chains into supervised datasets
+Prompt engineering pipelines for reasoning",,"Fine-tune a small model on a reasoning dataset (CoT, logic, or mat",,
+,,,,,,,
+Project Discussion,,,,,,,
+RAG,11.1,"RAG Fundamentals - embeddings, chunking, vector DBs, hybrid search, rerankers, query rewriting","Dense vs sparse vs hybrid retrieval — ColBERT, SPLADE, BM25
+Vector DBs — Qdrant, LanceDB, FAISS — on-prem deployment, indexing
+Graph RAG, HyDE, sub-queries, multi-hop",,,,
+,11.2,Evaluating RAG,"RAG evaluation — hit rate, faithfulness, context relevance — using Ragas",Build a small RAG pipeline (model + FAISS vector DB) and evaluate retrieval quality using RAGas or simple metrics,,,
+,,,,,,,
+Agents,12.1,ReAct Framework: Thought → Action → Observation,"ReAct, Plan-and-Execute — agent frameworks (LangChain, LlamaIndex)
+Tool calling — OpenAI style vs LangChain Tools vs custom REST APIs
+Agent memory — short-term (buffer), long-term (vector + graph)
+Reflexion, self-critique, tool retry — demo with AutoGen or DSPy
+",,,,
+Tool Use & Function Calling,12.2,MCP introduction,"Integrating APIs, Databases, Code Exec as Tools , Structured data integration (SQL, KG, graph-RAG)",Implement a toy MCP wrapper around a model agent,,,
+,12.3,"Agentic RAG, Multi Agent Orchestration, Multimodal Agents",Use cases for agentic RAG,,,,
+,,,,,,,
+Agent Finetuning,13.1,Fine Tuning for Tool calling,"Adapt LLM to follow tool-using prompts accurately
+Instruction tuning for multi-step reasoning + RAG integration",,"Fine-tune a small model on a tool-augmented dataset
+",,
+,,,,,,,
+,13.2,Agent Evaluation & Safety Demo,"Evaluate agent performance: success rate, hallucination, tool execution correctness
+
+Demo: Compare vanilla model vs fine-tuned agent on multi-step tasks",,Evaluate improvement in reasoning + tool accuracy,,
+Evaluation,14.1,Evaluation,"LLM-as-a-Judge, MT-Bench, Arena-Hard 
+A/B Testing Models/Prompts, Human Feedback Loops  ",,,,
+,14.2,Observability & Monitoring,"Logging token-level latency, throughput, GPU utilization
+Cost monitoring: batch size vs latency vs throughput
+Tools: Prometheus + Grafana, PyTorch Profiler, vLLM telemetry",Demo: Monitor a live RAG/agent pipeline,,,
+,,,,,,,
+Multimodal Models,15.1,"Multi Modal Architecture : Image, Audio and Video models, Running Locally","LLaVA, Fuyu, Kosmos — architectures, visual encoders, projection layers
+Whisper + LLM pipelines — speech-to-intent, diarization, timestamping
+Google's ""natively multimodal"" approach 
+Multimodal RAG — image + text retrieval, CLIP embeddings, joint indexing
+","Showcasing Capabilities:
+
+    Visual Question Answering (VQA): Provide an image and ask a direct question (""What color is the traffic light?"").
+
+    Image Description: Ask for a general summary (""Describe this scene in detail."").
+
+    Complex Reasoning: Ask an inferential question (""Based on the objects on this desk, what is the person's profession?"").",Run a LMM and LMRM locally,,
+,15.2,FIne tuning multimodal models,"Finetuning multimodal — dataset (OCR, diagrams, charts), loss functions
+Dataset preparation, Training strategy",,"Fine-tune a small LMM (e.g., LLaVA-Phi-3 or Moondream) on a custom visual task.",,
+,,,,,,,
+LLMs on the Edge: Tiny Models & On-Device Inference,16.1,"Edge-Optimized LLM Architectures, case studies","Edge Definition, Key motivations for on device LLMs, Challenges, raise of SLMs
+Frameworks and Runtimes for On-Device Inference - google, nvidia, apple","1. Run a LLM on RPi
+2. Run gemma 3n / LFM2 on android/ios - show multimodl capabilities",,,
+,16.2,Edge Optimization techniques,"Gemma 3n, LFM 3 case study, ",,Finetune Gemma 3n for Kannada language,,
+,,,,,,,
+Security & Privacy Engineering,17.1,"Threat Model: Prompt Injection, Jailbreaking, Data Leakage  ","The New Security Paradigm of LLMs, Holistic Threat Modeling for LLMs, Core Attack Vectors and Cross-Platform Examples, A Multi-Layered Defense Strategy",Prompt Injection Attack and Defense,,,
+Frontiers,17.2,"Emerging Topics: Mamba, Qwen Next, Hybrid architectures","SSMs : Mamba Introduction
+Qwen 3 Next, World models",Qwen 3 Next deployment,"Run Mamba-7B on 100K context — compare to Llama-3   
+
+    Speed: 150 tokens/sec vs 40  
+    Memory: 10GB vs 40GB  
+    Demo: “Mamba processes entire book in 10s — no context window limits.”
+     ",,
+,,,,,,,
+Presentations,18.1,Student Presentations I,,,,,
+,18.2,Student Presentations II,,,,,

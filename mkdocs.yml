@@ -1,0 +1,35 @@
+site_name: LLM Engineering Course
+site_description: A comprehensive hands-on course on Large Language Models for industry professionals
+site_url: https://llm-engg.github.io
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: deep purple
+      accent: purple
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - content.code.copy
+
+# Analytics configuration
+extra:
+  analytics:
+    provider: google
+    property: G-LLD65KQHZH  # Replace with your Google Analytics 4 property ID
+
+nav:
+  - Home: index.md
+  - Schedule: schedule.md
+  - Assignments and Labs: assignments.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - tables
