@@ -16,4 +16,16 @@
          <loc>https://llm-engg.github.io/schedule/</loc>
          <lastmod>2026-01-11</lastmod>
     </url>
+    <url>
+         <loc>https://llm-engg.github.io/reveal/css/theme/</loc>
+         <lastmod>2026-01-11</lastmod>
+    </url>
+    <url>
+         <loc>https://llm-engg.github.io/reveal/examples/markdown/</loc>
+         <lastmod>2026-01-11</lastmod>
+    </url>
+    <url>
+         <loc>https://llm-engg.github.io/reveal/test/simple/</loc>
+         <lastmod>2026-01-11</lastmod>
+    </url>
 </urlset>
