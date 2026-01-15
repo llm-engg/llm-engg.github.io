@@ -1,0 +1,250 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Slides</title>
+
+  <link rel="stylesheet" href="../reveal/dist/reveal.css">
+  <link rel="stylesheet" href="../reveal/dist/theme/solarized.css">
+  <!-- PDF export support: append ?print-pdf to URL, then Ctrl+P -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi)
+      ? 'reveal/dist/print/pdf.css'
+      : 'reveal/dist/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+
+  <!-- Bigger fonts for classrooms -->
+  <style>
+    .reveal {
+      font-size: 32px;
+    }
+    .reveal code {
+      font-size: 0.9em;
+    }
+    /* Left-align all slide content */
+    .reveal .slides section {
+      text-align: left;
+    }
+    .reveal .slides section ul,
+    .reveal .slides section ol {
+      display: block;
+      text-align: left;
+    }
+    .reveal .slides section li {
+      text-align: left;
+    }
+    /* Center-align headings */
+    .reveal .slides section h1,
+    .reveal .slides section h2,
+    .reveal .slides section h3 {
+      text-align: center;
+    }
+    /* Center-align tables */
+    .reveal .slides section table {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* Footer styling */
+    .reveal .footer {
+      position: absolute;
+      bottom: 1em;
+      left: 1em;
+      font-size: 0.5em;
+      color: #657b83;
+      z-index: 100;
+    }
+    /* Constrain slides to prevent overflow */
+    .reveal .slides section {
+      overflow: hidden !important;
+      height: 100% !important;
+      box-sizing: border-box !important;
+    }
+    /* Image sizing and background blend for solarized theme */
+    .reveal .slides section img,
+    .reveal .slides section p img,
+    .reveal img {
+      max-width: 600px !important;
+      max-height: 400px !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: contain !important;
+      display: block !important;
+      margin: 0.5em auto !important;
+      background-color: #fdf6e3 !important;
+      padding: 0.5em !important;
+      border-radius: 4px !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    /* Course header styling */
+    .course-header {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      font-size: 16px;
+      opacity: 0.6;
+    }
+  </style>
+
+  <link rel="stylesheet" href="reveal/plugin/highlight/monokai.css">
+</head>
+<body>
+
+
+<div class="reveal">
+  <div class="footer"> <a href="https://llm-engg.github.io">Large Language Models : A Hands-on Approach – CCE, IISc</a></div>
+  <div class="slides">
+    <section><h2>Large Language Models : A Hands on Approach</h2>
+<h3>LLM Basics</h3>
+</section>
+<section><h2>What is a Large Language Model (LLM)?</h2>
+<p>A deep neural network trained on extensive text datasets from books, articles, websites—sometimes encompassing large portions of the entire publicly available internet.</p>
+<p><img src="images/image-0.png" alt="LLMs Image"></p>
+</section>
+<section><h2>LLM Capabilities</h2>
+<ul>
+<li>Understanding and generating human language</li>
+<li>Code generation and debugging</li>
+<li>Multimodal data processing (text, images, audio)</li>
+<li>Reasoning and common sense understanding</li>
+</ul>
+</section>
+<section><h2>Language Modeling</h2>
+<p>A language model predicts the next word given preceding words.</p>
+<p><img src="images/next_token.gif" alt="Next Token Prediction"></p>
+<p>[Image source][1]</p>
+</section>
+<section><h2>Mathematical Definition</h2>
+<p>Joint probability of a sequence using chain rule:</p>
+<p>$
+P(w_1, w_2, \dots, w_T) = \prod_{t=1}^{T} P(w_t \mid w_1, \dots, w_{t-1})
+$</p>
+<p>Core objective: learn the conditional probability:</p>
+<p>$
+P(w_t \mid w_{&lt;t})
+$</p>
+<p><strong>where</strong></p>
+<ul>
+<li>$w_t$ — token to be predicted at step $t$</li>
+<li>$w_{&lt;t} = (w_1, \dots, w_{t-1})$ — context of preceding tokens</li>
+<li>$P(w_t \mid w_{&lt;t})$ — probability of next word conditioned on previous words</li>
+</ul>
+</section>
+<section><h2>What Makes LLMs &quot;Large&quot;?</h2>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Scale</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Parameters</strong></td>
+<td>&gt;1B (GPT-3: 175B, Llama 3: 8B-405B) [2]</td>
+</tr>
+<tr>
+<td><strong>Training Data</strong></td>
+<td>Trillions of tokens (Llama 3: 15T) [3]</td>
+</tr>
+<tr>
+<td><strong>Compute</strong></td>
+<td>Thousands of GPU-hours</td>
+</tr>
+</tbody></table>
+<p><img src="images/sizes.jpg" alt=""></p>
+</section>
+<section><h2>Applications of LLMs</h2>
+<ol>
+<li><strong>Chatbots &amp; Virtual Assistants</strong> - conversational agents</li>
+<li><strong>NLP Tasks</strong> — sentiment analysis, NER, classification</li>
+<li><strong>Content Generation</strong> — summarization, translation</li>
+<li><strong>Code Generation</strong> — snippets, debugging, automation</li>
+<li><strong>Education &amp; Tutoring</strong> — personalized learning</li>
+<li><strong>Creative Writing</strong> — ideas, plot twists, poetry</li>
+<li><strong>Research Assistance</strong> — paper summarization, literature reviews</li>
+</ol>
+</section>
+<section><h2>Why Build Your Own LLM?</h2>
+<ol>
+<li><strong>Domain-specific models</strong> — outperform general models (law, medical)</li>
+<li><strong>Cost-effectiveness</strong> — cheaper than cloud APIs at scale</li>
+<li><strong>Data Privacy</strong> — control over sensitive data</li>
+<li><strong>Custom Deployment</strong> — on-premise or edge devices</li>
+<li><strong>Autonomy</strong> — control behavior, updates, fixes</li>
+</ol>
+</section>
+<section><h2>Building LLMs: Overview</h2>
+<p><img src="images/building_llms.png" alt=""></p>
+<ol>
+<li><strong>Data Collection and Preprocessing</strong></li>
+<li><strong>Pretraining</strong>   </li>
+<li><strong>Fine-tuning</strong></li>
+<li><strong>Inference</strong></li>
+</ol>
+</section>
+<section><h2>Course Focus</h2>
+<p>We will focus on:</p>
+<ul>
+<li>Fine-tuning existing models</li>
+<li>Inference optimization</li>
+<li>Building applications with LLMs</li>
+</ul>
+<p>Using state of the art open source models available openly.</p>
+</section>
+<section><h2>Demo</h2>
+<ul>
+<li><a href="https://colab.research.google.com/drive/11p1Tu535Lh3fXZ7m0K-GbX97d1Hm9pmf">Text Generation</a></li>
+<li><a href="https://colab.research.google.com/drive/1jnXR6aKOIyoXMiYeBC_lHxejAvilR64q">Vision-Language Model</a></li>
+</ul>
+</section>
+<section><h2>Warm Up Exercise</h2>
+<ol>
+<li>Login to Google Colab</li>
+<li>Run shared notebooks</li>
+<li>Explore HuggingFace:<ul>
+<li>Trending models</li>
+<li>Spaces</li>
+<li>Datasets</li>
+</ul>
+</li>
+</ol>
+<p><strong>Reference:</strong> <a href="https://huggingface.co/blog/proflead/hugging-face-tutorial">HuggingFace Tutorial</a></p>
+</section>
+<section><h2>References</h2>
+<ol>
+<li><a href="https://jalammar.github.io/illustrated-gpt2/">The Illustrated GPT-2</a> - Jay Alammar</li>
+<li><a href="https://arxiv.org/abs/2005.14165">GPT-3 Paper</a> - Brown et al., 2020</li>
+<li><a href="https://arxiv.org/abs/2407.21783">Llama 3 Report</a> - Meta AI, 2024</li>
+</ol>
+</section>
+<section><h2>Thank You</h2>
+<p>Questions?</p>
+</section>
+  </div>
+</div>
+
+<script src="../reveal/dist/reveal.js"></script>
+<script src="../reveal/plugin/highlight/highlight.js"></script>
+<script src="../reveal/plugin/math/math.js"></script>
+<script src="../reveal/plugin/notes/notes.js"></script>
+
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: "c/t",
+  center: false,
+  transition: "none",     // better for teaching & recording
+  controls: true,         // show navigation arrows
+  controlsTutorial: true, // show arrow hints on first slide
+  controlsLayout: "bottom-right",
+  controlsBackArrows: "faded",
+  plugins: [ RevealHighlight, RevealMath, RevealNotes ]
+});
+</script>
+
+</body>
+</html>

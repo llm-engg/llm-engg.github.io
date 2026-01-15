@@ -1,0 +1,337 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Slides</title>
+
+  <link rel="stylesheet" href="../reveal/dist/reveal.css">
+  <link rel="stylesheet" href="../reveal/dist/theme/solarized.css">
+  <!-- PDF export support: append ?print-pdf to URL, then Ctrl+P -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi)
+      ? 'reveal/dist/print/pdf.css'
+      : 'reveal/dist/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+
+  <!-- Bigger fonts for classrooms -->
+  <style>
+    .reveal {
+      font-size: 32px;
+    }
+    .reveal code {
+      font-size: 0.9em;
+    }
+    /* Left-align all slide content */
+    .reveal .slides section {
+      text-align: left;
+    }
+    .reveal .slides section ul,
+    .reveal .slides section ol {
+      display: block;
+      text-align: left;
+    }
+    .reveal .slides section li {
+      text-align: left;
+    }
+    /* Center-align headings */
+    .reveal .slides section h1,
+    .reveal .slides section h2,
+    .reveal .slides section h3 {
+      text-align: center;
+    }
+    /* Center-align tables */
+    .reveal .slides section table {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* Footer styling */
+    .reveal .footer {
+      position: absolute;
+      bottom: 1em;
+      left: 1em;
+      font-size: 0.5em;
+      color: #657b83;
+      z-index: 100;
+    }
+    /* Constrain slides to prevent overflow */
+    .reveal .slides section {
+      overflow: hidden !important;
+      height: 100% !important;
+      box-sizing: border-box !important;
+    }
+    /* Image sizing and background blend for solarized theme */
+    .reveal .slides section img,
+    .reveal .slides section p img,
+    .reveal img {
+      max-width: 600px !important;
+      max-height: 400px !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: contain !important;
+      display: block !important;
+      margin: 0.5em auto !important;
+      background-color: #fdf6e3 !important;
+      padding: 0.5em !important;
+      border-radius: 4px !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    /* Course header styling */
+    .course-header {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      font-size: 16px;
+      opacity: 0.6;
+    }
+  </style>
+
+  <link rel="stylesheet" href="reveal/plugin/highlight/monokai.css">
+</head>
+<body>
+
+
+<div class="reveal">
+  <div class="footer"> <a href="https://llm-engg.github.io">Large Language Models : A Hands-on Approach – CCE, IISc</a></div>
+  <div class="slides">
+    <section><h2>Large Language Models : A Hands on Approach</h2>
+<h3>Course Orientation</h3>
+</section>
+<section><h2>Course Overview</h2>
+<ul>
+<li><strong>Duration</strong>: ~18 Weeks</li>
+<li><strong>Format</strong>: 2 sessions per week (Tue &amp; Thu, 7:00–8:30 PM IST)</li>
+<li><strong>Style</strong>: Lectures, demos and labs</li>
+<li><strong>Assessment</strong>: Quizzes, assignments, and final project/presentation</li>
+<li><strong>Credits</strong>: 3 + 1 (Credits added in ABC)</li>
+</ul>
+</section>
+<section><h2>Why This Course?</h2>
+<p>LLMs have changed how we build intelligent applications.</p>
+<p>This course aims to bridge the gap between:</p>
+<p><strong>Using LLMs via APIs</strong> → <strong>Engineering LLM systems</strong></p>
+</section>
+<section><h2>Learning Outcomes</h2>
+<ul>
+<li>Understand LLM architectures</li>
+<li>Fine-tune models for specific domains and tasks</li>
+<li>Optimize inference for cost and latency</li>
+<li>Build robust LLM-powered applications (RAG, agents, tool use)</li>
+<li>Evaluate, debug, and improve model performance</li>
+<li>Leverage open-source ecosystems for LLM engineering</li>
+</ul>
+</section>
+<section><h2>What This Course Will NOT Cover</h2>
+<ul>
+<li>Mathematical foundations</li>
+<li>Pretraining LLMs from scratch</li>
+<li>State of the art in research</li>
+<li>Data engineering pipelines</li>
+<li>Ethics and societal impacts</li>
+</ul>
+</section>
+<section><h2>Prerequisites</h2>
+<ul>
+<li><strong>Programming</strong>: Python proficiency</li>
+<li><strong>ML Basics</strong>: Understanding of neural networks and deep learning</li>
+<li><strong>Helpful</strong>: Familiarity with PyTorch, basic NLP concepts</li>
+</ul>
+</section>
+<section><h2>Tools and Resources</h2>
+<h3>Software Stack</h3>
+<ul>
+<li>Python</li>
+<li>PyTorch</li>
+<li>HuggingFace Ecosystem(models, libraries and datasets)</li>
+</ul>
+</section>
+<section><h2>Compute Stack</h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Cost</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Google Colab</td>
+<td>Free</td>
+<td>Limited GPU, good for experiments</td>
+</tr>
+<tr>
+<td>GCP Free Credits</td>
+<td>Free</td>
+<td>$300 for new accounts</td>
+</tr>
+<tr>
+<td>Colab Pro+</td>
+<td>Paid</td>
+<td>More GPU time, better GPUs</td>
+</tr>
+<tr>
+<td>RunPod</td>
+<td>Paid</td>
+<td>Flexible, longer runs</td>
+</tr>
+<tr>
+<td>Lightning AI</td>
+<td>Paid</td>
+<td>Easy setup, good UX</td>
+</tr>
+</tbody></table>
+<p><em>Free options suffice for most of our course needs</em></p>
+</section>
+<section><section><h2>Evaluation Criteria</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Weight</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Quizzes</td>
+<td>25%</td>
+<td>5 short in-class quizzes</td>
+</tr>
+<tr>
+<td>Assignments</td>
+<td>30%</td>
+<td>2 assignments (Mid Feb and Mid Mar)</td>
+</tr>
+<tr>
+<td>Final Project/Presentation</td>
+<td>40%</td>
+<td>Mar 3rd week onwards</td>
+</tr>
+<tr>
+<td>Participation</td>
+<td>5%</td>
+<td>In-class and forum engagement</td>
+</tr>
+</tbody></table>
+</section><section><h2>ABC</h2>
+<ul>
+<li><a href="https://www.abc.gov.in/">Academic Bank of Credits</a></li>
+<li>Credits will be added to your ABC account after successful course completion</li>
+<li>More information will be shared during the course</li>
+</ul>
+</section></section>
+<section><h2>Final Project Option</h2>
+<p>Individual or group project (max 2).</p>
+<p>Build an end-to-end LLM application:</p>
+<ul>
+<li>Model fine-tuning</li>
+<li>Inference optimization</li>
+<li>LLM Application (RAG, Agents)</li>
+<li>Open source contribution</li>
+<li>Other ideas welcome too</li>
+</ul>
+<p><strong>Deliverables</strong>: Documentation + Demo / Presentation</p>
+</section>
+<section><h2>Presentation Option</h2>
+<ul>
+<li><strong>Topic</strong>: Novel concept not covered in class</li>
+<li><strong>Format</strong>: Research paper or case study</li>
+<li><strong>Deliverables</strong>: Slides or summary document</li>
+<li><strong>Evaluation</strong>: Depth of understanding, presentation quality</li>
+<li><strong>Duration</strong>: 10 minutes, 8-10 slides</li>
+</ul>
+</section>
+<section><h2>Course Roadmap (1/2)</h2>
+<table>
+<thead>
+<tr>
+<th align="left">Module</th>
+<th align="left">Topic</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">1</td>
+<td align="left"><strong>LLM Foundations</strong> - Transformers, GPT-2, Modern Architectures, MoE, OSS Models</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left"><strong>GPUs</strong> - Architecture and Programming,  Multi-GPU Parallelism, Hardware Stack</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left"><strong>Inference</strong> - Sampling, KV Caching, Quantization, Speculative Decoding, Model Serving</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left"><strong>Fine-Tuning</strong> - SFT, PEFT (LoRA, QLoRA etc),RLHF (DPO, GRPO etc), Distillation</td>
+</tr>
+<tr>
+<td align="left">5</td>
+<td align="left"><strong>Reasoning</strong> - Chain-of-Thought (CoT), Test Time Scaling, Finetuning</td>
+</tr>
+</tbody></table>
+</section>
+<section><h2>Course Roadmap (2/2)</h2>
+<table>
+<thead>
+<tr>
+<th align="left">Module</th>
+<th align="left">Topic</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">6</td>
+<td align="left"><strong>RAG &amp; Agents</strong> - RAG Fundamentals, ReAct, Tools, Protocols, Agents, Finetuning</td>
+</tr>
+<tr>
+<td align="left">7</td>
+<td align="left"><strong>Evaluation</strong> - Moderl Evaluations, Benchmarks, LLM-as-a-Judge</td>
+</tr>
+<tr>
+<td align="left">8</td>
+<td align="left"><strong>Multimodal</strong> - Multimodal Architectures, Finetuning</td>
+</tr>
+<tr>
+<td align="left">9</td>
+<td align="left"><strong>Edge Deployment</strong> - Edge architectures, Optimization and Deployment</td>
+</tr>
+</tbody></table>
+</section>
+<section><h2>Making the Best of This Course</h2>
+<ul>
+<li><strong>Participate actively</strong>: Ask questions in class, engage in discussions</li>
+<li><strong>Practice hands-on</strong>: Run the code, experiment with parameters</li>
+<li><strong>Use AI tools</strong>: Leverage AI assistants for coding and learning</li>
+<li><strong>Stay connected</strong>: Use forum for async discussions</li>
+</ul>
+</section>
+<section><h2>Q&amp;A</h2>
+<h3>Any questions?</h3>
+</section>
+  </div>
+</div>
+
+<script src="../reveal/dist/reveal.js"></script>
+<script src="../reveal/plugin/highlight/highlight.js"></script>
+<script src="../reveal/plugin/math/math.js"></script>
+<script src="../reveal/plugin/notes/notes.js"></script>
+
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: "c/t",
+  center: false,
+  transition: "none",     // better for teaching & recording
+  controls: true,         // show navigation arrows
+  controlsTutorial: true, // show arrow hints on first slide
+  controlsLayout: "bottom-right",
+  controlsBackArrows: "faded",
+  plugins: [ RevealHighlight, RevealMath, RevealNotes ]
+});
+</script>
+
+</body>
+</html>

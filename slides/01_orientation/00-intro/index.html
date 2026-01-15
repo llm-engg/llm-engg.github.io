@@ -1,0 +1,869 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A comprehensive hands-on course on Large Language Models for industry professionals">
+      
+      
+      
+        <link rel="canonical" href="https://llm-engg.github.io/slides/01_orientation/00-intro/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.21">
+    
+    
+      
+        <title>00 intro - Large Language Models - A Hands-on Approach</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.2a3383ac.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-LLD65KQHZH"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-LLD65KQHZH",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-LLD65KQHZH",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#large-language-models-a-hands-on-approach" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Large Language Models - A Hands-on Approach" class="md-header__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Large Language Models - A Hands-on Approach
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              00 intro
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../schedule/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Schedule
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../assignments/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Assignments and Labs
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Large Language Models - A Hands-on Approach" class="md-nav__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Large Language Models - A Hands-on Approach
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../schedule/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Schedule
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../assignments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Assignments and Labs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#large-language-models-a-hands-on-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      Large Language Models : A Hands on Approach
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Large Language Models : A Hands on Approach">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#course-orientation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Course Orientation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#course-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Course Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-course" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why This Course?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#learning-outcomes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Learning Outcomes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-this-course-will-not-cover" class="md-nav__link">
+    <span class="md-ellipsis">
+      What This Course Will NOT Cover
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tools-and-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tools and Resources
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tools and Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#software-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      Software Stack
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compute-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compute Stack
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evaluation Criteria
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#abc" class="md-nav__link">
+    <span class="md-ellipsis">
+      ABC
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-project-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      Final Project Option
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#presentation-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      Presentation Option
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#course-roadmap-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      Course Roadmap (1/2)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#course-roadmap-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      Course Roadmap (2/2)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#making-the-best-of-this-course" class="md-nav__link">
+    <span class="md-ellipsis">
+      Making the Best of This Course
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qa" class="md-nav__link">
+    <span class="md-ellipsis">
+      Q&amp;A
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Q&amp;A">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#any-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Any questions?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>00 intro</h1>
+
+<h2 id="large-language-models-a-hands-on-approach">Large Language Models : A Hands on Approach</h2>
+<h3 id="course-orientation">Course Orientation</h3>
+<hr />
+<h2 id="course-overview">Course Overview</h2>
+<ul>
+<li><strong>Duration</strong>: ~18 Weeks</li>
+<li><strong>Format</strong>: 2 sessions per week (Tue &amp; Thu, 7:00–8:30 PM IST)</li>
+<li><strong>Style</strong>: Lectures, demos and labs</li>
+<li><strong>Assessment</strong>: Quizzes, assignments, and final project/presentation</li>
+<li><strong>Credits</strong>: 3 + 1 (Credits added in ABC)</li>
+</ul>
+<hr />
+<h2 id="why-this-course">Why This Course?</h2>
+<p>LLMs have changed how we build intelligent applications.</p>
+<p>This course aims to bridge the gap between:</p>
+<p><strong>Using LLMs via APIs</strong> → <strong>Engineering LLM systems</strong></p>
+<hr />
+<h2 id="learning-outcomes">Learning Outcomes</h2>
+<ul>
+<li>Understand LLM architectures</li>
+<li>Fine-tune models for specific domains and tasks</li>
+<li>Optimize inference for cost and latency</li>
+<li>Build robust LLM-powered applications (RAG, agents, tool use)</li>
+<li>Evaluate, debug, and improve model performance</li>
+<li>Leverage open-source ecosystems for LLM engineering</li>
+</ul>
+<hr />
+<h2 id="what-this-course-will-not-cover">What This Course Will NOT Cover</h2>
+<ul>
+<li>Mathematical foundations</li>
+<li>Pretraining LLMs from scratch</li>
+<li>State of the art in research</li>
+<li>Data engineering pipelines</li>
+<li>Ethics and societal impacts</li>
+</ul>
+<hr />
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li><strong>Programming</strong>: Python proficiency</li>
+<li><strong>ML Basics</strong>: Understanding of neural networks and deep learning</li>
+<li><strong>Helpful</strong>: Familiarity with PyTorch, basic NLP concepts</li>
+</ul>
+<hr />
+<h2 id="tools-and-resources">Tools and Resources</h2>
+<h3 id="software-stack">Software Stack</h3>
+<ul>
+<li>Python</li>
+<li>PyTorch</li>
+<li>HuggingFace Ecosystem(models, libraries and datasets)</li>
+</ul>
+<hr />
+<h2 id="compute-stack">Compute Stack</h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Cost</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Google Colab</td>
+<td>Free</td>
+<td>Limited GPU, good for experiments</td>
+</tr>
+<tr>
+<td>GCP Free Credits</td>
+<td>Free</td>
+<td>$300 for new accounts</td>
+</tr>
+<tr>
+<td>Colab Pro+</td>
+<td>Paid</td>
+<td>More GPU time, better GPUs</td>
+</tr>
+<tr>
+<td>RunPod</td>
+<td>Paid</td>
+<td>Flexible, longer runs</td>
+</tr>
+<tr>
+<td>Lightning AI</td>
+<td>Paid</td>
+<td>Easy setup, good UX</td>
+</tr>
+</tbody>
+</table>
+<p><em>Free options suffice for most of our course needs</em></p>
+<hr />
+<h2 id="evaluation-criteria">Evaluation Criteria</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Weight</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quizzes</td>
+<td>25%</td>
+<td>5 short in-class quizzes</td>
+</tr>
+<tr>
+<td>Assignments</td>
+<td>30%</td>
+<td>2 assignments (Mid Feb and Mid Mar)</td>
+</tr>
+<tr>
+<td>Final Project/Presentation</td>
+<td>40%</td>
+<td>Mar 3rd week onwards</td>
+</tr>
+<tr>
+<td>Participation</td>
+<td>5%</td>
+<td>In-class and forum engagement</td>
+</tr>
+</tbody>
+</table>
+<p>--</p>
+<h2 id="abc">ABC</h2>
+<ul>
+<li><a href="https://www.abc.gov.in/">Academic Bank of Credits</a></li>
+<li>Credits will be added to your ABC account after successful course completion</li>
+<li>More information will be shared during the course</li>
+</ul>
+<hr />
+<h2 id="final-project-option">Final Project Option</h2>
+<p>Individual or group project (max 2).</p>
+<p>Build an end-to-end LLM application:</p>
+<ul>
+<li>Model fine-tuning</li>
+<li>Inference optimization</li>
+<li>LLM Application (RAG, Agents)</li>
+<li>Open source contribution</li>
+<li>Other ideas welcome too</li>
+</ul>
+<p><strong>Deliverables</strong>: Documentation + Demo / Presentation</p>
+<hr />
+<h2 id="presentation-option">Presentation Option</h2>
+<ul>
+<li><strong>Topic</strong>: Novel concept not covered in class</li>
+<li><strong>Format</strong>: Research paper or case study</li>
+<li><strong>Deliverables</strong>: Slides or summary document</li>
+<li><strong>Evaluation</strong>: Depth of understanding, presentation quality</li>
+<li><strong>Duration</strong>: 10 minutes, 8-10 slides</li>
+</ul>
+<hr />
+<h2 id="course-roadmap-12">Course Roadmap (1/2)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Module</th>
+<th style="text-align: left;">Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;"><strong>LLM Foundations</strong> - Transformers, GPT-2, Modern Architectures, MoE, OSS Models</td>
+</tr>
+<tr>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;"><strong>GPUs</strong> - Architecture and Programming,  Multi-GPU Parallelism, Hardware Stack</td>
+</tr>
+<tr>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;"><strong>Inference</strong> - Sampling, KV Caching, Quantization, Speculative Decoding, Model Serving</td>
+</tr>
+<tr>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;"><strong>Fine-Tuning</strong> - SFT, PEFT (LoRA, QLoRA etc),RLHF (DPO, GRPO etc), Distillation</td>
+</tr>
+<tr>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;"><strong>Reasoning</strong> - Chain-of-Thought (CoT), Test Time Scaling, Finetuning</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="course-roadmap-22">Course Roadmap (2/2)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Module</th>
+<th style="text-align: left;">Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;"><strong>RAG &amp; Agents</strong> - RAG Fundamentals, ReAct, Tools, Protocols, Agents, Finetuning</td>
+</tr>
+<tr>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;"><strong>Evaluation</strong> - Moderl Evaluations, Benchmarks, LLM-as-a-Judge</td>
+</tr>
+<tr>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;"><strong>Multimodal</strong> - Multimodal Architectures, Finetuning</td>
+</tr>
+<tr>
+<td style="text-align: left;">9</td>
+<td style="text-align: left;"><strong>Edge Deployment</strong> - Edge architectures, Optimization and Deployment</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="making-the-best-of-this-course">Making the Best of This Course</h2>
+<ul>
+<li><strong>Participate actively</strong>: Ask questions in class, engage in discussions</li>
+<li><strong>Practice hands-on</strong>: Run the code, experiment with parameters</li>
+<li><strong>Use AI tools</strong>: Leverage AI assistants for coding and learning</li>
+<li><strong>Stay connected</strong>: Use forum for async discussions</li>
+</ul>
+<hr />
+<h2 id="qa">Q&amp;A</h2>
+<h3 id="any-questions">Any questions?</h3>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,655 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A comprehensive hands-on course on Large Language Models for industry professionals">
+      
+      
+      
+        <link rel="canonical" href="https://llm-engg.github.io/slides/02_llm_basics/notes/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.21">
+    
+    
+      
+        <title>Large Language Models (LLMs) - Introduction - Large Language Models - A Hands-on Approach</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.2a3383ac.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-LLD65KQHZH"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-LLD65KQHZH",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-LLD65KQHZH",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#large-language-models-llms-introduction" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Large Language Models - A Hands-on Approach" class="md-header__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Large Language Models - A Hands-on Approach
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Large Language Models (LLMs) - Introduction
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../schedule/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Schedule
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../assignments/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Assignments and Labs
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Large Language Models - A Hands-on Approach" class="md-nav__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Large Language Models - A Hands-on Approach
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../schedule/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Schedule
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../assignments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Assignments and Labs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-a-large-language-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is a Large Language Model?
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What is a Large Language Model?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mathematical-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mathematical Definition
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#some-applications-of-large-language-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Some Applications of Large Language Models
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-build-your-own-llm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why build your own LLM?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-and-using-llms" class="md-nav__link">
+    <span class="md-ellipsis">
+      Building and Using LLMs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Building and Using LLMs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#code-example-next-token-prediction-with-huggingface" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Example: Next-Token Prediction with HuggingFace
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      Demo
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exercise
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="large-language-models-llms-introduction">Large Language Models (LLMs) - Introduction</h1>
+<h2 id="what-is-a-large-language-model">What is a Large Language Model?</h2>
+<p>A Large Language Model is a deep neural network trained on extensive datasets containing text from books, articles, websites, and other sources sometimes encompassing large portions of the entire publicly available text on the internet.</p>
+<p>LLMs have remarkable capabilities in understanding, generating, and interpreting human language, code, and even multimodal data (text, images, audio).</p>
+<p><img alt="LLMs Image" src="../images/image-0.png" /></p>
+<p>A language model predicts the next word in a sequence given the preceding words. The models are trained to predict the next word in a sentence, given the preceding words. This training process allows them to learn grammar, facts about the world, reasoning abilities, and even some level of common sense.</p>
+<h3 id="mathematical-definition">Mathematical Definition</h3>
+<p>Mathematically, a language model estimates the probability distribution over a sequence of tokens. The joint probability of a sequence $W = (w_1, w_2, \dots, w_T)$ is factorized using the chain rule of probability:</p>
+<p>$$
+P(w_1, w_2, \dots, w_T) = \prod_{t=1}^{T} P(w_t \mid w_1, \dots, w_{t-1})
+$$</p>
+<p>The core objective is to learn the conditional probability of the next token $w_t$ given the history $w_{&lt;t}$:</p>
+<p>$$
+P(w_t \mid w_{&lt;t})
+$$</p>
+<p>Where:
+- $w_t$ is the token to be predicted at step $t$.
+- $w_{&lt;t} = (w_1, \dots, w_{t-1})$ is the context of preceding tokens.
+- $P(w_t \mid w_{&lt;t})$ is the probability of the next word $w_t$ conditioned on the sequence of previous words.</p>
+<p><img alt="Next Token Prediction" src="../images/next_token.gif" />
+[Image source][1]</p>
+<p>The "large" aspect refers to the model's size, which is typically measured in terms of:
+- <strong>Parameter count</strong>: Typically &gt;1B parameters (e.g., GPT-3: 175B, Llama 3: 8B-405B) [2]
+- <strong>Training data</strong>: Trillions of tokens (e.g., Llama 3 trained on 15T tokens) [3]
+- <strong>Compute</strong>: Thousands of GPU-hours for training</p>
+<p>These models can have billions or even trillions of parameters, enabling them to capture complex patterns in language.</p>
+<p><img alt="" src="../images/sizes.jpg" /></p>
+<h2 id="some-applications-of-large-language-models">Some Applications of Large Language Models</h2>
+<ol>
+<li>
+<p><strong>Chatbots and Virtual Assistants</strong>: LLMs power conversational agents that can understand and respond to user queries in a human-like manner.</p>
+</li>
+<li>
+<p><strong>Natural Language Processing (NLP)</strong>: LLMs are widely used in NLP tasks such as sentiment analysis, named entity recognition, and text classification.</p>
+</li>
+<li>
+<p><strong>Content Generation</strong>: LLMs can generate coherent and contextually relevant text, making them useful for content creation, summarization, and translation.</p>
+</li>
+<li>
+<p><strong>Code Generation</strong>: LLMs can assist in generating code snippets, automating repetitive coding tasks, and even debugging code.</p>
+</li>
+<li>
+<p><strong>Education and Tutoring</strong>: LLMs can provide personalized learning experiences, answer questions, and assist with homework.</p>
+</li>
+<li>
+<p><strong>Creative Writing</strong>: LLMs can collaborate with authors by generating ideas, suggesting plot twists, and even writing poetry or stories.</p>
+</li>
+<li>
+<p><strong>Research Assistance</strong>: LLMs can help researchers by summarizing papers, generating hypotheses, and even conducting literature reviews.</p>
+</li>
+</ol>
+<p>These applications demonstrate the versatility and potential of Large Language Models in transforming how we interact with technology and information.</p>
+<h2 id="why-build-your-own-llm">Why build your own LLM?</h2>
+<ol>
+<li><strong>Domain-specific models</strong> - can outperform general models like ChatGPT, Claude, etc.
+   e.g., Models trained for law, medical question answering, etc.</li>
+<li><strong>Cost-effectiveness</strong> - cheaper to run your own LLM than to use cloud-based services.</li>
+<li><strong>Data Privacy</strong> - you have control over the data used to train the model, prevent sensitive data being sent to model providers</li>
+<li><strong>Customized Deployment</strong> - you can deploy the model on your own infrastructure or edge devices</li>
+<li><strong>Autonomy</strong> - you can control the model's behavior, update it and fix it</li>
+</ol>
+<h2 id="building-and-using-llms">Building and Using LLMs</h2>
+<p>Building and using LLMs involves several steps, including data collection, preprocessing, model selection, training, and evaluation.</p>
+<p><img alt="" src="../images/building_llms.png" /></p>
+<p><strong>1. Data Collection and Preprocessing:</strong>
+Data collection is the first step in building an LLM. It involves gathering a large and diverse dataset of text data from various sources, such as books, articles, websites, and social media platforms. Typically several terabytes or petabytes of data are required to train a large LLM.</p>
+<p><strong>2. Pretraining:</strong>
+Pretraining involves training a large language model on a large dataset of text data. The model is trained to predict the next token in a sequence of tokens, given the preceding tokens. This training process allows the model to learn the patterns and relationships in the data, which can then be used for a variety of downstream tasks.</p>
+<p><strong>3. Fine-tuning:</strong>
+Fine-tuning adapts a pretrained model for specific tasks and aligns it to human preferences.</p>
+<p><strong>4. Inference:</strong>
+Inference involves using the model to generate text based on a given input. The model is used to generate text based on a given input, which can be used for a variety of downstream tasks.</p>
+<p>In our course, we'll not cover data collection and pretraining from scratch, but will focus on fine-tuning, inference optimization, and building applications using LLMs. Pre-training and data engineering require significant resources and are beyond the scope of this course. We shall use existing pretrained models from open-source repositories like HuggingFace and focus on engineering aspects of LLMs.</p>
+<h3 id="code-example-next-token-prediction-with-huggingface">Code Example: Next-Token Prediction with HuggingFace</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">transformers</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoModelForCausalLM</span><span class="p">,</span> <span class="n">AutoTokenizer</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">AutoModelForCausalLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;gpt2&quot;</span><span class="p">)</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;gpt2&quot;</span><span class="p">)</span>
+
+<span class="n">inputs</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;The capital of France is&quot;</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
+<span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">,</span> <span class="n">max_new_tokens</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="c1"># Output: &quot;The capital of France is Paris, and the&quot;</span>
+</code></pre></div>
+<h2 id="demo">Demo</h2>
+<ul>
+<li><a href="https://colab.research.google.com/drive/11p1Tu535Lh3fXZ7m0K-GbX97d1Hm9pmf">Text Generation</a></li>
+<li><a href="https://colab.research.google.com/drive/1jnXR6aKOIyoXMiYeBC_lHxejAvilR64q">Vision-Language Model</a></li>
+<li>Audio Generation</li>
+</ul>
+<h2 id="exercise">Exercise</h2>
+<ul>
+<li>Login to Google Colab</li>
+<li>Run shared notebooks</li>
+<li>Visit HuggingFace, explore trending models, spaces and datasets. Use this <a href="https://huggingface.co/blog/proflead/hugging-face-tutorial">HuggingFace Tutorial</a> as reference.</li>
+</ul>
+<h2 id="references">References</h2>
+<ol>
+<li><a href="https://jalammar.github.io/illustrated-gpt2/">The Illustrated GPT-2</a> - Jay Alammar</li>
+<li><a href="https://arxiv.org/abs/2005.14165">Language Models are Few-Shot Learners (GPT-3)</a> - Brown et al., 2020</li>
+<li><a href="https://arxiv.org/abs/2407.21783">Llama 3 Technical Report</a> - Meta AI, 2024</li>
+<li><a href="https://www.oreilly.com/library/view/hands-on-large-language/9781098150952/">Hands-On Large Language Models by Jay Alammar, Maarten Grootendorst</a></li>
+</ol>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

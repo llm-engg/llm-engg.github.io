@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>LLM Course</title>
+
+  <link rel="stylesheet" href="reveal/dist/reveal.css">
+  <link rel="stylesheet" href="reveal/dist/theme/solarized.css">
+  <!-- PDF export support: append ?print-pdf to URL, then Ctrl+P -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi)
+      ? 'reveal/dist/print/pdf.css'
+      : 'reveal/dist/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+
+  <!-- Bigger fonts for classrooms -->
+  <style>
+    .reveal {
+      font-size: 32px;
+    }
+    .reveal code {
+      font-size: 0.9em;
+    }
+    /* Left-align all slide content */
+    .reveal .slides section {
+      text-align: left;
+    }
+    .reveal .slides section ul,
+    .reveal .slides section ol {
+      display: block;
+      text-align: left;
+    }
+    .reveal .slides section li {
+      text-align: left;
+    }
+    /* Headings at top of slides */
+    .reveal .slides section h1,
+    .reveal .slides section h2,
+    .reveal .slides section h3 {
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 0.5em;
+    }
+    /* First slide (title slide) - center content vertically */
+    .reveal .slides > section:first-child,
+    .reveal .slides > section:first-child > section:first-child {
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      align-items: center !important;
+    }
+    /* Center-align tables */
+    .reveal .slides section table {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* Footer styling */
+    .reveal .footer {
+      position: absolute;
+      bottom: 1em;
+      left: 1em;
+      font-size: 0.5em;
+      color: #657b83;
+      z-index: 100;
+    }
+    /* Constrain slides to prevent overflow */
+    .reveal .slides section {
+      overflow: hidden !important;
+      height: 100% !important;
+      box-sizing: border-box !important;
+    }
+    /* Image sizing and background blend for solarized theme */
+    .reveal .slides section img,
+    .reveal .slides section p img,
+    .reveal img {
+      max-width: 600px !important;
+      max-height: 400px !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: contain !important;
+      display: block !important;
+      margin: 0.5em auto !important;
+      background-color: #fdf6e3 !important;
+      padding: 0.5em !important;
+      border-radius: 4px !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    
+  </style>
+
+  <link rel="stylesheet" href="reveal/plugin/highlight/monokai.css">
+ </head>
+<body>
+
+<div class="reveal">
+  <div class="footer"> <a href="https://llm-engg.github.io">Large Language Models : A Hands-on Approach – CCE, IISc</a></div>
+  <div class="slides">
+
+    <section
+      data-markdown="{{SLIDES_MD}}"
+      data-separator="^---$"
+      data-separator-vertical="^--$"
+      data-separator-notes="^Note:"
+    ></section>
+
+  </div>
+</div>
+
+<script src="reveal/dist/reveal.js"></script>
+<script src="reveal/plugin/markdown/markdown.js"></script>
+<script src="reveal/plugin/highlight/highlight.js"></script>
+<script src="reveal/plugin/math/math.js"></script>
+<script src="reveal/plugin/notes/notes.js"></script>
+
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: "c/t",
+    center: false,
+    transition: "none",     // better for teaching & recording
+    controls: true,         // show navigation arrows
+    controlsTutorial: true, // show arrow hints on first slide
+    controlsLayout: "bottom-right",
+    controlsBackArrows: "faded",
+    plugins: [
+      RevealMarkdown,
+      RevealHighlight,
+      RevealMath,
+      RevealNotes,
+     
+    ]
+  });
+</script>
+
+</body>
+</html>
