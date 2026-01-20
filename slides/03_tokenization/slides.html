@@ -440,6 +440,7 @@ $</p>
 <script src="../reveal/plugin/math/math.js"></script>
 <script src="../reveal/plugin/notes/notes.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin@11.6.0/plugin/mermaid/mermaid.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js"></script>
 
 
 <script>
@@ -451,12 +452,18 @@ Reveal.initialize({
   transition: "none",
   controls: true,
   controlsTutorial: true,
+  index:true,
   controlsLayout: "bottom-right",
   controlsBackArrows: "faded",
   mermaid:{
     
   },
-  plugins: [ RevealHighlight, RevealMath, RevealNotes, RevealMermaid ]
+  menu: {
+    side: "left",
+    titleSelector: "h1, h2, h3",
+    useTextContentForMissingTitles: true
+  },
+  plugins: [ RevealHighlight, RevealMath, RevealNotes, RevealMermaid, RevealMenu ]
 });
 
 </script>
