@@ -1,0 +1,1111 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A comprehensive hands-on course on Large Language Models for industry professionals">
+      
+      
+      
+        <link rel="canonical" href="https://llm-engg.github.io/slides/04_transformer_basics/slides/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.21">
+    
+    
+      
+        <title>Slides - Large Language Models - A Hands-on Approach</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.2a3383ac.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-LLD65KQHZH"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-LLD65KQHZH",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-LLD65KQHZH",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#topics-covered" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Large Language Models - A Hands-on Approach" class="md-header__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Large Language Models - A Hands-on Approach
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Slides
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../schedule/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Schedule
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../assignments/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Assignments and Labs
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Large Language Models - A Hands-on Approach" class="md-nav__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Large Language Models - A Hands-on Approach
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../schedule/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Schedule
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../assignments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Assignments and Labs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#topics-covered" class="md-nav__link">
+    <span class="md-ellipsis">
+      Topics Covered
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#models-of-the-week" class="md-nav__link">
+    <span class="md-ellipsis">
+      Models of the Week
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recap-tokenization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recap : Tokenization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recap : Tokenization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#text-to-token-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      Text to Token IDs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tokens-to-embeddings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tokens to Embeddings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transformers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-types-of-transformer-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Two types of Transformer Architectures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-components-of-transformer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Components of Transformer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#language-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Language Modeling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decoder-only-language-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decoder-only Language Model
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decoder-only-llm-input-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decoder-only LLM : Input Side
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decoder-only-llm-output-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decoder-only LLM : Output Side
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decoder-block-internals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decoder Block Internals
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sequence-modeling-challenges" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sequence Modeling Challenges
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recurrent-neural-networks-rnns-for-sequence-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recurrent Neural Networks (RNNs) for Sequence Modeling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rnns-attention" class="md-nav__link">
+    <span class="md-ellipsis">
+      RNNs + Attention
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rnns-attention_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      RNNs + Attention
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallel-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parallel Processing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#self-attention-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      Self-Attention Mechanism
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#self-attention-intuition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Self-Attention : Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#self-attention-intuition_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Self-Attention : Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#self-attention-vs-encoderdecoder-attention" class="md-nav__link">
+    <span class="md-ellipsis">
+      Self-Attention vs Encoder–Decoder Attention
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simple-attention-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple Attention Mechanism
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#computing-attention-weights-for-a-single-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      Computing attention weights for a single token
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#computing-attention-weights-for-a-single-token_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Computing attention weights for a single token
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#computing-attention-weigths-for-all-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      Computing attention weigths for all tokens
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#computing-attention-weigths-for-all-tokens_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Computing attention weigths for all tokens
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#summary-of-self-attention-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary of Self-Attention Mechanism
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thank-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      Thank You
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Slides</h1>
+
+<div class="center-slide">
+
+## LLMs : A Hands-on Approach 
+
+### Transformers
+</div>
+
+<hr />
+<h2 id="topics-covered">Topics Covered</h2>
+<ul>
+<li>Transformer architecture</li>
+<li>Self-attention mechanism</li>
+<li>Causal Attention</li>
+<li>Multi-head attention</li>
+</ul>
+<hr />
+<h2 id="models-of-the-week">Models of the Week</h2>
+<p><strong><a href="https://huggingface.co/moonshotai/Kimi-K2.5">moonshotai/Kimi-K2.5</a></strong></p>
+<ul>
+<li>SOTA Open Source model</li>
+<li>1T+ parameters, 30T tokens pretraining data, Vocabulary Size - 160K, Context Length - 256K</li>
+<li>Agentic, Agent Swarm, Multi-modal capabilities</li>
+</ul>
+<p><strong><a href="https://research.nvidia.com/labs/adlr/personaplex/">nvidia/personaplex-7b-v1</a></strong></p>
+<ul>
+<li>7B, Real-time, speech to speech model, full-duplex model </li>
+<li><a href="https://research.nvidia.com/labs/adlr/personaplex/">Demo</a></li>
+</ul>
+<p><strong><a href="https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice">Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice</a></strong></p>
+<ul>
+<li>Text to Speech model with voice design, voice cloning, custom voice</li>
+</ul>
+<hr />
+<h2 id="recap-tokenization">Recap : Tokenization</h2>
+<ul>
+<li>Words, Subwords, Characters level tokenization</li>
+<li>Subword tokenization is the most commonly used approach in LLMs</li>
+</ul>
+<p><img alt="" src="../images/tokens.png" /></p>
+<hr />
+<h3 id="text-to-token-ids">Text to Token IDs</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">tiktoken</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">get_encoding</span><span class="p">(</span><span class="s2">&quot;gpt2&quot;</span><span class="p">)</span>
+<span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;This is an example.&quot;</span>
+<span class="n">token_ids</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="c1"># tokens = [&#39;This&#39;, &#39; is&#39;, &#39; an&#39;, &#39; example&#39;, &#39;.&#39;]</span>
+<span class="c1"># token_ids = [40234, 2052, 133, 389, 12]</span>
+</code></pre></div>
+<p><img alt="" src="../images/word_tokenization.png" /></p>
+<hr />
+<h3 id="tokens-to-embeddings">Tokens to Embeddings</h3>
+<ul>
+<li>Each token ID maps to a unique vector in the embedding matrix</li>
+<li>Embedding Matrix : [vocab_size x embedding_dim] </li>
+<li>Example : GPT-2 Small<ul>
+<li>vocab_size = 50257</li>
+<li>embedding_dim = 768</li>
+</ul>
+</li>
+</ul>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/lm_token_embeddings.png" style="max-width: 50%;">
+    </div>
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/emb-matrix.png" style="max-width: 50%;">
+    </div>
+</div>
+
+<hr />
+<div class="center-slide">
+
+## Transformers
+
+</div>
+
+<hr />
+<h3 id="transformers">Transformers</h3>
+<p><img src="images/transformer.png" class="float-right"></p>
+<ul>
+<li>All LLMs rely on the Transformer architecture, introduced in the 2017 paper "Attention Is All You Need" (https://arxiv.org/abs/1706.03762).</li>
+<li>No Recurrent or Convolution layers, entirely based on Attention Mechanism</li>
+</ul>
+<hr />
+<h3 id="two-types-of-transformer-architectures">Two types of Transformer Architectures</h3>
+<p><img src="images/enc-dec-vs-dec-only.png" class="float-right"></p>
+<ul>
+<li><strong>Encoder-Decoder</strong> : Sequence to sequence tasks (translation, summarization)</li>
+<li><strong>Decoder-Only</strong> : Language modeling tasks (text generation, completion)</li>
+<li>Most LLMs (GPT, Llama, etc.) use the <strong>Decoder-Only</strong> architecture</li>
+</ul>
+<hr />
+<h3 id="key-components-of-transformer">Key Components of Transformer</h3>
+<p><img src="images/enc-dec.png" class="float-right"></p>
+<ul>
+<li>Positional Encoding <!-- .element: class="fragment semi-fade-out" data-fragment-index="1" --></li>
+<li>Multi-Head Attention <!-- .element: class="fragment highlight-current-blue grow" data-fragment-index="1" --></li>
+<li>Residual Connections <!-- .element: class="fragment semi-fade-out" data-fragment-index="1" --></li>
+<li>Feed Forward Networks <!-- .element: class="fragment semi-fade-out" data-fragment-index="1" --></li>
+<li>Layer Normalization <!-- .element: class="fragment semi-fade-out" data-fragment-index="1" --></li>
+</ul>
+<hr />
+<h3 id="language-modeling">Language Modeling</h3>
+<ul>
+<li>Given a sequence of tokens, predict the next token</li>
+<li>Example: A robot may not harm a ___ -&gt; human</li>
+<li>[PROMPT] -&gt; [MODEL] -&gt; [PREDICTION]</li>
+</ul>
+<p><img alt="" src="https://jalammar.github.io/images/xlnet/gpt-2-autoregression-2.gif" /></p>
+<hr />
+<h3 id="decoder-only-language-model">Decoder-only Language Model</h3>
+<ul>
+<li>A decoder-only language model is a stack of transformer decoder blocks</li>
+</ul>
+<p><img alt="alt text" src="https://jalammar.github.io/images/gpt2/gpt-2-simple-output-3.gif" /></p>
+<hr />
+<h3 id="decoder-only-llm-input-side">Decoder-only LLM : Input Side</h3>
+<ul>
+<li>Input tokens are passed through multiple  decoder blocks</li>
+<li><strong>Embed</strong> : Text -&gt; Token IDs -&gt; Embeddings -&gt; Decoder Blocks</li>
+</ul>
+<p><img alt="alt text" src="../images/decoder-blocks.png" /></p>
+<hr />
+<h3 id="decoder-only-llm-output-side">Decoder-only LLM : Output Side</h3>
+<ul>
+<li><strong>UnEmbed</strong> : The final vector is projected to vocabulary size and softmaxed to get token probabilities</li>
+</ul>
+<p><img alt="" src="../images/output-layer.png" /></p>
+<hr />
+<h3 id="decoder-block-internals">Decoder Block Internals</h3>
+<ul>
+<li>Masked Multi-Head Self-Attention</li>
+<li>Feed Forward Network (FFN)</li>
+<li>Residual Connections</li>
+<li>Layer Normalization</li>
+</ul>
+<p><img alt="alt text" src="../images/decoder-internals.png" /></p>
+<hr />
+<div class="center-slide">
+
+## Attention Mechanism
+
+</div>
+
+<hr />
+<h3 id="sequence-modeling-challenges">Sequence Modeling Challenges</h3>
+<ul>
+<li>Understanding context and relationships between words</li>
+<li>Need to keep grammatical structures aligned</li>
+</ul>
+<p><img alt="" src="../images/translate.png" /></p>
+<hr />
+<h3 id="recurrent-neural-networks-rnns-for-sequence-modeling">Recurrent Neural Networks (RNNs) for Sequence Modeling</h3>
+<ul>
+<li>Process all input into a hidden state, </li>
+<li>Pass hidden state to decoder</li>
+<li>Decoder uses hidden state to generate output sequence</li>
+</ul>
+<p><img alt="Encoder-Decoder" src="../images/rnn.png" /></p>
+<hr />
+<h3 id="rnns-attention">RNNs + Attention</h3>
+<ul>
+<li>Let Decoder access all Encoder hidden states</li>
+<li>Attend to relevant parts of input sequence when generating each output token [Bahdanau et al., 2015]</li>
+</ul>
+<p><img alt="bahdanau-attn" src="https://camo.githubusercontent.com/90bef5f34f4eb3eb23e8446eb150507bb0df2fc5cd4f0c5dc7e9d4db3dab1058/68747470733a2f2f332e62702e626c6f6773706f742e636f6d2f2d3350626a5f64767430566f2f562d71652d4e6c365035492f41414141414141414251632f7a305f365774565774764152744d6b3069395f41744c6579794779563641493477434c63422f73313630302f6e6d742d6d6f64656c2d666173742e676966" /></p>
+<hr />
+<h3 id="rnns-attention_1">RNNs + Attention</h3>
+<p><strong>Limitations</strong></p>
+<ul>
+<li>Sequential processing limits parallelization</li>
+<li>Difficulty capturing long-range dependencies</li>
+</ul>
+<p><strong>Solution</strong>: </p>
+<ul>
+<li>Remove recurrence, process all input tokens simultaneously</li>
+<li>Allow each token in the input to focus on relevant parts of the input</li>
+</ul>
+<hr />
+<h3 id="parallel-processing">Parallel Processing</h3>
+<ul>
+<li><strong>Encoder</strong> : Process all input tokens simultaneously</li>
+<li><strong>Decoder</strong> : Generate output tokens one by one, attending to encoder states and previous tokens</li>
+</ul>
+<p><img alt="" src="https://3.bp.blogspot.com/-aZ3zvPiCoXM/WaiKQO7KRnI/AAAAAAAAB_8/7a1CYjp40nUg4lKpW7covGZJQAySxlg8QCLcBGAs/s640/transform20fps.gif" /></p>
+<hr />
+<h3 id="self-attention-mechanism">Self-Attention Mechanism</h3>
+<ul>
+<li>Compute attention <strong>within</strong> the same sequence of tokens. <strong>Self = Same Sequence</strong></li>
+<li>Get improved representation by <strong>mixing in information</strong> from other tokens <strong>that seem relevant.</strong></li>
+</ul>
+<p><img alt="alt text" src="../images/self-attn.png" />
+<img alt="alt text" src="image.png" /></p>
+<hr />
+<h3 id="self-attention-intuition">Self-Attention : Intuition</h3>
+<div style="text-align: center;">
+
+*"Self-attention is like a group conversation where everyone can hear
+everyone else simultaneously, rather than passing notes one by one (RNNs)"*
+
+</div>
+
+<hr />
+<h3 id="self-attention-intuition_1">Self-Attention : Intuition</h3>
+<p><img src="images/attn-weighted.png" class="float-right"></p>
+<ul>
+<li>
+<p>Each token : "Who should I pay attention to?"</p>
+</li>
+<li>
+<p>For every token, the model:</p>
+<ul>
+<li>treats that token as the "current focus"</li>
+<li>assigns <strong>higher weight</strong> to tokens that help interpret it</li>
+<li>creates an updated vector for the token:  </li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="self-attention-vs-encoderdecoder-attention">Self-Attention vs Encoder–Decoder Attention</h3>
+<ul>
+<li>
+<p><strong>Encoder–Decoder</strong>: One sequence attends to a <em>different</em> sequence (e.g., translation: output attends to the input sentence).</p>
+</li>
+<li>
+<p><strong>Self-attention</strong>: Sequence attends to <strong>itself</strong> (tokens attending to other tokens in the same sentence).</p>
+</li>
+</ul>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/bahdanau-attn.png" style="max-width: 50%;">
+    </div>
+    <div style="flex: 1; padding: 10px;">
+        <img src="https://jalammar.github.io/images/t/transformer_self-attention_visualization.png" style="max-width: 50%;">
+    </div>
+</div>
+
+<hr />
+<h3 id="simple-attention-mechanism">Simple Attention Mechanism</h3>
+<p><img src="images/simple-attention.png" class="float-right"></p>
+<p><strong>Input</strong>  -  Sequence of vectors (X) (source)</p>
+<p><strong>Output</strong> - Sequence of vectors (Z) (context)</p>
+<div style="text-align: center;">
+$$
+X = [x_1, x_2, \dots, x_n], \quad x_i \in \mathbb{R}^d
+$$
+
+$$
+Z = [z_1, z_2, \dots, z_n], \quad z_i \in \mathbb{R}^d
+$$
+
+$$
+z_i = \sum_{j=1}^{n} \text{attention\_weight}_{ij} \. x_j
+$$
+</div>
+
+<hr />
+<h3 id="computing-attention-weights-for-a-single-token">Computing attention weights for a single token</h3>
+<div style="text-align: center;">
+
+*Your **journey** starts with one step*
+
+</div>
+
+<p>query = "journey"</p>
+<p><img src="images/simple-attn-scores.png" class="float-right"></p>
+<p>Step 1: </p>
+<ul>
+<li>Compute attention scores by dot product of "journey" with all tokens</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">query</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">attn_scores_2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
+    <span class="n">attn_scores_2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x_i</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">attn_scores_2</span><span class="p">)</span>
+</code></pre></div>
+<p>--</p>
+<h3 id="computing-attention-weights-for-a-single-token_1">Computing attention weights for a single token</h3>
+<p><img src="images/normalized.png" class="float-right"></p>
+<p>Step 2:</p>
+<ul>
+<li>Apply normalization to get attention weights (additive normalization)</li>
+<li>Normalization using softmax is more common in practice, as it ensures all weights are positive and sum to 1.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">attn_weights_2_tmp</span> <span class="o">=</span> <span class="n">attn_scores_2</span> <span class="o">/</span> <span class="n">attn_scores_2</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">softmax_naive</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">attn_weights_2_naive</span> <span class="o">=</span> <span class="n">softmax_naive</span><span class="p">(</span><span class="n">attn_scores_2</span><span class="p">)</span>
+
+<span class="n">attn_weights_2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">attn_scores_2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+<p>--</p>
+<p>Step 3:
+- Compute output vector as weighted sum of value vectors</p>
+<p><img alt="alt text" src="../images/context-vector.png" /></p>
+<div class="highlight"><pre><span></span><code><span class="n">context_vec_2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
+    <span class="n">context_vec_2</span> <span class="o">+=</span> <span class="n">attn_weights_2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">x_i</span>
+</code></pre></div>
+<hr />
+<h3 id="computing-attention-weigths-for-all-tokens">Computing attention weigths for all tokens</h3>
+<ul>
+<li>Compute attention scores for all tokens
+```python [1 | 2-10]
+attn_scores = torch.zeros(inputs.shape[0], inputs.shape[0])</li>
+</ul>
+<p>for i, x_i in enumerate(inputs):
+    for j, x_j in enumerate(inputs):
+        attn_scores[i, j] = torch.dot(x_i, x_j)</p>
+<div class="highlight"><pre><span></span><code>- Normalize scores to get attention weights
+```python
+attn_weights = torch.softmax(attn_scores, dim=-1)
+</code></pre></div>
+<ul>
+<li>Compute output/context    vectors for all tokens
+<div class="highlight"><pre><span></span><code><span class="n">output_vectors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">output_vectors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">attn_weights</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">inputs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+</code></pre></div></li>
+</ul>
+<p>--</p>
+<h3 id="computing-attention-weigths-for-all-tokens_1">Computing attention weigths for all tokens</h3>
+<ul>
+<li>Better implementation using matrix multiplication</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">attn_scores</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">attn_scores</span> <span class="o">=</span> <span class="n">inputs</span> <span class="o">@</span> <span class="n">inputs</span><span class="o">.</span><span class="n">T</span>
+<span class="n">attn_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">attn_scores</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">output_vectors</span> <span class="o">=</span> <span class="n">attn_weights</span> <span class="o">@</span> <span class="n">inputs</span>
+</code></pre></div>
+<hr />
+<h3 id="summary-of-self-attention-mechanism">Summary of Self-Attention Mechanism</h3>
+<ul>
+<li>Input: sequence of vectors (X) (source)</li>
+<li>Output: sequence of vectors (Z) (context)</li>
+<li>Compute attention scores against all input vectors</li>
+<li>Normalize scores to get attention weights</li>
+<li>Compute output vectors as weighted sum of input vectors</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">self_attention</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
+    <span class="c1"># Step 1: Compute attention scores</span>
+    <span class="n">attn_scores</span> <span class="o">=</span> <span class="n">inputs</span> <span class="o">@</span> <span class="n">inputs</span><span class="o">.</span><span class="n">T</span>
+    <span class="c1"># Step 2: Normalize scores to get attention weights</span>
+    <span class="n">attn_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">attn_scores</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Step 3: Compute output vectors as weighted sum of input vectors</span>
+    <span class="n">output_vectors</span> <span class="o">=</span> <span class="n">attn_weights</span> <span class="o">@</span> <span class="n">inputs</span>
+    <span class="k">return</span> <span class="n">output_vectors</span>
+</code></pre></div>
+<div style="text-align: center;">
+
+**How to improve this basic self-attention mechanism?** <!-- .element: class="fragment" data-fragment-index="2" -->
+
+Learn the weights used to compute attention scores! <!-- .element: class="fragment" data-fragment-index="3" -->
+
+</div>
+
+<hr />
+<h2 id="references">References</h2>
+<ul>
+<li>Vaswani et al., <a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a> (2017) - The original transformer paper</li>
+<li>Bahdanau et al., <a href="https://arxiv.org/abs/1409.0473">Neural Machine Translation by Jointly Learning to Align and Translate</a> (2014) - Introduced attention for seq2seq</li>
+<li>Jay Alammar, <a href="https://jalammar.github.io/illustrated-transformer/">The Illustrated Transformer</a></li>
+<li>Jay Alammar, <a href="https://jalammar.github.io/illustrated-gpt2/">The Illustrated GPT-2</a></li>
+<li><a href="http://nlp.seas.harvard.edu/2018/04/03/attention.html">The Annotated Transformer</a> - Harvard NLP</li>
+<li>Sebastian Raschka, <em>Build a Large Language Model from Scratch</em> - Chapters 3-4</li>
+</ul>
+<hr />
+<h2 id="thank-you">Thank You</h2>
+<p>Questions?</p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

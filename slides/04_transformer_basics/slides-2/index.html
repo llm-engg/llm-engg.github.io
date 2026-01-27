@@ -1,0 +1,974 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A comprehensive hands-on course on Large Language Models for industry professionals">
+      
+      
+      
+        <link rel="canonical" href="https://llm-engg.github.io/slides/04_transformer_basics/slides-2/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.21">
+    
+    
+      
+        <title>Slides 2 - Large Language Models - A Hands-on Approach</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.2a3383ac.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-LLD65KQHZH"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-LLD65KQHZH",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-LLD65KQHZH",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#scaled-dot-product-attention" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Large Language Models - A Hands-on Approach" class="md-header__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Large Language Models - A Hands-on Approach
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Slides 2
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../schedule/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Schedule
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../assignments/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Assignments and Labs
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Large Language Models - A Hands-on Approach" class="md-nav__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Large Language Models - A Hands-on Approach
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../schedule/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Schedule
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../assignments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Assignments and Labs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scaled-dot-product-attention" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scaled Dot-Product Attention
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#introducing-q-k-v-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introducing Q, K, V vectors
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-three-vectors-q-k-v" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why three vectors (Q, K, V)?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#q-k-v-projections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Q, K, V Projections
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-attention-with-learned-weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      Self-Attention with Learned Weights
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scaled-dot-product-attention_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scaled Dot-Product Attention
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementing-self-attention-with-learned-weights-single-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementing Self-Attention with Learned Weights : Single Token
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-attention-with-learned-weights-all-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      Self-Attention with Learned Weights : All Tokens
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#causal-attention-masking-in-decoder-only-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Causal Attention (Masking) in Decoder-Only Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Causal Attention (Masking) in Decoder-Only Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#masking-in-causal-attention" class="md-nav__link">
+    <span class="md-ellipsis">
+      Masking in Causal Attention
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attenion-dropout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attenion + Dropout
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Attenion + Dropout">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dropout-in-attention-weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dropout in Attention Weights
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#putting-it-all-together-self-attention-module-with-masking-and-dropout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Putting it all together: Self-Attention Module with Masking and Dropout
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi-head-attention" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-Head Attention
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Multi-Head Attention">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stacking-multiple-attention-heads" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stacking multiple attention heads
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-head-attention-naive-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-Head Attention : Naive Implementation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-head-attention-efficient-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-Head Attention : Efficient Implementation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-we-didnt-cover" class="md-nav__link">
+    <span class="md-ellipsis">
+      What We Didn't Cover
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Slides 2</h1>
+
+<div class="center-slide">
+
+## Self-Attention with Learned Weights
+
+</div>
+
+<hr />
+<h3 id="scaled-dot-product-attention">Scaled Dot-Product Attention</h3>
+<ul>
+<li>Assume attention weights as random matrix</li>
+<li>We need to learn these weights during training</li>
+</ul>
+<p><strong>What to attend to</strong> : Identify relevant tokens in the sequence.</p>
+<p><strong>How strongly to attend</strong>: Compute attention weights over those tokens.</p>
+<p><strong>Contextualize/Output</strong>: Weighted sum of token representations.</p>
+<hr />
+<h3 id="introducing-q-k-v-vectors">Introducing Q, K, V vectors</h3>
+<ul>
+<li>Query weight matrix ($W_q$) (for queries/input tokens)</li>
+<li>Key weight matrix ($W_k$) (for keys/other tokens)</li>
+<li>Value weight matrix ($W_v$) (for values/tokens to copy from)</li>
+</ul>
+<p><img alt="alt text" src="../images/projections.png" /></p>
+<hr />
+<h3 id="why-three-vectors-q-k-v">Why three vectors (Q, K, V)?</h3>
+<ul>
+<li><strong>Query (Q):</strong> Represents the current token we are focusing on. Q gets specialized to ask questions about relevance.</li>
+<li><strong>Key (K):</strong> Represents all tokens we are comparing against. K gets specialized to help determine relevance to Q.</li>
+<li>
+<p><strong>Value (V):</strong> Represents the actual information we want to copy from the input. V gets specialized to carry useful content.</p>
+</li>
+<li>
+<p>Q and K exist to define a similarity space, while V exists to define an information space.</p>
+</li>
+<li>Queries are optimized to ask questions</li>
+<li>Values are optimized to carry information</li>
+</ul>
+<p>--</p>
+<p><strong>Example</strong>
+Library System:</p>
+<p>Think of each token as a book in a library. Every book has three different representations, depending on what you’re doing with it.</p>
+<p><strong>Query (Q)</strong>: the question you’re asking right now</p>
+<p>"I'm looking for material about animal fatigue"</p>
+<p>"I need something that explains causal negation"</p>
+<p><em>Important</em>:
+The query is shaped by your current goal, not by what the books contain.</p>
+<p>That’s exactly what Q does:</p>
+<p>It encodes what this token needs from context.</p>
+<p>--</p>
+<p><strong>Key (K)</strong>: the book’s index card</p>
+<p>Each book has an index card (or metadata record).</p>
+<p>Topics, Keywords, Cross-references, Classification codes</p>
+<p><em>Important</em>:
+The system never reads the whole book to decide relevance.
+It compares your query against the keys.</p>
+<p>That’s K:
+A compact representation optimized for matching, not for content.</p>
+<p>--</p>
+<p><strong>Value (V)</strong>: the actual book content</p>
+<p>Once relevant books are identified, you don’t copy the index cards.</p>
+<p>You copy:
+<em>Paragraphs, Explanations, Facts,</em></p>
+<p>That’s the Value:
+The information you actually want to transfer into your answer.
+| Component | Description | Example |
+|-----------|-------------|---------|
+| <strong>Query (Q)</strong> | The question you're asking | "I need info about animal fatigue" |
+| <strong>Key (K)</strong> | Index cards with topics/keywords | Book metadata, classification codes |
+| <strong>Value (V)</strong> | Actual content to retrieve | Paragraphs, explanations, facts to copy |</p>
+<p>--</p>
+<p><strong>Can we use Q for V?</strong>
+- Using the same vector for both querying and copying can limit expressiveness.
+- Separate Q, K, V allow the model to learn different representations for querying and copying.</p>
+<hr />
+<h3 id="q-k-v-projections">Q, K, V Projections</h3>
+<p><img src="images/attn-summary.png" class="float-right"></p>
+<p>$W_q$: projects tokens into query space</p>
+<p>$W_k$: projects tokens into key space</p>
+<p>$W_v$: projects tokens into value space</p>
+<p>$Q = X W_q  $=&gt; Turn input tokens into queries</p>
+<p>$K = X W_k  $=&gt; Turn input tokens into keys</p>
+<p>$V = X W_v  $=&gt; Turn input tokens into values</p>
+<hr />
+<h3 id="self-attention-with-learned-weights">Self-Attention with Learned Weights</h3>
+<ul>
+<li>Project input vectors to query, key, and value spaces</li>
+</ul>
+<div style="text-align: center;">    
+$$\mathbf{queries} = X W_q$$
+
+$$\mathbf{keys} = X W_k$$
+
+$$\mathbf{values} = X W_v$$
+</div>
+
+<ul>
+<li>Compute Similarity : </li>
+</ul>
+<div style="text-align: center;"> 
+$$\mathbf{scores} = \mathbf{queries} \times \mathbf{keys}^T$$
+
+$$\mathbf{attn\_weights} = \text{softmax}(\mathbf{scores})$$
+
+</div>
+
+<ul>
+<li>Contextualization</li>
+</ul>
+<div style="text-align: center;"> 
+$$\mathbf{context\_vec} = \mathbf{attn\_weights} \times \mathbf{values}$$
+</div>
+
+<hr />
+<h3 id="scaled-dot-product-attention_1">Scaled Dot-Product Attention</h3>
+<div style="text-align: center;">
+
+$$
+\mathbf{Attention}(Q, K, V) = \mathbf{softmax}\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V
+$$
+
+</div>
+
+<p>$$d_k \text{ is the dimensionality of the key vectors (used for scaling).}$$</p>
+<p>Why divide by sqrt(dk)?
+- Prevents large dot product values when dk is large
+- Helps keep gradients stable during training
+- Dot product variance is ~dk, scaling by sqrt(dk) normalizes variance to ~1</p>
+<hr />
+<h3 id="implementing-self-attention-with-learned-weights-single-token">Implementing Self-Attention with Learned Weights : Single Token</h3>
+<p><strong>Calculating self-attention step-by-step</strong> : Single Token</p>
+<p><img alt="" src="../images/self-attention_q2.png" /></p>
+<p>--</p>
+<ol>
+<li>
+<p>Initial Step :
+<div class="highlight"><pre><span></span><code><span class="n">W_query</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">),</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">W_key</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">),</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">W_value</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">),</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Compute Query, Key, Value vectors:</p>
+</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">q_2</span> <span class="o">=</span> <span class="n">x_2</span> <span class="o">@</span> <span class="n">W_query</span>  <span class="c1"># Query for token 2</span>
+<span class="n">k_2</span> <span class="o">=</span> <span class="n">x_2</span> <span class="o">@</span> <span class="n">W_key</span>    <span class="c1"># Key for token 2</span>
+<span class="n">v_2</span> <span class="o">=</span> <span class="n">x_2</span> <span class="o">@</span> <span class="n">W_value</span>  <span class="c1"># Value for token 2</span>
+</code></pre></div>
+<ol>
+<li>Compute attention weights by dot product of Query with all Key vectors:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">attn_scores_2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">attn_scores_2</span> <span class="o">=</span> <span class="n">q_2</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">k_2</span><span class="p">)</span>
+<span class="n">attn_weights_2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">attn_scores_2</span> <span class="o">/</span> <span class="p">(</span><span class="n">k_2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<ol>
+<li>Calculate value vectors:
+<div class="highlight"><pre><span></span><code><span class="n">context_vec_2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">context_vec_2</span> <span class="o">=</span> <span class="n">attn_weights</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">@</span> <span class="n">V</span>
+</code></pre></div></li>
+</ol>
+<hr />
+<h3 id="self-attention-with-learned-weights-all-tokens">Self-Attention with Learned Weights :  All Tokens</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SelfAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">,</span> <span class="n">qkv_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W_query</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">qkv_bias</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W_key</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">qkv_bias</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W_value</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">qkv_bias</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">W_key</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">queries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">W_query</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">W_value</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">attn_scores</span> <span class="o">=</span> <span class="n">queries</span> <span class="o">@</span> <span class="n">keys</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">attn_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">attn_scores</span> <span class="o">/</span> <span class="n">keys</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">context_vec</span> <span class="o">=</span> <span class="n">attn_weights</span> <span class="o">@</span> <span class="n">values</span>
+        <span class="k">return</span> <span class="n">context_vec</span>
+</code></pre></div>
+<hr />
+<h2 id="causal-attention-masking-in-decoder-only-models">Causal  Attention (Masking) in Decoder-Only Models</h2>
+<p><img src="images/masked_attention.png" class="float-right"></p>
+<ul>
+<li>In decoder-only models, we predict next token based on previous tokens</li>
+<li><strong>Note</strong> : During training, we predict all tokens in parallel</li>
+<li>To prevent information leakage from future tokens, we apply a causal mask to the attention scores</li>
+<li>At all time steps, each token can only attend to earlier tokens</li>
+</ul>
+<hr />
+<h3 id="masking-in-causal-attention">Masking in Causal Attention</h3>
+<p><img src="images/masking_steps.png" class="float-right"></p>
+<ul>
+<li><strong>Masking</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">sa</span> <span class="o">=</span> <span class="n">SelfAttention</span><span class="p">(</span><span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">)</span>
+<span class="n">queries</span> <span class="o">=</span> <span class="n">sa</span><span class="o">.</span><span class="n">W_query</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<span class="n">keys</span> <span class="o">=</span> <span class="n">sa</span><span class="o">.</span><span class="n">W_key</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<span class="n">attn_scores</span> <span class="o">=</span> <span class="n">queries</span> <span class="o">@</span> <span class="n">keys</span><span class="o">.</span><span class="n">T</span>
+</code></pre></div>
+<ul>
+<li><strong>Softmax Function</strong></li>
+</ul>
+<p>$$
+\mathrm{Softmax}(x) = \frac{\exp(x)}{\sum \exp(x)}
+$$</p>
+<ul>
+<li>Fill with -inf where mask is True</li>
+</ul>
+<div class="highlight"><pre><span></span><code>    <span class="c1"># Step 1: Create mask shape (L, L)</span>
+    <span class="n">seq_len</span> <span class="o">=</span> <span class="n">attn_scores</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Step 2: Lower triangular = positions we CAN attend to</span>
+    <span class="n">causal_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">seq_len</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">),</span> <span class="n">diagonal</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">bool</span><span class="p">()</span>
+
+    <span class="c1"># Step 3: Set positions we CAN&#39;T attend to as -inf</span>
+    <span class="n">attn_scores</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="n">causal_mask</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;-inf&#39;</span><span class="p">))</span>
+</code></pre></div>
+<hr />
+<h2 id="attenion-dropout">Attenion + Dropout</h2>
+<p><em>Dropout</em> is a regularization technique that randomly sets some neuron weights to zero during training to prevent overfitting.</p>
+<p><img alt="alt text" src="../images/dropout.png" /></p>
+<hr />
+<h3 id="dropout-in-attention-weights">Dropout in Attention Weights</h3>
+<p><img src="images/dropout-attn.png" class="float-right"></p>
+<ul>
+<li>By applying dropout to attention weights, we randomly ignore some attention connections during training.</li>
+<li>Makes the model more robust by preventing it from relying too heavily on specific attention patterns.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">attn_weights</span> <span class="o">=</span> <span class="n">dropout</span><span class="p">(</span><span class="n">attn_weights</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="putting-it-all-together-self-attention-module-with-masking-and-dropout">Putting it all together: Self-Attention Module with Masking and Dropout</h3>
+<div class="highlight"><pre><span></span><code>    <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">W_key</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">queries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">W_query</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">W_value</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">attn_scores</span> <span class="o">=</span> <span class="n">queries</span> <span class="o">@</span> <span class="n">keys</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">),</span> <span class="n">diagonal</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">bool</span><span class="p">()</span>  <span class="c1"># Upper triangular</span>
+    <span class="n">attn_scores</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;-inf&#39;</span><span class="p">))</span>
+
+    <span class="n">attn_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">attn_scores</span> <span class="o">/</span> <span class="n">keys</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">attn_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">attn_weights</span><span class="p">)</span>
+
+    <span class="n">context_vec</span> <span class="o">=</span> <span class="n">attn_weights</span> <span class="o">@</span> <span class="n">values</span>
+</code></pre></div>
+<hr />
+<h2 id="multi-head-attention">Multi-Head Attention</h2>
+<h3 id="stacking-multiple-attention-heads">Stacking multiple attention heads</h3>
+<p><img src="images/stacked-heads.png" class="float-right"></p>
+<ul>
+<li>Perform multiple self-attention calculations in parallel, with own set of learned weight matrices (Wq, Wk, Wv) and  output vector for each head.</li>
+<li>Concatenate all to produce one context vector for each token.</li>
+<li>Multiple heads -&gt; attend to input sentence simultaneously -&gt; different relationships and patterns in the data.</li>
+</ul>
+<hr />
+<h3 id="multi-head-attention-naive-implementation">Multi-Head Attention : Naive Implementation</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># naive version using loops</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MultiHeadAttentionWrapper</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">,</span> <span class="n">context_length</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">num_heads</span><span class="p">,</span> <span class="n">qkv_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heads</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span>
+            <span class="n">CausalAttention</span><span class="p">(</span><span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">,</span> <span class="n">context_length</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">qkv_bias</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_heads</span><span class="p">)</span>
+        <span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">head</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">head</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">heads</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="multi-head-attention-efficient-implementation">Multi-Head Attention : Efficient Implementation</h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MultiHeadAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">,</span> <span class="n">context_length</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">num_heads</span><span class="p">,</span> <span class="n">qkv_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span> <span class="o">=</span> <span class="n">num_heads</span>
+    <span class="k">assert</span> <span class="n">d_out</span> <span class="o">%</span> <span class="n">num_heads</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;d_out must be divisible by num_heads&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span> <span class="o">=</span> <span class="n">d_out</span> <span class="o">//</span> <span class="n">num_heads</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">out_proj</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_out</span><span class="p">,</span> <span class="n">d_out</span><span class="p">)</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+
+    <span class="n">queries</span> <span class="o">=</span> <span class="n">queries</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">batches</span><span class="p">,</span> <span class="n">num_tokens</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span><span class="p">)</span> <span class="c1"># B x L x num_heads x head_dim</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">batches</span><span class="p">,</span> <span class="n">num_tokens</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span><span class="p">)</span> <span class="c1"># B x L x num_heads x head_dim</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">batches</span><span class="p">,</span> <span class="n">num_tokens</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span><span class="p">)</span> <span class="c1"># B x L x num_heads x head_dim</span>
+
+    <span class="n">queries</span> <span class="o">=</span> <span class="n">queries</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># B x num_heads x L x head_dim</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># B x num_heads x L x head_dim</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># B x num_heads x L x head_dim</span>
+
+    <span class="n">attn_scores</span> <span class="o">=</span> <span class="n">queries</span> <span class="o">@</span> <span class="n">keys</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="c1"># (B x num_heads x L x head_dim) @ (B x num_heads x head_dim x L) =&gt; B x num_heads x L x L</span>
+
+    <span class="c1"># mask : # L x L =&gt; (1 x 1 x L x L)</span>
+    <span class="n">attn_scores</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">bool</span><span class="p">()[:</span><span class="n">num_tokens</span><span class="p">,</span> <span class="p">:</span><span class="n">num_tokens</span><span class="p">],</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span> <span class="c1"># B x num_heads x L x L</span>
+
+    <span class="n">attn_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">attn_scores</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> 
+    <span class="n">attn_weights</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">)(</span><span class="n">attn_weights</span><span class="p">)</span> <span class="c1"># B x num_heads x L x L</span>
+
+    <span class="n">context_vec</span> <span class="o">=</span> <span class="n">attn_weights</span> <span class="o">@</span> <span class="n">values</span> <span class="c1"># (B x num_heads x L x L) @ (B x num_heads x L x head_dim)</span>
+
+    <span class="n">context_vec</span> <span class="o">=</span> <span class="n">context_vec</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># B x L x num_heads x head_dim</span>
+    <span class="n">context_vec</span> <span class="o">=</span> <span class="n">context_vec</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">batches</span><span class="p">,</span> <span class="n">num_tokens</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_out</span><span class="p">)</span> <span class="c1"># B x L x d_out</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_proj</span><span class="p">(</span><span class="n">context_vec</span><span class="p">)</span> <span class="c1"># (B x L x d_out) @ (d_out x d_out) =&gt; B x L x d_out</span>
+</code></pre></div>
+<hr />
+<h2 id="summary">Summary</h2>
+<p><strong>Journey through Attention:</strong></p>
+<ol>
+<li><strong>Simple Attention</strong>: Dot products between embeddings (no learning)</li>
+<li><strong>Self-Attention</strong>: Add learnable Q, K, V projections</li>
+<li><strong>Causal Attention</strong>: Mask future tokens for autoregressive generation</li>
+<li><strong>Multi-Head</strong>: Run multiple attention patterns in parallel</li>
+</ol>
+<hr />
+<h2 id="what-we-didnt-cover">What We Didn't Cover</h2>
+<ul>
+<li><strong>Positional Encodings</strong>: How does attention know word order?</li>
+<li><strong>Feed-Forward Networks</strong>: The other half of each transformer block</li>
+<li><strong>Layer Normalization</strong>: Stabilizing training</li>
+<li><strong>Residual Connections</strong>: Enabling deep networks</li>
+</ul>
+<p>→ These will be covered in the next session where we implement a full transformer block and a LLM from scratch!</p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
