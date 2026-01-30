@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#scaled-dot-product-attention" class="md-skip">
+        <a href="#topics-covered" class="md-skip">
           Skip to content
         </a>
       
@@ -376,15 +376,169 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#scaled-dot-product-attention" class="md-nav__link">
+  <a href="#topics-covered" class="md-nav__link">
     <span class="md-ellipsis">
-      Scaled Dot-Product Attention
+      Topics Covered
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
+  <a href="#recap" class="md-nav__link">
+    <span class="md-ellipsis">
+      RECAP
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RECAP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sequence-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sequence Modeling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rnns-attention" class="md-nav__link">
+    <span class="md-ellipsis">
+      RNNs + Attention
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rnns-attention_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      RNNs + Attention
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallel-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parallel Processing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#self-attention-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      Self-Attention Mechanism
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#self-attention-vs-encoderdecoder-attention" class="md-nav__link">
+    <span class="md-ellipsis">
+      Self-Attention vs Encoder–Decoder Attention
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#self-attention-intuition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Self-Attention : Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#computing-attention-weights-for-a-single-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      Computing attention weights for a single token
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#computing-attention-weigths-for-all-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      Computing attention weigths for all tokens
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#summary-of-self-attention-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary of Self-Attention Mechanism
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attention-as-information-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attention as information flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attention-as-information-flow_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attention as information flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attention-as-information-flow_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attention as information flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attention-as-information-flow_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attention as information flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attention-as-information-flow_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attention as information flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attention-as-information-flow_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attention as information flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#introducing-q-k-v-vectors" class="md-nav__link">
     <span class="md-ellipsis">
       Introducing Q, K, V vectors
@@ -392,8 +546,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#why-three-vectors-q-k-v" class="md-nav__link">
     <span class="md-ellipsis">
       Why three vectors (Q, K, V)?
@@ -401,8 +555,17 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-get-q-k-v-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to get Q, K, V vectors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#q-k-v-projections" class="md-nav__link">
     <span class="md-ellipsis">
       Q, K, V Projections
@@ -410,8 +573,17 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
+  <a href="#q-k-v-projections_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Q, K, V Projections
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#self-attention-with-learned-weights" class="md-nav__link">
     <span class="md-ellipsis">
       Self-Attention with Learned Weights
@@ -419,17 +591,17 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#scaled-dot-product-attention_1" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#scaled-dot-product-attention" class="md-nav__link">
     <span class="md-ellipsis">
       Scaled Dot-Product Attention
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#implementing-self-attention-with-learned-weights-single-token" class="md-nav__link">
     <span class="md-ellipsis">
       Implementing Self-Attention with Learned Weights : Single Token
@@ -437,11 +609,43 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
+  <a href="#implementing-self-attention-with-learned-weights-single-token_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementing Self-Attention with Learned Weights : Single Token
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#self-attention-with-learned-weights-all-tokens" class="md-nav__link">
     <span class="md-ellipsis">
       Self-Attention with Learned Weights : All Tokens
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attention-during-training" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attention during Training
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attention-during-training_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attention during Training
     </span>
   </a>
   
@@ -584,38 +788,254 @@
 
 <div class="center-slide">
 
+# Transformers - II
+
+</div>
+
+<hr />
+<h2 id="topics-covered">Topics Covered</h2>
+<ul>
+<li>Self-attention mechanism</li>
+<li>Causal Attention</li>
+<li>Multi-head attention</li>
+</ul>
+<hr />
+<h2 id="recap">RECAP</h2>
+<ul>
+<li>Encoder-Decoder architectures</li>
+<li>Cross attention mechanism between encoder and decoder</li>
+<li>Simple attention mechanism</li>
+</ul>
+<hr />
+<h3 id="sequence-modeling">Sequence Modeling</h3>
+<ul>
+<li>Process all input into a hidden state, </li>
+<li>Pass hidden state to decoder</li>
+<li>Decoder uses hidden state to generate output sequence</li>
+</ul>
+<p><img alt="Encoder-Decoder" src="../images/rnn.png" /></p>
+<hr />
+<h3 id="rnns-attention">RNNs + Attention</h3>
+<ul>
+<li>Let Decoder access all Encoder hidden states</li>
+<li>Attend to relevant parts of input sequence when generating each output token [Bahdanau et al., 2015]</li>
+</ul>
+<p><img alt="bahdanau-attn" src="https://camo.githubusercontent.com/90bef5f34f4eb3eb23e8446eb150507bb0df2fc5cd4f0c5dc7e9d4db3dab1058/68747470733a2f2f332e62702e626c6f6773706f742e636f6d2f2d3350626a5f64767430566f2f562d71652d4e6c365035492f41414141414141414251632f7a305f365774565774764152744d6b3069395f41744c6579794779563641493477434c63422f73313630302f6e6d742d6d6f64656c2d666173742e676966" /></p>
+<hr />
+<h3 id="rnns-attention_1">RNNs + Attention</h3>
+<p><strong>Limitations</strong></p>
+<ul>
+<li>Sequential processing limits parallelization</li>
+<li>Difficulty capturing long-range dependencies</li>
+</ul>
+<p><strong>Solution</strong>: </p>
+<ul>
+<li>Remove recurrence, process all input tokens simultaneously</li>
+<li>Allow each token in the input to focus on relevant parts of the input</li>
+</ul>
+<hr />
+<h3 id="parallel-processing">Parallel Processing</h3>
+<ul>
+<li><strong>Encoder</strong> : Process all input tokens simultaneously</li>
+<li><strong>Decoder</strong> : Generate output tokens one by one, attending to encoder states and previous tokens</li>
+</ul>
+<p><img alt="" src="https://3.bp.blogspot.com/-aZ3zvPiCoXM/WaiKQO7KRnI/AAAAAAAAB_8/7a1CYjp40nUg4lKpW7covGZJQAySxlg8QCLcBGAs/s640/transform20fps.gif" /></p>
+<hr />
+<h3 id="self-attention-mechanism">Self-Attention Mechanism</h3>
+<ul>
+<li>Compute attention <strong>within</strong> the same sequence of tokens. <strong>Self = Same Sequence</strong></li>
+<li>Get improved representation by <strong>mixing in information</strong> from other tokens <strong>that seem relevant.</strong></li>
+</ul>
+<p><img alt="alt text" src="../images/self-attn.png" /></p>
+<hr />
+<h3 id="self-attention-vs-encoderdecoder-attention">Self-Attention vs Encoder–Decoder Attention</h3>
+<ul>
+<li>
+<p><strong>Encoder–Decoder</strong>: One sequence attends to a <em>different</em> sequence (e.g., translation: output attends to the input sentence).</p>
+</li>
+<li>
+<p><strong>Self-attention</strong>: Sequence attends to <strong>itself</strong> (tokens attending to other tokens in the same sentence).</p>
+</li>
+</ul>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex: 1">
+        <img src="images/bahdanau-attn.png" style="max-width: 100%;">
+    </div>
+    <div style="flex: 1">
+        <img src="https://jalammar.github.io/images/t/transformer_self-attention_visualization.png" style="max-width: 80%;">
+    </div>
+</div>
+
+<hr />
+<h3 id="self-attention-intuition">Self-Attention : Intuition</h3>
+<div style="text-align: center;">
+
+*"Self-attention is like a group conversation where everyone can hear
+everyone else simultaneously, rather than passing notes one by one (RNNs)"*
+
+</div>
+
+<hr />
+<h3 id="computing-attention-weights-for-a-single-token">Computing attention weights for a single token</h3>
+<p><img src="images/normalized.png" class="float-right"></p>
+<p>Step 1:
+- Calculate attention scores dot product of input vectors
+- Normalize scores to get attention weights (additive normalization)</p>
+<div class="highlight"><pre><span></span><code><span class="n">attn_weights_2_tmp</span> <span class="o">=</span> <span class="n">attn_scores_2</span> <span class="o">/</span> <span class="n">attn_scores_2</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">softmax_naive</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">attn_weights_2_naive</span> <span class="o">=</span> <span class="n">softmax_naive</span><span class="p">(</span><span class="n">attn_scores_2</span><span class="p">)</span>
+
+<span class="n">attn_weights_2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">attn_scores_2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+<p>--</p>
+<p>Step 2:
+- Compute output vector as weighted sum of value vectors</p>
+<p><img alt="alt text" src="../images/context-vector.png" /></p>
+<div class="highlight"><pre><span></span><code><span class="n">context_vec_2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
+    <span class="n">context_vec_2</span> <span class="o">+=</span> <span class="n">attn_weights_2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">x_i</span>
+</code></pre></div>
+<hr />
+<h3 id="computing-attention-weigths-for-all-tokens">Computing attention weigths for all tokens</h3>
+<p><img alt="" src="../images/attn_all_tokens.png" /></p>
+<div class="highlight"><pre><span></span><code><span class="n">attn_scores</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">attn_scores</span> <span class="o">=</span> <span class="n">inputs</span> <span class="o">@</span> <span class="n">inputs</span><span class="o">.</span><span class="n">T</span>
+<span class="n">attn_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">attn_scores</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">output_vectors</span> <span class="o">=</span> <span class="n">attn_weights</span> <span class="o">@</span> <span class="n">inputs</span>
+</code></pre></div>
+<hr />
+<h3 id="summary-of-self-attention-mechanism">Summary of Self-Attention Mechanism</h3>
+<ul>
+<li>Input: sequence of vectors (X) (source)</li>
+<li>Output: sequence of vectors (Z) (context)</li>
+<li>Compute attention scores against all input vectors</li>
+<li>Normalize scores to get attention weights</li>
+<li>Compute output vectors as weighted sum of input vectors</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">self_attention</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
+    <span class="c1"># Step 1: Compute attention scores</span>
+    <span class="n">attn_scores</span> <span class="o">=</span> <span class="n">inputs</span> <span class="o">@</span> <span class="n">inputs</span><span class="o">.</span><span class="n">T</span>
+    <span class="c1"># Step 2: Normalize scores to get attention weights</span>
+    <span class="n">attn_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">attn_scores</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Step 3: Compute output vectors as weighted sum of input vectors</span>
+    <span class="n">output_vectors</span> <span class="o">=</span> <span class="n">attn_weights</span> <span class="o">@</span> <span class="n">inputs</span>
+    <span class="k">return</span> <span class="n">output_vectors</span>
+</code></pre></div>
+<div>
+</div>
+
+<div style="text-align: center;">
+
+<!-- .element: class="fragment" data-fragment-index="1" -->
+
+**How to improve this basic self-attention mechanism?** <!-- .element: class="fragment" data-fragment-index="2" -->
+
+Learn the weights used to compute attention scores! <!-- .element: class="fragment" data-fragment-index="3" -->
+
+</div>
+
+<hr />
+<div class="center-slide">
+
 ## Self-Attention with Learned Weights
 
 </div>
 
 <hr />
-<h3 id="scaled-dot-product-attention">Scaled Dot-Product Attention</h3>
+<h3 id="attention-as-information-flow">Attention as information flow</h3>
+<p>Three steps in attention mechanism:
+1. <strong>What to attend to</strong> : Identify relevant tokens in the sequence =&gt; Identify similar information
+2. <strong>How strongly to attend</strong>: Compute attention weights over those tokens =&gt; Determine importance
+3. <strong>Contextualize/Output</strong>: Weighted sum of token representations =&gt; Copy relevant information</p>
+<hr />
+<h3 id="attention-as-information-flow_1">Attention as information flow</h3>
+<p>Three steps in attention mechanism:
+1. <strong>What to attend to</strong> : Identify relevant tokens in the sequence =&gt; Identify similar information
+2. <strong>How strongly to attend</strong>: Compute attention weights over those tokens =&gt; Determine importance
+3. <strong>Contextualize/Output</strong>: Weighted sum of token representations =&gt; Copy relevant information</p>
+<div style="text-align: center;">
+
+</div>
+
 <ul>
-<li>Assume attention weights as random matrix</li>
-<li>We need to learn these weights during training</li>
+<li>We look at same <strong>token</strong> in three different ways to achieve this.</li>
 </ul>
-<p><strong>What to attend to</strong> : Identify relevant tokens in the sequence.</p>
-<p><strong>How strongly to attend</strong>: Compute attention weights over those tokens.</p>
-<p><strong>Contextualize/Output</strong>: Weighted sum of token representations.</p>
+<hr />
+<h3 id="attention-as-information-flow_2">Attention as information flow</h3>
+<p>Three steps in attention mechanism:
+1. <strong>What to attend to</strong> : Identify relevant tokens in the sequence =&gt; Identify similar information
+2. <strong>How strongly to attend</strong>: Compute attention weights over those tokens =&gt; Determine importance
+3. <strong>Contextualize/Output</strong>: Weighted sum of token representations =&gt; Copy relevant information</p>
+<div style="text-align: center;">
+
+
+</div>
+
+<ul>
+<li>We look at same <strong>token</strong> in three different ways to achieve this.</li>
+<li>The token embeddings alone are not sufficient.</li>
+</ul>
+<hr />
+<h3 id="attention-as-information-flow_3">Attention as information flow</h3>
+<div style="text-align: center;">
+The token embeddings alone are not sufficient.
+</div>
+
+<hr />
+<h3 id="attention-as-information-flow_4">Attention as information flow</h3>
+<div style="text-align: center;">
+The token embeddings alone are not sufficient.
+</div>
+
+<div style="text-align: center;">
+<b>Why</b>
+</div>
+
+<hr />
+<h3 id="attention-as-information-flow_5">Attention as information flow</h3>
+<div style="text-align: center;">
+The token embeddings alone are not sufficient.
+</div>
+
+<div style="text-align: center;">
+<b>Why</b>
+</div>
+
+<video controls src="images/QKVMotivationScene.mp4" title="Title"></video>
+
 <hr />
 <h3 id="introducing-q-k-v-vectors">Introducing Q, K, V vectors</h3>
+<p>We transform each input token into three different vectors:</p>
 <ul>
-<li>Query weight matrix ($W_q$) (for queries/input tokens)</li>
-<li>Key weight matrix ($W_k$) (for keys/other tokens)</li>
-<li>Value weight matrix ($W_v$) (for values/tokens to copy from)</li>
+<li>Token embedding: x_i</li>
+<li><strong>Query (Q)</strong>: What am I looking for?</li>
+<li><strong>Key (K)</strong>: What do I have to offer?</li>
+<li><strong>Value (V)</strong>: What information do I carry?</li>
 </ul>
 <p><img alt="alt text" src="../images/projections.png" /></p>
 <hr />
 <h3 id="why-three-vectors-q-k-v">Why three vectors (Q, K, V)?</h3>
 <ul>
-<li><strong>Query (Q):</strong> Represents the current token we are focusing on. Q gets specialized to ask questions about relevance.</li>
-<li><strong>Key (K):</strong> Represents all tokens we are comparing against. K gets specialized to help determine relevance to Q.</li>
-<li>
-<p><strong>Value (V):</strong> Represents the actual information we want to copy from the input. V gets specialized to carry useful content.</p>
+<li><strong>Query (Q):</strong> Current token we are focusing on. <ul>
+<li><strong>Q</strong> should get specialized to ask questions about relevance.</li>
+</ul>
 </li>
-<li>
-<p>Q and K exist to define a similarity space, while V exists to define an information space.</p>
+<li><strong>Key (K):</strong> All other tokens in the sequence. <ul>
+<li><strong>K</strong> should get specialized to help determine relevance to Q.</li>
+</ul>
 </li>
+<li><strong>Value (V):</strong> Represents the actual information we want to copy from the input. <ul>
+<li>V gets specialized to carry useful content.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<ul>
+<li>Q and K exist to define a similarity space, while V exists to define an information space.</li>
 <li>Queries are optimized to ask questions</li>
 <li>Values are optimized to carry information</li>
 </ul>
@@ -656,14 +1076,27 @@ The information you actually want to transfer into your answer.
 - Using the same vector for both querying and copying can limit expressiveness.
 - Separate Q, K, V allow the model to learn different representations for querying and copying.</p>
 <hr />
+<h3 id="how-to-get-q-k-v-vectors">How to get Q, K, V vectors</h3>
+<p>We project the token embedding to three learned projection spaces:</p>
+<p><strong>PROJECTION === "Matrix Multiplication"</strong></p>
+<ul>
+<li><strong>Query (Q)</strong>: $q_i = x_i W_q$</li>
+<li><strong>Key (K)</strong>: $k_i = x_i W_k$</li>
+<li><strong>Value (V)</strong>: $v_i = x_i W_v$</li>
+</ul>
+<p><img alt="alt text" src="../images/qkv.png" /></p>
+<hr />
 <h3 id="q-k-v-projections">Q, K, V Projections</h3>
-<p><img src="images/attn-summary.png" class="float-right"></p>
 <p>$W_q$: projects tokens into query space</p>
 <p>$W_k$: projects tokens into key space</p>
 <p>$W_v$: projects tokens into value space</p>
-<p>$Q = X W_q  $=&gt; Turn input tokens into queries</p>
-<p>$K = X W_k  $=&gt; Turn input tokens into keys</p>
-<p>$V = X W_v  $=&gt; Turn input tokens into values</p>
+<p><img alt="" src="../images/attn-summary.png" /></p>
+<hr />
+<h3 id="q-k-v-projections_1">Q, K, V Projections</h3>
+<p>$Q = X W_q$ =&gt; Turn input tokens into queries</p>
+<p>$K = X W_k$ =&gt; Turn input tokens into keys</p>
+<p>$V = X W_v$ =&gt; Turn input tokens into values</p>
+<p><img alt="" src="../images/attn-summary.png" /></p>
 <hr />
 <h3 id="self-attention-with-learned-weights">Self-Attention with Learned Weights</h3>
 <ul>
@@ -695,7 +1128,7 @@ $$\mathbf{context\_vec} = \mathbf{attn\_weights} \times \mathbf{values}$$
 </div>
 
 <hr />
-<h3 id="scaled-dot-product-attention_1">Scaled Dot-Product Attention</h3>
+<h3 id="scaled-dot-product-attention">Scaled Dot-Product Attention</h3>
 <div style="text-align: center;">
 
 $$
@@ -714,9 +1147,10 @@ $$
 <p><strong>Calculating self-attention step-by-step</strong> : Single Token</p>
 <p><img alt="" src="../images/self-attention_q2.png" /></p>
 <p>--</p>
+<h3 id="implementing-self-attention-with-learned-weights-single-token_1">Implementing Self-Attention with Learned Weights : Single Token</h3>
 <ol>
 <li>
-<p>Initial Step :
+<p>Initial Step
 <div class="highlight"><pre><span></span><code><span class="n">W_query</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">),</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">W_key</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">),</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">W_value</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">),</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -762,6 +1196,24 @@ $$
         <span class="n">context_vec</span> <span class="o">=</span> <span class="n">attn_weights</span> <span class="o">@</span> <span class="n">values</span>
         <span class="k">return</span> <span class="n">context_vec</span>
 </code></pre></div>
+<hr />
+<h2 id="attention-during-training">Attention during Training</h2>
+<ul>
+<li>All tokens are available =&gt; ["cat", "sat", "on", "the", "mat"]</li>
+<li>For each token we predict the next token <ul>
+<li>"cat" =&gt; "sat"</li>
+<li>"cat sat" =&gt; "on"</li>
+<li>"cat sat on" =&gt; "the"</li>
+<li>"cat sat on the" =&gt; "mat"</li>
+<li>"cat sat on the mat" =&gt; "."</li>
+</ul>
+</li>
+<li>We need to hide future tokens during training to prevent information leakage.</li>
+</ul>
+<hr />
+<h2 id="attention-during-training_1">Attention during Training</h2>
+<p><strong>Masking future tokens</strong></p>
+<video controls src="images/CausalMaskScene.mp4" title="Masking"></video>
 <hr />
 <h2 id="causal-attention-masking-in-decoder-only-models">Causal  Attention (Masking) in Decoder-Only Models</h2>
 <p><img src="images/masked_attention.png" class="float-right"></p>
