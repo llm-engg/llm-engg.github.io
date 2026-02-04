@@ -1,4 +1,4 @@
-# Engineering LLMs : A Hands on Approach
+# Large Language Models : A Hands on Approach
 
 Jan - May, 2026 @ [Center for Continuing Education](https://cce.iisc.ac.in/), [Indian Institute of Science](https://iisc.ac.in/)
 
@@ -6,10 +6,12 @@ Jan - May, 2026 @ [Center for Continuing Education](https://cce.iisc.ac.in/), [I
 ## Logistics
 
 - **Duration**: 18 weeks (Jan - May 2026)
-- **Format**: Online, Tue and Thu, 7:30 - 9:00 PM IST
-- **Contact**: TBA
+- **Format**: Online, Tue and Thu, 7:00 - 8:30 PM IST
+- **Contact**: [Yoginder Negi](https://yknegi.github.io), Senior Scientific Officer (yoginder@iisc.ac.in)
 
+## Registration
 
+To register please visit [**CCE Webpage for the course**](https://cce.iisc.ac.in/cce-proficience/large-language-modelsa-hands-on-approach-jm-2026/).
 
 ## Course Description
 
@@ -25,7 +27,7 @@ Jan - May, 2026 @ [Center for Continuing Education](https://cce.iisc.ac.in/), [I
     <ul>
         <li><strong>Understand LLM Architecture</strong>: Master transformer architectures, attention mechanisms, and modern LLM variants (GPT-OSS, Qwen, Gemma, etc.).</li>
         <li><strong>Optimize Inference</strong>: Implement efficient inference strategies including quantization, KV caching, and serving via inference engines like vLLM.</li>
-        <li><strong>Fine-tune Models</strong>: Apply various fine-tuning techniques including LoRA, QLoRA, instruction tuning, and preference alignment.</li>
+        <li><strong>Fine-tune Models</strong>: Apply various fine-tuning techniques including instruction tuning, PEFT techniques like LoRA, QLoRA etc and preference alignment.</li>
         <li><strong>Build RAG Systems</strong>: Design and implement Retrieval-Augmented Generation pipelines.</li>
         <li><strong>Develop AI Agents</strong>: Create tool-using agents with the ReAct framework.</li>
         <li><strong>Deploy at Scale</strong>: Set up production-ready LLM serving infrastructure with cost optimization.</li>
@@ -37,9 +39,17 @@ Jan - May, 2026 @ [Center for Continuing Education](https://cce.iisc.ac.in/), [I
 
 ## Prerequisites
 - Proficiency in **Python** and familiarity with any deep learning framework (PyTorch preferred).  
-- Basic understanding of neural networks.  
-- Working knowledge of **Linux**, **Docker**, and **Git**.  
+- Basic understanding of neural networks.
 - Optional but recommended: experience with **GPU computing**.
+
+## Instructors
+
+<div style="display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center;">
+    <img src="images/yknegi.jpg" alt="Yoginder Negi" style="width: 100px; height: 100px; object-fit: cover;">
+    <div><a href="https://yknegi.github.io"><strong>Yoginder Negi</strong></a> - Senior Scientific Officer, SERC, IISc.</div>
+    <img src="images/br.jpg" alt="Bhuthesh R" style="width: 100px; height: 100px; object-fit: cover;">
+    <div><strong>Bhuthesh R</strong> - Senior Data Scientist, <a href="https://moleculeai.com/team">Molecule AI Pvt Ltd</a>.</div>
+</div>
 
 ## Course Navigation
 

@@ -1,0 +1,867 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transformers-2</title>
+
+  <link rel="stylesheet" href="../reveal/dist/reveal.css">
+  <link rel="stylesheet" href="../reveal/dist/theme/solarized.css">
+  <!-- PDF export support: append ?print-pdf to URL, then Ctrl+P -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi)
+      ? '../reveal/dist/print/pdf.css'
+      : '../reveal/dist/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+
+  <!-- Bigger fonts for classrooms -->
+  <style>
+    /* Responsive: fill viewport */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    .reveal {
+      font-size: 32px;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .reveal .slides {
+      width: 90% !important;
+      max-width: 90% !important;
+      margin-left: 5% !important;
+      margin-right: 5% !important;
+    }
+    .reveal code {
+      font-size: 1.0em;
+    }
+    /* Left-align all slide content */
+    .reveal .slides section {
+      text-align: left;
+    }
+    .reveal .slides section ul,
+    .reveal .slides section ol {
+      display: block;
+      text-align: left;
+    }
+    .reveal .slides section li {
+      text-align: left;
+    }
+    /* Center-align headings */
+    .reveal .slides section h1,
+    .reveal .slides section h2,
+    .reveal .slides section h3 {
+      text-align: center;
+    }
+    /* Center-align tables */
+    .reveal .slides section table {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* Footer styling */
+    .reveal .footer {
+      position: absolute;
+      bottom: 1em;
+      left: 1em;
+      font-size: 0.5em;
+      color: #657b83;
+      z-index: 100;
+    }
+    /* Constrain slides to prevent overflow */
+    .reveal .slides section {
+      overflow: hidden !important;
+      height: 100% !important;
+      box-sizing: border-box !important;
+    }
+    /* Image sizing and background blend for solarized theme */
+    .reveal .slides section img,
+    .reveal .slides section p img,
+    .reveal img {
+      max-width: 100% !important;
+      max-height: 450px !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: contain !important;
+      display: block !important;
+      margin: 0.04em auto !important;
+      background-color: #fdf6e3 !important;
+      padding: 0.04em !important;
+      border-radius: 2px !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    /* Allow side-by-side images in flex containers */
+    .reveal .slides section [style*="display: flex"] img,
+    .reveal .slides section [style*="display:flex"] img {
+      display: inline-block !important;
+      margin: 0 !important;
+      max-width: 100% !important;
+      max-height: 500px !important;
+    }
+    /* Float images for text wrap */
+    .reveal .slides section img.float-right {
+      float: right !important;
+      margin: 0 0 0.5em 1em !important;
+      max-width: 50% !important;
+      max-height: 500px !important;
+    }
+    .reveal .slides section img.float-left {
+      float: left !important;
+      margin: 0 1em 0.5em 0 !important;
+      max-width: 50% !important;
+      max-height: 500px !important;
+    }
+    /* Centered slide for section breaks */
+    .reveal .slides section .center-slide {
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      text-align: center !important;
+      width: 90% !important;
+    }
+    .reveal .slides section .center-slide h1,
+    .reveal .slides section .center-slide h2,
+    .reveal .slides section .center-slide h3,
+    .reveal .slides section .center-slide p {
+      text-align: center !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+    /* Fragment animation: semi-fade-out */
+    .reveal .slides section .fragment.semi-fade-out {
+      opacity: 1;
+      visibility: inherit;
+      transition: opacity 0.3s ease;
+    }
+    .reveal .slides section .fragment.semi-fade-out.visible {
+      opacity: 0.3;
+    }
+    /* Fragment animation: grow with highlight */
+    .reveal .slides section .fragment.grow {
+      opacity: 1;
+      visibility: inherit;
+      transition: transform 0.3s ease;
+    }
+    .reveal .slides section .fragment.grow.visible {
+      transform: scale(1.0);
+    }
+    /* Course header styling */
+    .course-header {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      font-size: 16px;
+      opacity: 0.6;
+    }
+    /* Chalkboard plugin fixes */
+    #chalkboard, #notescanvas {
+      z-index: 200 !important;
+      pointer-events: auto !important;
+      touch-action: none !important;
+    }
+    .chalkboard-button {
+      z-index: 201 !important;
+    }
+  </style>
+
+  <link rel="stylesheet" href="../reveal/plugin/highlight/monokai.css">
+  <!-- Pointer plugin -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-pointer@0.1.4/dist/pointer.css">
+  <!-- Chalkboard plugin dependencies -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-plugins@4.6.0/chalkboard/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-plugins@4.6.0/customcontrols/style.css">
+</head>
+<body>
+
+
+<div class="reveal">
+  <div class="footer"> <a href="https://llm-engg.github.io">Large Language Models : A Hands-on Approach – CCE, IISc</a></div>
+  <div class="slides">
+    <section><div class="center-slide">
+
+<h1>Transformers - II</h1>
+</div>
+
+</section>
+<section><h2>Topics Covered</h2>
+<ul>
+<li>Self-attention mechanism</li>
+<li>Causal Attention</li>
+<li>Multi-head attention</li>
+</ul>
+</section>
+<section><h2>RECAP</h2>
+<ul>
+<li>Encoder-Decoder architectures</li>
+<li>Cross attention mechanism between encoder and decoder</li>
+<li>Simple attention mechanism</li>
+</ul>
+</section>
+<section><h3>Sequence Modeling</h3>
+<ul>
+<li>Process all input into a hidden state, </li>
+<li>Pass hidden state to decoder</li>
+<li>Decoder uses hidden state to generate output sequence</li>
+</ul>
+<p> <img src="images/rnn.png" alt="Encoder-Decoder"></p>
+</section>
+<section><h3>RNNs + Attention</h3>
+<ul>
+<li>Let Decoder access all Encoder hidden states</li>
+<li>Attend to relevant parts of input sequence when generating each output token [Bahdanau et al., 2015]</li>
+</ul>
+<p><img src="https://camo.githubusercontent.com/90bef5f34f4eb3eb23e8446eb150507bb0df2fc5cd4f0c5dc7e9d4db3dab1058/68747470733a2f2f332e62702e626c6f6773706f742e636f6d2f2d3350626a5f64767430566f2f562d71652d4e6c365035492f41414141414141414251632f7a305f365774565774764152744d6b3069395f41744c6579794779563641493477434c63422f73313630302f6e6d742d6d6f64656c2d666173742e676966" alt="bahdanau-attn"></p>
+</section>
+<section><h3>RNNs + Attention</h3>
+<p><strong>Limitations</strong></p>
+<ul>
+<li>Sequential processing limits parallelization</li>
+<li>Difficulty capturing long-range dependencies</li>
+</ul>
+<p><strong>Solution</strong>: </p>
+<ul>
+<li>Remove recurrence, process all input tokens simultaneously</li>
+<li>Allow each token in the input to focus on relevant parts of the input</li>
+</ul>
+</section>
+<section><h3>Parallel Processing</h3>
+<ul>
+<li><strong>Encoder</strong> : Process all input tokens simultaneously</li>
+<li><strong>Decoder</strong> : Generate output tokens one by one, attending to encoder states and previous tokens</li>
+</ul>
+<p><img src="https://3.bp.blogspot.com/-aZ3zvPiCoXM/WaiKQO7KRnI/AAAAAAAAB_8/7a1CYjp40nUg4lKpW7covGZJQAySxlg8QCLcBGAs/s640/transform20fps.gif" alt=""></p>
+</section>
+<section><h3>Self-Attention Mechanism</h3>
+<ul>
+<li>Compute attention <strong>within</strong> the same sequence of tokens. <strong>Self = Same Sequence</strong></li>
+<li>Get improved representation by <strong>mixing in information</strong> from other tokens <strong>that seem relevant.</strong></li>
+</ul>
+<p><img src="images/self-attn.png" alt="alt text"></p>
+</section>
+<section><h3>Self-Attention vs Encoder–Decoder Attention</h3>
+<ul>
+<li><p><strong>Encoder–Decoder</strong>: One sequence attends to a <em>different</em> sequence (e.g., translation: output attends to the input sentence).</p>
+</li>
+<li><p><strong>Self-attention</strong>: Sequence attends to <strong>itself</strong> (tokens attending to other tokens in the same sentence).</p>
+</li>
+</ul>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex: 1">
+        <img src="images/bahdanau-attn.png" style="max-width: 100%;">
+    </div>
+    <div style="flex: 1">
+        <img src="https://jalammar.github.io/images/t/transformer_self-attention_visualization.png" style="max-width: 80%;">
+    </div>
+</div>
+
+</section>
+<section><h3>Self-Attention : Intuition</h3>
+<div style="text-align: center;">
+
+<p><em>&quot;Self-attention is like a group conversation where everyone can hear
+everyone else simultaneously, rather than passing notes one by one (RNNs)&quot;</em></p>
+</div>
+
+
+</section>
+<section><section><h3>Computing attention weights for a single token</h3>
+<img src="images/normalized.png" class="float-right">
+
+<p>Step 1:</p>
+<ul>
+<li>Calculate attention scores dot product of input vectors</li>
+<li>Normalize scores to get attention weights (additive normalization)</li>
+</ul>
+<pre><code class="language-python">attn_weights_2_tmp = attn_scores_2 / attn_scores_2.sum()
+
+def softmax_naive(x):
+    return torch.exp(x) / torch.exp(x).sum(dim=0)
+
+attn_weights_2_naive = softmax_naive(attn_scores_2)
+
+attn_weights_2 = torch.softmax(attn_scores_2, dim=0)
+</code></pre>
+</section><section><p>Step 2:</p>
+<ul>
+<li>Compute output vector as weighted sum of value vectors</li>
+</ul>
+<p><img src="images/context-vector.png" alt="alt text"></p>
+<pre><code class="language-python">context_vec_2 = torch.zeros(inputs.shape[1])
+for i, x_i in enumerate(inputs):
+    context_vec_2 += attn_weights_2[i] * x_i
+</code></pre>
+</section></section>
+<section><h3>Computing attention weigths for all tokens</h3>
+<p><img src="images/attn_all_tokens.png" alt=""></p>
+<pre><code class="language-python">
+attn_scores = torch.zeros(inputs.shape[0], inputs.shape[0])
+
+attn_scores = inputs @ inputs.T
+attn_weights = torch.softmax(attn_scores, dim=-1)
+output_vectors = attn_weights @ inputs
+</code></pre>
+</section>
+<section><h3>Summary of Self-Attention Mechanism</h3>
+<ul>
+<li>Input: sequence of vectors (X) (source)</li>
+<li>Output: sequence of vectors (Z) (context)</li>
+<li>Compute attention scores against all input vectors</li>
+<li>Normalize scores to get attention weights</li>
+<li>Compute output vectors as weighted sum of input vectors</li>
+</ul>
+<pre><code class="language-python">def self_attention(inputs):
+    # Step 1: Compute attention scores
+    attn_scores = inputs @ inputs.T
+    # Step 2: Normalize scores to get attention weights
+    attn_weights = torch.softmax(attn_scores, dim=-1)
+    # Step 3: Compute output vectors as weighted sum of input vectors
+    output_vectors = attn_weights @ inputs
+    return output_vectors
+</code></pre>
+<div>
+</div>
+
+<div style="text-align: center;" class="fragment" data-fragment-index="1">
+
+
+
+<p><strong>How to improve this basic self-attention mechanism?</strong> <!-- .element: class="fragment" data-fragment-index="2" --></p>
+<p class="fragment" data-fragment-index="3">Learn the weights used to compute attention scores! </p>
+</div>
+
+</section>
+<section><div class="center-slide">
+
+<h2>Self-Attention with Learned Weights</h2>
+</div>
+
+</section>
+<section><h3>Attention as information flow</h3>
+<p>Three steps in attention mechanism:</p>
+<ol>
+<li><strong>What to attend to</strong> : Identify relevant tokens in the sequence =&gt; Identify similar information</li>
+<li><strong>How strongly to attend</strong>: Compute attention weights over those tokens =&gt; Determine importance</li>
+<li><strong>Contextualize/Output</strong>: Weighted sum of token representations =&gt; Copy relevant information</li>
+</ol>
+</section>
+<section><h3>Attention as information flow</h3>
+<p>Three steps in attention mechanism:</p>
+<ol>
+<li><strong>What to attend to</strong> : Identify relevant tokens in the sequence =&gt; Identify similar information</li>
+<li><strong>How strongly to attend</strong>: Compute attention weights over those tokens =&gt; Determine importance</li>
+<li><strong>Contextualize/Output</strong>: Weighted sum of token representations =&gt; Copy relevant information</li>
+</ol>
+<div style="text-align: center;">
+   
+</div>
+
+<ul>
+<li>We look at same <strong>token</strong> in three different ways to achieve this.</li>
+</ul>
+</section>
+<section><h3>Attention as information flow</h3>
+<p>Three steps in attention mechanism:</p>
+<ol>
+<li><strong>What to attend to</strong> : Identify relevant tokens in the sequence =&gt; Identify similar information</li>
+<li><strong>How strongly to attend</strong>: Compute attention weights over those tokens =&gt; Determine importance</li>
+<li><strong>Contextualize/Output</strong>: Weighted sum of token representations =&gt; Copy relevant information</li>
+</ol>
+<div style="text-align: center;">
+     
+
+</div>
+
+<ul>
+<li>We look at same <strong>token</strong> in three different ways to achieve this.</li>
+<li>The token embeddings alone are not sufficient.</li>
+</ul>
+</section>
+<section><h3>Attention as information flow</h3>
+<div style="text-align: center;">
+The token embeddings alone are not sufficient.
+</div>
+
+</section>
+<section><h3>Attention as information flow</h3>
+<div style="text-align: center;">
+The token embeddings alone are not sufficient.
+</div>
+
+<div style="text-align: center;">
+<b>Why</b>
+</div>
+
+</section>
+<section><h3>Attention as information flow</h3>
+<div style="text-align: center;">
+The token embeddings alone are not sufficient.
+</div>
+
+<div style="text-align: center;">
+<b>Why</b>
+</div>
+
+<p><video controls src="images/QKVMotivationScene.mp4" title="Title"></video></p>
+</section>
+<section><h3>Introducing Q, K, V vectors</h3>
+<p>We transform each input token into three different vectors:</p>
+<ul>
+<li>Token embedding: x_i</li>
+<li><strong>Query (Q)</strong>: What am I looking for?</li>
+<li><strong>Key (K)</strong>: What do I have to offer?</li>
+<li><strong>Value (V)</strong>: What information do I carry?</li>
+</ul>
+<p><img src="images/projections.png" alt="alt text"></p>
+</section>
+<section><section><h3>Why three vectors (Q, K, V)?</h3>
+<ul>
+<li><strong>Query (Q):</strong> Current token we are focusing on. <ul>
+<li><strong>Q</strong> should get specialized to ask questions about relevance.</li>
+</ul>
+</li>
+<li><strong>Key (K):</strong> All other tokens in the sequence. <ul>
+<li><strong>K</strong> should get specialized to help determine relevance to Q.</li>
+</ul>
+</li>
+<li><strong>Value (V):</strong> Represents the actual information we want to copy from the input. <ul>
+<li>V gets specialized to carry useful content.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
+<li>Q and K exist to define a similarity space, while V exists to define an information space.</li>
+<li>Queries are optimized to ask questions</li>
+<li>Values are optimized to carry information</li>
+</ul>
+</section><section><p><strong>Example</strong>
+Library System:</p>
+<p>Think of each token as a book in a library. Every book has three different representations, depending on what you’re doing with it.</p>
+<p><strong>Query (Q)</strong>: the question you’re asking right now</p>
+<p>&quot;I&#39;m looking for material about animal fatigue&quot;</p>
+<p>&quot;I need something that explains causal negation&quot;</p>
+<p><em>Important</em>:
+The query is shaped by your current goal, not by what the books contain.</p>
+<p>That’s exactly what Q does:</p>
+<p>It encodes what this token needs from context.</p>
+</section><section><p><strong>Key (K)</strong>: the book’s index card</p>
+<p>Each book has an index card (or metadata record).</p>
+<p>Topics, Keywords, Cross-references, Classification codes</p>
+<p><em>Important</em>:
+The system never reads the whole book to decide relevance.
+It compares your query against the keys.</p>
+<p>That’s K:
+A compact representation optimized for matching, not for content.</p>
+</section><section><p><strong>Value (V)</strong>: the actual book content</p>
+<p>Once relevant books are identified, you don’t copy the index cards.</p>
+<p>You copy:
+<em>Paragraphs, Explanations, Facts,</em></p>
+<p>That’s the Value:
+The information you actually want to transfer into your answer.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Query (Q)</strong></td>
+<td>The question you&#39;re asking</td>
+<td>&quot;I need info about animal fatigue&quot;</td>
+</tr>
+<tr>
+<td><strong>Key (K)</strong></td>
+<td>Index cards with topics/keywords</td>
+<td>Book metadata, classification codes</td>
+</tr>
+<tr>
+<td><strong>Value (V)</strong></td>
+<td>Actual content to retrieve</td>
+<td>Paragraphs, explanations, facts to copy</td>
+</tr>
+</tbody></table>
+</section><section><p><strong>Can we use Q for V?</strong></p>
+<ul>
+<li>Using the same vector for both querying and copying can limit expressiveness.</li>
+<li>Separate Q, K, V allow the model to learn different representations for querying and copying.</li>
+</ul>
+</section></section>
+<section><h3>How to get Q, K, V vectors</h3>
+<p>We project the token embedding to three learned projection spaces:</p>
+<p><strong>PROJECTION === &quot;Matrix Multiplication&quot;</strong></p>
+<ul>
+<li><strong>Query (Q)</strong>: $q_i = x_i W_q$</li>
+<li><strong>Key (K)</strong>: $k_i = x_i W_k$</li>
+<li><strong>Value (V)</strong>: $v_i = x_i W_v$</li>
+</ul>
+<p><img src="images/qkv.png" alt="alt text"></p>
+</section>
+<section><h3>Q, K, V Projections</h3>
+<p>$W_q$: projects tokens into query space</p>
+<p>$W_k$: projects tokens into key space</p>
+<p>$W_v$: projects tokens into value space</p>
+<p><img src="images/attn-summary.png" alt=""></p>
+</section>
+<section><h3>Q, K, V Projections</h3>
+<p>$Q = X W_q$ =&gt; Turn input tokens into queries</p>
+<p>$K = X W_k$ =&gt; Turn input tokens into keys</p>
+<p>$V = X W_v$ =&gt; Turn input tokens into values</p>
+<p><img src="images/attn-summary.png" alt=""></p>
+</section>
+<section><h3>Self-Attention with Learned Weights</h3>
+<ul>
+<li>Project input vectors to query, key, and value spaces</li>
+</ul>
+<div style="text-align: center;">    
+$\mathbf{queries} = X W_q$
+
+<p>$\mathbf{keys} = X W_k$</p>
+<p>$\mathbf{values} = X W_v$</p>
+</div>
+
+<ul>
+<li>Compute Similarity :</li>
+</ul>
+<div style="text-align: center;"> 
+$\mathbf{scores} = \mathbf{queries} \times \mathbf{keys}^T$
+
+<p>$\mathbf{attn_weights} = \text{softmax}(\mathbf{scores})$</p>
+</div>
+
+<ul>
+<li>Contextualization</li>
+</ul>
+<div style="text-align: center;"> 
+$\mathbf{context\_vec} = \mathbf{attn\_weights} \times \mathbf{values}$
+</div>
+
+</section>
+<section><h3>Scaled Dot-Product Attention</h3>
+<div style="text-align: center;">
+
+<p>$
+\mathbf{Attention}(Q, K, V) = \mathbf{softmax}\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V
+$</p>
+</div>
+
+<p>$d_k \text{ is the dimensionality of the key vectors (used for scaling).}$</p>
+<p>Why divide by sqrt(dk)?</p>
+<ul>
+<li>Prevents large dot product values when dk is large</li>
+<li>Helps keep gradients stable during training</li>
+<li>Dot product variance is ~dk, scaling by sqrt(dk) normalizes variance to ~1</li>
+</ul>
+</section>
+<section><section><h3>Implementing Self-Attention with Learned Weights : Single Token</h3>
+<p><strong>Calculating self-attention step-by-step</strong> : Single Token</p>
+<p><img src="images/self-attention_q2.png" alt=""></p>
+</section><section><h3>Implementing Self-Attention with Learned Weights : Single Token</h3>
+<ol start="0">
+<li>Initial Step</li>
+</ol>
+<pre><code class="language-python">W_query = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
+W_key = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
+W_value = torch.nn.Parameter(torch.rand(d_in, d_out), requires_grad=False)
+</code></pre>
+<ol>
+<li>Compute Query, Key, Value vectors:</li>
+</ol>
+<pre><code class="language-python">q_2 = x_2 @ W_query  # Query for token 2
+k_2 = x_2 @ W_key    # Key for token 2
+v_2 = x_2 @ W_value  # Value for token 2
+</code></pre>
+<ol start="2">
+<li>Compute attention weights by dot product of Query with all Key vectors:</li>
+</ol>
+<pre><code class="language-python">attn_scores_2 = torch.empty(inputs.shape[0])
+attn_scores_2 = q_2.dot(k_2)
+attn_weights_2 = torch.softmax(attn_scores_2 / (k_2.shape[-1]**0.5), dim=-1)
+</code></pre>
+<ol start="3">
+<li>Calculate value vectors:</li>
+</ol>
+<pre><code class="language-python">context_vec_2 = torch.zeros(inputs.shape[1])
+context_vec_2 = attn_weights[2] @ V
+</code></pre>
+</section></section>
+<section><h3>Self-Attention with Learned Weights :  All Tokens</h3>
+<pre><code class="language-python">class SelfAttention(nn.Module):
+    def __init__(self, d_in, d_out, qkv_bias=False):
+
+        super().__init__()
+        self.W_query = nn.Linear(d_in, d_out, bias=qkv_bias)
+        self.W_key = nn.Linear(d_in, d_out, bias=qkv_bias)
+        self.W_value = nn.Linear(d_in, d_out, bias=qkv_bias)
+
+    def forward(self, x):
+        keys = self.W_key(x)
+        queries = self.W_query(x)
+        values = self.W_value(x)
+        attn_scores = queries @ keys.T
+        attn_weights = torch.softmax(attn_scores / keys.shape[-1]**0.5, dim=-1)
+        context_vec = attn_weights @ values
+        return context_vec
+</code></pre>
+</section>
+<section><h2>Attention during Training</h2>
+<ul>
+<li>All tokens are available =&gt; [&quot;cat&quot;, &quot;sat&quot;, &quot;on&quot;, &quot;the&quot;, &quot;mat&quot;]</li>
+<li>For each token we predict the next token <ul>
+<li>&quot;cat&quot; =&gt; &quot;sat&quot;</li>
+<li>&quot;cat sat&quot; =&gt; &quot;on&quot;</li>
+<li>&quot;cat sat on&quot; =&gt; &quot;the&quot;</li>
+<li>&quot;cat sat on the&quot; =&gt; &quot;mat&quot;</li>
+<li>&quot;cat sat on the mat&quot; =&gt; &quot;.&quot;</li>
+</ul>
+</li>
+<li>We need to hide future tokens during training to prevent information leakage.</li>
+</ul>
+</section>
+<section><h2>Attention during Training</h2>
+<p><strong>Masking future tokens</strong></p>
+<p><video controls src="images/CausalMaskScene.mp4" title="Masking"></video></p>
+</section>
+<section><h2>Causal  Attention (Masking) in Decoder-Only Models</h2>
+<img src="images/masked_attention.png" class="float-right">
+
+<ul>
+<li>In decoder-only models, we predict next token based on previous tokens</li>
+<li><strong>Note</strong> : During training, we predict all tokens in parallel</li>
+<li>To prevent information leakage from future tokens, we apply a causal mask to the attention scores</li>
+<li>At all time steps, each token can only attend to earlier tokens</li>
+</ul>
+</section>
+<section><h3>Masking in Causal Attention</h3>
+<img src="images/masking_steps.png" class="float-right">
+
+<ul>
+<li><strong>Masking</strong></li>
+</ul>
+<pre><code class="language-python">sa = SelfAttention(d_in, d_out)
+queries = sa.W_query(inputs)
+keys = sa.W_key(inputs)
+attn_scores = queries @ keys.T
+</code></pre>
+<ul>
+<li><strong>Softmax Function</strong></li>
+</ul>
+<p>$
+\mathrm{Softmax}(x) = \frac{\exp(x)}{\sum \exp(x)}
+$</p>
+<ul>
+<li>Fill with -inf where mask is True</li>
+</ul>
+<pre><code class="language-python">    # Step 1: Create mask shape (L, L)
+    seq_len = attn_scores.shape[-1]
+
+    # Step 2: Lower triangular = positions we CAN attend to
+    causal_mask = torch.triu(torch.ones(seq_len, seq_len), diagonal=1).bool()
+
+    # Step 3: Set positions we CAN&#39;T attend to as -inf
+    attn_scores.masked_fill_(causal_mask, float(&#39;-inf&#39;))
+</code></pre>
+</section>
+<section><h2>Attenion + Dropout</h2>
+<p><em>Dropout</em> is a regularization technique that randomly sets some neuron weights to zero during training to prevent overfitting.</p>
+<p><img src="images/dropout.png" alt="alt text"></p>
+</section>
+<section><h3>Dropout in Attention Weights</h3>
+<img src="images/dropout-attn.png" class="float-right">
+
+<ul>
+<li>By applying dropout to attention weights, we randomly ignore some attention connections during training.</li>
+<li>Makes the model more robust by preventing it from relying too heavily on specific attention patterns.</li>
+</ul>
+<pre><code class="language-python">dropout = nn.Dropout(p=0.2)
+attn_weights = dropout(attn_weights)
+</code></pre>
+</section>
+<section><h3>Putting it all together: Self-Attention Module with Masking and Dropout</h3>
+<pre><code class="language-python">    keys = self.W_key(x)
+    queries = self.W_query(x)
+    values = self.W_value(x)
+
+    attn_scores = queries @ keys.T
+    
+    mask = torch.triu(torch.ones(L, L), diagonal=1).bool()  # Upper triangular
+    attn_scores.masked_fill_(mask, float(&#39;-inf&#39;))
+    
+    attn_weights = torch.softmax(attn_scores / keys.shape[-1]**0.5, dim=-1)
+
+    attn_weights = self.dropout(attn_weights)
+
+    context_vec = attn_weights @ values
+</code></pre>
+</section>
+<section><h2>Multi-Head Attention</h2>
+<h3>Stacking multiple attention heads</h3>
+<img src="images/stacked-heads.png" class="float-right">
+
+<ul>
+<li>Perform multiple self-attention calculations in parallel, with own set of learned weight matrices (Wq, Wk, Wv) and  output vector for each head.</li>
+<li>Concatenate all to produce one context vector for each token.</li>
+<li>Multiple heads -&gt; attend to input sentence simultaneously -&gt; different relationships and patterns in the data.</li>
+</ul>
+</section>
+<section><h3>Multi-Head Attention : Naive Implementation</h3>
+<pre><code class="language-python">
+# naive version using loops
+
+class MultiHeadAttentionWrapper(nn.Module):
+    def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
+        super().__init__()
+        self.heads = nn.ModuleList([
+            CausalAttention(d_in, d_out, context_length, dropout, qkv_bias)
+            for _ in range(num_heads)
+        ])
+    
+    def forward(self, x):
+        return torch.cat([head(x) for head in self.heads], dim=-1)
+</code></pre>
+</section>
+<section><h3>Multi-Head Attention : Efficient Implementation</h3>
+<pre><code class="language-python">class MultiHeadAttention(nn.Module):
+  def __init__(self, d_in, d_out, context_length, dropout, num_heads, qkv_bias=False):
+    super().__init__()
+    self.num_heads = num_heads
+    assert d_out % num_heads == 0, &quot;d_out must be divisible by num_heads&quot;
+    self.head_dim = d_out // num_heads
+    self.out_proj = nn.Linear(d_out, d_out)
+
+  def forward(self, X):
+
+    queries = queries.reshape(batches, num_tokens, self.num_heads, self.head_dim) # B x L x num_heads x head_dim
+    keys = keys.reshape(batches, num_tokens, self.num_heads, self.head_dim) # B x L x num_heads x head_dim
+    values = values.reshape(batches, num_tokens, self.num_heads, self.head_dim) # B x L x num_heads x head_dim
+
+    queries = queries.transpose(1, 2) # B x num_heads x L x head_dim
+    keys = keys.transpose(1, 2) # B x num_heads x L x head_dim
+    values = values.transpose(1, 2) # B x num_heads x L x head_dim
+
+    attn_scores = queries @ keys.transpose(2, 3) # (B x num_heads x L x head_dim) @ (B x num_heads x head_dim x L) =&gt; B x num_heads x L x L
+
+    # mask : # L x L =&gt; (1 x 1 x L x L)
+    attn_scores.masked_fill_(self.mask.bool()[:num_tokens, :num_tokens], -torch.inf) # B x num_heads x L x L
+
+    attn_weights = torch.softmax(attn_scores / self.head_dim ** 0.5, dim=-1) 
+    attn_weights = nn.Dropout(self.dropout)(attn_weights) # B x num_heads x L x L
+
+    context_vec = attn_weights @ values # (B x num_heads x L x L) @ (B x num_heads x L x head_dim)
+
+    context_vec = context_vec.transpose(1, 2) # B x L x num_heads x head_dim
+    context_vec = context_vec.reshape(batches, num_tokens, self.d_out) # B x L x d_out
+
+    return self.out_proj(context_vec) # (B x L x d_out) @ (d_out x d_out) =&gt; B x L x d_out
+</code></pre>
+</section>
+<section><h2>Summary</h2>
+<p><strong>Journey through Attention:</strong></p>
+<ol>
+<li><strong>Simple Attention</strong>: Dot products between embeddings (no learning)</li>
+<li><strong>Self-Attention</strong>: Add learnable Q, K, V projections</li>
+<li><strong>Causal Attention</strong>: Mask future tokens for autoregressive generation</li>
+<li><strong>Multi-Head</strong>: Run multiple attention patterns in parallel</li>
+</ol>
+</section>
+<section><h2>What We Didn&#39;t Cover</h2>
+<ul>
+<li><strong>Positional Encodings</strong>: How does attention know word order?</li>
+<li><strong>Feed-Forward Networks</strong>: The other half of each transformer block</li>
+<li><strong>Layer Normalization</strong>: Stabilizing training</li>
+<li><strong>Residual Connections</strong>: Enabling deep networks</li>
+</ul>
+<p>→ These will be covered in the next session where we implement a full transformer block and a LLM from scratch!</p>
+</section>
+  </div>
+</div>
+
+
+
+<script src="../reveal/dist/reveal.js"></script>
+<script src="../reveal/plugin/markdown/markdown.js"></script>
+<script src="../reveal/plugin/highlight/highlight.js"></script>
+<script src="../reveal/plugin/math/math.js"></script>
+<script src="../reveal/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin@11.6.0/plugin/mermaid/mermaid.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js"></script>
+<!-- Pointer plugin -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-pointer@0.1.4/dist/pointer.js"></script>
+<!-- Chalkboard plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-plugins@4.6.0/chalkboard/plugin.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-plugins@4.6.0/customcontrols/plugin.js"></script>
+
+
+<script>
+
+Reveal.initialize({
+  hash: true,
+  slideNumber: "c/t",
+  center: false,
+  transition: "none",
+  controls: true,
+  controlsTutorial: true,
+  index:true,
+  controlsLayout: "bottom-right",
+  controlsBackArrows: "faded",
+  // Responsive: fill browser width
+  width: "100%",
+  height: "100%",
+  margin: 0.04,
+  minScale: 0.2,
+  maxScale: 2.0,
+  mermaid:{
+
+  },
+  menu: {
+    side: "left",
+    titleSelector: "h1, h2, h3",
+    useTextContentForMissingTitles: true
+  },
+  // Pointer plugin config (press Q to toggle)
+  pointer: {
+    key: "q",
+    color: "red",
+    pointerSize: 16,
+    alwaysVisible: false
+  },
+  // Chalkboard plugin config (press B for board, C for canvas)
+  chalkboard: {
+    boardmarkerWidth: 4,
+    chalkWidth: 5,
+    chalkEffect: 0.5,
+    theme: "chalkboard",
+    transition: 800,
+    readOnly: false
+  },
+  touch: true,
+  customcontrols: {
+    controls: [
+      { icon: '<i class="fa fa-pen-square"></i>',
+        title: 'Toggle notes canvas (C)',
+        action: 'RevealChalkboard.toggleNotesCanvas();'
+      },
+      { icon: '<i class="fa fa-chalkboard"></i>',
+        title: 'Toggle chalkboard (B)',
+        action: 'RevealChalkboard.toggleChalkboard();'
+      }
+    ]
+  },
+  plugins: [ RevealMarkdown, RevealHighlight, RevealMath, RevealNotes, RevealMermaid, RevealMenu, RevealPointer,  RevealCustomControls ]
+});
+
+</script>
+
+</body>
+</html>

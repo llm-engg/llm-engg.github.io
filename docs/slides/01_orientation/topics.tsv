@@ -1,0 +1,53 @@
+LLM Foundations I	1.1	Transformers	Transformer architecture: attention, FFNs, positional and token embeddings, layer norm etc 
+	1.2	Tokenization, Pretraining objectives	
+	2.1	LLM Architecture - GPT  2	GPT 2 implementation and Training Loop
+	2.2	LLM Modern Architectures	RMS Norm, Attention Variants, Hyperparameters, Activations
+	3.1	Mixture of Experts	Sparse models: MoE (Mixture of Experts), routing, load balancing
+LLM Foundation II	3.1	Scaing Laws	Model and Data scaling, Emergent properties, case studies
+	3.2	Case studies : State-of-the-art open-source LLM models	Qwen 3, GPT OSS, Gemma 3, DeepSeek, Mixtral, SmolLM, Kimi etc
+			
+GPUs	4.1	GPU architecture deep dive	SMs (Streaming Multiprocessors), warps, threads. memory hierarchy, CUDA programming fundamentals: kernels,  streams
+	4.2	Parallelism: Muti GPU, Multi Node	 Profiling LLMs: Nsight Systems, PyTorch Profiler, memory vs compute bound Multi-GPU communication: NCCL, all-reduce, ring-allgather
+	4.3	On-Prem Hardware Stack Deep Dive	GPU selection guide (NVIDIA vs. AMD for LLMs), NVLink vs. PCIe, CPU-GPU memory hierarchy   Building cost-effective clusters: 10G/25G networking, RAID-Z for dataset storage  
+			
+Optimizing Inference	5.1	Inference Math and Bottlenecks	Sampling Techniques for LLMs Forward pass math,  Key bottlenecks compute and memory bottlenecks ( Batch size vs throughput vs latency, GPU utilization), Roofline & Arithmetic Intensity
+	5.2	Memory, Efficient Attention & KV Caching	Memory decomposition: Activations, params, KV etc Optimizing attention: KV Cache, FlashAttention, KV cache management, Prefix caching / Prompt caching Kernel fusion (matmul + bias + activation fused).
+			
+	6.1	Quantization Fundamentals	Quantization: PTQ (post-training), QAT (quantization-aware training) INT8, INT4, FP8, AWQ, GPTQ quantization formats, Quantization-induced errors & hallucinations, KV Cache Quantization
+	6.2	Speculative Decoding	EAGLE, MEDUSA etc
+	7.1	Inference Engines and Mutli GPU	vLLM (continuous batching, PagedAttention), Tensor RT-LLM, llama.cpp (CPU/offload efficiency).  Multi-GPU serving: tensor parallelism CPU/GPU offload tradeoffs.
+	7.2	Router Models & Cascade Inference  Case study : Serving large models	Router models for inference  Large Model Serving case study 
+			
+Fine-Tuning Fundamentals	8.1	SFT	Data Curation -> Instruction Tuning -> Preference Alignment -> Evaluation. SFT : Dataset engineering: prompt formatting, domain corpora, instruction tuning  
+	8.2	PEFT	LORA and variants
+	9.1	Instruction tuning & alignmen	RLHF : PPO, DPO
+	9.2	More RL	GRPO, RLVR methods
+	9.3	Distillation	
+			
+Reasoning	10.1	Reasoning & Chain-of-Thought	CoT datasets and supervision strategies Self-consistency & Tree-of-Thought reasoning
+	10.2	Finetuning for reasoning	Convert reasoning chains into supervised datasets Fine-tuning for reasoning tasks (math, logic, code)
+			
+RAG	11.1	RAG Fundamentals - embeddings, chunking, vector DBs, hybrid search, rerankers, query rewriting	Dense vs sparse vs hybrid retrieval — ColBERT, SPLADE, BM25 Vector DBs, indexing, retrieval
+	11.2	Evaluating RAG	RAG evaluation — hit rate, faithfulness, context relevance — using Ragas
+			
+Agents	12.1	ReAct Framework: Thought → Action → Observation	ReAct, Plan-and-Execute, Tool calling, Agent memory
+Tool Use & Function Calling	12.2	MCP introduction	Integrating APIs, Databases, Code Exec as Tools
+	12.3	Multi Agent Orchestration, Multimodal Agents	
+			
+Agent Finetuning	13.1	Fine Tuning for Tool calling	Adapt LLM to follow tool-using prompts accurately Instruction tuning for multi-step reasoning + RAG integration
+	13.2	Agent Evaluation	Evaluate agent performance: success rate, hallucination, tool execution correctness  Demo: Compare vanilla model vs fine-tuned agent on multi-step tasks
+			
+Evaluation	14.1	Evaluation	Evaluation strategies, LLM-as-a-Judge, Human Feedback  
+	14.2	Observability & Monitoring	Logging token-level latency, throughput, GPU utilization Cost monitoring: batch size vs latency vs throughput Tools: Prometheus + Grafana, PyTorch Profiler, vLLM telemetry
+			
+Multimodal Models	15.1	Multimodal Architectures	Image, Audio and Video models
+	15.2	FIne tuning multimodal models	Finetuning multimodal — dataset (OCR, diagrams, charts), loss functions Dataset preparation, Training strategy
+			
+LLMs on the Edge: Tiny Models & On-Device Inference	16.1	Edge-Optimized LLM Architectures, case studies	Edge Definition, Key motivations for on device LLMs and Challenges Frameworks and Runtimes for On-Device Inference - Running models on Android, RPi
+	16.2	Edge Optimization techniques	Gemma 3n, LFM 3 case study, 
+			
+	17.1	Buffer I	
+	17.2	Buffer II	
+			
+	18.1	Student Presentations I	
+	18.2	Student Presentations II	

@@ -1,0 +1,574 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Transformers-1</title>
+
+  <link rel="stylesheet" href="../reveal/dist/reveal.css">
+  <link rel="stylesheet" href="../reveal/dist/theme/solarized.css">
+  <!-- PDF export support: append ?print-pdf to URL, then Ctrl+P -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi)
+      ? '../reveal/dist/print/pdf.css'
+      : '../reveal/dist/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+
+  <!-- Bigger fonts for classrooms -->
+  <style>
+    .reveal {
+      font-size: 32px;
+    }
+    .reveal code {
+      font-size: 0.9em;
+    }
+    /* Left-align all slide content */
+    .reveal .slides section {
+      text-align: left;
+    }
+    .reveal .slides section ul,
+    .reveal .slides section ol {
+      display: block;
+      text-align: left;
+    }
+    .reveal .slides section li {
+      text-align: left;
+    }
+    /* Center-align headings */
+    .reveal .slides section h1,
+    .reveal .slides section h2,
+    .reveal .slides section h3 {
+      text-align: center;
+    }
+    /* Center-align tables */
+    .reveal .slides section table {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* Footer styling */
+    .reveal .footer {
+      position: absolute;
+      bottom: 1em;
+      left: 1em;
+      font-size: 0.5em;
+      color: #657b83;
+      z-index: 100;
+    }
+    /* Constrain slides to prevent overflow */
+    .reveal .slides section {
+      overflow: hidden !important;
+      height: 100% !important;
+      box-sizing: border-box !important;
+    }
+    /* Image sizing and background blend for solarized theme */
+    .reveal .slides section img,
+    .reveal .slides section p img,
+    .reveal img {
+      max-width: 900px !important;
+      max-height: 450px !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: contain !important;
+      display: block !important;
+      margin: 0.04em auto !important;
+      background-color: #fdf6e3 !important;
+      padding: 0.04em !important;
+      border-radius: 2px !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    /* Allow side-by-side images in flex containers */
+    .reveal .slides section [style*="display: flex"] img,
+    .reveal .slides section [style*="display:flex"] img {
+      display: inline-block !important;
+      margin: 0 !important;
+      max-width: 100% !important;
+      max-height: 500px !important;
+    }
+    /* Float images for text wrap */
+    .reveal .slides section img.float-right {
+      float: right !important;
+      margin: 0 0 0.5em 1em !important;
+      max-width: 45% !important;
+      max-height: 400px !important;
+    }
+    .reveal .slides section img.float-left {
+      float: left !important;
+      margin: 0 1em 0.5em 0 !important;
+      max-width: 45% !important;
+      max-height: 400px !important;
+    }
+    /* Centered slide for section breaks */
+    .reveal .slides section .center-slide {
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      text-align: center !important;
+      width: 90% !important;
+    }
+    .reveal .slides section .center-slide h1,
+    .reveal .slides section .center-slide h2,
+    .reveal .slides section .center-slide h3,
+    .reveal .slides section .center-slide p {
+      text-align: center !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+    /* Fragment animation: semi-fade-out */
+    .reveal .slides section .fragment.semi-fade-out {
+      opacity: 1;
+      visibility: inherit;
+      transition: opacity 0.3s ease;
+    }
+    .reveal .slides section .fragment.semi-fade-out.visible {
+      opacity: 0.3;
+    }
+    /* Fragment animation: grow with highlight */
+    .reveal .slides section .fragment.grow {
+      opacity: 1;
+      visibility: inherit;
+      transition: transform 0.3s ease;
+    }
+    .reveal .slides section .fragment.grow.visible {
+      transform: scale(1.0);
+    }
+    /* Course header styling */
+    .course-header {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      font-size: 16px;
+      opacity: 0.6;
+    }
+  </style>
+
+  <link rel="stylesheet" href="../reveal/plugin/highlight/monokai.css">
+</head>
+<body>
+
+
+<div class="reveal">
+  <div class="footer"> <a href="https://llm-engg.github.io">Large Language Models : A Hands-on Approach – CCE, IISc</a></div>
+  <div class="slides">
+    <section><div class="center-slide">
+
+<h2>LLMs : A Hands-on Approach</h2>
+<h3>Transformers</h3>
+</div>
+
+</section>
+<section><h2>Topics Covered</h2>
+<ul>
+<li>Transformer architecture</li>
+<li>Self-attention mechanism</li>
+<li>Causal Attention</li>
+<li>Multi-head attention</li>
+</ul>
+</section>
+<section><h2>Models of the Week</h2>
+<p><strong><a href="https://huggingface.co/moonshotai/Kimi-K2.5">moonshotai/Kimi-K2.5</a></strong></p>
+<ul>
+<li>SOTA Open Source model</li>
+<li>1T+ parameters, 30T tokens pretraining data, Vocabulary Size - 160K, Context Length - 256K</li>
+<li>Agentic, Agent Swarm, Multi-modal capabilities</li>
+</ul>
+<p><strong><a href="https://research.nvidia.com/labs/adlr/personaplex/">nvidia/personaplex-7b-v1</a></strong></p>
+<ul>
+<li>7B, Real-time, speech to speech model, full-duplex model </li>
+<li><a href="https://research.nvidia.com/labs/adlr/personaplex/">Demo</a></li>
+</ul>
+<p><strong><a href="https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice">Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice</a></strong></p>
+<ul>
+<li>Text to Speech model with voice design, voice cloning, custom voice</li>
+</ul>
+</section>
+<section><h2>Recap : Tokenization</h2>
+<ul>
+<li>Words, Subwords, Characters level tokenization</li>
+<li>Subword tokenization is the most commonly used approach in LLMs</li>
+</ul>
+<p><img src="images/tokens.png" alt=""></p>
+</section>
+<section><h3>Text to Token IDs</h3>
+<pre><code class="language-python">import tiktoken
+tokenizer = tiktoken.get_encoding(&quot;gpt2&quot;)
+text = &quot;This is an example.&quot;
+token_ids = tokenizer.encode(text)
+# tokens = [&#39;This&#39;, &#39; is&#39;, &#39; an&#39;, &#39; example&#39;, &#39;.&#39;]
+# token_ids = [40234, 2052, 133, 389, 12]
+</code></pre>
+<p><img src="images/word_tokenization.png" alt=""></p>
+</section>
+<section><h3>Tokens to Embeddings</h3>
+<ul>
+<li>Each token ID maps to a unique vector in the embedding matrix</li>
+<li>Embedding Matrix : [vocab_size x embedding_dim] </li>
+<li>Example : GPT-2 Small<ul>
+<li>vocab_size = 50257</li>
+<li>embedding_dim = 768</li>
+</ul>
+</li>
+</ul>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/lm_token_embeddings.png" style="max-width: 50%;">
+    </div>
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/emb-matrix.png" style="max-width: 50%;">
+    </div>
+</div>
+
+</section>
+<section><div class="center-slide">
+
+<h2>Transformers</h2>
+</div>
+
+</section>
+<section><h3>Transformers</h3>
+<img src="images/transformer.png" class="float-right">
+
+<ul>
+<li>All LLMs rely on the Transformer architecture, introduced in the 2017 paper &quot;Attention Is All You Need&quot; (<a href="https://arxiv.org/abs/1706.03762">https://arxiv.org/abs/1706.03762</a>).</li>
+<li>No Recurrent or Convolution layers, entirely based on Attention Mechanism</li>
+</ul>
+</section>
+<section><h3>Two types of Transformer Architectures</h3>
+<img src="images/enc-dec-vs-dec-only.png" class="float-right">
+
+
+<ul>
+<li><strong>Encoder-Decoder</strong> : Sequence to sequence tasks (translation, summarization)</li>
+<li><strong>Decoder-Only</strong> : Language modeling tasks (text generation, completion)</li>
+<li>Most LLMs (GPT, Llama, etc.) use the <strong>Decoder-Only</strong> architecture</li>
+</ul>
+</section>
+<section><h3>Key Components of Transformer</h3>
+<img src="images/enc-dec.png" class="float-right">
+
+<ul>
+<li class="fragment semi-fade-out" data-fragment-index="1">Positional Encoding </li>
+<li class="fragment highlight-current-blue grow" data-fragment-index="1">Multi-Head Attention </li>
+<li class="fragment semi-fade-out" data-fragment-index="1">Residual Connections </li>
+<li class="fragment semi-fade-out" data-fragment-index="1">Feed Forward Networks </li>
+<li class="fragment semi-fade-out" data-fragment-index="1">Layer Normalization </li>
+</ul>
+</section>
+<section><h3>Language Modeling</h3>
+<ul>
+<li>Given a sequence of tokens, predict the next token</li>
+<li>Example: A robot may not harm a ___ -&gt; human</li>
+<li>[PROMPT] -&gt; [MODEL] -&gt; [PREDICTION]</li>
+</ul>
+<p><img src="https://jalammar.github.io/images/xlnet/gpt-2-autoregression-2.gif" alt=""></p>
+</section>
+<section><h3>Decoder-only Language Model</h3>
+<ul>
+<li>A decoder-only language model is a stack of transformer decoder blocks</li>
+</ul>
+<p><img src="https://jalammar.github.io/images/gpt2/gpt-2-simple-output-3.gif" alt="alt text"></p>
+</section>
+<section><h3>Decoder-only LLM : Input Side</h3>
+<ul>
+<li>Input tokens are passed through multiple  decoder blocks</li>
+<li><strong>Embed</strong> : Text -&gt; Token IDs -&gt; Embeddings -&gt; Decoder Blocks</li>
+</ul>
+<p><img src="images/decoder-blocks.png" alt="alt text"></p>
+</section>
+<section><h3>Decoder-only LLM : Output Side</h3>
+<ul>
+<li><strong>UnEmbed</strong> : The final vector is projected to vocabulary size and softmaxed to get token probabilities</li>
+</ul>
+<p><img src="images/output-layer.png" alt=""></p>
+</section>
+<section><h3>Decoder Block Internals</h3>
+<ul>
+<li>Masked Multi-Head Self-Attention</li>
+<li>Feed Forward Network (FFN)</li>
+<li>Residual Connections</li>
+<li>Layer Normalization</li>
+</ul>
+<p><img src="images/decoder-internals.png" alt="alt text"></p>
+</section>
+<section><div class="center-slide">
+
+<h2>Attention Mechanism</h2>
+</div>
+
+</section>
+<section><h3>Sequence Modeling Challenges</h3>
+<ul>
+<li>Understanding context and relationships between words</li>
+<li>Need to keep grammatical structures aligned</li>
+</ul>
+<p><img src="images/translate.png" alt=""></p>
+</section>
+<section><h3>Recurrent Neural Networks (RNNs) for Sequence Modeling</h3>
+<ul>
+<li>Process all input into a hidden state, </li>
+<li>Pass hidden state to decoder</li>
+<li>Decoder uses hidden state to generate output sequence</li>
+</ul>
+<p> <img src="images/rnn.png" alt="Encoder-Decoder"></p>
+</section>
+<section><h3>RNNs + Attention</h3>
+<ul>
+<li>Let Decoder access all Encoder hidden states</li>
+<li>Attend to relevant parts of input sequence when generating each output token [Bahdanau et al., 2015]</li>
+</ul>
+<p><img src="https://camo.githubusercontent.com/90bef5f34f4eb3eb23e8446eb150507bb0df2fc5cd4f0c5dc7e9d4db3dab1058/68747470733a2f2f332e62702e626c6f6773706f742e636f6d2f2d3350626a5f64767430566f2f562d71652d4e6c365035492f41414141414141414251632f7a305f365774565774764152744d6b3069395f41744c6579794779563641493477434c63422f73313630302f6e6d742d6d6f64656c2d666173742e676966" alt="bahdanau-attn"></p>
+</section>
+<section><h3>RNNs + Attention</h3>
+<p><strong>Limitations</strong></p>
+<ul>
+<li>Sequential processing limits parallelization</li>
+<li>Difficulty capturing long-range dependencies</li>
+</ul>
+<p><strong>Solution</strong>: </p>
+<ul>
+<li>Remove recurrence, process all input tokens simultaneously</li>
+<li>Allow each token in the input to focus on relevant parts of the input</li>
+</ul>
+</section>
+<section><h3>Parallel Processing</h3>
+<ul>
+<li><strong>Encoder</strong> : Process all input tokens simultaneously</li>
+<li><strong>Decoder</strong> : Generate output tokens one by one, attending to encoder states and previous tokens</li>
+</ul>
+<p><img src="https://3.bp.blogspot.com/-aZ3zvPiCoXM/WaiKQO7KRnI/AAAAAAAAB_8/7a1CYjp40nUg4lKpW7covGZJQAySxlg8QCLcBGAs/s640/transform20fps.gif" alt=""></p>
+</section>
+<section><h3>Self-Attention Mechanism</h3>
+<ul>
+<li>Compute attention <strong>within</strong> the same sequence of tokens. <strong>Self = Same Sequence</strong></li>
+<li>Get improved representation by <strong>mixing in information</strong> from other tokens <strong>that seem relevant.</strong></li>
+</ul>
+<p><img src="images/self-attn.png" alt="alt text">
+<img src="image.png" alt="alt text"></p>
+</section>
+<section><h3>Self-Attention : Intuition</h3>
+<div style="text-align: center;">
+
+<p><em>&quot;Self-attention is like a group conversation where everyone can hear
+everyone else simultaneously, rather than passing notes one by one (RNNs)&quot;</em></p>
+</div>
+
+    
+
+</section>
+<section><h3>Self-Attention : Intuition</h3>
+<img src="images/attn-weighted.png" class="float-right">
+
+<ul>
+<li><p>Each token : &quot;Who should I pay attention to?&quot;</p>
+</li>
+<li><p>For every token, the model:</p>
+<ul>
+<li>treats that token as the &quot;current focus&quot;</li>
+<li>assigns <strong>higher weight</strong> to tokens that help interpret it</li>
+<li>creates an updated vector for the token:</li>
+</ul>
+</li>
+</ul>
+</section>
+<section><h3>Self-Attention vs Encoder–Decoder Attention</h3>
+<ul>
+<li><p><strong>Encoder–Decoder</strong>: One sequence attends to a <em>different</em> sequence (e.g., translation: output attends to the input sentence).</p>
+</li>
+<li><p><strong>Self-attention</strong>: Sequence attends to <strong>itself</strong> (tokens attending to other tokens in the same sentence).</p>
+</li>
+</ul>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/bahdanau-attn.png" style="max-width: 50%;">
+    </div>
+    <div style="flex: 1; padding: 10px;">
+        <img src="https://jalammar.github.io/images/t/transformer_self-attention_visualization.png" style="max-width: 50%;">
+    </div>
+</div>
+
+</section>
+<section><h3>Simple Attention Mechanism</h3>
+<img src="images/simple-attention.png" class="float-right">
+
+<p><strong>Input</strong>  -  Sequence of vectors (X) (source)</p>
+<p><strong>Output</strong> - Sequence of vectors (Z) (context)</p>
+<div style="text-align: center;">
+$
+X = [x_1, x_2, \dots, x_n], \quad x_i \in \mathbb{R}^d
+$
+
+<p>$
+Z = [z_1, z_2, \dots, z_n], \quad z_i \in \mathbb{R}^d
+$</p>
+<p>$
+z_i = \sum_{j=1}^{n} \text{attention_weight}_{ij} . x_j
+$</p>
+</div>
+
+</section>
+<section><section><h3>Computing attention weights for a single token</h3>
+<div style="text-align: center;">
+
+<p><em>Your <strong>journey</strong> starts with one step</em></p>
+</div>
+
+<p>query = &quot;journey&quot;</p>
+<img src="images/simple-attn-scores.png" class="float-right">
+
+<p>Step 1: </p>
+<ul>
+<li>Compute attention scores by dot product of &quot;journey&quot; with all tokens</li>
+</ul>
+<pre><code class="language-python">query = inputs[1]
+
+attn_scores_2 = torch.empty(inputs.shape[0])
+
+for i, x_i in enumerate(inputs):
+    attn_scores_2[i] = torch.dot(x_i, query)
+
+print(attn_scores_2)
+</code></pre>
+</section><section><h3>Computing attention weights for a single token</h3>
+<img src="images/normalized.png" class="float-right">
+
+<p>Step 2:</p>
+<ul>
+<li>Apply normalization to get attention weights (additive normalization)</li>
+<li>Normalization using softmax is more common in practice, as it ensures all weights are positive and sum to 1.</li>
+</ul>
+<pre><code class="language-python">attn_weights_2_tmp = attn_scores_2 / attn_scores_2.sum()
+
+def softmax_naive(x):
+    return torch.exp(x) / torch.exp(x).sum(dim=0)
+
+attn_weights_2_naive = softmax_naive(attn_scores_2)
+
+attn_weights_2 = torch.softmax(attn_scores_2, dim=0)
+</code></pre>
+</section><section><p>Step 3:</p>
+<ul>
+<li>Compute output vector as weighted sum of value vectors</li>
+</ul>
+<p><img src="images/context-vector.png" alt="alt text"></p>
+<pre><code class="language-python">context_vec_2 = torch.zeros(inputs.shape[1])
+for i, x_i in enumerate(inputs):
+    context_vec_2 += attn_weights_2[i] * x_i
+</code></pre>
+</section></section>
+<section><section><h3>Computing attention weigths for all tokens</h3>
+<ul>
+<li>Compute attention scores for all tokens</li>
+</ul>
+<pre><code class="language-python">attn_scores = torch.zeros(inputs.shape[0], inputs.shape[0])
+
+for i, x_i in enumerate(inputs):
+    for j, x_j in enumerate(inputs):
+        attn_scores[i, j] = torch.dot(x_i, x_j)
+</code></pre>
+<ul>
+<li>Normalize scores to get attention weights</li>
+</ul>
+<pre><code class="language-python">attn_weights = torch.softmax(attn_scores, dim=-1)
+</code></pre>
+<ul>
+<li>Compute output/context    vectors for all tokens</li>
+</ul>
+<pre><code class="language-python">output_vectors = torch.zeros_like(inputs)
+for i in range(inputs.shape[0]):
+    for j in range(inputs.shape[0]):
+        output_vectors[i] += attn_weights[i, j] * inputs[j]
+</code></pre>
+</section><section><h3>Computing attention weigths for all tokens</h3>
+<ul>
+<li>Better implementation using matrix multiplication</li>
+</ul>
+<pre><code class="language-python">
+attn_scores = torch.zeros(inputs.shape[0], inputs.shape[0])
+
+attn_scores = inputs @ inputs.T
+attn_weights = torch.softmax(attn_scores, dim=-1)
+output_vectors = attn_weights @ inputs
+</code></pre>
+</section></section>
+<section><h3>Summary of Self-Attention Mechanism</h3>
+<ul>
+<li>Input: sequence of vectors (X) (source)</li>
+<li>Output: sequence of vectors (Z) (context)</li>
+<li>Compute attention scores against all input vectors</li>
+<li>Normalize scores to get attention weights</li>
+<li>Compute output vectors as weighted sum of input vectors</li>
+</ul>
+<pre><code class="language-python">def self_attention(inputs):
+    # Step 1: Compute attention scores
+    attn_scores = inputs @ inputs.T
+    # Step 2: Normalize scores to get attention weights
+    attn_weights = torch.softmax(attn_scores, dim=-1)
+    # Step 3: Compute output vectors as weighted sum of input vectors
+    output_vectors = attn_weights @ inputs
+    return output_vectors
+</code></pre>
+<div style="text-align: center;">
+
+<p><strong>How to improve this basic self-attention mechanism?</strong> <!-- .element: class="fragment" data-fragment-index="2" --></p>
+<p class="fragment" data-fragment-index="3">Learn the weights used to compute attention scores! </p>
+</div>
+
+</section>
+<section><h2>References</h2>
+<ul>
+<li>Vaswani et al., <a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a> (2017) - The original transformer paper</li>
+<li>Bahdanau et al., <a href="https://arxiv.org/abs/1409.0473">Neural Machine Translation by Jointly Learning to Align and Translate</a> (2014) - Introduced attention for seq2seq</li>
+<li>Jay Alammar, <a href="https://jalammar.github.io/illustrated-transformer/">The Illustrated Transformer</a></li>
+<li>Jay Alammar, <a href="https://jalammar.github.io/illustrated-gpt2/">The Illustrated GPT-2</a></li>
+<li><a href="http://nlp.seas.harvard.edu/2018/04/03/attention.html">The Annotated Transformer</a> - Harvard NLP</li>
+<li>Sebastian Raschka, <em>Build a Large Language Model from Scratch</em> - Chapters 3-4</li>
+</ul>
+</section>
+<section><h2>Thank You</h2>
+<p>Questions?</p>
+</section>
+  </div>
+</div>
+
+
+
+<script src="../reveal/dist/reveal.js"></script>
+<script src="../reveal/plugin/markdown/markdown.js"></script>
+<script src="../reveal/plugin/highlight/highlight.js"></script>
+<script src="../reveal/plugin/math/math.js"></script>
+<script src="../reveal/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin@11.6.0/plugin/mermaid/mermaid.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js"></script>
+
+
+<script>
+
+Reveal.initialize({
+  hash: true,
+  slideNumber: "c/t",
+  center: false,
+  transition: "none",
+  controls: true,
+  controlsTutorial: true,
+  index:true,
+  controlsLayout: "bottom-right",
+  controlsBackArrows: "faded",
+  mermaid:{
+    
+  },
+  menu: {
+    side: "left",
+    titleSelector: "h1, h2, h3",
+    useTextContentForMissingTitles: true
+  },
+  plugins: [ RevealMarkdown, RevealHighlight, RevealMath, RevealNotes, RevealMermaid, RevealMenu ]
+});
+
+</script>
+
+</body>
+</html>

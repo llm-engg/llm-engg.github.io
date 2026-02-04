@@ -1,0 +1,472 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Tokenization</title>
+
+  <link rel="stylesheet" href="../reveal/dist/reveal.css">
+  <link rel="stylesheet" href="../reveal/dist/theme/solarized.css">
+  <!-- PDF export support: append ?print-pdf to URL, then Ctrl+P -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi)
+      ? '../reveal/dist/print/pdf.css'
+      : '../reveal/dist/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+
+  <!-- Bigger fonts for classrooms -->
+  <style>
+    .reveal {
+      font-size: 32px;
+    }
+    .reveal code {
+      font-size: 0.9em;
+    }
+    /* Left-align all slide content */
+    .reveal .slides section {
+      text-align: left;
+    }
+    .reveal .slides section ul,
+    .reveal .slides section ol {
+      display: block;
+      text-align: left;
+    }
+    .reveal .slides section li {
+      text-align: left;
+    }
+    /* Center-align headings */
+    .reveal .slides section h1,
+    .reveal .slides section h2,
+    .reveal .slides section h3 {
+      text-align: center;
+    }
+    /* Center-align tables */
+    .reveal .slides section table {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* Footer styling */
+    .reveal .footer {
+      position: absolute;
+      bottom: 1em;
+      left: 1em;
+      font-size: 0.5em;
+      color: #657b83;
+      z-index: 100;
+    }
+    /* Constrain slides to prevent overflow */
+    .reveal .slides section {
+      overflow: hidden !important;
+      height: 100% !important;
+      box-sizing: border-box !important;
+    }
+    /* Image sizing and background blend for solarized theme */
+    .reveal .slides section img,
+    .reveal .slides section p img,
+    .reveal img {
+      max-width: 600px !important;
+      max-height: 400px !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: contain !important;
+      display: block !important;
+      margin: 0.5em auto !important;
+      background-color: #fdf6e3 !important;
+      padding: 0.5em !important;
+      border-radius: 4px !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    /* Course header styling */
+    .course-header {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      font-size: 16px;
+      opacity: 0.6;
+    }
+  </style>
+
+  <link rel="stylesheet" href="../reveal/plugin/highlight/monokai.css">
+</head>
+<body>
+
+
+<div class="reveal">
+  <div class="footer"> <a href="https://llm-engg.github.io">Large Language Models : A Hands-on Approach – CCE, IISc</a></div>
+  <div class="slides">
+    <section><h2>Large Language Models: A Hands on Approach</h2>
+<h3>Tokenization</h3>
+</section>
+<section><h2>Topics Covered</h2>
+<ul>
+<li>Preprocessing text data for LLMs</li>
+<li>Tokenization techniques</li>
+<li>Byte Pair Encoding (BPE)</li>
+<li>Converting tokens into vectors</li>
+</ul>
+</section>
+<section><h2>Models of the Week</h2>
+<h3><a href="https://blog.google/innovation-and-ai/technology/developers-tools/translategemma/">TranslateGemma</a></h3>
+<ul>
+<li>SOTA Open weights multilingual translation model</li>
+<li>Multimodal capabilities: text + images for context</li>
+<li>4B, 12B and 27B versions</li>
+</ul>
+<h3><a href="https://deepmind.google/models/gemma/medgemma/">MedGemma</a></h3>
+<ul>
+<li>SOTA Open weights medical imaging and document understanding model</li>
+<li>CT/MRI/Histopathology Processing, Medical Document Understanding, Multi-domain Classification</li>
+</ul>
+<h3><a href="https://huggingface.co/zai-org/GLM-4.7-Flash">GLM-4.7-Flash</a></h3>
+<ul>
+<li>Coding, Tool use and Reasoning abilities</li>
+<li>30B-A3B MoE model</li>
+</ul>
+</section>
+<section><h2>Motivation</h2>
+<p>Why does tokenization matter?</p>
+<ul>
+<li><strong>Cost</strong>: Billing is per token, not per word</li>
+<li><strong>Context limits</strong>: Tokenization decides what fits vs what gets truncated</li>
+<li><strong>Reasoning failures</strong>: Try &quot;Say Nameeee&quot; vs &quot;Say Name eee&quot; in DeepSeek</li>
+<li><strong>Multilingual bias</strong>: Some languages need more tokens for same meaning</li>
+</ul>
+</section>
+<section><h2>Data Preprocessing Pipeline</h2>
+<ul>
+<li>Cannot feed raw text directly into LLMs. </li>
+<li>Need numerical representations.</li>
+</ul>
+<p><img src="images/preprocess.png" alt="Data Preprocessing"></p>
+<pre class="mermaid">graph LR
+    A[Raw Text] --> B[Tokenization]
+    B --> C[Token IDs]
+    C --> D[Embedding Layer]
+    D --> E[Input Embeddings]
+    E --> F[LLM]</pre></section>
+<section><h2>The Full Pipeline</h2>
+<p><strong>Unified Architecture</strong></p>
+<p><img src="images/unified.png" alt="Unified Architecture"></p>
+</section>
+<section><h2>What Is Tokenization?</h2>
+<p>Tokenization breaks text into smaller units called <strong>tokens</strong>.</p>
+<p>Tokens can be words, subwords, or characters.</p>
+<p><strong>Example:</strong> &quot;The transformer architecture is revolutionary.&quot;</p>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Tokens</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Words</td>
+<td><code>[&quot;The&quot;, &quot;transformer&quot;, &quot;architecture&quot;, &quot;is&quot;, &quot;revolutionary&quot;, &quot;.&quot;]</code></td>
+<td>6</td>
+</tr>
+<tr>
+<td>Characters</td>
+<td><code>[&quot;T&quot;, &quot;h&quot;, &quot;e&quot;, &quot; &quot;, &quot;t&quot;, &quot;r&quot;, &quot;a&quot;, ...]</code></td>
+<td>45</td>
+</tr>
+<tr>
+<td>Subwords</td>
+<td><code>[&quot;The&quot;, &quot; transform&quot;, &quot;er&quot;, &quot; architecture&quot;, &quot; is&quot;, &quot; revolution&quot;, &quot;ary&quot;, &quot;.&quot;]</code></td>
+<td>8</td>
+</tr>
+</tbody></table>
+</section>
+<section><h2>Real World Example: GPT-2 Tokenizer</h2>
+<p><a href="https://platform.openai.com/tokenizer">Try it yourself</a></p>
+<p><img src="images/gpt2-tokenizer.png" alt="GPT-2 Tokenizer"></p>
+</section>
+<section><h2>Tokenization Pipeline</h2>
+<p><img src="images/tokenization-pipeline.png" alt="Tokenization Pipeline"></p>
+</section>
+<section><h2>Tokenization Spectrum</h2>
+<pre><code>Bytes → Characters → Subwords → Words
+  ↑                              ↑
+ 256 tokens                     Millions of tokens
+ Long sequences                 Short sequences
+</code></pre>
+<p>Trade-off between vocabulary size and sequence length.</p>
+</section>
+<section><h2>Word-Level Tokenization</h2>
+<p>Split text into words based on spaces and punctuation.</p>
+<pre><code class="language-python">import re
+text = &quot;Hello, world. This, is a test.&quot;
+result = re.split(r&#39;(\s)&#39;, text)
+# [&#39;Hello,&#39;, &#39; &#39;, &#39;world.&#39;, &#39; &#39;, &#39;This,&#39;, &#39; &#39;, &#39;is&#39;, &#39; &#39;, &#39;a&#39;, &#39; &#39;, &#39;test.&#39;]
+</code></pre>
+<p><img src="images/word_tokenization.png" alt="Word Tokenization"></p>
+</section>
+<section><h2>Word-Level: Pros and Cons</h2>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Short sequences (one token per word)</li>
+<li>Linguistically intuitive</li>
+<li>Fast attention (fewer tokens)</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Huge vocabulary (English needs 100K+ words)</li>
+<li>OOV problem: Unknown words → <code>[UNK]</code></li>
+<li>Morphological blindness: &quot;run&quot;, &quot;runs&quot;, &quot;running&quot; are unrelated</li>
+<li>Language-specific: Some languages don&#39;t use spaces</li>
+</ul>
+</section>
+<section><h2>Character-Level Tokenization</h2>
+<p>Split text into individual characters.</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>No OOV tokens (any text can be encoded)</li>
+<li>Tiny vocabulary (~100-300 tokens)</li>
+<li>Handles typos and neologisms</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Very long sequences (5-10x longer)</li>
+<li>Slow attention (more tokens)</li>
+<li>Poor semantics (characters lack meaning)</li>
+<li>Harder to learn word structure</li>
+</ul>
+</section>
+<section><h2>Subword Tokenization</h2>
+<p>The sweet spot: split rare words, keep common words whole.</p>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Subword Tokens</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>the</td>
+<td><code>[&quot;the&quot;]</code></td>
+<td>Common → single token</td>
+</tr>
+<tr>
+<td>transformer</td>
+<td><code>[&quot;trans&quot;, &quot;former&quot;]</code></td>
+<td>Split into known pieces</td>
+</tr>
+<tr>
+<td>unhappiness</td>
+<td><code>[&quot;un&quot;, &quot;happi&quot;, &quot;ness&quot;]</code></td>
+<td>Morphemes preserved</td>
+</tr>
+<tr>
+<td>GPT-4</td>
+<td><code>[&quot;G&quot;, &quot;PT&quot;, &quot;-&quot;, &quot;4&quot;]</code></td>
+<td>Unknown → character fallback</td>
+</tr>
+</tbody></table>
+</section>
+<section><h2>Popular Subword Algorithms</h2>
+<ol>
+<li><strong>Byte Pair Encoding (BPE)</strong> - Frequency-based merging</li>
+<li><strong>WordPiece</strong> - Probability-based merging (BERT)</li>
+<li><strong>SentencePiece</strong> - Unigram language model (LLaMA)</li>
+</ol>
+</section>
+<section><h2>Byte Pair Encoding (BPE)</h2>
+<p><em>Sennrich et al. (2016)</em></p>
+<p><strong>Core idea:</strong> Iteratively merge the most frequent pair of tokens.</p>
+<ol>
+<li>Start with vocabulary of individual characters (or bytes)</li>
+<li>Count all adjacent pairs in the corpus</li>
+<li>Merge the most frequent pair into a new token</li>
+<li>Repeat until reaching desired vocabulary size</li>
+</ol>
+</section>
+<section><section><h2>BPE Walkthrough</h2>
+<p><strong>Input:</strong> &quot;low lower lowest&quot;</p>
+<p><strong>Step 1 - Initialize tokens:</strong></p>
+<pre><code>[&#39;l&#39;, &#39;o&#39;, &#39;w&#39;, &#39; &#39;, &#39;l&#39;, &#39;o&#39;, &#39;w&#39;, &#39;e&#39;, &#39;r&#39;, &#39; &#39;, &#39;l&#39;, &#39;o&#39;, &#39;w&#39;, &#39;e&#39;, &#39;s&#39;, &#39;t&#39;]
+</code></pre>
+<p><strong>Step 2 - Count pairs:</strong></p>
+<pre><code>(&#39;l&#39;, &#39;o&#39;): 3    (&#39;o&#39;, &#39;w&#39;): 3    (&#39;w&#39;, &#39; &#39;): 3
+(&#39; &#39;, &#39;l&#39;): 2    (&#39;e&#39;, &#39;r&#39;): 1    (&#39;e&#39;, &#39;s&#39;): 1
+</code></pre>
+</section><section><h2>BPE Walkthrough (continued)</h2>
+<p><strong>Step 3 - Merge most frequent pair</strong> <code>(&#39;l&#39;, &#39;o&#39;)</code> → <code>&#39;lo&#39;</code></p>
+<pre><code>[&#39;lo&#39;, &#39;w&#39;, &#39; &#39;, &#39;lo&#39;, &#39;w&#39;, &#39;e&#39;, &#39;r&#39;, &#39; &#39;, &#39;lo&#39;, &#39;w&#39;, &#39;e&#39;, &#39;s&#39;, &#39;t&#39;]
+</code></pre>
+<p><strong>Step 4 - Count pairs again:</strong></p>
+<pre><code>(&#39;lo&#39;, &#39;w&#39;): 3    (&#39;w&#39;, &#39; &#39;): 3    (&#39; &#39;, &#39;lo&#39;): 2
+</code></pre>
+<p><strong>Step 5 - Merge</strong> <code>(&#39;lo&#39;, &#39;w&#39;)</code> → <code>&#39;low&#39;</code></p>
+<pre><code>[&#39;low&#39;, &#39; &#39;, &#39;low&#39;, &#39;e&#39;, &#39;r&#39;, &#39; &#39;, &#39;low&#39;, &#39;e&#39;, &#39;s&#39;, &#39;t&#39;]
+</code></pre>
+</section><section><h2>BPE Result</h2>
+<p><strong>Final tokenization:</strong></p>
+<pre><code>&quot;low lower lowest&quot; → [&quot;low&quot;, &quot; &quot;, &quot;low&quot;, &quot;er&quot;, &quot; &quot;, &quot;low&quot;, &quot;est&quot;]
+</code></pre>
+<p><strong>Can encode any word:</strong></p>
+<pre><code>&quot;lowestness&quot; → [&quot;low&quot;, &quot;est&quot;, &quot;ness&quot;]
+</code></pre>
+<p><img src="images/subwords.png" alt="Subwords"></p>
+</section></section>
+<section><h2>BPE: Pros and Cons</h2>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Balances vocabulary size and sequence length</li>
+<li>Handles OOV words by breaking into subwords</li>
+<li>Captures morphological structure</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Greedy algorithm (may not find optimal tokenization)</li>
+<li>Training corpus dependent</li>
+</ul>
+</section>
+<section><h2>Byte-Level BPE (GPT-2 Style)</h2>
+<p>GPT-2 uses byte-level BPE:</p>
+<ul>
+<li>Start with <strong>256 byte tokens</strong> (not Unicode characters)</li>
+<li>All text is UTF-8 encoded first</li>
+<li>Merges operate on bytes, not characters</li>
+<li>Avoids merges beyond word boundaries</li>
+</ul>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Handles any language without special tokenization</li>
+<li>Works with emojis, rare scripts, binary data</li>
+<li>No <code>[UNK]</code> tokens ever needed</li>
+</ul>
+</section>
+<section><h2>Multimodal Tokenization</h2>
+<p>Modern models tokenize more than text:</p>
+<ul>
+<li><strong>Text</strong>: Subword tokenization (BPE, WordPiece)</li>
+<li><strong>Images</strong>: Patch-based (e.g., ViT) - split into 16x16 patches</li>
+<li><strong>Video</strong>: Frame + patch tokenization</li>
+<li><strong>Audio</strong>: Spectrogram frames</li>
+</ul>
+<pre class="mermaid">graph LR
+    T[Text Input] --> TT[Text Tokenizer]
+    I[Image Input] --> IT[Image Tokenizer]
+    A[Audio Input] --> AT[Audio Tokenizer]
+    V[Video Input] --> VT[Video Tokenizer]
+
+    TT --> U[Unified Token Sequence]
+    IT --> U
+    AT --> U
+    VT --> U
+
+    U --> M[Transformer Model]</pre></section>
+<section><h2>Vocabulary Size Trade-offs</h2>
+<p><strong>Smaller Vocabulary:</strong></p>
+<ul>
+<li>Faster training and inference</li>
+<li>Lower memory usage</li>
+<li>Longer sequences</li>
+</ul>
+<p><strong>Larger Vocabulary:</strong></p>
+<ul>
+<li>Shorter sequences</li>
+<li>Better semantic representation</li>
+<li>Higher memory usage</li>
+</ul>
+</section>
+<section><h2>Vocabulary Impact on Parameters</h2>
+<p>$
+\text{Embedding Matrix} = V \times E
+$</p>
+<p>$
+\text{Output Layer} = H \times V
+$</p>
+<p>Where $V$ = vocabulary size, $E$ = embedding dimension, $H$ = hidden dimension</p>
+</section>
+<section><h2>Model Vocabulary Comparison</h2>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Vocabulary Size</th>
+<th>Tokenizer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GPT-2</td>
+<td>50,257</td>
+<td>BPE</td>
+</tr>
+<tr>
+<td>GPT-4</td>
+<td>~100,000</td>
+<td>BPE variant</td>
+</tr>
+<tr>
+<td>BERT</td>
+<td>30,522</td>
+<td>WordPiece</td>
+</tr>
+<tr>
+<td>LLaMA</td>
+<td>32,000</td>
+<td>SentencePiece</td>
+</tr>
+<tr>
+<td>Claude</td>
+<td>~100,000</td>
+<td>BPE variant</td>
+</tr>
+</tbody></table>
+</section>
+<section><h2>References</h2>
+<ol>
+<li><a href="https://www.youtube.com/watch?v=zduSFxRajkE">Let&#39;s Build the GPT Tokenizer</a> - Andrej Karpathy</li>
+<li><a href="https://huggingface.co/spaces/HuggingFaceTB/smol-training-playbook#the-tokenizer">The Smol Training Playbook</a></li>
+<li><a href="https://arxiv.org/abs/1508.07909">Neural Machine Translation of Rare Words with Subword Units</a> - Sennrich et al., 2016</li>
+</ol>
+</section>
+<section><h2>Thank You</h2>
+<p>Questions?</p>
+</section>
+  </div>
+</div>
+
+
+
+<script src="../reveal/dist/reveal.js"></script>
+<script src="../reveal/plugin/highlight/highlight.js"></script>
+<script src="../reveal/plugin/math/math.js"></script>
+<script src="../reveal/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin@11.6.0/plugin/mermaid/mermaid.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js"></script>
+
+
+<script>
+
+Reveal.initialize({
+  hash: true,
+  slideNumber: "c/t",
+  center: false,
+  transition: "none",
+  controls: true,
+  controlsTutorial: true,
+  index:true,
+  controlsLayout: "bottom-right",
+  controlsBackArrows: "faded",
+  mermaid:{
+    
+  },
+  menu: {
+    side: "left",
+    titleSelector: "h1, h2, h3",
+    useTextContentForMissingTitles: true
+  },
+  plugins: [ RevealHighlight, RevealMath, RevealNotes, RevealMermaid, RevealMenu ]
+});
+
+</script>
+
+</body>
+</html>
