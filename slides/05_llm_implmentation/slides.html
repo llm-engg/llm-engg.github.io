@@ -1,0 +1,706 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPT-2</title>
+
+  <link rel="stylesheet" href="../reveal/dist/reveal.css">
+  <link rel="stylesheet" href="../reveal/dist/theme/solarized.css">
+  <!-- PDF export support: append ?print-pdf to URL, then Ctrl+P -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi)
+      ? '../reveal/dist/print/pdf.css'
+      : '../reveal/dist/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+
+  <!-- Bigger fonts for classrooms -->
+  <style>
+    /* Responsive: fill viewport */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    .reveal {
+      font-size: 32px;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .reveal .slides {
+      width: 90% !important;
+      max-width: 90% !important;
+      margin-left: 5% !important;
+      margin-right: 5% !important;
+    }
+    .reveal code {
+      font-size: 1.0em;
+    }
+    /* Left-align all slide content */
+    .reveal .slides section {
+      text-align: left;
+    }
+    .reveal .slides section ul,
+    .reveal .slides section ol {
+      display: block;
+      text-align: left;
+    }
+    .reveal .slides section li {
+      text-align: left;
+    }
+    /* Center-align headings */
+    .reveal .slides section h1,
+    .reveal .slides section h2,
+    .reveal .slides section h3 {
+      text-align: center;
+    }
+    /* Center-align tables */
+    .reveal .slides section table {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* Footer styling */
+    .reveal .footer {
+      position: absolute;
+      bottom: 1em;
+      left: 1em;
+      font-size: 0.5em;
+      color: #657b83;
+      z-index: 100;
+    }
+    /* Constrain slides to prevent overflow */
+    .reveal .slides section {
+      overflow: hidden !important;
+      height: 100% !important;
+      box-sizing: border-box !important;
+    }
+    /* Image sizing and background blend for solarized theme */
+    .reveal .slides section img,
+    .reveal .slides section p img,
+    .reveal img {
+      max-width: 100% !important;
+      max-height: 450px !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: contain !important;
+      display: block !important;
+      margin: 0.04em auto !important;
+      background-color: #fdf6e3 !important;
+      padding: 0.04em !important;
+      border-radius: 2px !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    /* Allow side-by-side images in flex containers */
+    .reveal .slides section [style*="display: flex"] img,
+    .reveal .slides section [style*="display:flex"] img {
+      display: inline-block !important;
+      margin: 0 !important;
+      max-width: 100% !important;
+      max-height: 500px !important;
+    }
+    /* Float images for text wrap */
+    .reveal .slides section img.float-right {
+      float: right !important;
+      margin: 0 0 0.5em 1em !important;
+      max-width: 50% !important;
+      max-height: 500px !important;
+    }
+    .reveal .slides section img.float-left {
+      float: left !important;
+      margin: 0 1em 0.5em 0 !important;
+      max-width: 50% !important;
+      max-height: 500px !important;
+    }
+    /* Centered slide for section breaks */
+    .reveal .slides section .center-slide {
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      text-align: center !important;
+      width: 90% !important;
+    }
+    .reveal .slides section .center-slide h1,
+    .reveal .slides section .center-slide h2,
+    .reveal .slides section .center-slide h3,
+    .reveal .slides section .center-slide p {
+      text-align: center !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+    /* Fragment animation: semi-fade-out */
+    .reveal .slides section .fragment.semi-fade-out {
+      opacity: 1;
+      visibility: inherit;
+      transition: opacity 0.3s ease;
+    }
+    .reveal .slides section .fragment.semi-fade-out.visible {
+      opacity: 0.3;
+    }
+    /* Fragment animation: grow with highlight */
+    .reveal .slides section .fragment.grow {
+      opacity: 1;
+      visibility: inherit;
+      transition: transform 0.3s ease;
+    }
+    .reveal .slides section .fragment.grow.visible {
+      transform: scale(1.0);
+    }
+    /* Course header styling */
+    .course-header {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      font-size: 16px;
+      opacity: 0.6;
+    }
+  </style>
+
+  <link rel="stylesheet" href="../reveal/plugin/highlight/monokai.css">
+  <!-- Chalkboard plugin -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chalkboard/style.css">
+</head>
+<body>
+
+
+<div class="reveal">
+  <div class="footer"> <a href="https://llm-engg.github.io">Large Language Models : A Hands-on Approach – CCE, IISc</a></div>
+  <div class="slides">
+    <section><div class="center-slide">
+
+<h1>LLMs : A Hands-on Approach</h1>
+<h3>GPT - 2  : Model Architecture and Implementation</h3>
+</div>
+
+</section>
+<section><h2>Topics Covered</h2>
+<ul>
+<li><strong>Transformer Architecture Review</strong><ul>
+<li>Self-Attention Mechanism Recap</li>
+<li>Causal Masking in Decoder-Only Models</li>
+<li>Multi-Head Attention</li>
+</ul>
+</li>
+<li><strong>GPT-2 Architecture</strong><ul>
+<li>Layer Normalization</li>
+<li>Self-Attention in GPT-2</li>
+<li>Feed-Forward Network (FFN)</li>
+<li>Residual Connections</li>
+</ul>
+</li>
+<li><strong>Implementing GPT-2 from Scratch</strong></li>
+</ul>
+</section>
+<section><h2>Models of the Week</h2>
+<p><strong><a href="https://huggingface.co/stepfun-ai/Step-3.5-Flash">stepfun-ai/Step-3.5-Flash</a></strong></p>
+<ul>
+<li>SOTA Open Source model</li>
+<li>199B parameters, Vocabulary Size - 128K, Context Length - 256K</li>
+<li>45 Transformer layers</li>
+<li>Attention<ul>
+<li>num_attention_heads: 64</li>
+<li>head_dim: 128</li>
+</ul>
+</li>
+<li>Coding and Agentic use</li>
+</ul>
+<p><strong><a href="https://huggingface.co/arcee-ai/Trinity-Large-Preview">arcee-ai/Trinity-Large-Preview</a></strong></p>
+<ul>
+<li>~398B parameters, Vocabulary Size - 200192, Context Length - 8192, 512K</li>
+<li>60 Transformer layers</li>
+<li>Attention<ul>
+<li>num_attention_heads: 48</li>
+<li>head_dim: 128</li>
+</ul>
+</li>
+</ul>
+</section>
+<section><h2>Recap : Self-Attention Mechanism</h2>
+<ul>
+<li>The token embeddings alone are not sufficient.</li>
+<li>We want dynamic, context-dependent representations of each token.</li>
+<li>Self-attention allows each token to attend to all other tokens in the sequence to gather relevant context.</li>
+</ul>
+<p><video controls src="images/QKVMotivationScene.mp4" title="Title"></video></p>
+</section>
+<section><h2>Recap : Self-Attention Mechanism</h2>
+<p>We project the token embedding to three learned projection spaces:</p>
+<p><strong>PROJECTION === &quot;Matrix Multiplication&quot;</strong></p>
+<ul>
+<li><strong>Query (Q)</strong>: $q_i = x_i W_q$</li>
+<li><strong>Key (K)</strong>: $k_i = x_i W_k$</li>
+<li><strong>Value (V)</strong>: $v_i = x_i W_v$</li>
+</ul>
+<p><img src="images/qkv.png" alt="alt text"></p>
+</section>
+<section><h2>Introducing Q, K, V vectors</h2>
+<p>We transform each input token into three different vectors:</p>
+<ul>
+<li>Token embedding: x_i</li>
+<li><strong>Query (Q)</strong>: What am I looking for?</li>
+<li><strong>Key (K)</strong>: What do I have to offer?</li>
+<li><strong>Value (V)</strong>: What information do I carry?</li>
+</ul>
+<p><img src="images/projections.png" alt="alt text"></p>
+</section>
+<section><h2>Scaled Dot-Product Attention</h2>
+<div style="text-align: center; padding: 20px;">
+
+<p>$
+\mathbf{Attention}(Q, K, V) = \mathbf{softmax}\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V
+$</p>
+</div>
+
+<ul>
+<li>$d_k \text{ is the dimensionality of the key vectors (used for scaling).}$</li>
+<li>without $\sqrt{d_k}$, dot products grow with dimension → softmax saturates → tiny gradients.</li>
+</ul>
+<div> <br> </div>
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/attn-0.png" style="max-width: 50%;">
+    </div>
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/attn-1.png" style="max-width: 50%;">
+    </div>
+</div>
+
+</section>
+<section><h2>Causal  Attention (Masking) in Decoder-Only Models</h2>
+<img src="images/masked_attention.png" class="float-right">
+
+<ul>
+<li>In decoder-only models, we predict next token based on previous tokens</li>
+<li><strong>Note</strong> : During training, we predict all tokens in parallel</li>
+<li>To prevent information leakage from future tokens, we apply a causal mask to the attention scores</li>
+<li>At all time steps, each token can only attend to earlier tokens and itself</li>
+</ul>
+</section>
+<section><h2>Multi-Head Attention</h2>
+<h3>Stacking multiple attention heads</h3>
+<ul>
+<li>Perform multiple self-attention calculations in parallel</li>
+<li>Independent set of learned weight matrices (Wq, Wk, Wv) and  output vector for each head.</li>
+<li>Concatenate all to produce one context vector for each token.</li>
+<li>Multiple heads -&gt; attend to input sentence simultaneously -&gt; different relationships and patterns in the data.</li>
+</ul>
+<p>$ MultiHead(Q,K,V) = Concat(head_1,...,head_h)W_O $ </p>
+<p>where $ head_i = Attention(QW_{q_i}, KW_{k_i}, VW_{v_i}) $</p>
+<img src="images/stacked-heads.png" >
+
+
+</section>
+<section><div class="center-slide">
+
+<h1>GPT-2 Model</h1>
+<h3>Architecture and Implementation</h3>
+</div>
+
+</section>
+<section><h2>Generative Pre-trained Transformer (GPT)</h2>
+<ul>
+<li>Decoder only Transformer architecture</li>
+<li>Pre-trained on large corpus of text data (40GB of internet text) using self-supervised next-token prediction.</li>
+<li>Demonstrated  that general purpose models for textual understanding are incredibly effective without using any task-specific architectures or modifications</li>
+</ul>
+<p><img src="images/lm.png" alt="alt text"></p>
+</section>
+<section><h2>Language Modeling Objective</h2>
+<ul>
+<li><p>Predict the next token in a sequence given all previous tokens</p>
+</li>
+<li><p><strong>P(x) = ∏ P(x_i | x_1, ..., x_{i-1})</strong></p>
+</li>
+</ul>
+<p><img src="https://jalammar.github.io/images/xlnet/gpt-2-autoregression-2.gif" alt="LM"></p>
+</section>
+<section><h2>Auto-regressive Text Generation</h2>
+<ul>
+<li>Given a prompt, GPT-2 generates text one token at a time</li>
+<li>At each step, the model predicts the next token based on all previous tokens</li>
+<li>The predicted token is appended to the input sequence for the next prediction</li>
+</ul>
+<p><img src="images/lm-2.png" alt="alt text"></p>
+</section>
+<section><h2>GPT-2 Architecture</h2>
+<ul>
+<li>GPT model stacks multiple transformer decoder blocks</li>
+<li>Each block has:<ul>
+<li>Masked Multi-Head Self-Attention layer</li>
+<li>Feed-Forward Neural Network (FFN)</li>
+<li>Layer Normalization and Residual Connections</li>
+</ul>
+</li>
+<li>Final output layer</li>
+</ul>
+<p><img src="https://jalammar.github.io/images/xlnet/transformer-decoder-intro.png" alt=""></p>
+<p><span style="font-size: small;">Ref : Radford et al., 2019 &quot;Language Models are Unsupervised Multitask Learners&quot; </span></p>
+</section>
+<section><h2>Detailed GPT-2 Architecture</h2>
+<div> <br> </div>
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/gpt2.png" style="max-width: 50%;">
+    </div>
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/sizes.png" style="max-width: 50%;">
+    </div>
+
+</div>
+
+<pre><code class="language-python">
+GPT_CONFIG_124M = {
+&quot;vocab_size&quot;: 50257, # 50000 BPE merges + 256 byte tokens + 1 special token
+&quot;context_length&quot;: 1024, # max length of input sequences
+&quot;emb_dim&quot;: 768,
+&quot;n_heads&quot;: 12,
+&quot;n_layers&quot;: 12,
+&quot;drop_rate&quot;: 0.1,
+&quot;qkv_bias&quot;: False
+}
+</code></pre>
+</section>
+<section><h2>Inputs to the GPT-2 Model</h2>
+<ul>
+<li>Input Text -&gt; Tokenization -&gt; Token IDs</li>
+<li>Input Encodings:<ul>
+<li>Token Embeddings: Represent the meaning of each token</li>
+<li>Positional Encodings: Represent the position of each token in the sequence</li>
+</ul>
+</li>
+<li>Combined to form the input to the first transformer block</li>
+</ul>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/wte.png" style="max-width: 50%;">
+    </div>
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/wpe.png" style="max-width: 50%;">
+    </div>
+
+</div>
+
+
+</section>
+<section><h2>Inputs to the GPT-2 Model</h2>
+<ul>
+<li>Transformers have no inherent notion of sequence order, Without positional info, &#39;dog bites man&#39; = &#39;man bites dog&#39; to the model</li>
+<li>GPT-2 uses LEARNED positional embeddings (vs sinusoidal in original Transformer)</li>
+<li>Both embeddings are simply added element-wise (not concatenated)</li>
+</ul>
+<p><img src="images/inputs.png" alt="alt text"></p>
+</section>
+<section><h2>Layer Normalization</h2>
+<ul>
+<li>Gradient explosion/vanishing issues in deep networks</li>
+<li>Normalizes (centers) inputs across features for <strong>each token</strong> to have zero mean and unit variance</li>
+<li>Stabilizes training and improves convergence</li>
+<li>In GPT-2, applied before self-attention and feed-forward layers (Pre-LN)</li>
+</ul>
+<p><img src="images/ln.png" alt="alt text"></p>
+</section>
+<section><h2>Layer Normalization</h2>
+<ul>
+<li><strong>Normalization</strong></li>
+</ul>
+<div style="text-align: center"> <br>
+    $
+    \hat x = \frac{x - \mu}{\sigma + \epsilon} 
+    $
+
+</div>
+
+<ul>
+<li><strong>LayerNorm formula:</strong></li>
+</ul>
+<div style="text-align: center"> <br>
+
+<p>$
+\text{LayerNorm}(x) = \frac{x - \mu}{\sigma + \epsilon} \cdot \gamma + \beta
+$</p>
+</div>
+
+<p>Where:</p>
+<ul>
+<li>x: input vector for a token</li>
+<li>μ: mean of the elements in x</li>
+<li>σ: standard deviation of the elements in x</li>
+<li>ε: small constant for numerical stability</li>
+<li>γ, β: learnable parameters for scaling and shifting</li>
+</ul>
+</section>
+<section><h2>Self-Attention in GPT-2</h2>
+<ul>
+<li>Multi-Head Self-Attention mechanism</li>
+<li>Attention heads : 12</li>
+<li>Head dimension : 64</li>
+<li>Context length : 1024 tokens</li>
+<li>Context Vector Size per token : 768 (12 heads * 64 dim)</li>
+</ul>
+</section>
+<section><h2>Self-Attention in GPT-2</h2>
+<ul>
+<li><p>Each Transformer Block contains </p>
+<ul>
+<li>A Multi-Head Self-Attention layer</li>
+<li>Each head computes attention using Q, K, V</li>
+<li>Causal mask applied to prevent attending to future tokens and dropout for regularization</li>
+</ul>
+  <div style="margin-bottom: 30px;"></div></li>
+</ul>
+<!-- Self-Attention Implementation Steps -->
+<div class="r-stack">
+    <img src="images/sa-1.png" class="fragment fade-out" data-fragment-index="0">
+    <img src="images/sa-2.png" class="fragment current-visible" data-fragment-index="0">
+    <img src="images/sa-3.png" class="fragment current-visible" data-fragment-index="1">
+    <img src="images/sa-4.png" class="fragment current-visible" data-fragment-index="2">
+    <img src="images/sa-5.png" class="fragment current-visible" data-fragment-index="3">
+    <img src="images/sa-6.png" class="fragment current-visible" data-fragment-index="4">
+    <img src="images/sa-7.png" class="fragment current-visible" data-fragment-index="5">
+    <img src="images/sa-8.png" class="fragment" data-fragment-index="6">
+</div>
+
+
+</section>
+<section><h2>Feed-Forward  Network (FFN)</h2>
+<ul>
+<li>A Feed-Forward Network (FFN) is applied independently to each token&#39;s representation after the self-attention layer.</li>
+<li>Affine transformation followed by a non-linear activation function.</li>
+</ul>
+<div style="margin-bottom: 30px;"></div>
+
+
+<p><img src="images/ffn-2.png" alt="alt text"></p>
+</section>
+<section><h2>Feed-Forward  Network (FFN)</h2>
+<ul>
+<li>A Feed-Forward Network (FFN) is applied independently to each token&#39;s representation after the self-attention layer.</li>
+<li>Affine transformation followed by a non-linear activation function.</li>
+</ul>
+<div style="text-align: center"> <br>
+A Linear Layer is defined as: $ \text{Linear}(x) = xW^T + b $
+
+</div>
+
+<div style="margin-bottom: 30px;"></div>
+
+<p><img src="images/ffn-1.png" alt="alt text"></p>
+</section>
+<section><h2>Feed-Forward  Network (FFN) in GPT-2</h2>
+<ul>
+<li>Each transformer block contains a Feed-Forward Network (FFN)</li>
+<li>FFN has two linear layers with GELU activation in between</li>
+</ul>
+<div style="text-align: center"> <br>
+$
+\text{FFN}(x) = \text{Linear}_2(\text{GELU}(\text{Linear}_1(x)))
+$
+
+</div>
+
+<p><img src="images/ffn-3.png" alt="alt text"></p>
+</section>
+<section><h2>GELU Activation Function</h2>
+<ul>
+<li>Gaussian Error Linear Unit (GELU) is  used in GPT-2&#39;s FFN</li>
+<li>Smooth approximation of ReLU, allows small negative values to pass through</li>
+</ul>
+<div style="margin-bottom: 50px;"></div>
+
+<div style="text-align: center"> <br>
+$\mathbf{GELU(x) = 0.5 \cdot x \cdot (1 + \tanh[\sqrt{2/\pi}(x + 0.044715 \cdot x^3)])}$
+</div>
+
+<div style="margin-bottom: 30px;"></div>
+
+<p><img src="images/gelu.png" alt="alt text"></p>
+</section>
+<section><h2>FFN in GPT-2</h2>
+<ul>
+<li>Hidden layer size is <strong>4 times</strong> the input/output size (3072 for GPT-2 small)</li>
+<li>Applies non-linear transformation to <strong>each token&#39;s</strong> representation independently</li>
+</ul>
+<p><img src="images/ffn-4.png" alt="alt text"></p>
+<ul>
+<li><p>Why 4x?</p>
+<ul>
+<li>Empirically found to work well</li>
+</ul>
+</li>
+<li><p>FFN layers contain most of the model&#39;s parameters!</p>
+<ul>
+<li>For GPT-2 small: FFN has 768 -&gt; 3072 -&gt; 768, that&#39;s 768 * 3072 * 2 ≈ 4.7M params per block</li>
+<li>12 blocks × 4.7 M ≈ 56M params just in FFNs (almost half the model)</li>
+</ul>
+</li>
+</ul>
+</section>
+<section><h2>Residual Connections</h2>
+<ul>
+<li>Help mitigate vanishing gradient problems in deep networks</li>
+<li>Add the input of a layer to its output before passing to the next layer</li>
+<li>Gradients get progressively smaller as they backpropagate through layers</li>
+<li>Preserve information from earlier layers, helping training stability</li>
+</ul>
+<p><img src="images/res_layer-1.png" alt="alt text"></p>
+</section>
+<section><h2>Connecting it all : Transformer Block in GPT-2</h2>
+<ul>
+<li><p>We have implemented the key components of a transformer block used in GPT-2:</p>
+<ul>
+<li>✓ Layer Normalization</li>
+<li>✓ Multi-Head Self-Attention with Causal Masking</li>
+<li>✓ Residual Connection</li>
+<li>✓ Feed-Forward Network (FFN)</li>
+</ul>
+</li>
+<li><p>12 such blocks are stacked in GPT-2 small
+<img src="images/trf-block.png" alt="alt text"></p>
+</li>
+</ul>
+</section>
+<section><h2>Transformer Block in GPT-2</h2>
+<p><img src="images/trf-block-2.png" alt=""></p>
+<pre><code class="language-python">
+def forward(self, x):
+    shortcut = x
+    x = self.norm1(x)
+    x = self.att(x)
+    x = self.dropout(x)
+    x = x + shortcut
+
+    shortcut = x
+    x = self.norm2(x)
+    x = self.ff(x)
+    x = self.dropout(x)
+    x = x + shortcut
+
+    return x
+</code></pre>
+</section>
+<section><h2>GPT-2 Model Implementation</h2>
+<ul>
+<li>We have all the components to implement GPT-2 from scratch</li>
+<li>Token Embeddings + Positional Encodings</li>
+<li>Stack of Transformer Blocks</li>
+<li>Final Layer Normalization and Output Layer</li>
+</ul>
+<img src="images/gpt2-final.png" alt="GPT-2 Model Architecture">
+
+</section>
+<section><h2>GPT-2 Model Implementation</h2>
+<p><strong>Model Initialization</strong></p>
+<pre><code class="language-python">## GPT-2 Model Initialization pseudo-code
+tok_emb = nn.Embedding(vocab_size, emb_dim)
+pos_emb = nn.Embedding(context_length, emb_dim)
+drop_emb = nn.Dropout(drop_rate)
+trf_blocks = [TransformerBlock(cfg) for _ in range(n_layers)] # 
+final_norm = LayerNorm(emb_dim)
+out_head = nn.Linear(emb_dim, vocab_size, bias=False)
+</code></pre>
+<p><strong>Forward Pass</strong></p>
+<pre><code class="language-python">x = tok_embeds + pos_embeds
+x = self.drop_emb(x)
+x = self.trf_blocks(x)
+x = self.final_norm(x)
+logits = self.out_head(x)
+</code></pre>
+</section>
+<section><h2>GPT-2 Parameter Count</h2>
+<ul>
+<li>GPT-2 small has ~124M parameters</li>
+<li>Major contributors:<ul>
+<li>Token Embeddings: ~38M</li>
+<li>Transformer Blocks: ~85M<ul>
+<li>Self-Attention layers: ~23M</li>
+<li>Feed-Forward Networks: ~56M</li>
+</ul>
+</li>
+<li>Output Layer: ~38M</li>
+</ul>
+</li>
+<li>Most parameters are in embeddings and FFN layers</li>
+</ul>
+</section>
+<section><h2>Next Steps</h2>
+<ul>
+<li>Implement training loop with cross-entropy loss</li>
+<li>Integrate tokenizer for text input/output</li>
+<li>Load pretrained weights from HuggingFace for GPT-2</li>
+<li>Experiment with text generation</li>
+</ul>
+</section>
+<section><h2>References</h2>
+<ol>
+<li><a href="https://cameronrwolfe.substack.com/p/decoder-only-transformers-the-workhorse">Decoder-Only Transformers: The Workhorse of Generative LLMs</a></li>
+<li><a href="https://jalammar.github.io/illustrated-gpt2/">The Illustrated GPT-2 (Visualizing Transformer Language Models)</a></li>
+<li><a href="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf">GPT-2 Paper</a></li>
+<li><a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need Paper</a></li>
+<li>Build LLMs from Scratch, Sebastian Raschka, Manning Publications, 2025</li>
+</ol>
+</section>
+  </div>
+</div>
+
+
+
+<script src="../reveal/dist/reveal.js"></script>
+<script src="../reveal/plugin/markdown/markdown.js"></script>
+<script src="../reveal/plugin/highlight/highlight.js"></script>
+<script src="../reveal/plugin/math/math.js"></script>
+<script src="../reveal/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin@11.6.0/plugin/mermaid/mermaid.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js"></script>
+<!-- Chalkboard plugin -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chalkboard/plugin.js"></script>
+
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: "c/t",
+  center: false,
+  transition: "none",
+  controls: true,
+  controlsTutorial: true,
+  index:true,
+  controlsLayout: "bottom-right",
+  controlsBackArrows: "faded",
+  // Responsive: fill browser width
+  width: "100%",
+  height: "100%",
+  margin: 0.04,
+  minScale: 0.2,
+  maxScale: 2.0,
+  mermaid:{
+
+  },
+  menu: {
+    side: "left",
+    titleSelector: "h1, h2, h3",
+    useTextContentForMissingTitles: true
+  },
+  chalkboard: {
+    boardmarkerWidth: 4,
+    chalkWidth: 5,
+    chalkEffect: 0.5,
+    theme: "chalkboard",
+    transition: 800,
+    readOnly: false
+  },
+  plugins: [ RevealMarkdown, RevealHighlight, RevealMath, RevealNotes, RevealMermaid, RevealMenu, RevealChalkboard ]
+});
+
+</script>
+
+</body>
+</html>
