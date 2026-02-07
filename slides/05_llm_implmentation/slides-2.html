@@ -1,0 +1,616 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPT-2</title>
+
+  <link rel="stylesheet" href="../reveal/dist/reveal.css">
+  <link rel="stylesheet" href="../reveal/dist/theme/solarized.css">
+  <!-- PDF export support: append ?print-pdf to URL, then Ctrl+P -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi)
+      ? '../reveal/dist/print/pdf.css'
+      : '../reveal/dist/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+
+  <!-- Bigger fonts for classrooms -->
+  <style>
+    /* Responsive: fill viewport */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    .reveal {
+      font-size: 32px;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .reveal .slides {
+      width: 90% !important;
+      max-width: 90% !important;
+      margin-left: 5% !important;
+      margin-right: 5% !important;
+    }
+    .reveal code {
+      font-size: 1.0em;
+    }
+    /* Left-align all slide content */
+    .reveal .slides section {
+      text-align: left;
+    }
+    .reveal .slides section ul,
+    .reveal .slides section ol {
+      display: block;
+      text-align: left;
+    }
+    .reveal .slides section li {
+      text-align: left;
+    }
+    /* Center-align headings */
+    .reveal .slides section h1,
+    .reveal .slides section h2,
+    .reveal .slides section h3 {
+      text-align: center;
+    }
+    /* Center-align tables */
+    .reveal .slides section table {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* Footer styling */
+    .reveal .footer {
+      position: absolute;
+      bottom: 1em;
+      left: 1em;
+      font-size: 0.5em;
+      color: #657b83;
+      z-index: 100;
+    }
+    /* Constrain slides to prevent overflow */
+    .reveal .slides section {
+      overflow: hidden !important;
+      height: 100% !important;
+      box-sizing: border-box !important;
+    }
+    /* Image sizing and background blend for solarized theme */
+    .reveal .slides section img,
+    .reveal .slides section p img,
+    .reveal img {
+      max-width: 100% !important;
+      max-height: 600px !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: contain !important;
+      display: block !important;
+      margin: 0.04em auto !important;
+      background-color: #fdf6e3 !important;
+      padding: 0.04em !important;
+      border-radius: 2px !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    /* Allow side-by-side images in flex containers */
+    .reveal .slides section [style*="display: flex"] img,
+    .reveal .slides section [style*="display:flex"] img {
+      display: inline-block !important;
+      margin: 0 !important;
+      max-width: 100% !important;
+      max-height: 500px !important;
+    }
+    /* Float images for text wrap */
+    .reveal .slides section img.float-right {
+      float: right !important;
+      margin: 0 0 0.5em 1em !important;
+      max-width: 50% !important;
+      max-height: 500px !important;
+    }
+    .reveal .slides section img.float-left {
+      float: left !important;
+      margin: 0 1em 0.5em 0 !important;
+      max-width: 50% !important;
+      max-height: 500px !important;
+    }
+    /* Centered slide for section breaks */
+    .reveal .slides section .center-slide {
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      text-align: center !important;
+      width: 90% !important;
+    }
+    .reveal .slides section .center-slide h1,
+    .reveal .slides section .center-slide h2,
+    .reveal .slides section .center-slide h3,
+    .reveal .slides section .center-slide p {
+      text-align: center !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+    /* Fragment animation: semi-fade-out */
+    .reveal .slides section .fragment.semi-fade-out {
+      opacity: 1;
+      visibility: inherit;
+      transition: opacity 0.3s ease;
+    }
+    .reveal .slides section .fragment.semi-fade-out.visible {
+      opacity: 0.3;
+    }
+    /* Fragment animation: grow with highlight */
+    .reveal .slides section .fragment.grow {
+      opacity: 1;
+      visibility: inherit;
+      transition: transform 0.3s ease;
+    }
+    .reveal .slides section .fragment.grow.visible {
+      transform: scale(1.0);
+    }
+    /* Course header styling */
+    .course-header {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      font-size: 16px;
+      opacity: 0.6;
+    }
+  </style>
+
+  <link rel="stylesheet" href="../reveal/plugin/highlight/monokai.css">
+  <!-- Chalkboard plugin -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chalkboard/style.css">
+</head>
+<body>
+
+
+<div class="reveal">
+  <div class="footer"> <a href="https://llm-engg.github.io">Large Language Models : A Hands-on Approach – CCE, IISc</a></div>
+  <div class="slides">
+    <section><div class="center-slide">
+
+<h1>LLMs : A Hands-on Approach</h1>
+<h3>GPT - 2  : Implementation and Training</h3>
+</div>
+
+</section>
+<section><h2>Topics Covered</h2>
+<ul>
+<li><p><strong>GPT-2 Architecture Review</strong></p>
+<ul>
+<li>Layer Normalization</li>
+<li>Self-Attention in GPT-2</li>
+<li>Feed-Forward Network (FFN)</li>
+<li>Residual Connections</li>
+</ul>
+</li>
+<li><p><strong>Training GPT-2</strong></p>
+<ul>
+<li>Text generation</li>
+<li>Greedy decoding loop</li>
+<li>Training loop</li>
+</ul>
+</li>
+</ul>
+</section>
+<section><h2>GPT-2 Architecture</h2>
+<ul>
+<li>GPT model stacks multiple transformer decoder blocks</li>
+<li>Each block has:<ul>
+<li>Masked Multi-Head Self-Attention layer</li>
+<li>Feed-Forward Neural Network (FFN)</li>
+<li>Layer Normalization and Residual Connections</li>
+</ul>
+</li>
+<li>Final output layer</li>
+</ul>
+<p><img src="images/trf-block-2.png" alt=""></p>
+</section>
+<section><h2>GPT-2 Architecture</h2>
+<ul>
+<li>12 Transformer blocks</li>
+<li>768-dimensional hidden states</li>
+<li>12 attention heads</li>
+<li>Vocabulary size: 50,257 tokens</li>
+</ul>
+<div class="center-slide">
+
+
+<p><img src="images/gpt2-final.png" alt=""></p>
+</div>
+
+</section>
+<section><div class="center-slide">
+
+<h2>Text Generation</h2>
+</div>
+
+</section>
+<section><h2>Autoregressive Text Generation</h2>
+<p>LLMs generate text <strong>one token at a time</strong> through an iterative process:</p>
+<ol>
+<li>Start with an input context (e.g., &quot;Hello, I am&quot;)</li>
+<li>Model predicts the next token probability distribution</li>
+<li>Select the next token (highest probability = greedy decoding)</li>
+<li>Append token to context</li>
+<li>Repeat until desired length</li>
+</ol>
+<p><img src="images/gen_steps.png" alt="alt text"></p>
+<p><strong>Key Insight</strong>: The model consumes its own previous outputs as future inputs - this is the <strong>autoregressive</strong> property.</p>
+</section>
+<section><h2>Logits to Token Selection</h2>
+<p>The GPT output is <strong>logits</strong>, not probabilities.</p>
+<ul>
+<li>Logits ∈ ℝ^V</li>
+<li>Softmax converts logits -&gt; probability distribution</li>
+<li>Argmax selects most likely token</li>
+</ul>
+<pre><code class="language-python">probas = torch.softmax(logits, dim=-1)
+token_id = torch.argmax(probas)
+</code></pre>
+<p><img src="images/output.png" alt="alt text"></p>
+</section>
+<section><h2>Understanding the Generation Flow</h2>
+<p><strong>Input → Token IDs → Model → Logits → Softmax → Token Selection → Output</strong></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Operation</th>
+<th>Shape Transformation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Tokenize input</td>
+<td>&quot;Hello, I am&quot; → [15496, 11, 314, 716]</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Model forward</td>
+<td>(1, 4) → (1, 4, 50257)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Extract last logits</td>
+<td>(1, 4, 50257) → (1, 50257)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Softmax</td>
+<td>logits → probabilities</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Argmax</td>
+<td>select token ID 257 → &quot;a&quot;</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Concatenate</td>
+<td>extend sequence for next iteration</td>
+</tr>
+</tbody></table>
+<img src="images/gen_details.png" style="width: 100%; height: auto;">
+
+</section>
+<section><h2>Greedy Decoding Loop</h2>
+<p>Greedy decoding selects the <strong>highest-probability token</strong> at each step.</p>
+<p>Properties:</p>
+<ul>
+<li>Deterministic</li>
+<li>Fast</li>
+<li>Often repetitive / dull</li>
+</ul>
+<p><img src="images/greedy.png" alt="alt text"></p>
+<p>Greedy decoding = always take the most confident step.</p>
+<ul>
+<li>Does Greedy Decoding produce best text?</li>
+<li>Why not generate whole sentences?</li>
+<li>How different from encoder and decoder models?</li>
+</ul>
+</section>
+<section><h2>Why Untrained Models Generate Gibberish</h2>
+<p>Before training:</p>
+<ul>
+<li>Weights are random</li>
+<li>Logits are random</li>
+<li>Token probabilities are near-uniform</li>
+</ul>
+<p>With vocab size = 50,257:</p>
+<blockquote>
+<p>Initial probability ≈ 1 / 50,257 ≈ 0.00002</p>
+</blockquote>
+<p>Thus generated text is effectively random noise.</p>
+</section>
+<section><div class="center-slide">
+
+<h2>Training the GPT</h2>
+</div>
+
+
+</section>
+<section><h2>Training Overview</h2>
+<ul>
+<li>Training Loop<ul>
+<li>Loss Optimization</li>
+<li>Data Loading</li>
+</ul>
+</li>
+<li>Model Evaluation</li>
+<li>Using Pretrained weights</li>
+</ul>
+</section>
+<section><h2>Evaluating Generative Text Models</h2>
+<h3>Why Evaluation Matters</h3>
+<p>Before training, we need metrics to:</p>
+<ul>
+<li>Measure model performance quantitatively</li>
+<li>Track training progress</li>
+<li>Detect overfitting</li>
+<li>Compare different models</li>
+</ul>
+<p><strong>Key Challenge</strong>: How do we numerically assess the quality of generated text?</p>
+<p><strong>Solution</strong>: Use the model&#39;s own probability estimates vs true probabilties for the &quot;correct&quot; next tokens.</p>
+</section>
+<section><h2>Cross Entropy Loss for Language Modeling</h2>
+<p>The training objective: <strong>Maximize the probability of the correct next token</strong></p>
+<p>Given:</p>
+<ul>
+<li><strong>Inputs</strong>: Token IDs the model sees</li>
+<li><strong>Targets</strong>: Token IDs the model should predict (inputs shifted by 1)</li>
+</ul>
+<pre><code class="language-python">inputs = torch.tensor([[16833, 3626, 6100],   # [&quot;every effort moves&quot;,
+                       [40,    1107, 588]])    #  &quot;I really like&quot;]
+
+targets = torch.tensor([[3626, 6100, 345  ],  # [&quot; effort moves you&quot;,
+                        [1107, 588, 11311]])  #  &quot; really like chocolate&quot;]
+</code></pre>
+<div style="margin-top: 20px; margin-bottom: 20px;">
+</div>
+
+<p><strong>Cross-entropy</strong> loss measures how well the model&#39;s predicted probabilities match the true next tokens.</p>
+<p><strong>Mathematical Formula:</strong></p>
+<p>$
+\text{Loss} = -\frac{1}{N} \sum_{i=1}^{N} \log P(x_i^{\text{target}})
+$</p>
+<p>Where:</p>
+<ul>
+<li>$N$ = total number of tokens</li>
+<li>$P(x_i^{\text{target}})$ = predicted probability for the correct token at position $i$</li>
+<li>The negative sign converts it to a loss (we want to maximize probability = minimize negative log probability)</li>
+</ul>
+</section>
+<section><h2>Calculating Cross Entropy Loss</h2>
+<p><img src="images/ce-1.png" alt="alt text"></p>
+</section>
+<section><h2>Understanding Cross Entropy Loss</h2>
+<p><strong>Step-by-step computation</strong></p>
+<ol>
+<li><strong>Get logits</strong> from model: shape <code>(batch, seq_len, vocab_size)</code></li>
+<li><strong>Apply softmax</strong> to get probabilities</li>
+<li><strong>Extract target probabilities</strong>: probability assigned to correct tokens</li>
+<li><strong>Apply logarithm</strong>: log probabilities are more numerically stable</li>
+<li><strong>Average</strong> over all tokens</li>
+<li><strong>Negate</strong>: we minimize negative log-likelihood</li>
+</ol>
+<h2></h2>
+<h2></h2>
+<p><strong>In PyTorch, we can compute this in one step using <code>cross_entropy</code> function:</strong></p>
+<pre><code class="language-python"># PyTorch does all 6 steps in one function:
+loss = torch.nn.functional.cross_entropy(logits_flat, targets_flat)
+</code></pre>
+<p><strong>Initial loss</strong> (untrained model): ~10.99</p>
+<p><strong>Target loss</strong> (well-trained): approaches ~0</p>
+</section>
+<section><h2>Perplexity: Interpretable Metric</h2>
+<p><strong>Perplexity</strong> = <code>exp(cross_entropy_loss)</code></p>
+<p>Interpretation: The effective vocabulary size the model is &quot;uncertain&quot; about at each step.</p>
+<p>Interpretation:</p>
+<ul>
+<li>Effective number of equally likely tokens</li>
+<li>Lower is better</li>
+</ul>
+<pre><code class="language-python">perplexity = torch.exp(loss)
+# For initial loss of 10.79: perplexity ≈ 48,725
+# Meaning: model is unsure among ~48,725 tokens
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Loss</th>
+<th>Perplexity</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>10.79</td>
+<td>48,725</td>
+<td>Random guessing (vocab size: 50,257)</td>
+</tr>
+<tr>
+<td>5.0</td>
+<td>148</td>
+<td>Moderate uncertainty</td>
+</tr>
+<tr>
+<td>2.0</td>
+<td>7.4</td>
+<td>Low uncertainty</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>1.65</td>
+<td>Very confident</td>
+</tr>
+</tbody></table>
+</section>
+<section><h2>Processing Data for Training</h2>
+<ul>
+<li>Given a text corpus<ul>
+<li>split into training and validation sets</li>
+<li>for each set encode it to token IDs</li>
+<li>create input-target pairs</li>
+</ul>
+</li>
+<li>Inputs and targets are created by shifting token IDs by one position</li>
+</ul>
+<p><img src="images/data-loading.png" alt="alt text"></p>
+<p>In Pytorch</p>
+<ul>
+<li><strong>Dataset</strong> Encodes all text to token IDs</li>
+<li><strong>DataLoader</strong> handles batching and shuffling:</li>
+</ul>
+</section>
+<section><h2>Training vs Validation Loss</h2>
+<p>During training we split data into :</p>
+<ul>
+<li>Training set</li>
+<li>Validation set</li>
+</ul>
+<pre><code class="language-python">train_ratio = 0.90
+split_idx = int(train_ratio * len(text_data))
+train_data = text_data[:split_idx]
+val_data = text_data[split_idx:]
+</code></pre>
+<p><strong>What to watch for:</strong></p>
+<ul>
+<li>Training loss <strong>decreases</strong>, Validation loss <strong>decreases</strong> -&gt; Model is learning and generalizing</li>
+<li>Training loss <strong>decreases</strong>, Validation loss <strong>increases</strong> -&gt; <strong>OVERFITTING!</strong></li>
+</ul>
+</section>
+<section><h2>The Training Loop</h2>
+<p>During Training we update model weights to minimize loss through <strong>backpropagation</strong> and <strong>gradient descent</strong>.</p>
+<p><img src="images/train-loop.png" alt="alt text"></p>
+<p><strong>Training Loop in code</strong></p>
+<pre><code class="language-python">
+    for epoch in range(num_epochs):
+        model.train()  # Enable dropout
+
+        for input_batch, target_batch in train_loader:
+            optimizer.zero_grad()  # Reset gradients
+
+            loss = calc_loss_batch(input_batch, target_batch, model, device)
+            loss.backward()        # Calculate gradients
+            optimizer.step()       # Update weights
+</code></pre>
+</section>
+<section><h2>Loading and Saving Model Weights</h2>
+<p><strong>We must save trained models to:</strong></p>
+<ul>
+<li>Avoid retraining</li>
+<li>Share models with others</li>
+<li>Resume training later</li>
+<li>Deploy to production</li>
+</ul>
+<pre><code class="language-python"># ============ SAVE ============
+
+torch.save(model.state_dict(), &quot;model.pth&quot;)
+
+# Save model + optimizer (for resuming training)
+torch.save({
+    &quot;model_state_dict&quot;: model.state_dict(),
+    &quot;optimizer_state_dict&quot;: optimizer.state_dict(),
+}, &quot;model_and_optimizer.pth&quot;)
+
+
+# ============ LOAD ============
+# Load weights into fresh model
+model = GPTModel(GPT_CONFIG_124M)
+model.load_state_dict(torch.load(&quot;model.pth&quot;, map_location=device))
+model.eval()  # Set to evaluation mode
+
+# Resume training
+checkpoint = torch.load(&quot;model_and_optimizer.pth&quot;, map_location=device)
+model = GPTModel(GPT_CONFIG_124M)
+model.load_state_dict(checkpoint[&quot;model_state_dict&quot;])
+
+optimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.1)
+optimizer.load_state_dict(checkpoint[&quot;optimizer_state_dict&quot;])
+model.train()  # Set to training mode
+</code></pre>
+</section>
+<section><h2>LLM Loss Surfaces</h2>
+<p>LLM training optimizes a <strong>high-dimensional non-convex loss surface</strong> defined by:</p>
+<blockquote>
+<p>L(θ) = −E[log p_θ(tokenₜ₊₁ | contextₜ)]</p>
+</blockquote>
+<p>Key properties:</p>
+<ul>
+<li>Billions of parameters</li>
+<li>Extremely overparameterized</li>
+<li>Many equivalent minima</li>
+<li>Flat basins dominate</li>
+</ul>
+<p>More details in :</p>
+<ul>
+<li><a href="https://arxiv.org/html/2505.17646v2">Unveiling the Basin-Like Loss Landscape in Large Language Models</a></li>
+<li><a href="https://www.youtube.com/watch?v=lyZorUc8Gm4">Visualizing the Loss Landscape of Neural Nets</a></li>
+</ul>
+</section>
+<section><div class="center-slide">
+
+<h3>Questions?</h3>
+</div></section>
+  </div>
+</div>
+
+
+
+<script src="../reveal/dist/reveal.js"></script>
+<script src="../reveal/plugin/markdown/markdown.js"></script>
+<script src="../reveal/plugin/highlight/highlight.js"></script>
+<script src="../reveal/plugin/math/math.js"></script>
+<script src="../reveal/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin@11.6.0/plugin/mermaid/mermaid.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js"></script>
+<!-- Chalkboard plugin -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chalkboard/plugin.js"></script>
+
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: "c/t",
+  center: false,
+  transition: "none",
+  controls: true,
+  controlsTutorial: true,
+  index:true,
+  controlsLayout: "bottom-right",
+  controlsBackArrows: "faded",
+  // Responsive: fill browser width
+  width: "100%",
+  height: "100%",
+  margin: 0.04,
+  minScale: 0.2,
+  maxScale: 2.0,
+  mermaid:{
+
+  },
+  menu: {
+    side: "left",
+    titleSelector: "h1, h2, h3",
+    useTextContentForMissingTitles: true
+  },
+  chalkboard: {
+    boardmarkerWidth: 4,
+    chalkWidth: 5,
+    chalkEffect: 0.5,
+    theme: "chalkboard",
+    transition: 800,
+    readOnly: false
+  },
+  plugins: [ RevealMarkdown, RevealHighlight, RevealMath, RevealNotes, RevealMermaid, RevealMenu, RevealChalkboard ]
+});
+
+</script>
+
+</body>
+</html>
