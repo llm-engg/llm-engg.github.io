@@ -1,0 +1,2020 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A comprehensive hands-on course on Large Language Models for industry professionals">
+      
+      
+      
+        <link rel="canonical" href="https://llm-engg.github.io/slides/06_modern_architectures/summary/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.21">
+    
+    
+      
+        <title>Modern Transformer Architecture Variants - Large Language Models - A Hands-on Approach</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.2a3383ac.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-LLD65KQHZH"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-LLD65KQHZH",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-LLD65KQHZH",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#modern-transformer-architecture-variants" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Large Language Models - A Hands-on Approach" class="md-header__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Large Language Models - A Hands-on Approach
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Modern Transformer Architecture Variants
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../schedule/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Schedule
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../assignments/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Assignments and Labs
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Large Language Models - A Hands-on Approach" class="md-nav__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Large Language Models - A Hands-on Approach
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../schedule/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Schedule
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../assignments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Assignments and Labs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview-methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview &amp; Methodology
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-architecture-variations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Part 1: Architecture Variations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: Architecture Variations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-pre-norm-vs-post-norm-universal-consensus" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.1 Pre-Norm vs Post-Norm (Universal consensus)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.1 Pre-Norm vs Post-Norm (Universal consensus)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#student-questions-from-the-cs336-lecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Student Questions (from the CS336 lecture)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-questions-for-students" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Questions for Students
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-layernorm-vs-rmsnorm-strong-consensus-toward-rmsnorm" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2 LayerNorm vs RMSNorm (Strong consensus toward RMSNorm)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.2 LayerNorm vs RMSNorm (Strong consensus toward RMSNorm)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#student-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Student Questions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-questions-for-students_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Questions for Students
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-dropping-bias-terms-universal-trend" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.3 Dropping Bias Terms (Universal trend)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.3 Dropping Bias Terms (Universal trend)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-questions-for-students_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Questions for Students
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-activations-gated-linear-units-strong-trend-toward-swiglugeglu" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.4 Activations &amp; Gated Linear Units (Strong trend toward SwiGLU/GeGLU)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.4 Activations &amp; Gated Linear Units (Strong trend toward SwiGLU/GeGLU)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#student-questions-from-the-cs336-lecture_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Student Questions (from the CS336 lecture)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-questions-for-students_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Questions for Students
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-serial-vs-parallel-layers-minor-variation" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.5 Serial vs Parallel Layers (Minor variation)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.5 Serial vs Parallel Layers (Minor variation)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#student-questions-from-the-cs336-lecture_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Student Questions (from the CS336 lecture)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-questions-for-students_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Questions for Students
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-position-embeddings-converged-to-rope" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.6 Position Embeddings (Converged to RoPE)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Position Embeddings (Converged to RoPE)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#student-questions-from-the-cs336-lecture_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Student Questions (from the CS336 lecture)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-questions-for-students_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Questions for Students
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-hyperparameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Part 2: Hyperparameters
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: Hyperparameters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-ffn-dimension-ratio-d_ff-4-cdot-d_model-or-83-for-glus" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1 FFN Dimension Ratio: $d_{ff} = 4 \cdot d_{model}$ (or 8/3 for GLUs)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1 FFN Dimension Ratio: $d_{ff} = 4 \cdot d_{model}$ (or 8/3 for GLUs)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-questions-for-students_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Questions for Students
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-head-dimension-ratio-d_head-times-n_heads-d_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2 Head Dimension Ratio: $d_{head} \times n_{heads} = d_{model}$
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 Head Dimension Ratio: $d_{head} \times n_{heads} = d_{model}$">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-questions-for-students_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Questions for Students
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-aspect-ratio-d_model-n_layers-approx-100-200" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.3 Aspect Ratio: $d_{model} / n_{layers} \approx 100-200$
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.3 Aspect Ratio: $d_{model} / n_{layers} \approx 100-200$">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-questions-for-students_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Questions for Students
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-vocabulary-size" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.4 Vocabulary Size
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.4 Vocabulary Size">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#student-questions-from-the-cs336-lecture_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Student Questions (from the CS336 lecture)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-questions-for-students_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Questions for Students
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-regularization-weight-decay-yes-dropout-no" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.5 Regularization: Weight Decay Yes, Dropout No
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.5 Regularization: Weight Decay Yes, Dropout No">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#student-questions-from-the-cs336-lecture_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Student Questions (from the CS336 lecture)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-questions-for-students_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Questions for Students
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-stability-tricks-new-in-2024-2025" class="md-nav__link">
+    <span class="md-ellipsis">
+      Part 3: Stability Tricks (New in 2024-2025)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: Stability Tricks (New in 2024-2025)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-problem-softmaxes" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 The Problem: Softmaxes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1 The Problem: Softmaxes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-z-loss-output-softmax-stability" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 Z-Loss (Output Softmax Stability)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.2 Z-Loss (Output Softmax Stability)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-qk-norm-attention-softmax-stability" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.3 QK-Norm (Attention Softmax Stability)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-logit-soft-capping-less-common" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.4 Logit Soft-Capping (Less Common)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.4 Logit Soft-Capping (Less Common)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#student-questions-from-the-cs336-lecture_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Student Questions (from the CS336 lecture)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-questions-for-students_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Questions for Students
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-attention-variants" class="md-nav__link">
+    <span class="md-ellipsis">
+      Part 4: Attention Variants
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Attention Variants">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-gqa-mqa-inference-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.1 GQA / MQA (Inference Optimization)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1 GQA / MQA (Inference Optimization)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-questions-for-students_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Questions for Students
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-sliding-window-full-attention-interleaving-2025-state-of-the-art" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2 Sliding Window + Full Attention Interleaving (2025 State of the Art)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.2 Sliding Window + Full Attention Interleaving (2025 State of the Art)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teaching-intuition_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      Teaching Intuition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-questions-for-students_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Questions for Students
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-llama-like-modern-consensus-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      The "LLaMA-like" Modern Consensus Architecture
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-cutting-themes-for-discussion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cross-Cutting Themes for Discussion
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cross-Cutting Themes for Discussion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#theme-1-theory-vs-practice-in-architecture-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      Theme 1: Theory vs Practice in Architecture Design
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#theme-2-the-role-of-systems-in-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Theme 2: The Role of Systems in Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#theme-3-convergent-evolution-and-conservatism" class="md-nav__link">
+    <span class="md-ellipsis">
+      Theme 3: Convergent Evolution and Conservatism
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#theme-4-what-we-dont-know" class="md-nav__link">
+    <span class="md-ellipsis">
+      Theme 4: What We Don't Know
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#suggested-exercises-for-students" class="md-nav__link">
+    <span class="md-ellipsis">
+      Suggested Exercises for Students
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Suggested Exercises for Students">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exercise-1-architecture-autopsy-20-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exercise 1: Architecture Autopsy (20 min)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exercise-2-parameter-budget-calculator-30-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exercise 2: Parameter Budget Calculator (30 min)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exercise-3-stability-detective-discussion-15-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exercise 3: Stability Detective (Discussion, 15 min)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exercise-4-rope-implementation-homework" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exercise 4: RoPE Implementation (Homework)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="modern-transformer-architecture-variants">Modern Transformer Architecture Variants</h1>
+<h2 id="overview-methodology">Overview &amp; Methodology</h2>
+<p>The lecture takes a <strong>data-driven, empirical approach</strong> to understanding transformer architecture choices. Rather than theorizing about what should work, Hashimoto surveyed <strong>19+ dense model releases</strong> from 2017-2025 (Original Transformer through SmolLM, Command A, Gemma 3) and compiled a spreadsheet tracking architecture decisions across all of them. The key insight: you can observe <strong>convergent evolution</strong> in neural architectures -- certain choices have won out decisively, while others remain genuinely open.</p>
+<p><strong>Central theme:</strong> "The best way to learn is hands-on experience; the second best way is to learn from others' experience."</p>
+<hr />
+<h2 id="part-1-architecture-variations">Part 1: Architecture Variations</h2>
+<h3 id="11-pre-norm-vs-post-norm-universal-consensus">1.1 Pre-Norm vs Post-Norm (Universal consensus)</h3>
+<p><strong>The one thing everyone agrees on.</strong> This is the single strongest consensus in modern LLM architecture.</p>
+<p><strong>What changed:</strong> The original transformer (Vaswani 2017) placed LayerNorm <em>after</em> the residual addition (post-norm). Pre-norm moves it <em>before</em> the sub-layer, keeping the residual stream clean.</p>
+<p><strong>Post-LN:</strong> <code>x → Attention(x) → Add → LayerNorm → FFN → Add → LayerNorm</code>
+<strong>Pre-LN:</strong> <code>x → LayerNorm → Attention → Add → LayerNorm → FFN → Add</code></p>
+<p><strong>Why pre-norm wins:</strong>
+- <strong>Gradient propagation:</strong> The residual stream provides an identity connection from top to bottom. Post-norm inserts normalization into this path, disrupting gradient flow. Xiong (2020) showed post-LN has gradient attenuation that grows with depth -- at initialization, gradients explode in later layers; only after careful warmup does it stabilize.
+- <strong>Training stability:</strong> Salazar &amp; Nguyen (2019) showed post-norm training exhibits frequent gradient spikes (visible as high-variance gradient norms). Pre-norm dramatically reduces these spikes.
+- <strong>Practical benefit today:</strong> Pre-norm allows using larger learning rates and eliminates the need for careful warmup schedules. This matters enormously for large-scale training.</p>
+<h4 id="teaching-intuition">Teaching Intuition</h4>
+<p>Think of the residual stream as a <strong>highway</strong> running from the bottom of the network to the top. In post-norm, you're placing toll booths (LayerNorms) directly on the highway -- every car (gradient) has to stop and be processed. In pre-norm, you've moved the toll booths onto the exit ramps (the attention/FFN branches). The highway itself is completely clear, so gradients travel freely end-to-end.</p>
+<p>A concrete way to show this: draw the computational graph and trace the gradient path. In post-norm, the gradient must pass through LayerNorm's Jacobian at every layer (multiplied L times for L layers). In pre-norm, there's always a direct additive path through the residual that bypasses everything.</p>
+<h4 id="student-questions-from-the-cs336-lecture">Student Questions (from the CS336 lecture)</h4>
+<p><strong>Q: Why exactly is LayerNorm in the residual stream bad?</strong>
+A: The residual gives you an identity connection from almost the top to the bottom of the network. This makes gradient propagation trivially easy -- there's no vanishing/exploding gradient along this path. Putting LayerNorm in the middle disrupts this identity. The empirical evidence confirms it: post-norm models show gradient attenuation (gradients grow across layers at init) and require careful warmup to stabilize.</p>
+<p><strong>Q: If pre-norm preserves the residual, don't the activations grow unboundedly as they flow through layers?</strong>
+A: Yes, they can! This is actually a real concern. The residual stream accumulates contributions from every layer, and its magnitude can grow. This is part of why a <strong>final LayerNorm</strong> is needed before the output projection in pre-norm architectures. It's also part of the motivation for "double norm" -- adding normalization on the branch outputs controls their magnitude before they enter the residual.</p>
+<h4 id="advanced-questions-for-students">Advanced Questions for Students</h4>
+<ol>
+<li>
+<p><strong>Derive it:</strong> Write out the backward pass for a 2-layer post-norm vs pre-norm network. Show explicitly where the LayerNorm Jacobian appears in each case and how it affects gradient magnitude.</p>
+</li>
+<li>
+<p><strong>The double-norm puzzle:</strong> If pre-norm works because we keep the residual clean, then double-norm (pre + post outside residual) also keeps the residual clean. But now the branch output is normalized twice. Could this hurt expressiveness? What's the tradeoff?</p>
+</li>
+<li>
+<p><strong>Thought experiment:</strong> BERT was trained with post-norm and was hugely successful. Why did post-norm work for BERT but became problematic for GPT-scale models? (Hint: think about depth, training duration, and learning rate schedules.)</p>
+</li>
+</ol>
+<p><strong>New development -- "Double norm" (2024-2025):</strong>
+If the intuition is "keep LayerNorms out of the residual stream," why not add a <em>second</em> norm after the sub-layer but outside the residual path? Recent models do exactly this:
+- <strong>Grok, Gemma 2:</strong> LayerNorm both before AND after attention/FFN blocks (outside residual)
+- <strong>OLMo 2:</strong> Only the post-norm outside the residual stream (not the pre-norm)</p>
+<p>This is argued to further improve stability for very large models.</p>
+<h3 id="12-layernorm-vs-rmsnorm-strong-consensus-toward-rmsnorm">1.2 LayerNorm vs RMSNorm (Strong consensus toward RMSNorm)</h3>
+<p><strong>LayerNorm</strong> (original): Normalize by subtracting mean and dividing by std dev, then scale ($\gamma$) and shift ($\beta$):
+$$y = \frac{x - E[x]}{\sqrt{Var[x] + \epsilon}} \cdot \gamma + \beta$$</p>
+<p><strong>RMSNorm</strong> (modern): Drop the mean subtraction and bias term:
+$$y = \frac{x}{\sqrt{||x||_2^2 + \epsilon}} \cdot \gamma$$</p>
+<p><strong>Notable models using LayerNorm:</strong> GPT-1/2/3, OPT, GPT-J, BLOOM
+<strong>Notable models using RMSNorm:</strong> LLaMA family, PaLM, Chinchilla, T5</p>
+<p><strong>Why RMSNorm wins -- a nuanced argument:</strong></p>
+<p>The naive argument is "fewer operations = faster." But normalization is only 0.17% of FLOPs (tensor contractions are 99.8%). So saving a mean calculation seems meaningless.</p>
+<p><strong>The real reason: FLOPS are not runtime.</strong> (Key insight from Ivanov et al 2023)</p>
+<table>
+<thead>
+<tr>
+<th>Operator class</th>
+<th>% FLOPs</th>
+<th>% Runtime</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tensor contraction</td>
+<td>99.80</td>
+<td>61.0</td>
+</tr>
+<tr>
+<td>Stat. normalization</td>
+<td>0.17</td>
+<td><strong>25.5</strong></td>
+</tr>
+<tr>
+<td>Element-wise</td>
+<td>0.03</td>
+<td>13.5</td>
+</tr>
+</tbody>
+</table>
+<p>Normalization operations are 0.17% of FLOPs but <strong>25.5% of runtime</strong> because they are dominated by <strong>data movement</strong> (memory bandwidth), not compute. RMSNorm has fewer parameters to move in and out of memory, which translates to real wallclock savings.</p>
+<p><strong>Empirical validation (Narang et al 2020):</strong> RMSNorm achieves both:
+- Faster training (3.68 vs 3.50 steps/second)
+- Lower final loss (1.821 vs 1.838)
+- Better downstream performance (SGLUE 75.45 vs 71.66)</p>
+<h4 id="teaching-intuition_1">Teaching Intuition</h4>
+<p>Show students the FLOP breakdown table and ask: "Should we bother optimizing normalization if it's only 0.17% of FLOPs?" Let them argue "no." Then reveal the runtime column -- normalization is <strong>25% of wallclock time</strong>. This is the single most important systems insight for architecture design: <strong>FLOPs are a terrible proxy for runtime.</strong> Memory bandwidth, not compute, is the bottleneck for many operations. This lesson recurs throughout inference optimization, kernel fusion, and GPU architecture.</p>
+<p>An analogy: Imagine a factory where 99.8% of the work is done by robots (matrix multiplies) and 0.2% by humans (normalization). The robots are incredibly fast. The humans aren't slow at their task, but they spend most of their time <em>walking to the warehouse to fetch parts</em> (memory access). Optimizing the human's work saves far more time than you'd expect from the 0.2% number.</p>
+<h4 id="student-questions">Student Questions</h4>
+<p><strong>Q: If mean-centering doesn't matter, does that tell us something about what LayerNorm actually does?</strong>
+A: Great question. It suggests that the <em>scale normalization</em> (dividing by magnitude) is the critical operation, not the centering. The model can learn to handle non-zero-mean activations just fine. What it really needs is for activations not to blow up or collapse in magnitude.</p>
+<p><strong>Q: One exception: Cohere's Command A and R+ use LayerNorm rather than RMSNorm. Any idea why?</strong>
+A (from Hashimoto): "I'm not quite sure why." This is a genuine open question -- it may relate to their specific training setup or the parallel layer architecture they use.</p>
+<h4 id="advanced-questions-for-students_1">Advanced Questions for Students</h4>
+<ol>
+<li>
+<p><strong>The 25% puzzle:</strong> Normalization is 0.17% of FLOPs but 25% of runtime. Compute the arithmetic intensity (FLOPs per byte of memory accessed) for LayerNorm vs a matrix multiply. Why is it so different? (Hint: LayerNorm reads the entire vector, computes a scalar, then reads it again to normalize. The ratio of compute to data movement is terrible.)</p>
+</li>
+<li>
+<p><strong>Would you expect the RMSNorm advantage to grow or shrink on future hardware?</strong> Consider trends in compute-to-memory-bandwidth ratios on GPUs (the "arithmetic intensity gap"). What happens as GPUs get more FLOPS but memory bandwidth scales more slowly?</p>
+</li>
+<li>
+<p><strong>RMSNorm removes the bias $\beta$ (shift parameter). Could this hurt for certain tasks?</strong> Think about cases where the optimal activation distribution is not zero-centered.</p>
+</li>
+</ol>
+<h3 id="13-dropping-bias-terms-universal-trend">1.3 Dropping Bias Terms (Universal trend)</h3>
+<p>Most modern transformers have <strong>no bias terms</strong> in linear layers or LayerNorm.</p>
+<p>Original: $FFN(x) = \max(0, xW_1 + b_1)W_2 + b_2$
+Modern: $FFN(x) = \sigma(xW_1)W_2$</p>
+<p><strong>Reasons:</strong>
+1. Same memory/data movement argument as RMSNorm -- fewer parameters to load
+2. <strong>Optimization stability</strong> -- empirically, dropping bias terms stabilizes training of very large networks (the mechanism isn't fully understood, but the effect is clear)</p>
+<h4 id="teaching-intuition_2">Teaching Intuition</h4>
+<p>Bias terms seem harmless -- they're just adding a constant. But think about what happens across many layers. Each bias adds an offset to the activation distribution. Across 80+ layers, these offsets accumulate in the residual stream. Now the model has to "fight" these accumulated biases just to keep activations in a reasonable range. Removing biases means the network only does linear transformations (matrix multiplies) and nonlinearities -- there's nothing pulling activations in arbitrary directions.</p>
+<p>Also connect this to RMSNorm: if you've already removed the $\beta$ shift from normalization, keeping bias terms in linear layers reintroduces the same kind of shift you just removed. The whole trend is: <strong>let the model learn through matrix multiplies alone, don't add unnecessary constant offsets.</strong></p>
+<h4 id="advanced-questions-for-students_2">Advanced Questions for Students</h4>
+<ol>
+<li>
+<p><strong>Parameter efficiency:</strong> A bias vector in a $d_{model}$-dimensional linear layer adds $d_{model}$ parameters. For a model with $d_{model} = 4096$ and, say, 6 linear layers per block across 32 blocks, how many bias parameters is that? What fraction of total parameters? Is the memory argument actually compelling, or is something else going on?</p>
+</li>
+<li>
+<p><strong>Bias and initialization:</strong> At initialization, a linear layer without bias computes $y = Wx$ where $W$ is typically initialized with small random values. Adding a bias $b$ (often initialized to zero) shouldn't change anything at init. So why would removing bias help <em>stability</em>? (This remains an open question -- discuss hypotheses.)</p>
+</li>
+</ol>
+<h3 id="14-activations-gated-linear-units-strong-trend-toward-swiglugeglu">1.4 Activations &amp; Gated Linear Units (Strong trend toward SwiGLU/GeGLU)</h3>
+<p><strong>Evolution of activations:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Activation</th>
+<th>Formula</th>
+<th>Notable Models</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ReLU</td>
+<td>$FF(x) = \max(0, xW_1)W_2$</td>
+<td>Original transformer, T5, Gopher, OPT</td>
+</tr>
+<tr>
+<td>GeLU</td>
+<td>$FF(x) = GELU(xW_1)W_2$ where $GELU(x) = x\Phi(x)$</td>
+<td>GPT-1/2/3, GPT-J, BLOOM</td>
+</tr>
+<tr>
+<td>SwiGLU</td>
+<td>$FF(x) = (Swish(xW) \otimes xV)W_2$</td>
+<td>LLaMA 1/2/3, PaLM, Mistral, <em>most post-2023</em></td>
+</tr>
+<tr>
+<td>GeGLU</td>
+<td>$FF(x) = (GELU(xW) \otimes xV)W_2$</td>
+<td>T5 v1.1, mT5, Phi3, Gemma 2/3</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What makes GLUs different:</strong> Instead of just applying a nonlinearity, GLUs add a <strong>gating mechanism</strong>. The hidden representation is element-wise multiplied by a learned linear projection $xV$. This gate controls information flow through the MLP.</p>
+<p>$$\text{Standard:} \quad \sigma(xW_1) \rightarrow \sigma(xW_1) \otimes (xV) \quad \text{(gated)}$$</p>
+<p><strong>The extra parameter V</strong> means GLU models have 3 weight matrices (W, V, W2) instead of 2. To keep parameter count matched, the hidden dimension $d_{ff}$ is scaled down by 2/3.</p>
+<p><strong>Evidence GLUs work (Shazeer 2020, Narang et al 2020):</strong> Consistently better performance across multiple benchmarks. GLU variants (GeGLU, SwiGLU, ReGLU) all outperform non-gated counterparts.</p>
+<p><strong>Important caveat:</strong> GLUs aren't <em>necessary</em> for good models. GPT-3 (GeLU), Nemotron 340B (Squared ReLU), and Falcon 2 11B (ReLU) are all strong models without gating. But evidence consistently favors GLUs.</p>
+<p><strong>Q&amp;A insight -- does the non-monotonic region of Swish/GeLU cause problems?</strong> Hashimoto: In practice no, because optimization uses high learning rates with momentum, so activations don't converge to the zero point. Also, the FLOP cost of these fancier activations is negligible compared to the matrix multiplies; what matters is memory pressure, which is identical.</p>
+<h4 id="teaching-intuition_3">Teaching Intuition</h4>
+<p>Think of the MLP as a <strong>two-step process</strong>: (1) project into a high-dimensional space, apply nonlinearity, (2) project back. The gating mechanism adds a <strong>learned filter</strong> at step 1 -- the model gets to decide, for each hidden dimension, how much signal to let through. Without gating, the nonlinearity is a fixed function of the input. With gating, it's <em>input-dependent</em> -- the gate $xV$ learns which features are relevant for the current input and suppresses others.</p>
+<p>A good analogy: imagine a photo editor. The standard MLP applies a fixed filter (contrast, brightness). The gated MLP first analyzes the photo to decide <em>which</em> filter to apply and how strongly -- it's adaptive. The $xV$ projection is the "analyzer" and the element-wise multiplication is the "adaptive filtering."</p>
+<p><strong>Why the 2/3 scaling?</strong> Walk through the parameter count. Standard MLP: $W_1 \in \mathbb{R}^{d \times d_{ff}}$ + $W_2 \in \mathbb{R}^{d_{ff} \times d}$ = $2 \cdot d \cdot d_{ff}$ params. Gated MLP: $W \in \mathbb{R}^{d \times d_{ff}}$ + $V \in \mathbb{R}^{d \times d_{ff}}$ + $W_2 \in \mathbb{R}^{d_{ff} \times d}$ = $3 \cdot d \cdot d_{ff}$ params. To match: set $d_{ff}^{gated} = \frac{2}{3} d_{ff}^{standard} = \frac{2}{3} \cdot 4d = \frac{8}{3}d$.</p>
+<h4 id="student-questions-from-the-cs336-lecture_1">Student Questions (from the CS336 lecture)</h4>
+<p><strong>Q: ReLU is easily differentiable. GeLU/Swish involve the CDF of a Gaussian -- does that slow things down?</strong>
+A (from another student in the audience): "What really matters is memory pressure, and it's the exact same because you're reading the same number of elements." The extra arithmetic is negligible; the bottleneck is loading and storing the activation tensor, which is the same size regardless of the nonlinearity.</p>
+<p><strong>Q: Below a certain negative value, Swish and GeLU are not monotonically increasing -- they actually decrease. Doesn't this break gradient descent?</strong>
+A: Intuitively you might think activations could get "trapped" in this negative region. But in practice, with high learning rates and momentum, activations are being pushed around aggressively. They don't converge to the problematic zero point. The small negative bump has negligible effect on training dynamics.</p>
+<h4 id="advanced-questions-for-students_3">Advanced Questions for Students</h4>
+<ol>
+<li>
+<p><strong>Parameter count exercise:</strong> Prove that setting $d_{ff} = \frac{8}{3} d_{model}$ for a gated MLP gives exactly the same number of parameters as $d_{ff} = 4 \cdot d_{model}$ for a standard MLP. Then: do the FLOPs also match? (Careful: GLU has an extra element-wise multiply.)</p>
+</li>
+<li>
+<p><strong>Why gating works:</strong> Gating appears in LSTMs, GRUs, highway networks, and now GLU-style MLPs. What's the common principle? Can you formulate a general hypothesis for why learned multiplicative interactions help? (Consider: information routing, gradient flow, conditional computation.)</p>
+</li>
+<li>
+<p><strong>Squared ReLU:</strong> Nemotron 340B uses $\text{ReLU}^2(x) = (\max(0, x))^2$. This has even sparser activations than ReLU (smoother around zero, but kills more values). Why might sparsity in activations be beneficial? Could this relate to the "superposition hypothesis" from mechanistic interpretability?</p>
+</li>
+<li>
+<p><strong>Design exercise:</strong> You're building a 7B parameter model. You've decided on SwiGLU. Your $d_{model} = 4096$. Calculate: (a) What should $d_{ff}$ be? (b) Total MLP parameters per layer. (c) If you used standard ReLU MLP instead, what would $d_{ff}$ be for the same parameter count?</p>
+</li>
+</ol>
+<h3 id="15-serial-vs-parallel-layers-minor-variation">1.5 Serial vs Parallel Layers (Minor variation)</h3>
+<p><strong>Serial (standard):</strong> Attention first, then MLP sequentially.
+$$y = x + MLP(LN(x + Attention(LN(x))))$$</p>
+<p><strong>Parallel:</strong> Attention and MLP computed simultaneously, results added.
+$$y = x + MLP(LN(x)) + Attention(LN(x))$$</p>
+<p><strong>Benefits of parallel:</strong>
+- ~15% faster training (PaLM paper) because MLP and attention matrix multiplies can be fused
+- LayerNorm can be shared between the two branches
+- Quality neutral at large scale (small degradation at 8B, none at 62B per PaLM)</p>
+<p><strong>Models using parallel:</strong> GPT-J (pioneer), PaLM, GPT-NeoX, Cohere Command A/R+, Falcon 2 11B</p>
+<p><strong>Current status:</strong> Most recent models still use serial. Parallel hasn't been widely adopted despite the compute win, possibly because the quality tradeoff isn't worth it at smaller scales.</p>
+<h4 id="teaching-intuition_4">Teaching Intuition</h4>
+<p>In a serial block, the MLP gets to <em>see the output of attention</em> -- it can refine what attention computed. In a parallel block, MLP and attention work <em>independently</em> on the same input and their outputs are simply summed. This is like the difference between two people working <em>sequentially</em> (one reviews and improves the other's work) vs <em>in parallel</em> (both work independently, results are merged).</p>
+<p>The PaLM team's finding is telling: at 8B scale, parallel hurts slightly. At 62B, no difference. Their hypothesis: at large enough scale, the model has so much capacity that the loss from not composing attention + MLP is negligible. The compute savings from fusing operations outweigh the small expressiveness loss.</p>
+<h4 id="student-questions-from-the-cs336-lecture_2">Student Questions (from the CS336 lecture)</h4>
+<p><strong>Q: Is serial more efficient than parallel?</strong>
+A: Actually the reverse -- parallel is more compute-efficient (15% faster training). The concern is about expressiveness: serial composes two computations, while parallel merely adds them. You might expect serial to be more expressive. The tradeoff is: parallel gains systems efficiency but potentially loses expressiveness.</p>
+<h4 id="advanced-questions-for-students_4">Advanced Questions for Students</h4>
+<ol>
+<li>
+<p><strong>Expressiveness argument:</strong> The serial formulation computes $MLP(LN(x + Attn(LN(x))))$ -- the MLP can be a function of the attention output. The parallel computes $MLP(LN(x)) + Attn(LN(x))$ -- both branches see only $x$. Give a concrete example of a computation that serial can express but parallel cannot. (Hint: think about attention selecting information that the MLP then needs to process.)</p>
+</li>
+<li>
+<p><strong>Fusion opportunity:</strong> Explain specifically which matrix multiplies can be fused in the parallel formulation but not in serial. Draw the computation graph for both and identify the kernel fusion boundaries.</p>
+</li>
+<li>
+<p><strong>Why hasn't parallel won?</strong> Despite the 15% training speedup, most 2024-2025 models use serial. Hypothesize: is this conservatism (copying LLaMA), or is there a real quality concern? How would you design an experiment to settle this?</p>
+</li>
+</ol>
+<h3 id="16-position-embeddings-converged-to-rope">1.6 Position Embeddings (Converged to RoPE)</h3>
+<p>This is the area that saw the most exploration in 2017-2022, but has now largely converged.</p>
+<p><strong>Evolution:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>How it works</th>
+<th>Models</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sinusoidal</strong></td>
+<td>Add fixed sin/cos to embedding</td>
+<td>Original Transformer</td>
+</tr>
+<tr>
+<td><strong>Absolute (learned)</strong></td>
+<td>Add learned position vector $u_i$ to embedding</td>
+<td>GPT-1/2/3, OPT</td>
+</tr>
+<tr>
+<td><strong>Relative</strong></td>
+<td>Add learned bias to attention scores</td>
+<td>T5, Gopher, Chinchilla</td>
+</tr>
+<tr>
+<td><strong>ALiBi</strong></td>
+<td>Linear attention bias</td>
+<td>BLOOM</td>
+</tr>
+<tr>
+<td><strong>NoPE</strong></td>
+<td>No position embedding at all</td>
+<td>SmolLM3, Kimi Linear</td>
+</tr>
+<tr>
+<td><strong>RoPE</strong></td>
+<td>Rotate query/key vectors</td>
+<td>GPT-J, PaLM, LLaMA, <strong>all 2024+ models</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>RoPE's key idea:</strong></p>
+<p>We want attention scores to depend only on <em>relative</em> position $(i - j)$, not absolute positions. Mathematically, find $f(x, i)$ such that:
+$$\langle f(x, i), f(y, j) \rangle = g(x, y, i-j)$$</p>
+<p><strong>Why existing methods fail this:</strong>
+- Sinusoidal: Cross-terms leak absolute position info
+- Absolute: Obviously not relative
+- T5 relative: Modifies the attention computation, but the result isn't a standard inner product</p>
+<p><strong>RoPE's solution:</strong> Rotations preserve inner products. If you rotate each embedding vector by an angle proportional to its position, the inner product between any two vectors depends only on their angular <em>difference</em> (= relative position).</p>
+<p><strong>Implementation:</strong> Pair up dimensions (d/2 pairs), apply 2D rotations with different frequencies per pair (analogous to sinusoidal frequencies). The rotation matrix is block-diagonal with 2x2 rotation blocks:</p>
+<p>$$R_{\Theta,m} = \text{block-diag}(\text{Rot}(m\theta_1), \text{Rot}(m\theta_2), \ldots, \text{Rot}(m\theta_{d/2}))$$</p>
+<p><strong>Critical difference from sinusoidal:</strong> RoPE is <strong>multiplicative</strong> (applied at each attention layer to Q and K), not additive (at input). This is essential for enforcing position invariance at every attention operation.</p>
+<p><strong>Why RoPE won:</strong> All 19 papers Hashimoto surveyed from 2024-2025 use RoPE. Beyond the theoretical elegance, RoPE has proven practically effective and has spawned many context-length extension algorithms (NTK-aware scaling, YaRN, etc.).</p>
+<h4 id="teaching-intuition_5">Teaching Intuition</h4>
+<p><strong>The "we know" example from the lecture is gold for teaching.</strong> Walk through it step by step:</p>
+<ol>
+<li>Start with two word vectors: $\vec{we}$ and $\vec{know}$ (arrows in 2D for visualization).</li>
+<li>Sentence "we know that" -- "we" is at position 0, "know" at position 1. Rotate "we" by 0 radians, "know" by $\theta$ radians. The angle between them is $\theta$.</li>
+<li>Sentence "of course we know" -- "we" is at position 2, "know" at position 3. Rotate "we" by $2\theta$, "know" by $3\theta$. The angle between them is still $\theta$.</li>
+<li><strong>Key insight:</strong> The inner product $\langle R_{2\theta}\vec{we}, R_{3\theta}\vec{know} \rangle = \langle R_0\vec{we}, R_\theta\vec{know} \rangle$ because rotations preserve inner products and only the <em>difference</em> in rotation angles matters.</li>
+</ol>
+<p>This is the entire idea. Everything else is implementation details (how to handle high dimensions, how to pick $\theta$s).</p>
+<p><strong>The high-dimensional extension:</strong> We can't easily rotate in $d$-dimensional space (too many degrees of freedom). RoPE's clever trick: pair up consecutive dimensions and rotate each pair independently. This gives $d/2$ independent 2D rotations, each with its own frequency -- exactly analogous to how sinusoidal embeddings have different frequencies for different dimension pairs.</p>
+<p><strong>Why it's multiplicative, not additive:</strong> Draw the code path. Absolute embeddings: add position vector at the input, once. RoPE: multiply Q and K by rotation matrix at <em>every</em> attention layer. This is necessary because if you only add at the bottom, the position signal gets diluted by subsequent transformations. By applying at each attention operation, you guarantee position information is fresh.</p>
+<h4 id="student-questions-from-the-cs336-lecture_3">Student Questions (from the CS336 lecture)</h4>
+<p><strong>Q: Are the rotation angles ($\theta$) hyperparameters or learned?</strong>
+A: Neither -- they follow a fixed schedule (like sinusoidal embeddings). Different dimension pairs rotate at different speeds: some fast (capturing local/nearby token relationships), some slow (capturing long-range relationships). The thetas are not learned because rotating is just a matrix multiply with fixed coefficients -- if you were learning thetas, you'd need to differentiate through trig functions, which could cause issues.</p>
+<p><strong>Q: Is the rate of rotation consistent across models?</strong>
+A: There's some variation in the $\theta$ schedule across models. The original RoPE uses $\theta_i = 10000^{-2i/d}$. Later work (NTK-aware RoPE, YaRN) modifies these to enable context length extension.</p>
+<p><strong>Q: Do the rotations create difficulty with training?</strong>
+A: No, because a rotation is just a fixed matrix multiply (since $\theta$s and positions $m$ are fixed during forward pass). It's no different from any other linear transformation. Gradients flow through it normally. If you were <em>learning</em> the rotation parameters, then differentiating through trig functions could be problematic, but you're not.</p>
+<h4 id="advanced-questions-for-students_5">Advanced Questions for Students</h4>
+<ol>
+<li>
+<p><strong>Prove the relative position property:</strong> Given $f(x, m) = R_m W x$ where $R_m$ is the RoPE rotation matrix, show that $\langle f(x, m), f(y, n) \rangle = g(x, y, m-n)$ for some function $g$. Where does the proof break if we use additive position embeddings instead?</p>
+</li>
+<li>
+<p><strong>Context length extrapolation:</strong> RoPE was originally trained on sequences of length $L$ with $\theta_i = 10000^{-2i/d}$. At inference, we want to use length $4L$. What goes wrong? The rotation angles $m\theta_i$ for positions $m &gt; L$ were never seen during training. How do NTK-aware scaling and YaRN address this? (Hint: they modify the base frequency or interpolate positions.)</p>
+</li>
+<li>
+<p><strong>RoPE vs ALiBi:</strong> ALiBi (Attention with Linear Biases) achieves relative position encoding by subtracting a linear penalty from attention scores: $\text{score}_{ij} = q_i \cdot k_j - m \cdot |i-j|$, where $m$ is a per-head slope. Compare the expressiveness: RoPE modulates the <em>content-based</em> similarity via rotation, while ALiBi adds a <em>content-independent</em> distance penalty. In what scenarios might one be better than the other?</p>
+</li>
+<li>
+<p><strong>NoPE layers (No Position Embedding):</strong> In the Command A / LLaMA 4 architecture, some layers use full attention with <em>no</em> position embedding at all. How can a transformer layer function without position information? What does this layer compute? (It can attend to all positions equally based on content only -- think of it as a pure "what's similar to me?" lookup.)</p>
+</li>
+</ol>
+<hr />
+<h2 id="part-2-hyperparameters">Part 2: Hyperparameters</h2>
+<h3 id="21-ffn-dimension-ratio-d_ff-4-cdot-d_model-or-83-for-glus">2.1 FFN Dimension Ratio: $d_{ff} = 4 \cdot d_{model}$ (or 8/3 for GLUs)</h3>
+<p><strong>The rule:</strong> Almost universally, the FFN hidden dimension is 4x the model dimension.</p>
+<p>For GLU variants (which have an extra parameter matrix V), scale down by 2/3 to maintain parameter parity: $d_{ff} = \frac{8}{3} d_{model} \approx 2.67 \cdot d_{model}$</p>
+<p><strong>Models following the 8/3 rule:</strong> LLaMA 70B (2.68), Qwen 14B (2.67), DeepSeek 67B (2.68), Yi 34B (2.85)
+<strong>Slightly larger:</strong> PaLM (4.0), Mistral 7B (3.5), LLaMA-2 70B (3.5)</p>
+<p><strong>Notable exception -- T5 11B:</strong> Uses $d_{ff} = 65,536$ with $d_{model} = 1024$ -- a <strong>64x multiplier</strong>. Rationale from the paper: larger FFN means larger matrix multiplies, which TPUs handle more efficiently. However, T5 v1.1 walked this back to a 2.5 multiplier with GeGLU and got a better model.</p>
+<p><strong>Empirical evidence (Kaplan et al 2020):</strong> There's a wide basin between ratios 1-10 where performance is near-optimal. The 4x default sits comfortably within this basin.</p>
+<h4 id="teaching-intuition_6">Teaching Intuition</h4>
+<p>The MLP does two things: <strong>project up</strong> to a higher-dimensional space (where nonlinearities can carve out complex decision boundaries), then <strong>project back</strong> to the model dimension. The ratio controls how much "room" the model has for intermediate computation. At 4x, you're saying: "give the MLP 4 times as many hidden neurons as its input dimension to do its computation."</p>
+<p>Why does a wide basin exist (1-10x all work)? Because the model can compensate: if $d_{ff}$ is smaller, each MLP does less work, but you have many layers, so the total computation budget is still large. It's only at extreme ratios (&gt;10x) where you're spending parameters very inefficiently that things degrade.</p>
+<p><strong>The T5 story is great for teaching:</strong> "LLM training is a game of copying hyperparameters from other people" (Hashimoto). T5 was bold enough to try 64x -- and it worked! But then T5 v1.1 quietly walked it back to 2.5x and got a <em>better</em> model. The lesson: you <em>can</em> break conventions, but the conventions exist for reason.</p>
+<h4 id="advanced-questions-for-students_6">Advanced Questions for Students</h4>
+<ol>
+<li>
+<p><strong>Where do the MLP parameters live?</strong> For a standard model with $d_{ff} = 4 d_{model}$, what fraction of total layer parameters are in the MLP vs attention? Compute for both standard (2 matrices: $d \times 4d$ and $4d \times d$) and gated (3 matrices with $d_{ff} = 8/3 \cdot d$). Which dominates?</p>
+</li>
+<li>
+<p><strong>The T5 rationale:</strong> T5 chose 64x because "modern accelerators are most efficient for large dense matrix multiplications." Explain this argument in terms of arithmetic intensity. When does making one dimension very large help GPU utilization? When does it become counterproductive?</p>
+</li>
+</ol>
+<h3 id="22-head-dimension-ratio-d_head-times-n_heads-d_model">2.2 Head Dimension Ratio: $d_{head} \times n_{heads} = d_{model}$</h3>
+<p>The standard practice is to split the model dimension evenly across heads, so each head gets $d_{model}/n_{heads}$ dimensions. This means adding more heads doesn't increase compute cost.</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Num heads</th>
+<th>Head dim</th>
+<th>Model dim</th>
+<th>Ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPT-3</td>
+<td>96</td>
+<td>128</td>
+<td>12288</td>
+<td>1</td>
+</tr>
+<tr>
+<td>T5</td>
+<td>128</td>
+<td>128</td>
+<td>1024</td>
+<td><strong>16</strong></td>
+</tr>
+<tr>
+<td>LLaMA-2</td>
+<td>64</td>
+<td>128</td>
+<td>8192</td>
+<td>1</td>
+</tr>
+<tr>
+<td>PaLM</td>
+<td>48</td>
+<td>258</td>
+<td>18432</td>
+<td>1.48</td>
+</tr>
+</tbody>
+</table>
+<p>T5 is again the outlier (ratio of 16). Bhojanapalli et al (2020) argued theoretically against the 1:1 ratio (low-rank bottleneck per head), but in practice the bottleneck doesn't seem to bite.</p>
+<h4 id="teaching-intuition_7">Teaching Intuition</h4>
+<p>Multi-head attention is a clever trick: instead of one big attention computation, we run $h$ smaller ones in parallel. The key insight is that this <strong>doesn't cost extra compute</strong>. We still compute one big $XQ$ multiplication ($d \times d$ parameters) and then <em>reshape</em> the result into $h$ heads, each with $d/h$ dimensions. The total parameter count and FLOPs are the same whether we use 1 head or 96 heads.</p>
+<p>But each head only has $d/h$ dimensions to work with. If $d/h$ is very small (say, 8 or 16), each head can only represent very low-rank attention patterns. The theoretical concern is: with 128 heads and $d = 4096$, each head only has 32 dimensions -- is that enough to compute meaningful attention patterns?</p>
+<p>In practice: yes, it seems to be. Models with the 1:1 ratio work great. The theoretical low-rank bottleneck doesn't seem to matter empirically.</p>
+<h4 id="advanced-questions-for-students_7">Advanced Questions for Students</h4>
+<ol>
+<li>
+<p><strong>Rank analysis:</strong> Each attention head computes $\text{softmax}(Q_h K_h^T / \sqrt{d_h})$, where $Q_h, K_h \in \mathbb{R}^{n \times d_h}$. What is the maximum rank of $Q_h K_h^T$? For $d_h = 128$ and $n = 4096$, is the attention matrix rank-limited? Does this matter?</p>
+</li>
+<li>
+<p><strong>Breaking the 1:1 ratio:</strong> With GQA, we have fewer KV heads than query heads. This means the KV projection is $d_{model} \rightarrow n_{kv_heads} \times d_{head}$ where $n_{kv_heads} &lt; n_{q_heads}$. The 1:1 ratio now only applies to Q. What are the implications for the attention patterns' expressiveness?</p>
+</li>
+</ol>
+<h3 id="23-aspect-ratio-d_model-n_layers-approx-100-200">2.3 Aspect Ratio: $d_{model} / n_{layers} \approx 100-200$</h3>
+<p>How deep vs wide should the model be?</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>$d_{model}/n_{layers}$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPT-3/OPT/Mistral/Qwen</td>
+<td>128</td>
+</tr>
+<tr>
+<td>LLaMA/LLaMA-2/Chinchilla</td>
+<td>102</td>
+</tr>
+<tr>
+<td>PaLM (540B)</td>
+<td>156</td>
+</tr>
+<tr>
+<td>T5 (11B)</td>
+<td>43 (outlier)</td>
+</tr>
+<tr>
+<td>GPT-2</td>
+<td>33 (outlier)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sweet spot is 100-200.</strong> Evidence from Kaplan et al (2020) shows this is optimal across scales (50M, 274M, 1.5B parameters).</p>
+<p><strong>Systems consideration:</strong> Very deep models are harder to parallelize (pipeline parallelism has latency constraints), while very wide models can use tensor parallelism (requires fast networking). Networking constraints may drive depth/width choices.</p>
+<p><strong>Depth vs width for downstream tasks:</strong> Tay et al (2021) found that while upstream loss depends mainly on parameter count, downstream accuracy (e.g., SuperGLUE) may favor deeper models at equal FLOPs. This isn't fully settled.</p>
+<h4 id="teaching-intuition_8">Teaching Intuition</h4>
+<p>Aspect ratio is the "shape" of your model -- tall and thin vs short and wide. Think of it like a building: more floors (layers) means more sequential processing, while wider floors (larger $d_{model}$) means more parallel processing per step.</p>
+<p><strong>Why ~128 hidden dims per layer?</strong> No one has a clean theoretical answer. It's empirically derived: Kaplan et al (2020) show that across 3 orders of magnitude in model size, the optimal aspect ratio stays roughly constant. This is remarkable -- it means when you double your parameter budget, you should make the model both deeper AND wider in roughly equal proportion.</p>
+<p><strong>The systems angle is critical for teaching:</strong> A very deep model (many layers, small $d_{model}$) is hard to parallelize across GPUs because layers are sequential -- GPU 1 must finish layer 1 before GPU 2 can start layer 2 (pipeline parallelism). A very wide model (few layers, huge $d_{model}$) can split each layer's matrix multiply across many GPUs (tensor parallelism), but this requires extremely fast inter-GPU communication (NVLink, not just PCIe). Real clusters have specific network topologies that constrain what's feasible. So the "optimal" aspect ratio isn't just about model quality -- it's about what your hardware can efficiently execute.</p>
+<h4 id="advanced-questions-for-students_8">Advanced Questions for Students</h4>
+<ol>
+<li>
+<p><strong>Scaling exercise:</strong> You have a 7B parameter budget. Using the consensus ratios ($d_{ff} = 8/3 \cdot d_{model}$, SwiGLU, $d_{head} = 128$, aspect ratio ~128), work out: $d_{model}$, $n_{layers}$, $n_{heads}$, $d_{ff}$. Verify total parameter count. Compare your answer to LLaMA-2 7B's actual architecture.</p>
+</li>
+<li>
+<p><strong>Pipeline vs tensor parallelism tradeoff:</strong> You have 8 GPUs connected with NVLink (fast) within a node, and 4 nodes connected with InfiniBand (slower). You're training a model with 80 layers and $d_{model} = 8192$. How would you distribute the model? What changes if the model had 160 layers and $d_{model} = 4096$ (same parameter count)?</p>
+</li>
+<li>
+<p><strong>The depth-downstream mystery:</strong> Tay et al (2021) showed deeper models are better for downstream tasks even when upstream loss is the same. Why might depth help with fine-tuning? (Hypothesize: deeper networks compose more functions, enabling more abstract representations that transfer better. Or: deeper networks have more "slots" for task-specific adaptation during fine-tuning.)</p>
+</li>
+</ol>
+<h3 id="24-vocabulary-size">2.4 Vocabulary Size</h3>
+<p><strong>Monolingual models:</strong> 30-50K tokens (Original Transformer: 37K, GPT-2/3: 50K, LLaMA: 32K)
+<strong>Multilingual/Production:</strong> 100-250K tokens (GPT-4: 100K, PaLM: 256K, Qwen: 152K, Command A: 255K)</p>
+<p>Trend is upward as models serve more diverse users and languages. Larger vocabularies particularly help low-resource languages by packing them into fewer tokens (reducing inference cost for those users).</p>
+<h4 id="teaching-intuition_9">Teaching Intuition</h4>
+<p>Vocabulary size involves a fundamental tradeoff: <strong>compression vs coverage</strong>. Larger vocab = each token carries more information (fewer tokens per sentence = faster inference, cheaper API calls), but also = larger embedding matrix (more parameters, slower softmax). Smaller vocab = model sees more tokens per concept (more compositional, potentially better generalization), but longer sequences (slower, more expensive).</p>
+<p>For production multilingual systems, the equation tilts heavily toward larger vocabs. Cohere's argument: with a large, multilingual tokenizer, a Hindi sentence might use 50 tokens instead of 200. That's 4x cheaper inference for Hindi users -- a direct business and equity argument.</p>
+<h4 id="student-questions-from-the-cs336-lecture_4">Student Questions (from the CS336 lecture)</h4>
+<p><strong>Q: Do multilingual vocabularies actually improve performance in one language (e.g., English)?</strong>
+A: For high-resource languages like English, the impact is small -- you can get by with 32K tokens. The value of larger vocabularies is primarily for lower-resource languages, where they dramatically reduce token count and inference cost.</p>
+<h4 id="advanced-questions-for-students_9">Advanced Questions for Students</h4>
+<ol>
+<li>
+<p><strong>Embedding matrix cost:</strong> The embedding matrix is $V \times d_{model}$ parameters. For $V = 256000$ and $d = 4096$, how large is this in GB (at bf16)? What fraction of a 7B model's total parameters? At what point does the embedding matrix become the dominant cost?</p>
+</li>
+<li>
+<p><strong>The efficiency argument:</strong> Larger vocab → fewer tokens per document → fewer forward passes at inference. But also: larger vocab → larger softmax computation at every step. When does the trade off favor larger vocabs? Derive a rough expression for total inference cost as a function of vocab size, average compression ratio, and model size.</p>
+</li>
+<li>
+<p><strong>Tokenizer-model co-design:</strong> Should vocabulary size decisions be made independently of architecture decisions? Consider: a model with $d_{model} = 1024$ may not have enough representational capacity to embed 256K distinct tokens meaningfully. How would you design an experiment to find the optimal vocab size as a function of model size?</p>
+</li>
+</ol>
+<h3 id="25-regularization-weight-decay-yes-dropout-no">2.5 Regularization: Weight Decay Yes, Dropout No</h3>
+<p><strong>Dropout has gone out of fashion</strong> for pretraining. Newer models (post-2022) mostly don't use it. Rationale: with trillions of tokens and single-epoch training, there's no overfitting concern.</p>
+<p><strong>Weight decay persists</strong> (typically 0.1), but <strong>not for regularization</strong>. This is counterintuitive.</p>
+<p><strong>Why weight decay helps (Andriushchenko et al 2023):</strong>
+- Train/val gap is identical regardless of weight decay amount -- it's not controlling overfitting
+- Weight decay interacts with learning rate schedules: with cosine LR decay, high weight decay models start slower but accelerate dramatically near the end of training
+- The result is <strong>lower training loss</strong> (which equals better val loss since there's no overfitting)</p>
+<h4 id="teaching-intuition_10">Teaching Intuition</h4>
+<p>This is a great "intuition-busting" topic. Walk students through the reasoning:</p>
+<p><strong>Step 1 (the puzzle):</strong> You have trillions of tokens, billions of parameters, and you train for one epoch. There's zero overfitting risk. Why would you regularize?</p>
+<p><strong>Step 2 (the observation):</strong> Look at Andriushchenko's plots. Train loss vs val loss: identical lines regardless of weight decay. It's not preventing overfitting. But training loss <em>itself</em> is lower with weight decay.</p>
+<p><strong>Step 3 (the mechanism):</strong> Weight decay shrinks weights. With a cosine learning rate schedule, the learning rate starts high and decays to near-zero. Early in training (high LR), weight decay is fighting against the large updates, slowing learning. Late in training (low LR), the weights have been kept small by weight decay, and the model can now make very precise, fine-grained adjustments. It's as if weight decay creates a "compressed spring" that releases energy at the end of training.</p>
+<p><strong>The punchline:</strong> Weight decay in LLM pretraining is not regularization in the classical sense. It's an <strong>optimization trick</strong> that improves training dynamics by interacting with the learning rate schedule.</p>
+<h4 id="student-questions-from-the-cs336-lecture_5">Student Questions (from the CS336 lecture)</h4>
+<p><strong>Q: Why did dropout go out of fashion?</strong>
+A: There's no evidence it helps training loss, and since there's no overfitting problem (single epoch over vast data), there's no regularization need either. It also complicates distributed training (need to synchronize dropout masks or deal with variance).</p>
+<p><strong>Q: If weight decay doesn't affect val loss relative to train loss, why do we care about the training dynamics?</strong>
+A: Because the game is minimizing training loss -- that's the objective. Weight decay somehow gets us to lower training losses (which are also lower val losses, since the gap is constant). The surprising part is that it achieves this through optimization dynamics, not regularization.</p>
+<h4 id="advanced-questions-for-students_10">Advanced Questions for Students</h4>
+<ol>
+<li>
+<p><strong>AdamW vs L2 regularization:</strong> In standard SGD, weight decay and L2 regularization are equivalent. In Adam, they're not (this is why AdamW exists). Explain the difference. Why does this distinction matter for LLM training? (Hint: Adam's adaptive learning rates interact differently with the penalty term.)</p>
+</li>
+<li>
+<p><strong>The cosine schedule interaction:</strong> Sketch what happens to the effective learning rate (LR × gradient magnitude) with and without weight decay under a cosine schedule. Why does weight decay create a "spring-loading" effect? Could you achieve the same effect with a different LR schedule and no weight decay?</p>
+</li>
+<li>
+<p><strong>Dropout in fine-tuning:</strong> Even though dropout isn't used in pretraining, it's still common in fine-tuning. Why might the calculus be different? (Fine-tuning: small dataset, many epochs, real overfitting risk. The arguments against dropout vanish.)</p>
+</li>
+</ol>
+<hr />
+<h2 id="part-3-stability-tricks-new-in-2024-2025">Part 3: Stability Tricks (New in 2024-2025)</h2>
+<p>This is the area Hashimoto identified as having the most new development in the past year. As models get larger and train longer, stability becomes critical.</p>
+<h3 id="31-the-problem-softmaxes">3.1 The Problem: Softmaxes</h3>
+<p>Two softmaxes in a transformer are potential instability sources:
+1. <strong>Output softmax</strong> (final logit → probability conversion)
+2. <strong>Attention softmax</strong> (QK^T → attention weights)</p>
+<p>Both involve exponentials (can overflow) and division (can be zero).</p>
+<h4 id="teaching-intuition_11">Teaching Intuition</h4>
+<p>Show students the OLMo training curves: the blue curve (unstable) has gradient norm spikes everywhere -- imagine paying $10M to train a model and watching it diverge at step 400K. The orange curve (stable) is smooth. The difference? A few small architectural interventions. This motivates <em>why</em> stability tricks matter: they're not about making models better, they're about making sure your $10M training run doesn't crash and burn.</p>
+<p><strong>Why softmaxes are dangerous:</strong> $\text{softmax}(x)_i = e^{x_i} / \sum_j e^{x_j}$. If any $x_i$ becomes very large (say, 1000), $e^{1000}$ overflows float32/bfloat16. If all $x_i$ are very negative, $\sum_j e^{x_j} \approx 0$, and you divide by zero. These are the two failure modes: <strong>overflow</strong> and <strong>underflow</strong>. Both create NaN/Inf gradients that corrupt the entire training.</p>
+<h3 id="32-z-loss-output-softmax-stability">3.2 Z-Loss (Output Softmax Stability)</h3>
+<p><strong>Idea (Devlin 2014, popularized by PaLM 2022):</strong> Add an auxiliary loss to keep the softmax normalizer $Z(x) = \sum_{r'} e^{U_{r'}(x)}$ close to 1:</p>
+<p>$$L = \sum_i [\log(P(x_i)) - \alpha \cdot \log^2(Z(x_i))]$$</p>
+<p>When $\log(Z) \approx 0$ (i.e., $Z \approx 1$), the softmax computation simplifies to just $U_r(x)$ -- no exponentials or log-sum-exp, which is numerically clean.</p>
+<p><strong>Adopted by:</strong> PaLM (pioneer), Baichuan 2, DCLM, OLMo 2</p>
+<h4 id="teaching-intuition_12">Teaching Intuition</h4>
+<p>Walk through the math slowly. The log-softmax is $\log P(x) = U_r(x) - \log Z(x)$. If $Z(x)$ is well-behaved (close to 1), then $\log Z \approx 0$ and $\log P \approx U_r$ -- you're just reading off the logit directly. No exponentials, no division. Clean gradients.</p>
+<p>The Z-loss penalty $\alpha \cdot \log^2 Z$ is a gentle nudge: "please keep $Z$ close to 1." It doesn't force it -- the model is free to have $Z \neq 1$ if that helps the main loss -- but there's a cost for letting $Z$ drift far from 1.</p>
+<p><strong>Analogy:</strong> It's like putting a leash on a dog. The dog (the model) can go wherever it wants, but if it pulls too far (Z gets large), the leash (Z-loss) tugs back. The coefficient $\alpha = 10^{-4}$ makes it a very loose leash -- only extreme deviations get penalized.</p>
+<h3 id="33-qk-norm-attention-softmax-stability">3.3 QK-Norm (Attention Softmax Stability)</h3>
+<p><strong>Idea:</strong> Apply LayerNorm to queries and keys <em>before</em> computing attention scores. This bounds the inputs to the softmax, preventing extreme values.</p>
+<p><strong>Origin:</strong> Vision/multimodal community (Dehgani 2023 for large ViTs, then Chameleon, IDEFICS from Hugging Face). The innovation then migrated to pure text LLMs.</p>
+<p><strong>Adopted by:</strong> Gemma 2, DCLM, OLMo 2</p>
+<p><strong>Meta-lesson:</strong> LayerNorm is strikingly effective as a stability tool. It's been added at pre-norm position, post-norm-outside-residual position, and now inside attention for QK normalization.</p>
+<h3 id="34-logit-soft-capping-less-common">3.4 Logit Soft-Capping (Less Common)</h3>
+<p><strong>Idea (Gemma 2):</strong> Cap attention logits using tanh:
+$$\text{logits} \leftarrow \text{soft_cap} \cdot \tanh(\text{logits} / \text{soft_cap})$$</p>
+<p>Prevents logits from exceeding $\pm$soft_cap. Gemma 2 uses soft_cap=50 for attention, 30 for final layer.</p>
+<p><strong>Mixed evidence:</strong> Nvidia ablation showed soft-capping slightly <em>hurts</em> perplexity (11.24 vs 11.19 baseline), while QK-norm improves it (10.84-10.85). So QK-norm appears to be the better stability intervention.</p>
+<h4 id="student-questions-from-the-cs336-lecture_6">Student Questions (from the CS336 lecture)</h4>
+<p><strong>Q: For QK-norm, the LayerNorm is applied during training. Is it kept at inference time?</strong>
+A: Yes, absolutely. The LayerNorm has learned parameters ($\gamma$) that the model depends on. Removing it at inference would be like removing a layer from the network -- the model would produce garbage because it was trained to expect normalized QK inputs.</p>
+<h4 id="advanced-questions-for-students_11">Advanced Questions for Students</h4>
+<ol>
+<li>
+<p><strong>Z-loss vs QK-norm:</strong> Both stabilize softmaxes, but they work differently. Z-loss is a <em>loss function</em> modification (the forward pass is unchanged). QK-norm is an <em>architecture</em> modification (adds parameters and computation). What are the tradeoffs? When might you prefer one over the other?</p>
+</li>
+<li>
+<p><strong>Where do the instabilities come from?</strong> In the attention softmax, the inputs are $QK^T / \sqrt{d_k}$. If $Q$ and $K$ have entries that grow during training (activation drift), then $QK^T$ can have entries that are very large. Trace through <em>why</em> activations might grow during training. (Hint: residual stream accumulation, lack of normalization, training dynamics.)</p>
+</li>
+<li>
+<p><strong>The LayerNorm meta-lesson:</strong> Hashimoto's joke: "stack more layer norms." We've now seen LayerNorm used at: pre-norm position, double-norm position, QK-norm position. Is there a principled theory for <em>where</em> normalization helps? Or is it just "throw a norm at any unstable computation and it usually helps"? What are the costs of excessive normalization?</p>
+</li>
+<li>
+<p><strong>Soft-capping as an alternative to FlashAttention:</strong> The standard numerical trick for stable softmax is to subtract $\max(x)$ before exponentiating. FlashAttention handles this automatically. Logit soft-capping with tanh prevents large values altogether. If you're already using FlashAttention with the max-subtraction trick, does soft-capping provide additional benefit? Why might it <em>hurt</em> perplexity?</p>
+</li>
+</ol>
+<hr />
+<h2 id="part-4-attention-variants">Part 4: Attention Variants</h2>
+<h3 id="41-gqa-mqa-inference-optimization">4.1 GQA / MQA (Inference Optimization)</h3>
+<p><strong>Problem:</strong> During autoregressive generation, the KV cache creates terrible arithmetic intensity. At training time, attention has high arithmetic intensity $O((1/k + 1/bn)^{-1})$. At inference (incremental decoding), it drops to $O((n/d + 1/b)^{-1})$ -- the $n/d$ term is problematic because you want long sequences ($n$ large) but can't easily increase $d$.</p>
+<p><strong>Multi-Query Attention (MQA):</strong> Keep multiple query heads but use a <strong>single shared</strong> key and value head. This dramatically reduces KV cache size and memory movement.</p>
+<p><strong>Grouped-Query Attention (GQA):</strong> A middle ground -- share K/V across groups of query heads (e.g., 8 query heads share 2 KV heads). Provides a knob to trade off expressiveness vs inference efficiency.</p>
+<p><strong>Evidence:</strong> MQA has a small PPL hit (30.2 vs 29.9 multi-head; Shazeer 2019). GQA shows low to no quality hit while providing major inference speedups (Ainslie 2023).</p>
+<h4 id="teaching-intuition_13">Teaching Intuition</h4>
+<p><strong>The KV cache explanation is essential.</strong> Walk through it step-by-step:</p>
+<ol>
+<li>
+<p>At training time, we process the entire sequence at once. We compute $Q, K, V$ for all positions simultaneously. The attention matrix multiply $QK^T$ is a fat matrix multiply -- GPUs love this.</p>
+</li>
+<li>
+<p>At inference, we generate tokens one-at-a-time. For each new token, we compute only one new row of $Q$ (1 token). But we need to multiply it against <em>all</em> previous $K$'s (accumulated in the KV cache). This is a matrix-vector multiply (one row of Q against the full K matrix) -- terrible arithmetic intensity.</p>
+</li>
+<li>
+<p><strong>The bottleneck isn't compute, it's memory.</strong> We have to <em>load</em> the entire KV cache from GPU memory for every single token generation. For a model with 32 heads, 128 dims per head, and 100K context tokens, the KV cache is $2 \times 32 \times 128 \times 100000 \times 2$ bytes $\approx$ 1.6 GB <em>per layer</em>. For 80 layers: 128 GB. Loading this from HBM for every token is brutally slow.</p>
+</li>
+<li>
+<p><strong>MQA's fix:</strong> If we share K and V across all heads, the cache shrinks by a factor of $n_{heads}$ (e.g., 32x smaller). GQA with 4 KV groups gives an 8x reduction. Dramatically less memory to move around.</p>
+</li>
+</ol>
+<p><strong>Key insight to drive home:</strong> GQA/MQA is purely about inference efficiency. It barely affects training. The architecture decision is driven by <em>deployment</em> economics -- how many tokens per second can you serve, at what cost per query.</p>
+<h4 id="advanced-questions-for-students_12">Advanced Questions for Students</h4>
+<ol>
+<li>
+<p><strong>KV cache size calculation:</strong> For LLaMA-2 70B (80 layers, 64 heads, $d_{head} = 128$, GQA with 8 KV groups), calculate the KV cache size in GB for a context of 128K tokens at bf16. How does this compare to the model weights size? At what context length does the KV cache exceed the model weights?</p>
+</li>
+<li>
+<p><strong>The arithmetic intensity argument:</strong> Derive the arithmetic intensity for standard multi-head attention at inference (one token at a time). Show that it's $O((n/d + 1/b)^{-1})$. Then derive it for MQA and show the improvement. At what batch size does MQA stop being beneficial? (i.e., when does the $1/b$ term dominate regardless.)</p>
+</li>
+<li>
+<p><strong>Quality tradeoff:</strong> MQA forces all query heads to attend using the same K and V. Conceptually, this means different attention heads can no longer look at different "aspects" of the keys and values -- they all share the same representation. Why doesn't this hurt more? (Hypothesize: the query projections already provide enough diversity, and the shared K/V still contains all the information.)</p>
+</li>
+<li>
+<p><strong>Training GQA from scratch vs converting:</strong> Ainslie et al (2023) showed you can convert a trained MHA model to GQA by mean-pooling the KV heads, then fine-tuning briefly. Why does this work? What information is lost in the mean-pooling, and why can fine-tuning recover it?</p>
+</li>
+</ol>
+<h3 id="42-sliding-window-full-attention-interleaving-2025-state-of-the-art">4.2 Sliding Window + Full Attention Interleaving (2025 State of the Art)</h3>
+<p><strong>The modern trick for long context:</strong>
+- Every Nth layer (e.g., every 4th) uses <strong>full self-attention with no position embedding</strong> (NoPE)
+- Remaining layers use <strong>sliding window attention with RoPE</strong></p>
+<p><strong>Example (Cohere Command A):</strong> Blocks 1-3 use SWA+RoPE, Block 4 uses Full+NoPE, repeat.</p>
+<p><strong>Why this works:</strong>
+- <strong>Short-range:</strong> RoPE + sliding window handles local context efficiently
+- <strong>Long-range:</strong> Full attention layers with no position embedding can extrapolate to arbitrary lengths (no position encoding to break down)
+- <strong>Systems:</strong> Full attention only happens every N layers, controlling compute cost</p>
+<p><strong>Models using this:</strong> LLaMA 4, Gemma 3, Cohere Command A</p>
+<h4 id="teaching-intuition_14">Teaching Intuition</h4>
+<p><strong>The "interleaving" trick is brilliant and worth unpacking carefully:</strong></p>
+<p>Think of the transformer as building up understanding layer by layer. In the SWA+Full interleaving:</p>
+<ul>
+<li>
+<p><strong>SWA layers (with RoPE):</strong> "Look at nearby tokens and understand local patterns." The sliding window means you only see, say, 4096 tokens around you. RoPE tells you exactly how far away each token is. These layers are cheap (sparse attention) and handle local syntax, word relationships, etc.</p>
+</li>
+<li>
+<p><strong>Full attention layers (with NoPE -- no position embedding):</strong> "Now look at the entire document and find relevant information anywhere." No position embedding means the model doesn't know <em>where</em> things are -- just <em>what</em> they are. This is purely content-based retrieval. And because there's no position encoding, it doesn't break when the document is longer than anything seen in training.</p>
+</li>
+</ul>
+<p><strong>The key insight for context length:</strong> The reason RoPE breaks at longer contexts is that the rotation angles $m\theta$ for large $m$ were never seen during training -- the model doesn't know how to handle them. By using NoPE for long-range attention, you sidestep this entirely. The full-attention layers don't care about position, so they work at any length.</p>
+<p><strong>Analogy:</strong> It's like reading a book with two strategies. Most of the time (SWA layers), you read carefully, knowing exactly which page and paragraph you're on (RoPE). Occasionally (full attention layers), you pause and think "where else in this entire book was this concept mentioned?" -- doing a pure content search without caring about page numbers (NoPE).</p>
+<h4 id="advanced-questions-for-students_13">Advanced Questions for Students</h4>
+<ol>
+<li>
+<p><strong>Design tradeoff:</strong> If every 4th layer uses full attention (quadratic in sequence length) and the other 3 use sliding window (linear), what's the overall complexity as a function of sequence length $n$ and window size $w$? For a model with 32 layers and $w = 4096$, at what context length does the full attention cost dominate?</p>
+</li>
+<li>
+<p><strong>NoPE expressiveness:</strong> A full attention layer with no position embedding computes: $\text{softmax}(QK^T/\sqrt{d})V$. Position information is only available through what earlier layers have "written" into the residual stream. How does the model disambiguate two identical tokens at different positions? (Answer: earlier SWA+RoPE layers have already baked position-dependent information into the token representations.)</p>
+</li>
+<li>
+<p><strong>Why not all-NoPE?</strong> If NoPE enables infinite context, why not use it everywhere? Design an experiment showing where pure NoPE would fail. (Hint: word order matters in language -- "dog bites man" vs "man bites dog" need position information to distinguish.)</p>
+</li>
+<li>
+<p><strong>KV cache implications:</strong> In the interleaved architecture, SWA layers only cache the last $w$ tokens. Full attention layers cache everything. Calculate the KV cache savings compared to full attention everywhere. For a 128K context with $w = 4096$ and every 4th layer being full attention, what's the reduction?</p>
+</li>
+</ol>
+<hr />
+<h2 id="the-llama-like-modern-consensus-architecture">The "LLaMA-like" Modern Consensus Architecture</h2>
+<p>Combining all the above, the modern default is:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Choice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Normalization</td>
+<td><strong>RMSNorm, pre-norm</strong></td>
+</tr>
+<tr>
+<td>Bias terms</td>
+<td><strong>None</strong></td>
+</tr>
+<tr>
+<td>Activation/FFN</td>
+<td><strong>SwiGLU</strong> with $d_{ff} \approx 2.67 \cdot d_{model}$</td>
+</tr>
+<tr>
+<td>Position embedding</td>
+<td><strong>RoPE</strong> (applied at each attention layer)</td>
+</tr>
+<tr>
+<td>Layer structure</td>
+<td><strong>Serial</strong> (attention → MLP)</td>
+</tr>
+<tr>
+<td>Attention</td>
+<td><strong>GQA</strong> for inference efficiency</td>
+</tr>
+<tr>
+<td>Aspect ratio</td>
+<td>$d_{model}/n_{layers} \approx 100-200$</td>
+</tr>
+<tr>
+<td>Head dim</td>
+<td>$d_{head} \times n_{heads} = d_{model}$</td>
+</tr>
+<tr>
+<td>Regularization</td>
+<td>Weight decay 0.1, no dropout</td>
+</tr>
+<tr>
+<td>Stability</td>
+<td>Z-loss + QK-norm</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="key-references">Key References</h2>
+<ul>
+<li><strong>Pre/Post-Norm:</strong> Xiong et al 2020 "On Layer Normalization in the Transformer Architecture"; Salazar &amp; Nguyen 2019</li>
+<li><strong>RMSNorm:</strong> Zhang &amp; Sennrich 2019; Narang et al 2020</li>
+<li><strong>GLU/SwiGLU:</strong> Shazeer 2020 "GLU Variants Improve Transformer"; Narang et al 2020</li>
+<li><strong>RoPE:</strong> Su et al 2021 "RoFormer: Enhanced Transformer with Rotary Position Embedding"</li>
+<li><strong>Parallel Layers:</strong> Wang &amp; Komatsuzaki 2021 (GPT-J); Chowdhery et al 2022 (PaLM)</li>
+<li><strong>Aspect Ratio/Scaling:</strong> Kaplan et al 2020 "Scaling Laws for Neural Language Models"; Tay et al 2021</li>
+<li><strong>FLOPS vs Runtime:</strong> Ivanov et al 2023</li>
+<li><strong>Weight Decay:</strong> Andriushchenko et al 2023</li>
+<li><strong>Z-Loss:</strong> Devlin 2014; Chowdhery et al 2022 (PaLM)</li>
+<li><strong>QK-Norm:</strong> Dehgani 2023; Henry et al (OLMo 2)</li>
+<li><strong>Logit Soft-Capping:</strong> Gemma 2 Technical Report</li>
+<li><strong>GQA/MQA:</strong> Shazeer 2019; Ainslie et al 2023</li>
+<li><strong>Sliding Window:</strong> Child et al 2019; Jiang et al 2023 (Mistral)</li>
+</ul>
+<hr />
+<h2 id="cross-cutting-themes-for-discussion">Cross-Cutting Themes for Discussion</h2>
+<p>These are higher-level discussion topics that span multiple sections of the lecture. Good for class discussion or exam questions.</p>
+<h3 id="theme-1-theory-vs-practice-in-architecture-design">Theme 1: Theory vs Practice in Architecture Design</h3>
+<p>Almost no architecture choice in modern LLMs has a clean theoretical justification. Pre-norm: gradient arguments are hand-wavy. RMSNorm: the real reason is data movement, not math. GLUs: "they just work." RoPE: has nice math, but the practical success is what drove adoption.</p>
+<p><strong>Discussion prompt:</strong> "Is deep learning architecture design more like engineering or science? Are we doing principled design or glorified hyperparameter search? What would a more principled approach look like?"</p>
+<h3 id="theme-2-the-role-of-systems-in-architecture">Theme 2: The Role of Systems in Architecture</h3>
+<p>A recurring theme: architecture choices are increasingly driven by hardware constraints, not model quality.</p>
+<ul>
+<li>RMSNorm wins because of <strong>memory bandwidth</strong>, not mathematical superiority</li>
+<li>Parallel layers win because of <strong>kernel fusion</strong>, not expressiveness</li>
+<li>GQA/MQA exist because of <strong>KV cache memory</strong>, not training quality</li>
+<li>Aspect ratios are constrained by <strong>parallelism strategies</strong>, not optimal loss</li>
+<li>SWA+Full interleaving is designed for <strong>inference efficiency</strong>, not training loss</li>
+</ul>
+<p><strong>Discussion prompt:</strong> "As hardware changes (more compute, relatively less memory bandwidth), which architecture choices might change? What happens if we move to architectures optimized for, say, TPUs vs GPUs vs custom accelerators?"</p>
+<h3 id="theme-3-convergent-evolution-and-conservatism">Theme 3: Convergent Evolution and Conservatism</h3>
+<p>Hashimoto's metaphor of "convergent evolution" is apt. The field has converged on a "LLaMA-like" template. But is this convergence because these choices are genuinely optimal, or because everyone is copying from the same successful models?</p>
+<p><strong>Discussion prompt:</strong> "T5 tried radical hyperparameters (64x FFN ratio, 16x head ratio) and it worked. Yet almost no one followed. Why? Is the field too conservative? How would you distinguish 'this is the optimal choice' from 'this is what everyone copies'?"</p>
+<h3 id="theme-4-what-we-dont-know">Theme 4: What We Don't Know</h3>
+<p>Honest areas of ignorance from the lecture:
+- Why exactly do bias terms hurt stability?
+- Why does weight decay improve training loss through optimizer dynamics?
+- Is there a principled theory for where normalization helps?
+- What's the true optimal aspect ratio, and does it shift with scale?
+- Why haven't parallel layers been more widely adopted despite clear compute wins?</p>
+<p><strong>Discussion prompt:</strong> "Pick one of these open questions. Design a set of experiments that would give a convincing answer. What scale would you need to run at? What baselines and controls?"</p>
+<hr />
+<h2 id="suggested-exercises-for-students">Suggested Exercises for Students</h2>
+<h3 id="exercise-1-architecture-autopsy-20-min">Exercise 1: Architecture Autopsy (20 min)</h3>
+<p>Give students a recent model paper (e.g., Qwen-2.5 or SmolLM technical report). Have them fill in a table:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>This model's choice</th>
+<th>"Standard" choice</th>
+<th>Same or different?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Normalization type</td>
+<td>?</td>
+<td>RMSNorm</td>
+<td></td>
+</tr>
+<tr>
+<td>Norm position</td>
+<td>?</td>
+<td>Pre-norm</td>
+<td></td>
+</tr>
+<tr>
+<td>Activation</td>
+<td>?</td>
+<td>SwiGLU</td>
+<td></td>
+</tr>
+<tr>
+<td>Position embedding</td>
+<td>?</td>
+<td>RoPE</td>
+<td></td>
+</tr>
+<tr>
+<td>$d_{ff}/d_{model}$</td>
+<td>?</td>
+<td>8/3</td>
+<td></td>
+</tr>
+<tr>
+<td>Bias terms</td>
+<td>?</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>Attention type</td>
+<td>?</td>
+<td>GQA</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Then discuss: where does this model deviate from the consensus, and why?</p>
+<h3 id="exercise-2-parameter-budget-calculator-30-min">Exercise 2: Parameter Budget Calculator (30 min)</h3>
+<p>Given a fixed parameter budget (e.g., 3B, 7B, 13B), have students derive the full architecture specification using the consensus rules. Then compare their answer to real models of the same size.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Constraints:</span>
+<span class="c1"># d_ff = 8/3 * d_model (SwiGLU)</span>
+<span class="c1"># d_head = 128</span>
+<span class="c1"># n_heads = d_model / d_head</span>
+<span class="c1"># d_model / n_layers ≈ 128</span>
+<span class="c1">#</span>
+<span class="c1"># Total params ≈ n_layers * (</span>
+<span class="c1">#   3 * d_model * d_ff        # SwiGLU MLP: W, V, W2</span>
+<span class="c1">#   + 4 * d_model * d_model   # Attention: Q, K, V, O projections</span>
+<span class="c1">#   + 2 * d_model              # RMSNorm (before attention + before MLP)</span>
+<span class="c1"># ) + vocab_size * d_model     # Embedding</span>
+</code></pre></div>
+<h3 id="exercise-3-stability-detective-discussion-15-min">Exercise 3: Stability Detective (Discussion, 15 min)</h3>
+<p>Show students a training loss curve with gradient norm spikes (like the OLMo blue curve). Ask them to:
+1. Identify the likely cause (softmax instability, activation growth, etc.)
+2. Propose 3 interventions from the lecture (z-loss, QK-norm, logit capping)
+3. Predict which would help most and why
+4. Discuss what would happen if they just retrained from the last checkpoint before the spike</p>
+<h3 id="exercise-4-rope-implementation-homework">Exercise 4: RoPE Implementation (Homework)</h3>
+<p>Have students implement RoPE from scratch in PyTorch (no library calls):
+1. Generate the rotation matrix for given positions and dimensions
+2. Apply it to query and key tensors
+3. Verify the relative position property: show that $\langle R_m q, R_n k \rangle = \langle R_0 q, R_{n-m} k \rangle$
+4. Bonus: Implement NTK-aware scaling for context length extension</p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
