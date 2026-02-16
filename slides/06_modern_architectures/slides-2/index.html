@@ -1,0 +1,1566 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A comprehensive hands-on course on Large Language Models for industry professionals">
+      
+      
+      
+        <link rel="canonical" href="https://llm-engg.github.io/slides/06_modern_architectures/slides-2/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.21">
+    
+    
+      
+        <title>Slides 2 - Large Language Models - A Hands-on Approach</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.2a3383ac.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-LLD65KQHZH"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-LLD65KQHZH",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-LLD65KQHZH",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#topics-covered" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Large Language Models - A Hands-on Approach" class="md-header__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Large Language Models - A Hands-on Approach
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Slides 2
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../schedule/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Schedule
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../assignments/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Assignments and Labs
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Large Language Models - A Hands-on Approach" class="md-nav__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Large Language Models - A Hands-on Approach
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../schedule/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Schedule
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../assignments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Assignments and Labs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#topics-covered" class="md-nav__link">
+    <span class="md-ellipsis">
+      Topics Covered
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recap-current-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recap : Current Models
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-norm-vs-post-norm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre-Norm vs Post-Norm
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layernorm-vs-rmsnorm" class="md-nav__link">
+    <span class="md-ellipsis">
+      LayerNorm vs RMSNorm
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#activations-gated-linear-units-strong-trend-toward-swiglugeglu" class="md-nav__link">
+    <span class="md-ellipsis">
+      Activations &amp; Gated Linear Units (Strong trend toward SwiGLU/GeGLU)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gated-linear-units-glu" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gated Linear Units (GLU)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#position-encodings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Position Encodings
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#position-encodings_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Position Encodings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Position Encodings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-do-we-need-position-encodings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why do we need Position Encodings?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integer-posion-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integer Posion Encoding
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#binary-position-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Binary Position Encoding
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#binary-position-encoding_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Binary Position Encoding
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sinusoidal-position-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sinusoidal Position Encoding
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sinusoidal-position-encoding_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sinusoidal Position Encoding
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#absolute-vs-relative-position-encodings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Absolute vs Relative Position Encodings
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#relative-position-encoding-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Relative Position Encoding Example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#position-encoding-desirable-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Position Encoding : Desirable Properties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rotary-position-embeddings-rope" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rotary Position Embeddings (RoPE)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#encoding-position-as-a-rotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Encoding position as a rotation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dot-product-of-rotated-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dot product of rotated vectors
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rotations-in-higher-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rotations in higher dimensions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rotation-in-m-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rotation in m dimensions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#computing-attention-with-rope" class="md-nav__link">
+    <span class="md-ellipsis">
+      Computing Attention with RoPE
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-hyperparameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other Hyperparameters
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-hyperparameters_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other Hyperparameters
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Hyperparameters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ffn-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      FFN Dimensions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#number-of-attention-heads" class="md-nav__link">
+    <span class="md-ellipsis">
+      Number of attention heads
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vocabulary-size" class="md-nav__link">
+    <span class="md-ellipsis">
+      Vocabulary size
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mha-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      MHA Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mha-generation-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      MHA - Generation Phase
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mha-generation-phase_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      MHA - Generation Phase
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kv-cache-memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      KV Cache Memory Usage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi-query-attention-mqa" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-Query Attention (MQA)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#grouped-query-attention-gqa" class="md-nav__link">
+    <span class="md-ellipsis">
+      Grouped-Query Attention (GQA)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi-head-latent-attention-mla" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-head Latent Attention (MLA)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deepseek-v3-mla" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeepSeek V3 MLA
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qk-norm-attention-softmax-stability" class="md-nav__link">
+    <span class="md-ellipsis">
+      QK-Norm (Attention Softmax Stability)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      Further Reading
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Slides 2</h1>
+
+<div class="center-slide">
+
+# LLMs : A Hands-on Approach 
+
+### Modern Architectures
+</div>
+
+<hr />
+<h2 id="topics-covered">Topics Covered</h2>
+<ul>
+<li><strong>Modern LLM Architectures</strong><ul>
+<li>Positional Encodings</li>
+<li>Attention Variants</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="recap-current-models">Recap : Current Models</h2>
+<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQsF7QOjxAI1f7ud_oYNLRBq6qa3ZzLqtMMF_1xOKKbi5qb6atwvgeYIp4pYjuGXHDTKXMO0IdxBaVw/pubhtml?gid=1330227995&amp;single=true&amp;widget=true&amp;headers=false" style="width:100%;height:100%;border:none;"></iframe>
+
+<hr />
+<h2 id="pre-norm-vs-post-norm">Pre-Norm vs Post-Norm</h2>
+<p><strong>Almost all models post-2020 use pre-norm.</strong></p>
+<p><img alt="alt text" src="../images/pre-post-ln.png" /></p>
+<p><strong>Original Transformer</strong> : Post Norm</p>
+<p><code>x → Attention(x) → Add → LayerNorm → FFN → Add → LayerNorm</code></p>
+<p><strong>GPT 2</strong> : Pre-Norm</p>
+<p><code>x → LayerNorm → Attention → Add → LayerNorm → FFN → Add</code></p>
+<hr />
+<h2 id="layernorm-vs-rmsnorm">LayerNorm vs RMSNorm</h2>
+<div style="text-align: center;"> 
+Strong consensus toward RMSNorm
+</div>
+
+<div style="display: flex; gap: 2rem;">
+
+<div style="flex: 1;">
+
+**LayerNorm** (original): 
+
+Normalize by subtracting mean and dividing by std dev, then scale ($\gamma$) and shift ($\beta$):
+
+$$y = \frac{x - E[x]}{\sqrt{Var[x] + \epsilon}} \cdot \gamma + \beta$$
+
+*Models* : GPT-1/2/3, OPT, GPT-J, BLOOM
+
+</div>
+
+<div style="flex: 1; border-left: 2px solid #333; padding-left: 2rem;">
+
+**RMSNorm** (modern): 
+
+Drop the mean subtraction and bias term:
+
+$$y = \frac{x}{\sqrt{||x||_2^2 + \epsilon}} \cdot \gamma$$
+
+*Models* : LLaMA family, DeepSeek V3, Qwen3 etc
+
+</div>
+
+
+</div>
+
+<p><strong>Why RMSNorm</strong></p>
+<ul>
+<li>Fewer operations: RMSNorm requires fewer computations (no mean subtraction, no bias term) which reduces both FLOPs and memory bandwidth.</li>
+</ul>
+<hr />
+<h2 id="activations-gated-linear-units-strong-trend-toward-swiglugeglu">Activations &amp; Gated Linear Units (Strong trend toward SwiGLU/GeGLU)</h2>
+<p><strong>Evolution of activations:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Activation</th>
+<th>Formula</th>
+<th>Notable Models</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ReLU</td>
+<td>$FF(x) = \max(0, xW_1)W_2$</td>
+<td>Original transformer, T5, Gopher, OPT</td>
+</tr>
+<tr>
+<td>GeLU</td>
+<td>$FF(x) = GELU(xW_1)W_2$ where $GELU(x) = x\Phi(x)$</td>
+<td>GPT-1/2/3, GPT-J, BLOOM</td>
+</tr>
+<tr>
+<td>SwiGLU</td>
+<td>$FF(x) = (Swish(xW) \otimes xV)W_2$</td>
+<td>LLaMA 1/2/3, PaLM, Mistral, <em>most post-2023</em></td>
+</tr>
+<tr>
+<td>GeGLU</td>
+<td>$FF(x) = (GELU(xW) \otimes xV)W_2$</td>
+<td>T5 v1.1, mT5, Phi3, Gemma 2/3</td>
+</tr>
+</tbody>
+</table>
+<p>where <code>Swish(x) = x * sigmoid(x)</code> and $\otimes$ is elementwise multiplication.</p>
+<hr />
+<h2 id="gated-linear-units-glu">Gated Linear Units (GLU)</h2>
+<p><strong>What do GLUs do?</strong></p>
+<ul>
+<li>GLUs add a <strong>gating mechanism</strong></li>
+<li>Hidden representation element-wise multiplied by a gate $xV$ (learned linear projection)</li>
+<li>$xV$ controls information flow through the MLP</li>
+</ul>
+<p>$$\text{Standard:} \quad \sigma(xW_1) \rightarrow \sigma(xW_1) \otimes (xV) \quad \text{(gated)}$$</p>
+<div style="margin-bottom:30px"></div>
+
+<p><img alt="alt text" src="../images/glu.png" /></p>
+<hr />
+<h2 id="position-encodings">Position Encodings</h2>
+<p><strong>Evolution:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>How it works</th>
+<th>Models</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sinusoidal</strong></td>
+<td>Add fixed sin/cos to embedding</td>
+<td>Original Transformer</td>
+</tr>
+<tr>
+<td><strong>Absolute (learned)</strong></td>
+<td>Add learned position vector $u_i$ to embedding</td>
+<td>GPT-1/2/3, OPT</td>
+</tr>
+<tr>
+<td><strong>Relative</strong></td>
+<td>Add learned bias to attention scores</td>
+<td>T5, Gopher, Chinchilla</td>
+</tr>
+<tr>
+<td><strong>ALiBi</strong></td>
+<td>Linear attention bias</td>
+<td>BLOOM</td>
+</tr>
+<tr>
+<td><strong>NoPE</strong></td>
+<td>No position embedding at all</td>
+<td>SmolLM3, Kimi Linear</td>
+</tr>
+<tr>
+<td><strong>RoPE</strong></td>
+<td>Rotate query/key vectors</td>
+<td>GPT-J, PaLM, LLaMA, <strong>all 2024+ models</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="position-encodings_1">Position Encodings</h2>
+<h4 id="why-do-we-need-position-encodings">Why do we need Position Encodings?</h4>
+<p><strong>Attention is a position-agnostic operation</strong></p>
+<ul>
+<li>Treats the input as a <strong>set</strong>, not a sequence</li>
+<li>No inherent notion of order or position</li>
+</ul>
+<p><strong>Example:</strong></p>
+<p><em>The dog chased another dog</em> vs <em>Another dog chased the dog</em></p>
+<ul>
+<li>Both have the <strong>same set of tokens</strong></li>
+<li>But <strong>different meanings</strong></li>
+</ul>
+<p><strong>Solution:</strong> Add positional encodings to inject order information into the model</p>
+<p><img alt="alt text" src="../images/tok_pos.png" /></p>
+<hr />
+<h2 id="integer-posion-encoding">Integer Posion Encoding</h2>
+<ul>
+<li>Add the integer postion directly into embeddings.</li>
+<li>Problems:<ul>
+<li>Position encoding magnitude greater than token embedding magnitude</li>
+<li>Model should separately learn to handle content and position, which can make learning harder.</li>
+</ul>
+</li>
+</ul>
+<video controls src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/you-could-have-designed-SOTA-positional-encoding/IntegerEncoding.mp4" title="Int Encoding"></video>
+
+<hr />
+<h2 id="binary-position-encoding">Binary Position Encoding</h2>
+<video controls src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/you-could-have-designed-SOTA-positional-encoding/BinaryEncoding.mp4" title="Title"></video>
+
+<hr />
+<h2 id="binary-position-encoding_1">Binary Position Encoding</h2>
+<video controls src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/you-could-have-designed-SOTA-positional-encoding/BinaryPositionalEncodingPlot.mp4" title="Title"></video>
+
+<p><strong>Problems</strong>:</p>
+<ul>
+<li>Hamming distance artifacts</li>
+<li>Sparse representations (most bits are zero, which can make learning harder)</li>
+<li>No lernable interpolation</li>
+</ul>
+<hr />
+<h2 id="sinusoidal-position-encoding">Sinusoidal Position Encoding</h2>
+<p>$$ PE_{(pos,2i)} = sin(pos/10000^{2i/d_{\text{model}}}) $$</p>
+<p>$$ PE_{(pos,2i+1)} = cos(pos/10000^{2i/d_{\text{model}}}) $$</p>
+<video controls src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/you-could-have-designed-SOTA-positional-encoding/SteppedPositionalEncodingPlot.mp4" title="Title"></video>
+
+<hr />
+<h2 id="sinusoidal-position-encoding_1">Sinusoidal Position Encoding</h2>
+<p><em>Why </em><em>sin</em><em> and </em><em>cos</em>**? </p>
+<p>$sin(a+b) = sin(a)cos(b) + cos(a)sin(b)$</p>
+<p>$cos(a+b) = cos(a)cos(b) - sin(a)sin(b)$</p>
+<p><em>PE(pos+k)</em> is a linear function of <em>PE(pos)</em></p>
+<p>So </p>
+<p>$$
+\begin{aligned}
+\sin(\omega \cdot (p+k)) &amp;= \sin(\omega p)\cos(\omega k) + \cos(\omega p)\sin(\omega k)
+\end{aligned}
+$$</p>
+<p>$$
+\begin{aligned}
+\cos(\omega \cdot (p+k)) &amp;= \cos(\omega p)\cos(\omega k) - \sin(\omega p)\sin(\omega k)
+\end{aligned}
+$$</p>
+<div style="margin-bottom:20px"> </div>
+
+<p><strong>Downsides</strong> :</p>
+<p>Sinusoidal PE is added to embeddings: $x_p = x_{token} + PE(p)$</p>
+<p>Then projected: $q_p = W_q x_p$, $k_p = W_kx_p$</p>
+<ul>
+<li>Position and content are entangled before attention</li>
+<li>Relative position is implicit, not structural</li>
+<li>Attention must learn how to extract distance</li>
+</ul>
+<hr />
+<h2 id="absolute-vs-relative-position-encodings">Absolute vs Relative Position Encodings</h2>
+<ul>
+<li>
+<p><em>Absolute position encodings</em>  - Unique encoding to each position in the sequence. </p>
+</li>
+<li>
+<p><em>Relative position encodings</em> - Encodes the relative distance between tokens, rather than their absolute position.</p>
+</li>
+</ul>
+<p><img alt="alt text" src="../images/rel_pos.png" /></p>
+<p><strong>Why do we need them?</strong></p>
+<ul>
+<li>
+<p>"The cat sat" should have similar relationships whether at positions [5,6,7] or [105,106,107]</p>
+</li>
+<li>
+<p>Absolute encodings make it harder to learn patterns based on relative distance (e.g., "the word two positions to the left of X")</p>
+</li>
+</ul>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Learn patterns based on <strong>relative distance</strong> between tokens</li>
+<li>More important for many tasks than absolute position</li>
+<li>No reliance on fixed absolute positions</li>
+</ul>
+<hr />
+<h2 id="relative-position-encoding-example">Relative Position Encoding Example</h2>
+<p><strong>Example sentence:</strong> <em>"The dog chased another dog"</em></p>
+<p>When attending from position 2 ("chased"):</p>
+<table>
+<thead>
+<tr>
+<th>Position</th>
+<th>Token</th>
+<th>Absolute</th>
+<th>Relative to pos 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>The</td>
+<td>0</td>
+<td>-2</td>
+</tr>
+<tr>
+<td>1</td>
+<td>dog</td>
+<td>1</td>
+<td>-1</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>chased</strong></td>
+<td>2</td>
+<td><strong>0</strong> (self)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>another</td>
+<td>3</td>
+<td>+1</td>
+</tr>
+<tr>
+<td>4</td>
+<td>dog</td>
+<td>4</td>
+<td>+2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>In practice:</strong></p>
+<p><img alt="alt text" src="../images/qk_rel.png" /></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># T5-style relative attention bias</span>
+<span class="c1"># For position i attending to position j:</span>
+<span class="n">relative_position</span> <span class="o">=</span> <span class="n">j</span> <span class="o">-</span> <span class="n">i</span>  <span class="c1"># e.g., &quot;dog&quot;(1) → &quot;chased&quot;(2) = 1 - 2 = -1</span>
+
+<span class="c1"># Bias added to attention scores (learned, not fixed):</span>
+<span class="n">attention_score</span> <span class="o">=</span> <span class="p">(</span><span class="n">q_i</span> <span class="o">@</span> <span class="n">k_j</span><span class="p">)</span> <span class="o">+</span> <span class="n">bias</span><span class="p">[</span><span class="n">clip</span><span class="p">(</span><span class="n">relative_position</span><span class="p">,</span> <span class="o">-</span><span class="n">max_dist</span><span class="p">,</span> <span class="n">max_dist</span><span class="p">)]</span>
+</code></pre></div>
+<p><strong>Key differences from absolute:</strong>
+- Same relative pattern at any absolute position (e.g., "-1" always means "previous token")
+- Model learns one bias per relative distance, not per absolute position</p>
+<hr />
+<h2 id="position-encoding-desirable-properties">Position Encoding : Desirable Properties</h2>
+<ol>
+<li><strong>Inject position information</strong> into the model</li>
+<li><strong>Allow generalization to longer sequences</strong> than seen during training</li>
+<li><strong>Facilitate learning of relative position patterns</strong> (e.g., "the word   two positions to the left of X")</li>
+<li><strong>Be computationally efficient</strong> (not too many parameters or FLOPs)</li>
+<li><strong>Be compatible with attention mechanism</strong> (e.g., allow position information to influence attention scores)</li>
+</ol>
+<hr />
+<h2 id="rotary-position-embeddings-rope">Rotary Position Embeddings (RoPE)</h2>
+<p>We want attention scores to depend only on <em>relative</em> position $(i - j)$, not absolute positions. </p>
+<p>Mathematically, find $f(x, i)$ such that:</p>
+<p>$$\langle f(x, i), f(y, j) \rangle = g(x, y, i-j)$$</p>
+<p><strong>RoPE's key idea:</strong>
+- Instead of adding PE to the input <code>x</code>, apply rotation to the query and key vectors based on their position. 
+- Position information is directly encoded in the attention scores</p>
+<p><img alt="" src="../images/clip_3m05s_3m39s.gif" /></p>
+<hr />
+<h2 id="encoding-position-as-a-rotation">Encoding position as a rotation</h2>
+<p><strong>Rotating a 2D vector by an angle $\theta$</strong> </p>
+<div style="text-align:center"> 
+
+$$
+\begin{bmatrix}
+x' \\\\
+y'
+\end{bmatrix} =
+\begin{bmatrix}
+\cos \theta & -\sin \theta \\\\
+\sin \theta & \cos \theta
+\end{bmatrix}
+\begin{bmatrix}
+x \\\\
+y
+\end{bmatrix}
+$$ 
+
+</div>
+
+<p><strong>Rotating a word vector</strong></p>
+<p>Given a word vector $x = (x_1, x_2)$ at position $m$, we can rotate it by an angle $\theta_m$ to get the position-aware vector $x'$:</p>
+<div style="text-align:center"> 
+$$
+\begin{bmatrix}
+x'_1 \\\\
+x'_2
+\end{bmatrix} =
+\begin{bmatrix}
+\cos \theta_m & -\sin \theta_m \\\\
+\sin \theta_m & \cos \theta_m
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\\\
+x_2
+\end{bmatrix}
+$$ 
+</div   >
+
+<hr />
+<h2 id="dot-product-of-rotated-vectors">Dot product of rotated vectors</h2>
+<p>Let's rotate two vectors $q$ and $k$ by angles $\theta_q$ and $\theta_k$ respectively. </p>
+<p>$q' = R_{(\theta_q)} q$</p>
+<p>$k' = R_{(\theta_k)} k$</p>
+<p>The dot product of the rotated vectors is:
+$$\begin{aligned}
+q' \cdot k' &amp;= (R(\theta_q) q) \cdot (R(\theta_k) k) \
+&amp;= q^T R(\theta_q)^T R(\theta_k) k \
+&amp;= q^T R(\theta_k - \theta_q) k
+\end{aligned}$$</p>
+<p><strong>Dot products depend only on relative rotation.</strong></p>
+<p>Now attention scores depend on : <code>q</code>, <code>k</code>, and the <strong>relative angle</strong> $(\theta_k - \theta_q)$, which encodes the relative position between the two tokens.</p>
+<p><img alt="alt text" src="../images/rot_attn.png" /></p>
+<hr />
+<h2 id="rotations-in-higher-dimensions">Rotations in higher dimensions</h2>
+<p><img src="images/rot_all.png" class="float-right" style="width: 40%; margin-left: 20px;"></p>
+<ul>
+<li>
+<p>In higher dimensions, we can apply <strong>rotations in multiple planes</strong></p>
+<ul>
+<li>Example: In 4D space, rotate independently in $(x_1, x_2)$ plane and $(x_3, x_4)$ plane</li>
+</ul>
+</li>
+<li>
+<p>For a $d$-dimensional vector:</p>
+<ul>
+<li>Apply $\frac{d}{2}$ independent rotations</li>
+<li>Each rotation has its own angle $\theta_m$</li>
+<li>Encodes position information compatible with attention mechanism</li>
+</ul>
+</li>
+<li>
+<p><strong>Example</strong>: Model with hidden dimension $d = 512$</p>
+<ul>
+<li>Apply 256 independent rotations</li>
+<li>Each pair of dimensions gets rotated by different frequency</li>
+<li>Creates a rich positional representation</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="rotation-in-m-dimensions">Rotation in <code>m</code> dimensions</h2>
+<p><img alt="alt text" src="../images/rot_mdim.png" /></p>
+<p>$\theta_i = B^{-2i/d} \quad \text{where } B \text{ is the base (typically 10000)}$</p>
+<p>The wavelength of dimension $i$ is:</p>
+<p>$$\lambda_i = \frac{2\pi}{\theta_i} = 2\pi \cdot B^{2i/d}$$</p>
+<p>This creates a geometric progression of wavelengths:</p>
+<ul>
+<li><strong>Shortest wavelength</strong> (highest freq, $i=0$): $\lambda_{\min} = 2\pi \approx 6.28$ tokens</li>
+<li><strong>Longest wavelength</strong> (lowest freq, $i=d/2-1$): $\lambda_{\max} = 2\pi \cdot B \approx 62,832$ tokens (when $B=10000$)</li>
+</ul>
+<hr />
+<h2 id="computing-attention-with-rope">Computing Attention with RoPE</h2>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RoPEAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="o">-----</span>    
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>    
+        <span class="c1"># Apply RoPE to queries and keys</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">apply_rotary_emb</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">freqs_cis</span><span class="p">[:</span><span class="n">seq_len</span><span class="p">])</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">apply_rotary_emb</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">freqs_cis</span><span class="p">[:</span><span class="n">seq_len</span><span class="p">])</span>
+
+        <span class="c1"># Scaled dot-product attention</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="p">(</span><span class="n">q</span> <span class="o">@</span> <span class="n">k</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Key implementation details:</strong></p>
+<ol>
+<li><strong>Precompute frequencies</strong>: Calculate $\theta_i = 10000^{-2i/d}$ for all dimension pairs once</li>
+<li><strong>Apply once per forward pass</strong>: Rotate Q and K by position-dependent angles</li>
+<li><strong>No extra parameters</strong>: RoPE is fully deterministic, no learned weights</li>
+</ol>
+<hr />
+<h2 id="other-hyperparameters">Other Hyperparameters</h2>
+<ul>
+<li>How many attention heads?</li>
+<li>How many layers?</li>
+<li>Hidden dimension size?</li>
+<li>FFN dimension size?</li>
+<li>Vocab size?</li>
+</ul>
+<hr />
+<h2 id="other-hyperparameters_1">Other Hyperparameters</h2>
+<h4 id="ffn-dimensions">FFN Dimensions</h4>
+<ul>
+<li>Typical FFN dimension is 4x the hidden dimension (dff​=4⋅dmodel​)</li>
+<li>in <em>GLU variants</em> (SwiGLU, GeGLU), use 2/3 scaling to keep parameter count same</li>
+</ul>
+<h4 id="_1"></h4>
+<h4 id="_2"></h4>
+<h4 id="number-of-attention-heads">Number of attention heads</h4>
+<ul>
+<li>Common choices are 16, 32, or 64 heads for large models. </li>
+<li>The number of heads is often chosen to be a divisor of the hidden dimension for simplicity (e.g., 512 hidden dimension with 16 heads means each head has 32 dimensions).</li>
+</ul>
+<h4 id="_3"></h4>
+<h4 id="_4"></h4>
+<h4 id="vocabulary-size">Vocabulary size</h4>
+<p><strong>Monolingual models:</strong> 30-50K tokens (Original Transformer: 37K, GPT-2/3: 50K, LLaMA: 32K)</p>
+<p><strong>Multilingual/Production:</strong> 100-250K tokens (GPT-4: 100K, PaLM: 256K, Qwen: 152K, Command A: 255K)</p>
+<hr />
+<div class="center-slide" >
+
+## Efficent Attention Variants
+
+</div>
+
+<hr />
+<h2 id="mha-overview">MHA Overview</h2>
+<p>$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$</p>
+<p>$$
+\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \dots, \text{head}_h)W^O
+$$</p>
+<ul>
+<li><strong>Scaled Dot-Product Attention</strong>:</li>
+<li>$Q, K, V$: Query, Key, and Value matrices derived from input embeddings</li>
+<li>$d_k$: The dimensionality of the keys (and queries)</li>
+<li>$W^O$: Output projection matrix that combines the outputs of all heads into a single vector.</li>
+<li>$h$: The number of parallel attention heads.</li>
+</ul>
+<p><img alt="alt text" src="../images/mha.png" /></p>
+<hr />
+<h2 id="mha-generation-phase">MHA - Generation Phase</h2>
+<p><strong>Generation Phase (Autoregressive Decoding):</strong></p>
+<ul>
+<li>Generate tokens <strong>one at a time</strong> autoregressively</li>
+<li>At each step, compute attention over <strong>all previously generated tokens</strong></li>
+<li>Keys and Values for past tokens <strong>remain unchanged</strong></li>
+<li>Only the new token's Query needs to attend to all previous Keys/Values</li>
+</ul>
+<p><img alt="" src="../images/1_KV-1.gif" /></p>
+<hr />
+<h2 id="mha-generation-phase_1">MHA - Generation Phase</h2>
+<p><strong>Problem:</strong> Without caching, we recompute K and V for all previous tokens at every step!</p>
+<ul>
+<li>Step 1: Compute K, V for token 1</li>
+<li>Step 2: Recompute K, V for tokens 1, 2</li>
+<li>Step 3: Recompute K, V for tokens 1, 2, 3</li>
+<li>...</li>
+<li>Step N: Recompute K, V for all N tokens → <strong>O(N²) redundant computation</strong></li>
+</ul>
+<p><strong>Solution: KV Cache</strong> — Store computed K and V vectors and reuse them</p>
+<p><img alt="" src="../images/KV-2.gif" /></p>
+<hr />
+<h2 id="kv-cache-memory-usage">KV Cache Memory Usage</h2>
+<p><img src="images/kv-calc.png" class="float-right"></p>
+<p><strong>KV Cache size needed for MHA:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KV head dim</td>
+<td>128</td>
+</tr>
+<tr>
+<td>Sequence length</td>
+<td>32,768</td>
+</tr>
+<tr>
+<td>Num KV heads</td>
+<td>128</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Per-layer calculation:</strong></p>
+<p>$$\text{KV cache} = \text{seq_len} \times \text{num_heads} \times \text{head_dim} \times 2 \times 2$$</p>
+<p>$$= 32768 \times 128 \times 128 \times 2 \times 2 = \textbf{2.14 GB per layer}$$</p>
+<p><strong>Total for 61 layers:</strong> ~ 131 GB (~ 4 MB per token)</p>
+<table>
+<thead>
+<tr>
+<th>Attention Type</th>
+<th>Memory per Token</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MHA</strong></td>
+<td>4 MB</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Solution:</strong> Reduce KV heads to 1 (MQA) or use more efficient attention variants (GQA, MLA)</p>
+<hr />
+<h2 id="multi-query-attention-mqa">Multi-Query Attention (MQA)</h2>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/mha-2.png" style="max-width: 50%;">
+    </div>
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/mqa.png" style="max-width: 50%;">
+    </div>
+</div>
+
+<p><strong>Key Insight:</strong> Reduce number of KV heads to 1 = <strong>MQA (Multi-Query Attention)</strong></p>
+<p>$$\text{KV Cache} = 32768 \times 128 \times 1 \times 2 \times 2 = \textbf{16 MB per layer}$$</p>
+<p>For all 61 layers: <strong>~1 GB total</strong> (~32 KB per token)</p>
+<p><strong>128× reduction in KV cache memory!</strong></p>
+<table>
+<thead>
+<tr>
+<th>Attention Type</th>
+<th>Memory per Token</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MHA</strong></td>
+<td>4 MB</td>
+</tr>
+<tr>
+<td><strong>MQA</strong></td>
+<td>32 KB</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="grouped-query-attention-gqa">Grouped-Query Attention (GQA)</h2>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/mha-2.png" style="max-width: 50%;">
+    </div>
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/gqa.png" style="max-width: 50%;">
+    </div>
+</div>
+
+<p><strong>Key Insight:</strong> Use 1 KV head for each group of query heads (e.g., 1 KV head for 8 query heads)</p>
+<ul>
+<li>Balance between MHA (full expressivity) and MQA (maximum efficiency)</li>
+<li>If 8 Query heads share 1 KV head</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Attention Type</th>
+<th>Memory per Token</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MHA</strong></td>
+<td>4 MB</td>
+</tr>
+<tr>
+<td><strong>MQA</strong></td>
+<td>32 KB</td>
+</tr>
+<tr>
+<td><strong>GQA</strong></td>
+<td>500 KB</td>
+</tr>
+</tbody>
+</table>
+<p><strong>8× reduction compared to MHA, while preserving more expressivity than MQA</strong></p>
+<hr />
+<h2 id="multi-head-latent-attention-mla">Multi-head Latent Attention (MLA)</h2>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/ds-mha.png" style="max-width: 50%;">
+    </div>
+    <div style="flex: 1; padding: 10px;">
+        <img src="images/ds-mla.png" style="max-width: 50%;">
+    </div>
+</div>
+
+<p><strong>Key Insight:</strong> Compress K and V into a low-dimensional <strong>latent vector</strong> before caching</p>
+<ul>
+<li>Project hidden states into a compressed latent representation $c^{KV}$ (e.g., 512 dims)</li>
+<li>Cache only the compressed latent, not full K and V</li>
+<li>Reconstruct K and V from latent during attention computation</li>
+</ul>
+<hr />
+<h2 id="deepseek-v3-mla">DeepSeek V3 MLA</h2>
+<p><strong>KV Cache size for MLA (DeepSeek V3):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KV compression dim ($d_c$)</td>
+<td>512</td>
+</tr>
+<tr>
+<td>RoPE dim ($d_r$)</td>
+<td>64</td>
+</tr>
+<tr>
+<td>Sequence length</td>
+<td>32,768</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Per-layer calculation:</strong></p>
+<p>$$\text{MLA cache} = \text{seq_len} \times (d_c + d_r) \times 2$$</p>
+<p>$$= 32768 \times (512 + 64) \times 2 = \textbf{37.7 MB per layer}$$</p>
+<p><strong>Total for 61 layers:</strong> ~ 2.3 GB (~ 70 KB per token)</p>
+<table>
+<thead>
+<tr>
+<th>Attention Type</th>
+<th>Memory per Token</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MHA</strong></td>
+<td>4 MB</td>
+</tr>
+<tr>
+<td><strong>MQA</strong></td>
+<td>32 KB</td>
+</tr>
+<tr>
+<td><strong>GQA (8 groups)</strong></td>
+<td>500 KB</td>
+</tr>
+<tr>
+<td><strong>MLA</strong></td>
+<td>70 KB</td>
+</tr>
+</tbody>
+</table>
+<p><strong>~57× reduction compared to MHA, ~7× reduction compared to GQA</strong></p>
+<hr />
+<h2 id="qk-norm-attention-softmax-stability">QK-Norm (Attention Softmax Stability)</h2>
+<p><strong>Concept</strong>: Apply LayerNorm to Query ($Q$) and Key ($K$) vectors before computing dot-product attention.</p>
+<p>LayerNorm has evolved from Post-Norm (Transformer) to Pre-Norm (GPT-2) and now directly into the attention mechanism (QK-Norm) </p>
+<p><img alt="alt text" src="../images/qkv_norm.png" /></p>
+<hr />
+<h2 id="further-reading">Further Reading</h2>
+<p><a href="https://magazine.sebastianraschka.com/p/the-big-llm-architecture-comparison">The Big LLM Architecture Comparison</a></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
