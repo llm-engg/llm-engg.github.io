@@ -1,0 +1,1345 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A comprehensive hands-on course on Large Language Models for industry professionals">
+      
+      
+      
+        <link rel="canonical" href="https://llm-engg.github.io/slides/07_moe/summary/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.21">
+    
+    
+      
+        <title>Mixture of Experts (MoE) in LLMs - Large Language Models - A Hands-on Approach</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.2a3383ac.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-LLD65KQHZH"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-LLD65KQHZH",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-LLD65KQHZH",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mixture-of-experts-moe-in-llms" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Large Language Models - A Hands-on Approach" class="md-header__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Large Language Models - A Hands-on Approach
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Mixture of Experts (MoE) in LLMs
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../schedule/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Schedule
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../assignments/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Assignments and Labs
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Large Language Models - A Hands-on Approach" class="md-nav__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Large Language Models - A Hands-on Approach
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../schedule/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Schedule
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../assignments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Assignments and Labs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-moes-matter-now" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why MoEs Matter Now
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why MoEs Matter Now">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-havent-moes-been-more-popular-earlier" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Haven't MoEs Been More Popular Earlier?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-misleading-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      A Misleading Name
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Architecture
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dense-vs-sparse-transformer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dense vs Sparse Transformer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-gets-replaced" class="md-nav__link">
+    <span class="md-ellipsis">
+      What Gets Replaced
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#moe-design-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      MoE Design Dimensions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#routing-mechanisms" class="md-nav__link">
+    <span class="md-ellipsis">
+      Routing Mechanisms
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Routing Mechanisms">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#three-routing-paradigms" class="md-nav__link">
+    <span class="md-ellipsis">
+      Three Routing Paradigms
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#top-k-routing-in-detail" class="md-nav__link">
+    <span class="md-ellipsis">
+      Top-K Routing in Detail
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-top-k-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Top-K Values
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hash-routing-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hash Routing (Baseline)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-routing-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other Routing Methods
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Expert Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Expert Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fine-grained-experts-deepseek-innovation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fine-Grained Experts (DeepSeek Innovation)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-experts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Shared Experts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expert-routing-configurations-for-major-moes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Expert Routing Configurations for Major MoEs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ablation-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ablation Results
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#training-moes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Training MoEs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Training MoEs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-core-challenge" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Core Challenge
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stochastic-perturbations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stochastic Perturbations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heuristic-balancing-losses" class="md-nav__link">
+    <span class="md-ellipsis">
+      Heuristic Balancing Losses
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Heuristic Balancing Losses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#switch-transformer-fp-loss-standard" class="md-nav__link">
+    <span class="md-ellipsis">
+      Switch Transformer F*P Loss (Standard)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deepseek-v1-v2-multi-level-balancing" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeepSeek V1-V2: Multi-Level Balancing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deepseek-v3-auxiliary-loss-free-balancing" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeepSeek V3: Auxiliary-Loss-Free Balancing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stability-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stability Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stability Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#router-softmax-overflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Router Softmax Overflow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#z-loss-regularization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Z-Loss Regularization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#token-dropping-and-stochasticity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Token Dropping and Stochasticity
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#systems-training-moes-at-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      Systems: Training MoEs at Scale
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Systems: Training MoEs at Scale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expert-parallelism" class="md-nav__link">
+    <span class="md-ellipsis">
+      Expert Parallelism
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sparse-matrix-multiplication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sparse Matrix Multiplication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deepseek-v2-top-m-device-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeepSeek V2 Top-M Device Routing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#issues-with-fine-tuning-moes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issues with Fine-Tuning MoEs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upcycling-dense-to-moe-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upcycling: Dense-to-MoE Conversion
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Upcycling: Dense-to-MoE Conversion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#upcycling-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upcycling Results
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deepseek-architecture-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      DeepSeek Architecture Evolution
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DeepSeek Architecture Evolution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#non-moe-components-of-deepseek-v3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Non-MoE Components of DeepSeek V3
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Takeaways
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="mixture-of-experts-moe-in-llms">Mixture of Experts (MoE) in LLMs</h1>
+<p>Notes from Stanford CS336 Lecture 4 (Spring 2025) by Tatsunori Hashimoto.
+Sources: <a href="https://www.youtube.com/watch?v=LPv1KfUXLCo">Lecture video</a>, <a href="https://github.com/stanford-cs336/spring2025-lectures">Lecture slides</a></p>
+<hr />
+<h2 id="why-moes-matter-now">Why MoEs Matter Now</h2>
+<p>Nearly every frontier LLM is an MoE: GPT-4 (rumored via the NVIDIA leak of "GPT-MoE-1.8T"), Grok, Mixtral, DeepSeek V2/V3, Llama 4, DBRX, Qwen, and OLMoE. MoEs went from a niche research topic to the dominant architecture for high-performance open models in under two years. As Hashimoto puts it: "at almost all compute scales, training a mixture of experts model, if you do it well, is going to give you benefits over a dense model."</p>
+<p>Three reasons MoEs are winning:</p>
+<ol>
+<li>
+<p><strong>Same FLOPs, more parameters, better performance.</strong> At fixed compute, adding more experts consistently lowers loss. Switch Transformer (Fedus et al. 2022) showed that going from 1 expert to 256 experts monotonically reduces test loss at the same FLOP budget. "As you increase the number of experts, the training loss just keeps going down and down." If you believe what matters is having more parameters to memorize facts about the world, MoE is a great architecture.</p>
+</li>
+<li>
+<p><strong>Faster to train.</strong> OLMoE showed a 1.3B-active / 6.9B-total MoE achieves ~3x less FLOPs or tokens to match a dense 1.3B model on HellaSwag, and trains ~2x faster wall-clock. Switch Transformer 128-expert model reached the same perplexity as T5-Base with a <strong>7x training speedup</strong>.</p>
+</li>
+<li>
+<p><strong>Naturally parallelizable.</strong> Each expert can live on a separate device. Expert parallelism is a new dimension beyond data/model/pipeline parallelism -- experts on different GPUs process their assigned tokens independently, connected by all-to-all communication. Because experts are sparsely activated, all you do is route each token to the appropriate device and the computation happens there.</p>
+</li>
+</ol>
+<p><strong>Benchmark evidence:</strong> DeepSeek-V2 matches LLaMA 3 70B on MMLU with only ~21B activated parameters. Llama 4 Maverick beats Gemini 2.0 Flash and GPT-4o on multiple benchmarks at a fraction of the inference cost ($0.19-$0.49 per 1M tokens vs $4.39 for GPT-4o).</p>
+<h3 id="why-havent-moes-been-more-popular-earlier">Why Haven't MoEs Been More Popular Earlier?</h3>
+<ul>
+<li><strong>Infrastructure complexity</strong> -- advantages mainly materialize at multi-node scale with many accelerators. When you have to split up your models anyway, it makes sense to shard experts across different devices. But until you get to that point, MoEs aren't clearly better. "They're very complex and very messy."</li>
+<li><strong>Training instability</strong> -- sparse models suffer from worse training instabilities than dense transformers (loss spikes, router collapse). The routing decision (which expert to send a token to) is a discrete, non-differentiable choice -- fundamentally at odds with the smooth gradients deep learning relies on.</li>
+<li><strong>Fine-tuning challenges</strong> -- MoEs overfit more easily on small fine-tuning datasets due to the large total parameter count relative to activated parameters.</li>
+</ul>
+<h3 id="a-misleading-name">A Misleading Name</h3>
+<p>"Mixture of Experts" is a terribly named concept. You hear it and think there must be experts specialized for different domains -- a coding expert, an English expert, etc. It is very far from that mental model. MoE is simply a sparse architecture with multiple sub-networks activated selectively. The "experts" don't learn clean semantic specializations.</p>
+<hr />
+<h2 id="core-architecture">Core Architecture</h2>
+<h3 id="dense-vs-sparse-transformer">Dense vs Sparse Transformer</h3>
+<p>In a <strong>dense</strong> transformer, every token passes through one large FFN block. In a <strong>sparse</strong> (MoE) transformer:</p>
+<ul>
+<li>The single FFN is replaced by $N$ smaller "expert" FFN sub-networks</li>
+<li>A <strong>router</strong> (gating network) selects only $K$ of them per token</li>
+<li>The outputs of the selected experts are combined via weighted sum</li>
+</ul>
+<p><strong>Key insight:</strong> You can increase the number of experts without affecting FLOPs. Only $K$ experts are activated per token, so compute stays roughly constant while total parameters grow.</p>
+<h3 id="what-gets-replaced">What Gets Replaced</h3>
+<ul>
+<li><strong>Typical:</strong> Replace the MLP/FFN layer with MoE layer (most models do this)</li>
+<li><strong>Less common:</strong> MoE for attention heads (ModuleFormer, JetMoE) -- each attention head is also routed</li>
+</ul>
+<p>The attention layers remain shared/dense in most architectures. The MoE action is specifically in the MLPs.</p>
+<hr />
+<h2 id="moe-design-dimensions">MoE Design Dimensions</h2>
+<p>Three things vary across MoE architectures:</p>
+<ol>
+<li><strong>Routing function</strong> -- how tokens get assigned to experts</li>
+<li><strong>Expert sizes</strong> -- how many experts, how large each one is, shared vs routed</li>
+<li><strong>Training objectives</strong> -- how to train the router and keep experts balanced</li>
+</ol>
+<hr />
+<h2 id="routing-mechanisms">Routing Mechanisms</h2>
+<h3 id="three-routing-paradigms">Three Routing Paradigms</h3>
+<table>
+<thead>
+<tr>
+<th>Paradigm</th>
+<th>How it works</th>
+<th>Who uses it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Token chooses expert</strong></td>
+<td>Each token picks its top-K experts</td>
+<td>Most models (standard)</td>
+</tr>
+<tr>
+<td><strong>Expert chooses token</strong></td>
+<td>Each expert picks its top-K tokens</td>
+<td>Naturally balanced, but variable tokens/expert</td>
+</tr>
+<tr>
+<td><strong>Global routing</strong></td>
+<td>Solve an optimization/matching problem over all tokens and experts</td>
+<td>Theoretical, rarely used</td>
+</tr>
+</tbody>
+</table>
+<p>Almost all production MoEs use <strong>token-choice top-K routing</strong>. Ablations from OLMoE show token choice (TC) and expert choice (EC) perform similarly, with TC having a slight edge on downstream tasks.</p>
+<h3 id="top-k-routing-in-detail">Top-K Routing in Detail</h3>
+<p>The standard formulation (used in DeepSeek V1-V2, Grok, Qwen, Mixtral, DBRX):</p>
+<p>$$\mathbf{h}<em>t^l = \sum</em>{i=1}^{N} \left( g_{i,t} \cdot \text{FFN}_i(\mathbf{u}_t^l) \right) + \mathbf{u}_t^l$$</p>
+<p>where the gating weights are:</p>
+<p>$$g_{i,t} = \begin{cases} s_{i,t}, &amp; s_{i,t} \in \text{TopK}({s_{j,t} | 1 \leq j \leq N}, K) \ 0, &amp; \text{otherwise} \end{cases}$$</p>
+<p>$$s_{i,t} = \text{Softmax}_i\left(\mathbf{u}_t^{lT} \mathbf{e}_i^l\right)$$</p>
+<p>The router is just a <strong>logistic regressor</strong> -- a linear projection from hidden state to expert scores, followed by softmax. The simplicity is notable: complex routing (RL-based, learned routing networks) provides only marginal benefit. The router operates on the hidden state (after position embeddings, attention, etc.), not on raw token IDs.</p>
+<p><strong>Why is the router so basic?</strong> (Q&amp;A) Two reasons: (1) Systems concerns -- more FLOPs spent on routing means less available for actual computation, and (2) there are hard limits on how well you <em>can</em> route, because the learning signal for routing is very indirect. With top-2, you can only compare the two experts you actually evaluated. Even making the router an MLP doesn't clearly help.</p>
+<p><strong>Why not just softmax without top-K?</strong> You immediately lose the systems efficiency. Without top-K, you pay the training cost of all N experts per token -- the whole point of MoE is sparse activation during both training and inference.</p>
+<p><strong>Why softmax before top-K?</strong> The softmax here is really a "normalize to one" operation to make the gating weights a proper weighted average. After top-K, the weights no longer sum to one -- some architectures renormalize after top-K, some don't. It doesn't matter much since subsequent layer norms can adjust scale.</p>
+<p><strong>Why K &gt;= 2?</strong> The original argument was exploration: with K=1, you always exploit the best expert and never learn about alternatives. K=2 gives you a second "arm" that provides exploration signal, like epsilon-greedy in bandits. K=2 doubles activated FLOPs, which is why "activated parameters" is the metric MoE papers report.</p>
+<p><strong>How are K experts combined?</strong> The outputs of the K selected experts are summed (weighted by gating scores). This is NOT an expectation over FFNs -- each FFN_i is a different function, and the gates are sparse.</p>
+<h3 id="common-top-k-values">Common Top-K Values</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>K</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Switch Transformer</td>
+<td>1</td>
+</tr>
+<tr>
+<td>GShard, Grok, Mixtral</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Qwen, DBRX</td>
+<td>4</td>
+</tr>
+<tr>
+<td>DeepSeek V1</td>
+<td>6</td>
+</tr>
+<tr>
+<td>DeepSeek V3</td>
+<td>8 (of 256)</td>
+</tr>
+<tr>
+<td>OLMoE</td>
+<td>8 (of 64)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hash-routing-baseline">Hash Routing (Baseline)</h3>
+<p>A non-learned baseline where tokens are assigned to experts via a hash function. Surprisingly competitive -- "even if you're hashing, you will still get gains, which is pretty wild." Why does this work? Even with hashing, the same tokens consistently go to the same expert, so specialization still occurs (just non-semantic). For Zipfian distributions, frequent words like "the" might dominate one expert, giving accidental semantic clustering. A truly random routing (different expert each time, not input-dependent) would likely be terrible.</p>
+<h3 id="other-routing-methods">Other Routing Methods</h3>
+<ul>
+<li><strong>Reinforcement learning</strong> (Bengio 2013): Use REINFORCE to learn routing policy. "It's probably the most principled thing you can do -- you have a non-differentiable routing decision, think of it as a policy, throw RL at it." But gradient variance and complexity make it impractical. Not clearly better than hashing. Basically abandoned.</li>
+<li><strong>BASE routing</strong> (Clark 2022): Solve a linear assignment problem for globally optimal token-to-expert matching. Elegant but too expensive for the marginal benefit.</li>
+</ul>
+<hr />
+<h2 id="expert-configuration">Expert Configuration</h2>
+<h3 id="fine-grained-experts-deepseek-innovation">Fine-Grained Experts (DeepSeek Innovation)</h3>
+<p>Instead of $N$ full-sized FFN copies, make each expert <strong>much smaller</strong> (1/4 to 1/14 of standard FFN size) and use <strong>many more</strong> of them. This enables finer-grained specialization.</p>
+<p>The logic: "lots of experts is good" -&gt; "I want lots of experts but don't want to pay the parameter cost" -&gt; cut each expert into smaller pieces. If the standard FFN has a 1:4 hidden-to-intermediate ratio, you can use 1:2 instead (half the size), doubling the expert count for the same total parameters. Since each fine-grained expert is smaller, having more active experts is FLOPs-free.</p>
+<p>The fine-grained ratio = (expert intermediate dim) / (standard FFN intermediate dim).</p>
+<p><strong>Example:</strong> DeepSeek V1 has 64 experts at 1/4 ratio with 6 routed + 2 shared = 8 active. Each active expert is quarter-sized, so total active computation is roughly 2x a dense FFN.</p>
+<h3 id="shared-experts">Shared Experts</h3>
+<p>One or more experts that process <strong>all tokens</strong> regardless of routing. The idea: maybe some processing always needs to happen no matter which token you're seeing. Having a shared expert dedicated to this avoids wasting routing decisions on universal computation.</p>
+<p><strong>Mixed evidence:</strong> DeepSeek ablations show shared experts help. OLMoE ablations show no benefit. There was a period where Chinese LM companies tried many shared experts (Qwen had 4), but the field has converged to 0 or 1. The original motivation for 2 shared experts (DeepSeek V1) was to keep all experts the same size -- two quarter-sized shared experts instead of one half-sized one.</p>
+<h3 id="expert-routing-configurations-for-major-moes">Expert Routing Configurations for Major MoEs</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Routed</th>
+<th>Active</th>
+<th>Shared</th>
+<th>Fine-grained ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GShard</td>
+<td>2048</td>
+<td>2</td>
+<td>0</td>
+<td>--</td>
+</tr>
+<tr>
+<td>Switch Transformer</td>
+<td>64</td>
+<td>1</td>
+<td>0</td>
+<td>--</td>
+</tr>
+<tr>
+<td>Mixtral</td>
+<td>8</td>
+<td>2</td>
+<td>0</td>
+<td>--</td>
+</tr>
+<tr>
+<td>DBRX</td>
+<td>16</td>
+<td>4</td>
+<td>0</td>
+<td>--</td>
+</tr>
+<tr>
+<td>Grok</td>
+<td>8</td>
+<td>2</td>
+<td>0</td>
+<td>--</td>
+</tr>
+<tr>
+<td>DeepSeek V1</td>
+<td>64</td>
+<td>6</td>
+<td>2</td>
+<td>1/4</td>
+</tr>
+<tr>
+<td>Qwen 1.5</td>
+<td>60</td>
+<td>4</td>
+<td>4</td>
+<td>1/8</td>
+</tr>
+<tr>
+<td>DeepSeek V3</td>
+<td>256</td>
+<td>8</td>
+<td>1</td>
+<td>1/14</td>
+</tr>
+<tr>
+<td>OLMoE</td>
+<td>64</td>
+<td>8</td>
+<td>0</td>
+<td>1/8</td>
+</tr>
+<tr>
+<td>MiniMax</td>
+<td>32</td>
+<td>2</td>
+<td>0</td>
+<td>~1/4</td>
+</tr>
+<tr>
+<td>Llama 4 (Maverick)</td>
+<td>128</td>
+<td>1</td>
+<td>1</td>
+<td>1/2</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ablation-results">Ablation Results</h3>
+<p><strong>DeepSeek ablations:</strong> Fine-grained expert segmentation AND shared expert isolation both contribute to stronger performance across HellaSwag, PIQA, ARC, TriviaQA, NaturalQuestions. Going from 0 shared + 2/16 routed (GShard-style) to 1 shared + 7/63 routed (finer segmentation) progressively improves all benchmarks.</p>
+<p><strong>OLMoE ablations:</strong> Gains from fine-grained experts confirmed. However, shared experts showed <strong>no benefit</strong> in their setup (32 routed vs 31 routed + 1 shared performed the same). Increasing expert count from 8 to 32 to 64 consistently improved results.</p>
+<hr />
+<h2 id="training-moes">Training MoEs</h2>
+<h3 id="the-core-challenge">The Core Challenge</h3>
+<p>We need sparsity for training-time efficiency, but <strong>sparse gating decisions are not differentiable</strong> (hard top-K selection). If we turn on all experts, we pay the full FLOPs cost -- "having a model that's 256 times more expensive to train is a total no-go."</p>
+<p>Three approaches:
+1. <strong>Reinforcement learning</strong> to optimize gating policies -- the "right" solution theoretically, but gradient variance and complexity make it impractical
+2. <strong>Stochastic perturbations</strong> -- add noise to make routing soft/differentiable (bandit-style exploration)
+3. <strong>Heuristic balancing losses</strong> -- what everyone actually uses in practice</p>
+<p>"Having gone through deep learning classes of many kinds, you can kind of guess internally which one people use in practice."</p>
+<h3 id="stochastic-perturbations">Stochastic Perturbations</h3>
+<p><strong>Shazeer et al. (2017) -- Noisy top-K gating:</strong></p>
+<p>$$G(x) = \text{Softmax}(\text{KeepTopK}(H(x), k))$$
+$$H(x)<em>i = (x \cdot W_g)_i + \text{StandardNormal}() \cdot \text{Softplus}((x \cdot W</em>{\text{noise}})_i)$$</p>
+<p>where $\text{KeepTopK}$ sets non-top-K values to $-\infty$. The Gaussian noise encourages exploration of different expert assignments.</p>
+<p><strong>Fedus et al. (2022) -- Multiplicative jitter:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">is_training</span><span class="p">:</span>
+    <span class="n">router_logits</span> <span class="o">+=</span> <span class="n">mtf</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">router_logits</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                                         <span class="n">minval</span><span class="o">=</span><span class="mi">1</span><span class="o">-</span><span class="n">eps</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=</span><span class="mi">1</span><span class="o">+</span><span class="n">eps</span><span class="p">)</span>
+<span class="n">router_logits</span> <span class="o">=</span> <span class="n">mtf</span><span class="o">.</span><span class="n">to_float32</span><span class="p">(</span><span class="n">router_logits</span><span class="p">)</span>  <span class="c1"># float32 for stability</span>
+<span class="n">router_probs</span> <span class="o">=</span> <span class="n">mtf</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">router_logits</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<p>This was later found to hurt quality slightly and removed in Zoph et al. (2022). Input jitter improves stability (3/3 stable vs 4/6 baseline) but at a quality cost (-1.777 vs -1.755).</p>
+<h3 id="heuristic-balancing-losses">Heuristic Balancing Losses</h3>
+<p>Without load balancing, routers collapse to using only 1-2 experts, wasting all other capacity. The OLMoE paper shows this clearly: without load balancing loss (LBL), "the model just picks one or two experts and all the other experts are dead. The router never sends anything to them. So you're just wasting memory -- you've effectively gotten a smaller model." Even ignoring systems concerns, you want expert balancing just to use all your parameters effectively.</p>
+<h4 id="switch-transformer-fp-loss-standard">Switch Transformer F*P Loss (Standard)</h4>
+<p>$$\mathcal{L}<em>{\text{balance}} = \alpha \cdot N \cdot \sum</em>{i=1}^{N} f_i \cdot P_i$$</p>
+<p>where:
+- $f_i = \frac{1}{T} \sum_{x \in \mathcal{B}} \mathbb{1}{\text{argmax } p(x) = i}$ is the fraction of tokens dispatched to expert $i$
+- $P_i = \frac{1}{T} \sum_{x \in \mathcal{B}} p_i(x)$ is the mean router probability for expert $i$
+- $\alpha$ is the balancing coefficient
+- $N$ is the number of experts</p>
+<p><strong>Why it works:</strong> The derivative w.r.t. $p_i(x)$ is $\frac{\alpha N}{T^2} \sum \mathbb{1}_{\text{argmax } p(x)=i}$, so <strong>more frequent use = stronger downweighting</strong>. This creates a natural pressure toward uniform distribution.</p>
+<p><strong>Tradeoff:</strong> Large $\alpha$ improves balance but introduces interference gradients that harm model quality.</p>
+<h4 id="deepseek-v1-v2-multi-level-balancing">DeepSeek V1-V2: Multi-Level Balancing</h4>
+<p>Two levels of balancing:</p>
+<p><strong>Per-expert balancing</strong> (same as Switch Transformer):</p>
+<p>$$\mathcal{L}<em>{\text{ExpBal}} = \alpha_1 \sum</em>{i=1}^{N'} f_i P_i$$</p>
+<p><strong>Per-device balancing</strong> (reduces communication costs):</p>
+<p>$$\mathcal{L}<em>{\text{DevBal}} = \alpha_2 \sum</em>{i=1}^{D} f_i' P_i'$$</p>
+<p>where $f_i'$ and $P_i'$ aggregate over experts on device $i$.</p>
+<h4 id="deepseek-v3-auxiliary-loss-free-balancing">DeepSeek V3: Auxiliary-Loss-Free Balancing</h4>
+<p>A novel approach that avoids the quality-balance tradeoff:</p>
+<ol>
+<li>Add a <strong>learned bias</strong> $b_i$ to each expert's routing score</li>
+<li>Use <strong>online gradient descent per batch</strong> (not backprop) to update $b_i$</li>
+<li>If expert $i$ gets too many tokens, decrease $b_i$; if too few, increase it</li>
+</ol>
+<p>$$g'<em>{i,t} = \begin{cases} s</em>{i,t}, &amp; s_{i,t} + b_i \in \text{TopK}({s_{j,t} + b_j | 1 \leq j \leq N_r}, K_r) \ 0, &amp; \text{otherwise} \end{cases}$$</p>
+<p>A <strong>complementary sequence-wise auxiliary loss</strong> is still added for stability (so it's not fully auxiliary-loss-free). "If you read the DeepSeek V3 paper, they make a big deal about how this makes training so stable, so great. And then you keep reading and they're like, actually we decided we needed the heuristic loss back."</p>
+<p>$$\mathcal{L}<em>{\text{Bal}} = \alpha \sum</em>{i=1}^{N_r} f_i P_i$$</p>
+<p>where $f_i$ and $P_i$ are computed per-sequence rather than per-batch.</p>
+<p><strong>Why per-sequence?</strong> At inference time, you can't control which sequences you receive. Out-of-distribution inputs might overwhelm certain experts. Sequence-level balancing provides stronger guarantees than batch-level when individual sequences are adversarial or unusual.</p>
+<hr />
+<h2 id="stability-issues">Stability Issues</h2>
+<h3 id="router-softmax-overflow">Router Softmax Overflow</h3>
+<p>Exponential functions amplify small perturbations. In bfloat16, a roundoff error of 0.5 on logit values around 128 can alter the softmax output by 36%.</p>
+<p><strong>Solution:</strong> Always compute routing in <strong>float32</strong>, even when the rest of the model uses bf16/fp16.</p>
+<h3 id="z-loss-regularization">Z-Loss Regularization</h3>
+<p>A penalty on the log-sum-exp normalizer of router logits that prevents logit values from growing too large:</p>
+<p>$$L_z(x) = \frac{1}{B} \sum_{i=1}^{B} \left( \log \sum_{j=1}^{N} e^{x_j^{(i)}} \right)^2$$</p>
+<p>OLMoE ablations show that without z-loss, training suffers severe instability -- massive spikes in validation loss and HellaSwag performance that z-loss completely eliminates. Z-loss weight of 0.001 works well.</p>
+<h3 id="token-dropping-and-stochasticity">Token Dropping and Stochasticity</h3>
+<p>When an expert receives more tokens than its <strong>capacity factor</strong> allows, excess tokens are dropped. This creates a source of randomness even at temperature 0 during inference -- other queries in the same batch can affect which of your tokens get dropped.</p>
+<p>This was speculated to be the source of GPT-4's observed stochasticity (when temperature=0 still gave different outputs). Token dropping happens at the <strong>batch level</strong>, meaning other people's queries can cause your tokens to be dropped -- a cross-batch effect you almost never think about in standard inference. If your batch happens to have many tokens that love expert 3, and the device for expert 3 doesn't have enough memory, some tokens get dropped and receive zero MLP computation (just the residual connection passes through).</p>
+<hr />
+<h2 id="systems-training-moes-at-scale">Systems: Training MoEs at Scale</h2>
+<h3 id="expert-parallelism">Expert Parallelism</h3>
+<p>MoEs enable a new dimension of parallelism beyond data/model/pipeline:</p>
+<ol>
+<li><strong>Compute routing decisions</strong> locally on each device</li>
+<li><strong>All-to-all dispatch:</strong> send tokens to the device hosting their assigned expert</li>
+<li><strong>Parallel FFN computation:</strong> each device runs its local experts on received tokens</li>
+<li><strong>All-to-all gather:</strong> collect outputs and route back to originating device</li>
+</ol>
+<p>This combines with existing parallelism strategies:
+- <strong>Data Parallelism:</strong> replicate model, split data
+- <strong>Model Parallelism:</strong> split model weights across devices
+- <strong>Expert + Data Parallelism:</strong> different experts on different devices, data split across replicas
+- <strong>Expert + Model + Data Parallelism:</strong> all three combined for largest-scale training</p>
+<h3 id="sparse-matrix-multiplication">Sparse Matrix Multiplication</h3>
+<p>MoE routing creates variable-size batches per expert. Three approaches:</p>
+<ol>
+<li><strong>Batched matrix multiplication</strong> -- pad all expert batches to same size, run in parallel. Wastes FLOPs on padding.</li>
+<li><strong>Block diagonal matrix multiplication</strong> -- frame expert computation as block-diagonal matmul. More efficient but still assumes equal-sized blocks.</li>
+<li><strong>Block sparse matrix multiplication</strong> -- express as sparse matmul that handles variable expert loads without padding. Used by <strong>MegaBlocks</strong> library (used in many open MoEs).</li>
+</ol>
+<h3 id="deepseek-v2-top-m-device-routing">DeepSeek V2 Top-M Device Routing</h3>
+<p>To reduce all-to-all communication, DeepSeek V2 adds a constraint: first select the <strong>top-M devices</strong> (GPU nodes with highest affinity scores), then select top-K experts only within those devices. This keeps most communication local.</p>
+<hr />
+<h2 id="issues-with-fine-tuning-moes">Issues with Fine-Tuning MoEs</h2>
+<p>Sparse MoEs <strong>overfit</strong> more easily on smaller fine-tuning datasets. The total parameter count is much larger than what's activated per token, creating a capacity-data mismatch.</p>
+<p><strong>Solutions:</strong>
+- <strong>Freeze MoE experts, fine-tune non-MoE layers</strong> (Zoph et al.): Only update attention and non-MoE FFN layers. SuperGLUE scores stay competitive (86 vs 86.2) while avoiding overfitting.
+- <strong>Use more fine-tuning data</strong> (DeepSeek approach): DeepSeek uses 1.4M SFT examples covering math, code, writing, QA, reasoning, summarization to avoid overfitting their MoE.</p>
+<hr />
+<h2 id="upcycling-dense-to-moe-conversion">Upcycling: Dense-to-MoE Conversion</h2>
+<p>A cost-effective alternative to training MoE from scratch:</p>
+<ol>
+<li>Start from a <strong>pretrained dense model</strong></li>
+<li>Copy the FFN weights to initialize $N$ experts</li>
+<li>Apply small <strong>perturbations</strong> to each copy (break symmetry)</li>
+<li>Initialize the <strong>router from scratch</strong></li>
+<li>Continue pretraining</li>
+</ol>
+<h3 id="upcycling-results">Upcycling Results</h3>
+<p><strong>MiniCPM-MoE (13.6B total):</strong> Upcycled from MiniCPM-2.4B with top-K=2, 8 experts, ~4B active params. Trained with ~520B additional tokens. Outperforms DeepSeekMoE 16B and Mistral-7B on most benchmarks (MMLU 58.80, GSM8K 61.56, HumanEval 51.05).</p>
+<p><strong>Qwen MoE (14.3B total, 2.7B active):</strong> Initialized from Qwen 1.8B with top-K=4, 60 experts, 4 shared. One of the first confirmed upcycling successes. Achieves MMLU 62.5, competitive with Mistral-7B (64.1) while using only 2.7B active parameters.</p>
+<p>The upcycling approach is particularly attractive because it reuses expensive pretraining investment and converges faster than training from scratch.</p>
+<hr />
+<h2 id="deepseek-architecture-evolution">DeepSeek Architecture Evolution</h2>
+<p>The lecture traces the full evolution, noting that "DeepSeek V3 is not very different architecturally from the earliest DeepSeek models -- they had nailed the architecture when training much smaller 2B parameter models."</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>DeepSeek V1</th>
+<th>DeepSeek V2</th>
+<th>DeepSeek V3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total params</td>
+<td>16B</td>
+<td>236B</td>
+<td>671B</td>
+</tr>
+<tr>
+<td>Active params</td>
+<td>2.8B</td>
+<td>21B</td>
+<td>37B</td>
+</tr>
+<tr>
+<td>Experts</td>
+<td>64 fine-grained</td>
+<td>--</td>
+<td>256</td>
+</tr>
+<tr>
+<td>Routed/token</td>
+<td>6</td>
+<td>--</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Shared experts</td>
+<td>2</td>
+<td>--</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Fine-grained ratio</td>
+<td>1/4</td>
+<td>--</td>
+<td>1/14</td>
+</tr>
+<tr>
+<td>Gating</td>
+<td>Softmax</td>
+<td>Softmax</td>
+<td><strong>Sigmoid</strong></td>
+</tr>
+<tr>
+<td>Balancing</td>
+<td>F*P aux loss</td>
+<td>F*P + device balance</td>
+<td><strong>Bias-based (aux-loss-free)</strong></td>
+</tr>
+<tr>
+<td>Attention</td>
+<td>Standard MHA</td>
+<td><strong>Multi-Head Latent Attention</strong></td>
+<td>MLA</td>
+</tr>
+<tr>
+<td>Special</td>
+<td>--</td>
+<td>Top-M device routing</td>
+<td>Multi-token prediction</td>
+</tr>
+</tbody>
+</table>
+<p><strong>DeepSeek V3 MoE innovations:</strong>
+- <strong>Sigmoid gating</strong> instead of softmax (softer, doesn't force competition between experts). The gate is still normalized to sum to 1, just via a different mechanism.
+- <strong>Auxiliary-loss-free balancing</strong> with learned per-expert bias offsets (but sequence-wise aux loss added back)
+- Retains <strong>top-M device routing</strong> from V2, drops the communication balancing loss</p>
+<p><strong>Key insight:</strong> "DeepSeek V3 is not very different architecturally from the earliest DeepSeek models -- they had nailed the architecture when training much smaller 2B parameter models. They really just got the engineering right."</p>
+<h3 id="non-moe-components-of-deepseek-v3">Non-MoE Components of DeepSeek V3</h3>
+<p><strong>Multi-Head Latent Attention (MLA)</strong> -- introduced in V2, an alternative to GQA for KV cache compression:</p>
+<p>Instead of reducing the number of KV heads (GQA approach), MLA projects keys and values into a lower-dimensional <strong>latent space C</strong>:
+- Input $h_t$ is projected to a small $C$ (compressed KV representation)
+- Only $C$ is cached (much smaller than full K, V)
+- K and V are reconstructed by up-projecting from $C$ when needed
+- The clever trick: the up-projection matrix $W_{UK}$ can be <strong>merged</strong> with the query projection matrix via matrix associativity, so no extra FLOPs are needed</p>
+<p><strong>Complication with RoPE:</strong> RoPE rotation matrices sit between the query projection and the latent up-projection, breaking the matrix merge trick. DeepSeek's solution: apply RoPE only on non-compressed dimensions.</p>
+<p><strong>Multi-Token Prediction (MTP)</strong> -- a lightweight auxiliary task:
+- A small one-layer transformer takes the hidden state and predicts one additional token ahead
+- Despite the paper's elaborate diagram showing multi-token capability, "they only do MTP with one token ahead"
+- Helps training signal but is a minor component</p>
+<p><strong>DeepSeek V3 results:</strong> Outperforms GPT-4o, Claude 3.5 Sonnet, and Llama 3.1 405B on MMLU-Pro (75.9), GPQA-Diamond (59.1), MATH 500 (90.2), AIME 2024 (39.2), Codeforces (51.6 percentile), and SWE-bench Verified (42.0).</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ol>
+<li><strong>MoE = replace FFN with N smaller expert FFNs + router.</strong> Same FLOPs, more parameters, better performance. Don't think "specialized experts" -- think "sparse computation."</li>
+<li><strong>Routing is embarrassingly simple.</strong> A linear projection + softmax + top-K. Even hashing works. Complex routing (RL, optimal transport) provides marginal benefit at prohibitive cost.</li>
+<li><strong>Load balancing is the real game.</strong> Without it, routers collapse to 1-2 experts. The F*P auxiliary loss is standard; DeepSeek V3's bias-based approach is the latest (but they still add an aux loss back).</li>
+<li><strong>Fine-grained experts are a no-brainer.</strong> Smaller experts, more of them, same FLOPs. Shared experts are more debatable (DeepSeek says yes, OLMoE says no difference).</li>
+<li><strong>Stability requires care:</strong> float32 router computation + z-loss regularization. Without z-loss, expect severe training spikes.</li>
+<li><strong>Upcycling works.</strong> Copy a dense model's FFN, perturb, add a router, continue training. Cheap way to get MoE benefits.</li>
+<li><strong>Expert parallelism</strong> is a natural fit for distributed training. Top-M device routing (DeepSeek V2+) controls communication costs at scale.</li>
+<li><strong>Architectures don't change much.</strong> DeepSeek V1 to V3 is mostly the same MoE design, just scaled up with engineering improvements. "They nailed the architecture at the 2B scale."</li>
+</ol>
+<hr />
+<h2 id="references">References</h2>
+<ul>
+<li>Shazeer et al. (2017) -- <a href="https://arxiv.org/abs/1701.06538">Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer</a></li>
+<li>Lepikhin et al. (2020) -- <a href="https://arxiv.org/abs/2006.16668">GShard: Scaling Giant Models with Conditional Computation</a></li>
+<li>Fedus et al. (2022) -- <a href="https://arxiv.org/abs/2101.03961">Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity</a></li>
+<li>Zoph et al. (2022) -- <a href="https://arxiv.org/abs/2202.08906">ST-MoE: Designing Stable and Transferable Sparse Expert Models</a></li>
+<li>Clark et al. (2022) -- <a href="https://arxiv.org/abs/2202.01169">Unified Scaling Laws for Routed Language Models</a></li>
+<li>Dai et al. (2024) -- <a href="https://arxiv.org/abs/2401.06066">DeepSeekMoE: Towards Ultimate Expert Specialization</a></li>
+<li>DeepSeek-AI (2024) -- <a href="https://arxiv.org/abs/2405.04434">DeepSeek-V2: A Strong, Economical, and Efficient MoE Language Model</a></li>
+<li>DeepSeek-AI (2024) -- <a href="https://arxiv.org/abs/2412.19437">DeepSeek-V3 Technical Report</a></li>
+<li>Muennighoff et al. (2024) -- <a href="https://arxiv.org/abs/2409.02060">OLMoE: Open Mixture-of-Experts Language Models</a></li>
+<li>Gale et al. (2023) -- <a href="https://arxiv.org/abs/2211.15841">MegaBlocks: Efficient Sparse Training with Mixture-of-Experts</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
