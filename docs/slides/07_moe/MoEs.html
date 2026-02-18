@@ -1,0 +1,634 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slides</title>
+
+  <link rel="stylesheet" href="../reveal/dist/reveal.css">
+  <link rel="stylesheet" href="../reveal/dist/theme/solarized.css">
+  <!-- PDF export support: append ?print-pdf to URL, then Ctrl+P -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi)
+      ? '../reveal/dist/print/pdf.css'
+      : '../reveal/dist/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+
+  <!-- Bigger fonts for classrooms -->
+  <style>
+    /* Responsive: fill viewport */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    .reveal {
+      font-size: 32px;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .reveal .slides {
+      width: 90% !important;
+      max-width: 90% !important;
+      margin-left: 5% !important;
+      margin-right: 5% !important;
+    }
+    .reveal code {
+      font-size: 1.0em;
+    }
+    /* Left-align all slide content */
+    .reveal .slides section {
+      text-align: left;
+    }
+    .reveal .slides section ul,
+    .reveal .slides section ol {
+      display: block;
+      text-align: left;
+    }
+    .reveal .slides section li {
+      text-align: left;
+    }
+    /* Center-align headings */
+    .reveal .slides section h1,
+    .reveal .slides section h2,
+    .reveal .slides section h3 {
+      text-align: center;
+    }
+    /* Center-align tables */
+    .reveal .slides section table {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* Footer styling */
+    .reveal .footer {
+      position: absolute;
+      bottom: 1em;
+      left: 1em;
+      font-size: 0.5em;
+      color: #657b83;
+      z-index: 100;
+    }
+    /* Constrain slides to prevent overflow */
+    .reveal .slides section {
+      overflow: hidden !important;
+      height: 100% !important;
+      box-sizing: border-box !important;
+    }
+    /* Image sizing and background blend for solarized theme */
+    .reveal .slides section img,
+    .reveal .slides section p img,
+    .reveal img {
+      max-width: 100% !important;
+      max-height: 600px !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: contain !important;
+      display: block !important;
+      margin: 0.04em auto !important;
+      background-color: #fdf6e3 !important;
+      padding: 0.04em !important;
+      border-radius: 2px !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    /* Allow side-by-side images in flex containers */
+    .reveal .slides section [style*="display: flex"] img,
+    .reveal .slides section [style*="display:flex"] img {
+      display: inline-block !important;
+      margin: 0 !important;
+      max-width: 100% !important;
+      max-height: 500px !important;
+    }
+    /* Float images for text wrap */
+    .reveal .slides section img.float-right {
+      float: right !important;
+      margin: 0 0 0.5em 1em !important;
+      max-width: 50% !important;
+      max-height: 500px !important;
+    }
+    .reveal .slides section img.float-left {
+      float: left !important;
+      margin: 0 1em 0.5em 0 !important;
+      max-width: 50% !important;
+      max-height: 500px !important;
+    }
+    /* Centered slide for section breaks */
+    .reveal .slides section .center-slide {
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      text-align: center !important;
+      width: 90% !important;
+    }
+    .reveal .slides section .center-slide h1,
+    .reveal .slides section .center-slide h2,
+    .reveal .slides section .center-slide h3,
+    .reveal .slides section .center-slide p {
+      text-align: center !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+    /* Fragment animation: semi-fade-out */
+    .reveal .slides section .fragment.semi-fade-out {
+      opacity: 1;
+      visibility: inherit;
+      transition: opacity 0.3s ease;
+    }
+    .reveal .slides section .fragment.semi-fade-out.visible {
+      opacity: 0.3;
+    }
+    /* Fragment animation: grow with highlight */
+    .reveal .slides section .fragment.grow {
+      opacity: 1;
+      visibility: inherit;
+      transition: transform 0.3s ease;
+    }
+    .reveal .slides section .fragment.grow.visible {
+      transform: scale(1.0);
+    }
+    /* Course header styling */
+    .course-header {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      font-size: 16px;
+      opacity: 0.6;
+    }
+  </style>
+
+  <link rel="stylesheet" href="../reveal/plugin/highlight/monokai.css">
+  <!-- Chalkboard plugin -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chalkboard/style.css">
+</head>
+<body>
+
+
+<div class="reveal">
+  <div class="footer"> <a href="https://llm-engg.github.io">Large Language Models : A Hands-on Approach – CCE, IISc</a></div>
+  <div class="slides">
+    <section><div class="center-slide">
+
+<h1>LLMs : A Hands-on Approach</h1>
+<h3>Mixture of Experts</h3>
+</div>
+
+</section>
+<section><h2>Overview</h2>
+<ul>
+<li>Motivation</li>
+<li>MoE Architecture</li>
+<li>What do MoEs look like in LLMs?</li>
+<li>Dense vs Sparse MoE</li>
+<li>Routing Mechanisms</li>
+<li>Expert Configuration</li>
+<li>DeepSeek V3 MoE Architecture</li>
+</ul>
+</section>
+<section><h2>Motivation</h2>
+<p><img src="images/timeline.png" alt="alt text"></p>
+</section>
+<section><h2>Decoder-only LLMs</h2>
+<img alt text="decoder-only architecture" src="images/llm-decoder.png" class="float-right"/>
+
+
+<ul>
+<li><p>Decoder-only is the predominant architecture for LLMs</p>
+</li>
+<li><p>Core components</p>
+<ul>
+<li>Self-attention</li>
+<li>Feedforward (FFN)</li>
+<li>LayerNorm and residual connections</li>
+</ul>
+</li>
+<li><p>Most parameters are in the FFN layers</p>
+</li>
+</ul>
+</section>
+<section><h2>Decoder-only LLMs</h2>
+<img alt text="flops_vs_params" src="images/flops-params.png" class="float-right"/>
+
+<ul>
+<li>Most parameters are in the FFN layers</li>
+<li>The FFN layers are the main bottleneck for scaling up model capacity</li>
+<li>Increasing FFN size leads to quadratic growth in parameters and compute</li>
+</ul>
+</section>
+<section><h2>MoE Architecture</h2>
+<ul>
+<li>Replace big FFN with multiple smaller FFNs (experts)</li>
+<li>Only a subset of experts are active for each input token</li>
+<li>Routing mechanism decides which experts to activate</li>
+<li>Increase parameters without increasing compute</li>
+</ul>
+<p><img src="images/llm-moe.png" alt="alt text"></p>
+</section>
+<section><h2>MoE Architecture</h2>
+<ul>
+<li>All layers can be MoE</li>
+<li>Some layers (e.g., every 2nd layer) can be MoE in an interleaved fashion.</li>
+</ul>
+<pre><code class="language-python">def moe_layer(token, experts, router, top_k): 
+    # Ask the router &quot;which experts should handle this token?&quot; 
+    logits = router(token) 
+    
+    # With N total experts, pick only top_k (top_k &lt;&lt; N) 
+    top_k_logits, top_k_experts = top_k(logits, top_k) 
+    # Compute experts&#39; mixing weights
+    weights = softmax(top_k_logits)
+
+    # Mix only top_k experts together to provide the final output    
+    output = 0 
+    for i, expert_idx in enumerate(top_k_experts): 
+        output += weights[i] * experts[expert_idx](token) 
+    return output 
+    
+</code></pre>
+</section>
+<section><h2>Why are MoEs getting popular?</h2>
+<ul>
+<li><p><strong>Efficient Scaling:</strong> : Add model capacity (total parameters) without increasing active parameters (compute) significantly</p>
+</li>
+<li><p><strong>Efficient Pretraining and Inference</strong> - Faster training and inference compared to dense models of similar capacity</p>
+</li>
+</ul>
+<p><img src="images/moe-flops.png" alt="alt text"></p>
+</section>
+<section><h2>Why are MoEs getting popular?</h2>
+<ul>
+<li><strong>Improved Performance:</strong> - Better performance on many tasks by leveraging specialization and ensemble effects</li>
+<li>DeepSeek V2 236B MoE with 21B active parameters outperforms dense models with 100B+ parameters</li>
+</ul>
+<p><img src="images/moe-vs-dense.png" alt="alt text"></p>
+</section>
+<section><h2>MoE Architectures</h2>
+<p>Three things vary across MoE architectures:</p>
+<ol>
+<li><strong>Routing function</strong> - how tokens get assigned to experts</li>
+<li><strong>Expert sizes</strong> - how many experts, how large each one is, shared vs routed</li>
+<li><strong>Training objectives</strong> - how to train the router and keep experts balanced</li>
+</ol>
+</section>
+<section><h2>Routing Mechanisms</h2>
+<ul>
+<li>Token choice top K</li>
+<li>Expert choice top K</li>
+<li>Hash-based routing</li>
+<li>Learnable routing networks</li>
+</ul>
+<img alt text="routing mechanisms" src="images/routings.png" >
+
+</section>
+<section><h2>Top-K routing in detail</h2>
+<p><strong>1. Compute Gating Scores</strong> (e.g., dot product)</p>
+<div style="text-align: center;">
+
+<p>$s_{i,t} = \text{Softmax}_i\left(\mathbf{u}_t^{lT} \mathbf{e}_i^l\right)$</p>
+<ul>
+<li>$\mathbf{u}_t^l$ : input token representation at layer $l$ </li>
+<li>$\mathbf{e}_i^l$ : expert embedding for expert $i$ at layer $l$</li>
+</ul>
+</div>
+
+<p><strong>2. Select Top-K Experts</strong></p>
+<p><img src="images/topk.png" alt="alt text"></p>
+<p><strong>3. Compute Mixed Output</strong></p>
+<div style="text-align: center;">
+$ \mathbf{h}_t = \sum_{i=1}^{N} g_{i,t} \cdot \text{FFN}_i(\mathbf{u}_t) + \mathbf{u}_t $
+
+<p>where $\text{FFN}_i$ is the feedforward network for expert $i$</p>
+</div>
+
+</section>
+<section><h2>Top-K routing in more detail</h2>
+<h4>Why not just softmax without top-K?</h4>
+<!-- .element: class="fragment" -->
+
+<ul>
+<li>You immediately lose the systems efficiency</li>
+</ul>
+<!-- .element: class="fragment" -->
+<ul>
+<li>Without top-K, you pay the training cost of all N experts per token</li>
+</ul>
+<!-- .element: class="fragment" -->
+<ul>
+<li><strong>The whole point of MoE is sparse activation</strong> during both training and inference</li>
+</ul>
+<!-- .element: class="fragment" -->
+
+<p><img src="images/dense-moe.png" alt="alt text"></p>
+</section>
+<section><h2>Router Collapse</h2>
+<h4>The Problem</h4>
+<ul>
+<li><p>Gating network routes tokens to only a small subset of experts</p>
+</li>
+<li><p>Leaves most experts <strong>underutilized or completely inactive</strong></p>
+</li>
+<li><p><strong>The &quot;Rich-get-richer&quot; effect</strong>: Specialized experts attract more tokens $\rightarrow$ get more gradients $\rightarrow$ become better $\rightarrow$ attract even more tokens</p>
+</li>
+<li><p><strong>Degenerate policy</strong>: Router learns $s_{i,t} \approx 0$ for most experts</p>
+</li>
+</ul>
+<p>$
+\text{Effective capacity} \ll N \times \text{expert size}
+$</p>
+<h4>Consequences</h4>
+<ul>
+<li><strong>Wasted memory</strong>: Unused experts consume GPU memory but add no value</li>
+<li><strong>Reduced model quality</strong>: Equivalent to training a much smaller dense model</li>
+<li><strong>Poor generalization</strong>: Active experts become overloaded and overfit</li>
+</ul>
+</section>
+<section><h2>Mitigating Router Collapse</h2>
+<h4>Strategies</h4>
+<ul>
+<li><p><strong>Auxiliary Balancing Loss</strong>: Penalize uneven distribution (e.g., $F \cdot P$ loss)</p>
+</li>
+<li><p><strong>Expert Capacity</strong>: Cap the tokens per expert per batch to force overflow</p>
+</li>
+<li><p><strong>Random Noise</strong>: Add noise to router logits to encourage exploration</p>
+</li>
+<li><p><strong>Expert Choice</strong>: Experts pick tokens (rather than tokens picking experts)</p>
+</li>
+</ul>
+</section>
+<section><h2>Expert Configuration</h2>
+<p><strong>Fine-Grained Experts</strong></p>
+<ul>
+<li>Make experts smaller and use more of them.</li>
+<li>Instead of $N$ full-sized FFN copies, make each expert <strong>much smaller</strong> (1/4 to 1/14 of standard FFN size)</li>
+</ul>
+<p><em>The fine-grained ratio = (expert intermediate dim) / (standard FFN intermediate dim)</em></p>
+<p><img src="images/moe-experts.png" alt="alt text"></p>
+</section>
+<section><h2>Expert Configuration</h2>
+<p><strong>Shared Experts</strong></p>
+<ul>
+<li>One or more experts that process <strong>all tokens</strong> regardless of routing</li>
+<li><em>Shared experts</em> provide a common processing pathway for all tokens, ensuring that every token benefits from some shared knowledge.</li>
+<li><em>Routed experts</em> can specialize on different subsets of tokens. This hybrid approach can improve performance and stability.</li>
+</ul>
+<p><img src="images/moe-shared.png" alt="alt text"></p>
+</section>
+<section><h2>Expert Configuration</h2>
+<p><img src="images/moe-ablations.png" alt="alt text"></p>
+</section>
+<section><h3>Expert Routing Configurations for Major MoEs</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Routed</th>
+<th>Active</th>
+<th>Shared</th>
+<th>Fine-grained ratio</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GShard</td>
+<td>2048</td>
+<td>2</td>
+<td>0</td>
+<td>--</td>
+</tr>
+<tr>
+<td>Switch Transformer</td>
+<td>64</td>
+<td>1</td>
+<td>0</td>
+<td>--</td>
+</tr>
+<tr>
+<td>Mixtral</td>
+<td>8</td>
+<td>2</td>
+<td>0</td>
+<td>--</td>
+</tr>
+<tr>
+<td>DBRX</td>
+<td>16</td>
+<td>4</td>
+<td>0</td>
+<td>--</td>
+</tr>
+<tr>
+<td>Grok</td>
+<td>8</td>
+<td>2</td>
+<td>0</td>
+<td>--</td>
+</tr>
+<tr>
+<td>DeepSeek V1</td>
+<td>64</td>
+<td>6</td>
+<td>2</td>
+<td>1/4</td>
+</tr>
+<tr>
+<td>Qwen 1.5</td>
+<td>60</td>
+<td>4</td>
+<td>4</td>
+<td>1/8</td>
+</tr>
+<tr>
+<td>DeepSeek V3</td>
+<td>256</td>
+<td>8</td>
+<td>1</td>
+<td>1/14</td>
+</tr>
+<tr>
+<td>OLMoE</td>
+<td>64</td>
+<td>8</td>
+<td>0</td>
+<td>1/8</td>
+</tr>
+<tr>
+<td>MiniMax</td>
+<td>32</td>
+<td>2</td>
+<td>0</td>
+<td>~1/4</td>
+</tr>
+<tr>
+<td>Llama 4 (Maverick)</td>
+<td>128</td>
+<td>1</td>
+<td>1</td>
+<td>1/2</td>
+</tr>
+</tbody></table>
+</section>
+<section><h2>Training MoEs</h2>
+<p><strong>The Core Challenge</strong></p>
+<ul>
+<li><strong>Sparsity vs. Differentiability</strong>: We need sparsity for training-time efficiency.</li>
+<li><strong>Problem</strong>: Sparse gating decisions (hard top-K selection) are <strong>not differentiable</strong>.</li>
+<li>Gradient descent cannot directly optimize the discrete &quot;choice&quot; of an expert.</li>
+</ul>
+<p><strong>The Efficiency Trade-off</strong></p>
+<ul>
+<li>Activating all experts simplifies gradients but destroys compute efficiency.</li>
+<li><strong>FLOPs Cost</strong>: &quot;Having a model that&#39;s 256 times more expensive to train is a total no-go.&quot;</li>
+<li><strong>Goal</strong>: Maintain sparse execution while ensuring the routing mechanism can still be trained effectively.</li>
+</ul>
+</section>
+<section><h2>Heuristic Balancing Losses</h2>
+<p><strong>Switch Transformer F*P Loss (Standard)</strong></p>
+<p><img src="images/fp-loss.png" alt="alt text"></p>
+<p>where:</p>
+<ul>
+<li>$f_i = \frac{1}{T} \sum_{x \in \mathcal{B}} \mathbb{1}{\text{argmax } p(x) = i}$ is the fraction of tokens dispatched to expert $i$</li>
+<li>$P_i = \frac{1}{T} \sum_{x \in \mathcal{B}} p_i(x)$ is the mean router probability for expert $i$</li>
+<li>$\alpha$ is the balancing coefficient</li>
+<li>$N$ is the number of experts</li>
+</ul>
+</section>
+<section><h2>Expert Capacity</h2>
+<h4>Hardware Efficiency vs. Dynamic Routing</h4>
+<p><strong>Expert Capacity</strong>: The maximum number of tokens assigned to each expert per batch.</p>
+<p>$ \text{Expert Capacity} = \frac{\text{Tokens per Batch}}{\text{Number of Experts}} \times \text{Capacity Factor} $</p>
+<img alt text="expert capacity" src="images/expert-capacity.png" class="float-right"/>
+
+<h4>Handling Overflow (Dropped Tokens)</h4>
+<ul>
+<li><strong>Token Dropping</strong>: Occurs when the number of tokens routed to an expert exceeds its capacity.</li>
+<li><strong>Residual Bypass</strong>: Dropped tokens skip expert computation and flow directly through the residual connection to the next layer.</li>
+</ul>
+</section>
+<section><h2>Computing output of MoE layer</h2>
+<ul>
+<li><p>For each selected expert, compute the output for the assigned tokens</p>
+</li>
+<li><p>Combine the outputs from the selected experts (e.g., weighted sum) and add the residual connection</p>
+</li>
+</ul>
+<p><img src="images/moe-output.png" alt="alt text"></p>
+<p><a href="https://github.com/cat-state/modded-nanogpt-moe/blob/main/train_gpt_moe.py#L215">Example MoE Training code</a></p>
+</section>
+<section><h2>Total vs Activate Parameters</h2>
+<ul>
+<li><strong>Total Parameters</strong>: The entire set of model parameters, including all available experts (both active and inactive).</li>
+<li><strong>Active Parameters</strong>: The parameters actually triggered to process a single input token. This determines the compute cost (FLOPs) per token.</li>
+<li><strong>Key Advantage</strong>: MoEs scale model capacity (Total) while maintaining the inference latency and training cost of a much smaller dense model (Active).</li>
+</ul>
+<p><img src="images/active-1.png" alt="alt text"></p>
+</section>
+<section><h2>Total vs Activate Parameters</h2>
+<p><strong>Mixtral 8x7B MoE</strong></p>
+<img alt text="mixtral" src="images/active-2.png" class="float-right"/>
+
+<ul>
+<li><strong>Total Parameters</strong>: ~46.7B</li>
+<li><strong>Active Parameters</strong>: ~12.9B </li>
+<li><strong>Configuration</strong>:<ul>
+<li>8 experts per layer</li>
+<li>Top-2 gating ($K=2$ experts active per token)</li>
+</ul>
+</li>
+<li><strong>Parameter Sharing</strong>:<ul>
+<li>Only the Feed-Forward Network (FFN) blocks are replicated.</li>
+<li><strong>Shared components</strong>: Attention layers, LayerNorms, and Embeddings.</li>
+</ul>
+</li>
+</ul>
+<p>$ \text{Active Params} = \text{Shared} + (K \times \text{Expert FFN}) $
+$ \text{Total Params} = \text{Shared} + (N \times \text{Expert FFN}) $</p>
+<img alt text="mixtral-params" src="images/active-3.png" class="float-right"/>
+
+</section>
+<section><h2>DeepSeek V3 MoE</h2>
+<p><strong>DeepSeek V2</strong> </p>
+<ul>
+<li>a 236 billion parameter MoE with 21 billion active parameters</li>
+</ul>
+<p><img src="images/deepseek-v2.png" alt="alt text"></p>
+<p><strong>DeepSeek V3</strong></p>
+<ul>
+<li>a 671B parameter MoE with 37B active parameters</li>
+</ul>
+</section>
+<section><h2>DeepSeek V3 Architecture</h2>
+<img alt text="deepseek-v3-params" src="images/deepseek-v3.png" class="float-right"/>
+
+<ul>
+<li><strong>Sparse Activation</strong>: 671B total parameters, only 37B active per token</li>
+<li><strong>Shared + Routed Experts</strong>: Combines fine-grained routed experts (256) with 1 shared expert, 8 activated experts processing all tokens</li>
+<li><strong>Multi-Head Latent Attention (MLA)</strong>: Compresses KV cache into latent space, synergizes with sparse MoE for efficient inference</li>
+<li><strong>Multi-Token Prediction</strong>: Jointly optimizes predicting multiple tokens in parallel for improved coherence and throughput</li>
+</ul>
+</section>
+<section><div class="center-slide">
+
+<h2>Questions?</h2>
+</div>
+</section>
+  </div>
+</div>
+
+
+
+<script src="../reveal/dist/reveal.js"></script>
+<script src="../reveal/plugin/markdown/markdown.js"></script>
+<script src="../reveal/plugin/highlight/highlight.js"></script>
+<script src="../reveal/plugin/math/math.js"></script>
+<script src="../reveal/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin@11.6.0/plugin/mermaid/mermaid.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js"></script>
+<!-- Chalkboard plugin -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chalkboard/plugin.js"></script>
+
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: "c/t",
+  center: false,
+  transition: "none",
+  controls: true,
+  controlsTutorial: true,
+  index:true,
+  controlsLayout: "bottom-right",
+  controlsBackArrows: "faded",
+  // Responsive: fill browser width
+  width: "100%",
+  height: "100%",
+  margin: 0.04,
+  minScale: 0.2,
+  maxScale: 2.0,
+  mermaid:{
+
+  },
+  menu: {
+    side: "left",
+    titleSelector: "h1, h2, h3",
+    useTextContentForMissingTitles: true
+  },
+  chalkboard: {
+    boardmarkerWidth: 4,
+    chalkWidth: 5,
+    chalkEffect: 0.5,
+    theme: "chalkboard",
+    transition: 800,
+    readOnly: false
+  },
+  plugins: [ RevealMarkdown, RevealHighlight, RevealMath, RevealNotes, RevealMermaid, RevealMenu, RevealChalkboard ]
+});
+
+</script>
+
+</body>
+</html>

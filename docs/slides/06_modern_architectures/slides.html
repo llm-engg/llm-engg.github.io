@@ -1,0 +1,900 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slides</title>
+
+  <link rel="stylesheet" href="../reveal/dist/reveal.css">
+  <link rel="stylesheet" href="../reveal/dist/theme/solarized.css">
+  <!-- PDF export support: append ?print-pdf to URL, then Ctrl+P -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi)
+      ? '../reveal/dist/print/pdf.css'
+      : '../reveal/dist/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+
+  <!-- Bigger fonts for classrooms -->
+  <style>
+    /* Responsive: fill viewport */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    .reveal {
+      font-size: 32px;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .reveal .slides {
+      width: 90% !important;
+      max-width: 90% !important;
+      margin-left: 5% !important;
+      margin-right: 5% !important;
+    }
+    .reveal code {
+      font-size: 1.0em;
+    }
+    /* Left-align all slide content */
+    .reveal .slides section {
+      text-align: left;
+    }
+    .reveal .slides section ul,
+    .reveal .slides section ol {
+      display: block;
+      text-align: left;
+    }
+    .reveal .slides section li {
+      text-align: left;
+    }
+    /* Center-align headings */
+    .reveal .slides section h1,
+    .reveal .slides section h2,
+    .reveal .slides section h3 {
+      text-align: center;
+    }
+    /* Center-align tables */
+    .reveal .slides section table {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* Footer styling */
+    .reveal .footer {
+      position: absolute;
+      bottom: 1em;
+      left: 1em;
+      font-size: 0.5em;
+      color: #657b83;
+      z-index: 100;
+    }
+    /* Constrain slides to prevent overflow */
+    .reveal .slides section {
+      overflow: hidden !important;
+      height: 100% !important;
+      box-sizing: border-box !important;
+    }
+    /* Image sizing and background blend for solarized theme */
+    .reveal .slides section img,
+    .reveal .slides section p img,
+    .reveal img {
+      max-width: 100% !important;
+      max-height: 600px !important;
+      width: auto !important;
+      height: auto !important;
+      object-fit: contain !important;
+      display: block !important;
+      margin: 0.04em auto !important;
+      background-color: #fdf6e3 !important;
+      padding: 0.04em !important;
+      border-radius: 2px !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    /* Allow side-by-side images in flex containers */
+    .reveal .slides section [style*="display: flex"] img,
+    .reveal .slides section [style*="display:flex"] img {
+      display: inline-block !important;
+      margin: 0 !important;
+      max-width: 100% !important;
+      max-height: 500px !important;
+    }
+    /* Float images for text wrap */
+    .reveal .slides section img.float-right {
+      float: right !important;
+      margin: 0 0 0.5em 1em !important;
+      max-width: 50% !important;
+      max-height: 500px !important;
+    }
+    .reveal .slides section img.float-left {
+      float: left !important;
+      margin: 0 1em 0.5em 0 !important;
+      max-width: 50% !important;
+      max-height: 500px !important;
+    }
+    /* Centered slide for section breaks */
+    .reveal .slides section .center-slide {
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      text-align: center !important;
+      width: 90% !important;
+    }
+    .reveal .slides section .center-slide h1,
+    .reveal .slides section .center-slide h2,
+    .reveal .slides section .center-slide h3,
+    .reveal .slides section .center-slide p {
+      text-align: center !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+    /* Fragment animation: semi-fade-out */
+    .reveal .slides section .fragment.semi-fade-out {
+      opacity: 1;
+      visibility: inherit;
+      transition: opacity 0.3s ease;
+    }
+    .reveal .slides section .fragment.semi-fade-out.visible {
+      opacity: 0.3;
+    }
+    /* Fragment animation: grow with highlight */
+    .reveal .slides section .fragment.grow {
+      opacity: 1;
+      visibility: inherit;
+      transition: transform 0.3s ease;
+    }
+    .reveal .slides section .fragment.grow.visible {
+      transform: scale(1.0);
+    }
+    /* Course header styling */
+    .course-header {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      font-size: 16px;
+      opacity: 0.6;
+    }
+  </style>
+
+  <link rel="stylesheet" href="../reveal/plugin/highlight/monokai.css">
+  <!-- Chalkboard plugin -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chalkboard/style.css">
+</head>
+<body>
+
+
+<div class="reveal">
+  <div class="footer"> <a href="https://llm-engg.github.io">Large Language Models : A Hands-on Approach – CCE, IISc</a></div>
+  <div class="slides">
+    <section><div class="center-slide">
+
+<h1>LLMs : A Hands-on Approach</h1>
+<h3>Modern Architectures</h3>
+</div>
+
+</section>
+<section><h2>Topics Covered</h2>
+<ul>
+<li><strong>GPT-2 Review</strong><ul>
+<li>Training Loop</li>
+</ul>
+</li>
+<li><strong>Modern LLM Architectures</strong><ul>
+<li>Norm Types</li>
+<li>Activation Functions</li>
+<li>Positional Encodings</li>
+<li>Attention Variants</li>
+<li>Hyperparameters</li>
+</ul>
+</li>
+</ul>
+</section>
+<section><h2>Recap : GPT-2 Training Loop</h2>
+<p>During Training we update model weights to minimize loss through <strong>backpropagation</strong> and <strong>gradient descent</strong>.</p>
+<p><img src="images/train-loop.png" alt="alt text"></p>
+<p><strong>Training Loop in code</strong></p>
+<pre><code class="language-python">
+    for epoch in range(num_epochs):
+        model.train()  # Enable dropout
+
+        for input_batch, target_batch in train_loader:
+            optimizer.zero_grad()  # Reset gradients
+
+            loss = calc_loss_batch(input_batch, target_batch, model, device)
+            loss.backward()        # Calculate gradients
+            optimizer.step()       # Update weights
+</code></pre>
+</section>
+<section><h2>Loading and Saving Model Weights</h2>
+<p><strong>We must save trained models to:</strong></p>
+<ul>
+<li>Avoid retraining</li>
+<li>Share models with others</li>
+<li>Resume training later</li>
+<li>Deploy to production</li>
+</ul>
+<pre><code class="language-python"># ============ SAVE ============
+
+torch.save(model.state_dict(), &quot;model.pth&quot;)
+
+# Save model + optimizer (for resuming training)
+torch.save({
+    &quot;model_state_dict&quot;: model.state_dict(),
+    &quot;optimizer_state_dict&quot;: optimizer.state_dict(),
+}, &quot;model_and_optimizer.pth&quot;)
+
+
+# ============ LOAD ============
+# Load weights into fresh model
+model = GPTModel(GPT_CONFIG_124M)
+model.load_state_dict(torch.load(&quot;model.pth&quot;, map_location=device))
+model.eval()  # Set to evaluation mode
+
+# Resume training
+checkpoint = torch.load(&quot;model_and_optimizer.pth&quot;, map_location=device)
+model = GPTModel(GPT_CONFIG_124M)
+model.load_state_dict(checkpoint[&quot;model_state_dict&quot;])
+
+optimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.1)
+optimizer.load_state_dict(checkpoint[&quot;optimizer_state_dict&quot;])
+model.train()  # Set to training mode
+</code></pre>
+</section>
+<section><h2>LLM Loss Surfaces</h2>
+<p>LLM training optimizes a <strong>high-dimensional non-convex loss surface</strong> defined by:</p>
+<p>$
+\mathcal{L}(\theta) = -\frac{1}{N} \sum_{i=1}^{N} \log P_\theta(x_i^{\text{target}})
+$</p>
+<p>Key properties:</p>
+<ul>
+<li>Billions of parameters</li>
+<li>Extremely overparameterized</li>
+<li>Many equivalent minima</li>
+<li>Flat basins dominate</li>
+</ul>
+<p>More details in :</p>
+<ul>
+<li><a href="https://arxiv.org/html/2505.17646v2">Unveiling the Basin-Like Loss Landscape in Large Language Models</a></li>
+<li><a href="https://www.youtube.com/watch?v=lyZorUc8Gm4">Visualizing the Loss Landscape of Neural Nets</a></li>
+</ul>
+</section>
+<section><div class="center-slide">
+
+<h2>Modern Architectures</h2>
+</div>
+
+</section>
+<section><h2>GPT-2 Architecture</h2>
+<p><strong>Position embedding</strong>: learned, absolute</p>
+<p><strong>FFN</strong>: GELU</p>
+<p>$ \text{FFN}(x) = GELU(xW_1 + b_1)W_2 + b_2 $</p>
+<p><strong>Norm type</strong>: Pre-Norm, LayerNorm</p>
+<p><img src="images/gpt-2.png" alt="alt text"></p>
+</section>
+<section><h2>Current Models</h2>
+<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQsF7QOjxAI1f7ud_oYNLRBq6qa3ZzLqtMMF_1xOKKbi5qb6atwvgeYIp4pYjuGXHDTKXMO0IdxBaVw/pubhtml?gid=1330227995&amp;single=true&amp;widget=true&amp;headers=false" style="width:100%;height:100%;border:none;"></iframe>
+
+</section>
+<section><h2>Llama 2, LlaMA 3 and Qwen 3 Architectures</h2>
+<p><strong>Position embedding</strong>: RoPE (rotary position embeddings)</p>
+<p><strong>FFN</strong>: *GLU variant (SwiGLU for LLaMA, GeGLU for Qwen)</p>
+<p>$
+\textbf{SwiGLU}(x) = \text{Swish}(xW) \otimes (xV)W_2
+$</p>
+<p><strong>Norm type</strong>: Post-Norm, RMSNorm</p>
+<p><img src="images/llama-2.png" alt="alt text"></p>
+</section>
+<section><h2>Pre-Norm vs Post-Norm</h2>
+<p><strong>Almost all models post-2020 use pre-norm.</strong></p>
+<p><img src="images/pre-post-ln.png" alt="alt text"></p>
+<p><strong>Original Transformer</strong> : Post Norm</p>
+<p><code>x → Attention(x) → Add → LayerNorm → FFN → Add → LayerNorm</code></p>
+<p><strong>GPT 2</strong> : Pre-Norm</p>
+<p><code>x → LayerNorm → Attention → Add → LayerNorm → FFN → Add</code></p>
+</section>
+<section><h2>Pre-Norm vs Post-Norm</h2>
+<image src="images/pre-post-ln.png" >
+
+<p><strong>Why pre-norm wins:</strong></p>
+<ul>
+<li>Better gradient flow throrugh residual connections. </li>
+<li>Practical evidence: almost all modern LLMs use pre-norm</li>
+</ul>
+<p><strong>Note</strong> : Double norm also used in some models, but not as common as pre-norm. It applies LayerNorm both before and after the sub-layer.</p>
+<p><em>Question</em> : <code>BERT was trained with post-norm and it was huge success. But most models use pre-norm. Why?</code></p>
+</section>
+<section><h2>LayerNorm vs RMSNorm</h2>
+<div style="text-align: center;"> 
+Strong consensus toward RMSNorm
+</div>
+
+
+
+
+<div style="display: flex; gap: 2rem;">
+
+<div style="flex: 1;">
+
+<p><strong>LayerNorm</strong> (original): </p>
+<p>Normalize by subtracting mean and dividing by std dev, then scale ($\gamma$) and shift ($\beta$):</p>
+<p>$y = \frac{x - E[x]}{\sqrt{Var[x] + \epsilon}} \cdot \gamma + \beta$</p>
+<p><em>Models</em> : GPT-1/2/3, OPT, GPT-J, BLOOM</p>
+</div>
+
+<div style="flex: 1; border-left: 2px solid #333; padding-left: 2rem;">
+
+<p><strong>RMSNorm</strong> (modern): </p>
+<p>Drop the mean subtraction and bias term:</p>
+<p>$y = \frac{x}{\sqrt{||x||_2^2 + \epsilon}} \cdot \gamma$</p>
+<p><em>Models</em> : LLaMA family, DeepSeek V3, Qwen3 etc</p>
+</div>
+
+
+</div>
+
+<p><strong>Why RMSNorm</strong></p>
+<ul>
+<li>Fewer operations: RMSNorm requires fewer computations (no mean subtraction, no bias term) which reduces both FLOPs and memory bandwidth.</li>
+</ul>
+</section>
+<section><h2>Dropping bias Terms in FFN and LayerNorm</h2>
+<p>Most modern transformers have <strong>no bias terms</strong> in linear layers or LayerNorm.</p>
+<p>Original: $FFN(x) = \max(0, xW_1 + b_1)W_2 + b_2$</p>
+<p>Modern: $FFN(x) = \sigma(xW_1)W_2$</p>
+<p><strong>Reasons:</strong></p>
+<ol>
+<li>Same memory/data movement argument as RMSNorm -- fewer parameters to load</li>
+<li><strong>Optimization stability</strong> -- empirically, dropping bias terms stabilizes training of very large networks</li>
+</ol>
+<p><em><strong>LayerNorm Recap</strong></em></p>
+<ul>
+<li>Most models use RMSNorm</li>
+<li>Almost all models use pre-norm</li>
+</ul>
+</section>
+<section><h2>Activations &amp; Gated Linear Units (Strong trend toward SwiGLU/GeGLU)</h2>
+<p><strong>Evolution of activations:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Activation</th>
+<th>Formula</th>
+<th>Notable Models</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ReLU</td>
+<td>$FF(x) = \max(0, xW_1)W_2$</td>
+<td>Original transformer, T5, Gopher, OPT</td>
+</tr>
+<tr>
+<td>GeLU</td>
+<td>$FF(x) = GELU(xW_1)W_2$ where $GELU(x) = x\Phi(x)$</td>
+<td>GPT-1/2/3, GPT-J, BLOOM</td>
+</tr>
+<tr>
+<td>SwiGLU</td>
+<td>$FF(x) = (Swish(xW) \otimes xV)W_2$</td>
+<td>LLaMA 1/2/3, PaLM, Mistral, <em>most post-2023</em></td>
+</tr>
+<tr>
+<td>GeGLU</td>
+<td>$FF(x) = (GELU(xW) \otimes xV)W_2$</td>
+<td>T5 v1.1, mT5, Phi3, Gemma 2/3</td>
+</tr>
+</tbody></table>
+<p>where <code>Swish(x) = x * sigmoid(x)</code> and $\otimes$ is elementwise multiplication.</p>
+</section>
+<section><h2>Gated Linear Units (GLU)</h2>
+<p><strong>What do GLUs do?</strong></p>
+<ul>
+<li>GLUs add a <strong>gating mechanism</strong></li>
+<li>Hidden representation element-wise multiplied by a gate $xV$ (learned linear projection)</li>
+<li>$xV$ controls information flow through the MLP</li>
+</ul>
+<p>$\text{Standard:} \quad \sigma(xW_1) \rightarrow \sigma(xW_1) \otimes (xV) \quad \text{(gated)}$</p>
+<div style="margin-bottom:30px"></div>
+
+<p><img src="images/glu.png" alt="alt text"></p>
+</section>
+<section><h2>Gated Linear Units (GLU)</h2>
+<p><strong>More number of parameters?</strong></p>
+<p><em>The extra parameter V</em> means GLU models have 3 weight matrices <em>(W, V, W2)</em> instead of 2. </p>
+<p>How to keep parameter count the same? (memory is the real bottleneck, not compute)</p>
+</section>
+<section><h2>Gated Linear Units (GLU)</h2>
+<p><strong>More number of parameters?</strong></p>
+<p><em>The extra parameter V</em> means GLU models have 3 weight matrices <em>(W, V, W2)</em> instead of 2. </p>
+<p>How to keep parameter count the same? (memory is the real bottleneck, not compute)</p>
+<p><strong>Scale the FF Params</strong> </p>
+</section>
+<section><h2>Gated Linear Units (GLU)</h2>
+<p><strong>More number of parameters?</strong></p>
+<p><em>The extra parameter V</em> means GLU models have 3 weight matrices <em>(W, V, W2)</em> instead of 2. </p>
+<p>How to keep parameter count the same? (memory is the real bottleneck, not compute)</p>
+<p><strong>Scale the FF Params</strong> </p>
+<ul>
+<li>Standard MLP<ul>
+<li>$W_1 \in \mathbb{R}^{d \times d_{ff}}$ + $W_2 \in \mathbb{R}^{d_{ff} \times d}$ = $2 \cdot d \cdot d_{ff}$ params</li>
+<li>Total FFN params = $2 \cdot d \cdot 4 d$ = $8 \cdot d^2$.</li>
+</ul>
+</li>
+</ul>
+</section>
+<section><h2>Gated Linear Units (GLU)</h2>
+<p><strong>More number of parameters?</strong></p>
+<p><em>The extra parameter V</em> means GLU models have 3 weight matrices <em>(W, V, W2)</em> instead of 2. </p>
+<p>How to keep parameter count the same? (memory is the real bottleneck, not compute)</p>
+<p><strong>Scale the FF Params</strong> </p>
+<ul>
+<li><p>Standard MLP</p>
+<ul>
+<li>$W_1 \in \mathbb{R}^{d \times d_{ff}}$ + $W_2 \in \mathbb{R}^{d_{ff} \times d}$ = $2 \cdot d \cdot d_{ff}$ params</li>
+<li>Total FFN params = $2 \cdot d \cdot 4 d$ = $8 \cdot d^2$.</li>
+</ul>
+</li>
+<li><p>Gated MLP: </p>
+<ul>
+<li>$W \in \mathbb{R}^{d \times d_{ff}}$ + $V \in \mathbb{R}^{d \times d_{ff}}$ + $W_2 \in \mathbb{R}^{d_{ff} \times d}$ = $3 \cdot d \cdot d_{ff}$ params.</li>
+</ul>
+</li>
+</ul>
+</section>
+<section><h2>Gated Linear Units (GLU)</h2>
+<p><strong>More number of parameters?</strong></p>
+<p><em>The extra parameter V</em> means GLU models have 3 weight matrices <em>(W, V, W2)</em> instead of 2. </p>
+<p>How to keep parameter count the same? (memory is the real bottleneck, not compute)</p>
+<p><strong>Scale the FF Params</strong> </p>
+<ul>
+<li><p>Standard MLP</p>
+<ul>
+<li>$W_1 \in \mathbb{R}^{d \times d_{ff}}$ + $W_2 \in \mathbb{R}^{d_{ff} \times d}$ = $2 \cdot d \cdot d_{ff}$ params</li>
+<li>Total FFN params = $2 \cdot d \cdot 4 d$ = $8 \cdot d^2$.</li>
+</ul>
+</li>
+<li><p>Gated MLP: </p>
+<ul>
+<li>$W \in \mathbb{R}^{d \times d_{ff}}$ + $V \in \mathbb{R}^{d \times d_{ff}}$ + $W_2 \in \mathbb{R}^{d_{ff} \times d}$ = $3 \cdot d \cdot d_{ff}$ params.</li>
+</ul>
+</li>
+<li><p>To match: </p>
+<ul>
+<li>set $d_{ff}^{gated} = \frac{2}{3} d_{ff}^{standard} = \frac{2}{3} \cdot 4d = \frac{8}{3}d$. </li>
+<li>Total FFN params = $3 \cdot d \cdot \frac{8}{3}d = 8 \cdot d^2$.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Scaling Factors:</strong> </p>
+<ul>
+<li>Standard MLP: $d_{ff} = 4 \cdot d$</li>
+<li>Gated MLP: $d_{ff} = \frac{8}{3} \cdot d \approx 2.67 \cdot d$</li>
+</ul>
+</section>
+<section><h2>Serial vs Parallel Layers</h2>
+<p><strong>Normal transformer blocks are serial – they compute attention, then the MLP</strong></p>
+<p>Standard transformer block can be written as:</p>
+<p>$ 
+y = x + \text{MLP}(\text{LayerNorm}(x + \text{Attention}(\text{LayerNorm}(x))) 
+$</p>
+<p>Whereas the parallel formulation can be written as:</p>
+<p>$ 
+y = x + \text{MLP}(\text{LayerNorm}(x)) + \text{Attention}(\text{LayerNorm}(x)) 
+$</p>
+<p><img src="images/parallel.png" alt="alt text"></p>
+<p><a href="https://arxiv.org/html/2311.01906">image source</a></p>
+</section>
+<section><h2>Position Encodings</h2>
+<p><strong>Evolution:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>How it works</th>
+<th>Models</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Sinusoidal</strong></td>
+<td>Add fixed sin/cos to embedding</td>
+<td>Original Transformer</td>
+</tr>
+<tr>
+<td><strong>Absolute (learned)</strong></td>
+<td>Add learned position vector $u_i$ to embedding</td>
+<td>GPT-1/2/3, OPT</td>
+</tr>
+<tr>
+<td><strong>Relative</strong></td>
+<td>Add learned bias to attention scores</td>
+<td>T5, Gopher, Chinchilla</td>
+</tr>
+<tr>
+<td><strong>ALiBi</strong></td>
+<td>Linear attention bias</td>
+<td>BLOOM</td>
+</tr>
+<tr>
+<td><strong>NoPE</strong></td>
+<td>No position embedding at all</td>
+<td>SmolLM3, Kimi Linear</td>
+</tr>
+<tr>
+<td><strong>RoPE</strong></td>
+<td>Rotate query/key vectors</td>
+<td>GPT-J, PaLM, LLaMA, <strong>all 2024+ models</strong></td>
+</tr>
+</tbody></table>
+</section>
+<section><h2>Position Encodings</h2>
+<h4>Why do we need Position Encodings?</h4>
+<p><strong>Attention is a position-agnostic operation</strong></p>
+<ul>
+<li>Treats the input as a <strong>set</strong>, not a sequence</li>
+<li>No inherent notion of order or position</li>
+</ul>
+<p><strong>Example:</strong></p>
+<p><em>The dog chased another dog</em> vs <em>Another dog chased the dog</em></p>
+<ul>
+<li>Both have the <strong>same set of tokens</strong></li>
+<li>But <strong>different meanings</strong></li>
+</ul>
+<p><strong>Solution:</strong> Add positional encodings to inject order information into the model</p>
+<p><img src="images/tok_pos.png" alt="alt text"></p>
+</section>
+<section><h2>Integer Posion Encoding</h2>
+<ul>
+<li>Add the integer postion directly into embeddings.</li>
+<li>Problems:<ul>
+<li>Position encoding magnitude greater than token embedding magnitude</li>
+<li>Model should separately learn to handle content and position, which can make learning harder.</li>
+</ul>
+</li>
+</ul>
+<p><video controls src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/you-could-have-designed-SOTA-positional-encoding/IntegerEncoding.mp4" title="Int Encoding"></video></p>
+</section>
+<section><h2>Binary Position Encoding</h2>
+<p><video controls src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/you-could-have-designed-SOTA-positional-encoding/BinaryEncoding.mp4" title="Title"></video></p>
+</section>
+<section><h2>Binary Position Encoding</h2>
+<p><video controls src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/you-could-have-designed-SOTA-positional-encoding/BinaryPositionalEncodingPlot.mp4" title="Title"></video></p>
+<p><strong>Problems</strong>:</p>
+<ul>
+<li>Hamming distance artifacts</li>
+<li>Sparse representations (most bits are zero, which can make learning harder)</li>
+<li>No lernable interpolation</li>
+</ul>
+</section>
+<section><h2>Sinusoidal Position Encoding</h2>
+<p>$ PE_{(pos,2i)} = sin(pos/10000^{2i/d_{\text{model}}}) $</p>
+<p>$ PE_{(pos,2i+1)} = cos(pos/10000^{2i/d_{\text{model}}}) $</p>
+<p><video controls src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/you-could-have-designed-SOTA-positional-encoding/SteppedPositionalEncodingPlot.mp4" title="Title"></video></p>
+</section>
+<section><h2>Sinusoidal Position Encoding</h2>
+<p><em>Why <strong>sin</strong> and <strong>cos</strong></em>? </p>
+<p>$sin(a+b) = sin(a)cos(b) + cos(a)sin(b)$</p>
+<p>$cos(a+b) = cos(a)cos(b) - sin(a)sin(b)$</p>
+<p><em>PE(pos+k)</em> is a linear function of <em>PE(pos)</em></p>
+<p>So </p>
+<p>$
+\begin{aligned}
+\sin(\omega \cdot (p+k)) &amp;= \sin(\omega p)\cos(\omega k) + \cos(\omega p)\sin(\omega k)
+\end{aligned}
+$</p>
+<p>$
+\begin{aligned}
+\cos(\omega \cdot (p+k)) &amp;= \cos(\omega p)\cos(\omega k) - \sin(\omega p)\sin(\omega k)
+\end{aligned}
+$</p>
+<div style="margin-bottom:20px"> </div>
+
+<p><strong>Downsides</strong> :</p>
+<p>Sinusoidal PE is added to embeddings: $x_p = x_{token} + PE(p)$</p>
+<p>Then projected: $q_p = W_q x_p$, $k_p = W_kx_p$</p>
+<ul>
+<li>Position and content are entangled before attention</li>
+<li>Relative position is implicit, not structural</li>
+<li>Attention must learn how to extract distance</li>
+</ul>
+</section>
+<section><h2>Absolute vs Relative Position Encodings</h2>
+<ul>
+<li><p><em>Absolute position encodings</em>  - Unique encoding to each position in the sequence. </p>
+</li>
+<li><p><em>Relative position encodings</em> - Encodes the relative distance between tokens, rather than their absolute position.</p>
+</li>
+</ul>
+<p><img src="images/rel_pos.png" alt="alt text"></p>
+<p><strong>Why do we need them?</strong></p>
+<ul>
+<li><p>&quot;The cat sat&quot; should have similar relationships whether at positions [5,6,7] or [105,106,107]</p>
+</li>
+<li><p>Absolute encodings make it harder to learn patterns based on relative distance (e.g., &quot;the word two positions to the left of X&quot;)</p>
+</li>
+</ul>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Learn patterns based on <strong>relative distance</strong> between tokens</li>
+<li>More important for many tasks than absolute position</li>
+<li>No reliance on fixed absolute positions</li>
+</ul>
+</section>
+<section><h2>Relative Position Encoding Example</h2>
+<p><strong>Example sentence:</strong> <em>&quot;The dog chased another dog&quot;</em></p>
+<p>When attending from position 2 (&quot;chased&quot;):</p>
+<table>
+<thead>
+<tr>
+<th>Position</th>
+<th>Token</th>
+<th>Absolute</th>
+<th>Relative to pos 2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>The</td>
+<td>0</td>
+<td>-2</td>
+</tr>
+<tr>
+<td>1</td>
+<td>dog</td>
+<td>1</td>
+<td>-1</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>chased</strong></td>
+<td>2</td>
+<td><strong>0</strong> (self)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>another</td>
+<td>3</td>
+<td>+1</td>
+</tr>
+<tr>
+<td>4</td>
+<td>dog</td>
+<td>4</td>
+<td>+2</td>
+</tr>
+</tbody></table>
+<p><strong>In practice:</strong></p>
+<p><img src="images/qk_rel.png" alt="alt text"></p>
+<pre><code class="language-python"># T5-style relative attention bias
+# For position i attending to position j:
+relative_position = j - i  # e.g., &quot;dog&quot;(1) → &quot;chased&quot;(2) = 1 - 2 = -1
+
+# Bias added to attention scores (learned, not fixed):
+attention_score = (q_i @ k_j) + bias[clip(relative_position, -max_dist, max_dist)]
+</code></pre>
+<p><strong>Key differences from absolute:</strong></p>
+<ul>
+<li>Same relative pattern at any absolute position (e.g., &quot;-1&quot; always means &quot;previous token&quot;)</li>
+<li>Model learns one bias per relative distance, not per absolute position</li>
+</ul>
+</section>
+<section><h2>Position Encoding : Desirable Properties</h2>
+<ol>
+<li><strong>Inject position information</strong> into the model</li>
+<li><strong>Allow generalization to longer sequences</strong> than seen during training</li>
+<li><strong>Facilitate learning of relative position patterns</strong> (e.g., &quot;the word   two positions to the left of X&quot;)</li>
+<li><strong>Be computationally efficient</strong> (not too many parameters or FLOPs)</li>
+<li><strong>Be compatible with attention mechanism</strong> (e.g., allow position information to influence attention scores)</li>
+</ol>
+</section>
+<section><h2>Rotary Position Embeddings (RoPE)</h2>
+<p>We want attention scores to depend only on <em>relative</em> position $(i - j)$, not absolute positions. </p>
+<p>Mathematically, find $f(x, i)$ such that:</p>
+<p>$\langle f(x, i), f(y, j) \rangle = g(x, y, i-j)$</p>
+<p><strong>RoPE&#39;s key idea:</strong></p>
+<ul>
+<li>Instead of adding PE to the input <code>x</code>, apply rotation to the query and key vectors based on their position. </li>
+<li>Position information is directly encoded in the attention scores</li>
+</ul>
+<p><img src="images/clip_3m05s_3m39s.gif" alt=""></p>
+</section>
+<section><h2>Encoding position as a rotation</h2>
+<p><strong>Rotating a 2D vector by an angle $\theta$</strong> </p>
+<div style="text-align:center"> 
+
+<p>$
+\begin{bmatrix}
+x&#39; \\
+y&#39;
+\end{bmatrix} =
+\begin{bmatrix}
+\cos \theta &amp; -\sin \theta \\
+\sin \theta &amp; \cos \theta
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y
+\end{bmatrix}
+$ </p>
+</div>
+
+
+<p><strong>Rotating a word vector</strong></p>
+<p>Given a word vector $x = (x_1, x_2)$ at position $m$, we can rotate it by an angle $\theta_m$ to get the position-aware vector $x&#39;$:</p>
+<div style="text-align:center"> 
+$
+\begin{bmatrix}
+x'_1 \\\\
+x'_2
+\end{bmatrix} =
+\begin{bmatrix}
+\cos \theta_m & -\sin \theta_m \\\\
+\sin \theta_m & \cos \theta_m
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\\\
+x_2
+\end{bmatrix}
+$ 
+</div   >
+
+</section>
+<section><h2>Dot product of rotated vectors</h2>
+<p>Let&#39;s rotate two vectors $q$ and $k$ by angles $\theta_q$ and $\theta_k$ respectively. </p>
+<p>$q&#39; = R_{(\theta_q)} q$</p>
+<p>$k&#39; = R_{(\theta_k)} k$</p>
+<p>The dot product of the rotated vectors is:
+$\begin{aligned}
+q&#39; \cdot k&#39; &amp;= (R(\theta_q) q) \cdot (R(\theta_k) k) \
+&amp;= q^T R(\theta_q)^T R(\theta_k) k \
+&amp;= q^T R(\theta_k - \theta_q) k
+\end{aligned}$</p>
+<p><strong>Dot products depend only on relative rotation.</strong></p>
+<p>Now attention scores depend on : <code>q</code>, <code>k</code>, and the <strong>relative angle</strong> $(\theta_k - \theta_q)$, which encodes the relative position between the two tokens.</p>
+<p><img src="images/rot_attn.png" alt="alt text"></p>
+</section>
+<section><h2>Rotations in higher dimensions</h2>
+<img src="images/rot_all.png" class="float-right" style="width: 40%; margin-left: 20px;">
+
+<ul>
+<li><p>In higher dimensions, we can apply <strong>rotations in multiple planes</strong></p>
+<ul>
+<li>Example: In 4D space, rotate independently in $(x_1, x_2)$ plane and $(x_3, x_4)$ plane</li>
+</ul>
+</li>
+<li><p>For a $d$-dimensional vector:</p>
+<ul>
+<li>Apply $\frac{d}{2}$ independent rotations</li>
+<li>Each rotation has its own angle $\theta_m$</li>
+<li>Encodes position information compatible with attention mechanism</li>
+</ul>
+</li>
+<li><p><strong>Example</strong>: Model with hidden dimension $d = 512$</p>
+<ul>
+<li>Apply 256 independent rotations</li>
+<li>Each pair of dimensions gets rotated by different frequency</li>
+<li>Creates a rich positional representation</li>
+</ul>
+</li>
+</ul>
+</section>
+<section><h2>Rotation in <code>m</code> dimensions</h2>
+<p><img src="images/rot_mdim.png" alt="alt text"></p>
+<p>$\theta_i = B^{-2i/d} \quad \text{where } B \text{ is the base (typically 10000)}$</p>
+<p>The wavelength of dimension $i$ is:</p>
+<p>$\lambda_i = \frac{2\pi}{\theta_i} = 2\pi \cdot B^{2i/d}$</p>
+<p>This creates a geometric progression of wavelengths:</p>
+<ul>
+<li><strong>Shortest wavelength</strong> (highest freq, $i=0$): $\lambda_{\min} = 2\pi \approx 6.28$ tokens</li>
+<li><strong>Longest wavelength</strong> (lowest freq, $i=d/2-1$): $\lambda_{\max} = 2\pi \cdot B \approx 62,832$ tokens (when $B=10000$)</li>
+</ul>
+</section>
+<section><h2>Computing Attention with RoPE</h2>
+<pre><code class="language-python">class RoPEAttention(nn.Module):
+
+    -----    
+
+    def forward(self, x: torch.Tensor):    
+        # Apply RoPE to queries and keys
+        q = apply_rotary_emb(q, self.freqs_cis[:seq_len])
+        k = apply_rotary_emb(k, self.freqs_cis[:seq_len])
+                
+        # Scaled dot-product attention
+        scores = (q @ k.transpose(-2, -1)) / (self.head_dim ** 0.5)
+</code></pre>
+<p><strong>Key implementation details:</strong></p>
+<ol>
+<li><strong>Precompute frequencies</strong>: Calculate $\theta_i = 10000^{-2i/d}$ for all dimension pairs once</li>
+<li><strong>Apply once per forward pass</strong>: Rotate Q and K by position-dependent angles</li>
+<li><strong>No extra parameters</strong>: RoPE is fully deterministic, no learned weights</li>
+</ol>
+</section>
+<section><h2>Other Hyperparameters</h2>
+<ul>
+<li>How many attention heads?</li>
+<li>How many layers?</li>
+<li>Hidden dimension size?</li>
+<li>FFN dimension size?</li>
+<li>Vocab size?</li>
+</ul>
+</section>
+<section><h2>Feedforward network hyperparameters</h2>
+<ul>
+<li>Typical FFN dimension is 4x the hidden dimension (dff​=4⋅dmodel​)</li>
+<li>in <em>GLU variants</em> (SwiGLU, GeGLU), use 2/3 scaling to keep parameter count same</li>
+</ul>
+</section>
+<section><h2>Number of attention heads</h2>
+<ul>
+<li>Common choices are 16, 32, or 64 heads for large models. </li>
+<li>The number of heads is often chosen to be a divisor of the hidden dimension for simplicity (e.g., 512 hidden dimension with 16 heads means each head has 32 dimensions).</li>
+</ul>
+</section>
+<section><h2>Vocabulary size</h2>
+<p><strong>Monolingual models:</strong> 30-50K tokens (Original Transformer: 37K, GPT-2/3: 50K, LLaMA: 32K)</p>
+<p><strong>Multilingual/Production:</strong> 100-250K tokens (GPT-4: 100K, PaLM: 256K, Qwen: 152K, Command A: 255K)</p>
+</section>
+<section><h2>Further Reading</h2>
+<p><a href="https://magazine.sebastianraschka.com/p/the-big-llm-architecture-comparison">The Big LLM Architecture Comparison</a></p>
+</section>
+  </div>
+</div>
+
+
+
+<script src="../reveal/dist/reveal.js"></script>
+<script src="../reveal/plugin/markdown/markdown.js"></script>
+<script src="../reveal/plugin/highlight/highlight.js"></script>
+<script src="../reveal/plugin/math/math.js"></script>
+<script src="../reveal/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin@11.6.0/plugin/mermaid/mermaid.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js"></script>
+<!-- Chalkboard plugin -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chalkboard/plugin.js"></script>
+
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: "c/t",
+  center: false,
+  transition: "none",
+  controls: true,
+  controlsTutorial: true,
+  index:true,
+  controlsLayout: "bottom-right",
+  controlsBackArrows: "faded",
+  // Responsive: fill browser width
+  width: "100%",
+  height: "100%",
+  margin: 0.04,
+  minScale: 0.2,
+  maxScale: 2.0,
+  mermaid:{
+
+  },
+  menu: {
+    side: "left",
+    titleSelector: "h1, h2, h3",
+    useTextContentForMissingTitles: true
+  },
+  chalkboard: {
+    boardmarkerWidth: 4,
+    chalkWidth: 5,
+    chalkEffect: 0.5,
+    theme: "chalkboard",
+    transition: 800,
+    readOnly: false
+  },
+  plugins: [ RevealMarkdown, RevealHighlight, RevealMath, RevealNotes, RevealMermaid, RevealMenu, RevealChalkboard ]
+});
+
+</script>
+
+</body>
+</html>
