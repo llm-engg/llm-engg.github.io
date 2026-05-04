@@ -1,0 +1,386 @@
+{
+  "transformers": {
+    "total_time_s": 44.764720003004186,
+    "total_output_tokens": 2560,
+    "throughput_tok_per_s": 57.18789260444826,
+    "avg_latency_s": 2.2376443212502637,
+    "median_latency_s": 2.1948835365037667,
+    "p99_latency_s": 2.750697289011441,
+    "avg_ttft_s": null,
+    "num_prompts": 20,
+    "samples": [
+      {
+        "prompt_idx": 0,
+        "prompt": "Explain the difference between inductive and deductive reasoning with examples.",
+        "output_preview": "\n\n<think>\n\n</think>\n\nIn logic and critical thinking, **inductive reasoning** and **deductive reasoning** are two primary methods of drawing conclusions. The fundamental difference lies in the **direct",
+        "input_tokens": 14,
+        "output_tokens": 128,
+        "latency_s": 2.750697289011441,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 1,
+        "prompt": "A bat and a ball together cost $1.10. The bat costs $1.00 more than the ball. How much does the ball",
+        "output_preview": "\n\nLet the cost of the bat be $x$ dollars.\nThe cost of the ball is $x - 1$ dollars.\nWe have the equation: $x + (x - 1) = 1.10$.\n$x + x - 1 = 1.10$\n$2x - 1 = 1.10$\n$2x = 2.10$\n$x = 1.05$\nThe cost of the",
+        "input_tokens": 40,
+        "output_tokens": 128,
+        "latency_s": 2.1336174419993768,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 2,
+        "prompt": "If all roses are flowers and some flowers fade quickly, can we conclude that some roses fade quickly",
+        "output_preview": "\n\n<think>\n\n</think>\n\nYes, we can conclude that **some** roses fade quickly.\n\n### Logical Deduction\n\n1.  **Analyze the Premise**: The statement \"All roses are flowers\" means that the set of roses is a ",
+        "input_tokens": 26,
+        "output_tokens": 128,
+        "latency_s": 2.1239167519961484,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 3,
+        "prompt": "What is the Monty Hall problem and why is switching doors the better strategy?",
+        "output_preview": "\n\nThe Monty Hall problem is a probability puzzle that involves three doors, one of which has a prize, and two doors behind which there are no prizes. You choose one door, and then the host opens one o",
+        "input_tokens": 16,
+        "output_tokens": 128,
+        "latency_s": 2.1122661670087837,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 4,
+        "prompt": "Explain the concept of proof by contradiction with a simple mathematical example.",
+        "output_preview": "\n\n<think>\n\n</think>\n\n### Concept of Proof by Contradiction\n\n**Proof by contradiction** is a logical method used to prove a mathematical statement. Instead of attempting to prove the statement directly",
+        "input_tokens": 14,
+        "output_tokens": 128,
+        "latency_s": 2.1348734149942175,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 5,
+        "prompt": "Three friends split a hotel room costing $30. They each pay $10. The manager realizes the room is on",
+        "output_preview": "\n\nThis is a classic problem known as the \"Three Friends and the Room\" or the \"Room and the Bellboy\" problem. To solve it, let's break it down step-by-step:\n\n1. **Original Cost**: The room costs $30.\n2",
+        "input_tokens": 82,
+        "output_tokens": 128,
+        "latency_s": 2.074271329009207,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 6,
+        "prompt": "Explain why correlation does not imply causation. Give a real-world example.",
+        "output_preview": "\n\n<think>\n\n</think>\n\n### Why Correlation Does Not Imply Causation\n\nThe concept of correlation is often misunderstood as a guarantee of cause-and-effect. However, **correlation merely indicates that tw",
+        "input_tokens": 16,
+        "output_tokens": 128,
+        "latency_s": 2.0843054129945813,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 7,
+        "prompt": "What is Bayes' theorem and how does it update our beliefs with new evidence?",
+        "output_preview": "\n\nBayes' theorem is a fundamental concept in probability theory that allows us to calculate the posterior probability of a hypothesis given new evidence. It helps us update our beliefs based on new in",
+        "input_tokens": 17,
+        "output_tokens": 128,
+        "latency_s": 2.160527521002223,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 8,
+        "prompt": "A farmer has 17 sheep. All but 9 die. How many are left? Explain why people often get this wrong.",
+        "output_preview": "\nAnswer:\n\nHere is the step-by-step logical deduction to solve the problem.\n\n### Step 1: Identify the total number of sheep\nThe problem states that the farmer has **17** sheep.\n\n### Step 2: Identify th",
+        "input_tokens": 27,
+        "output_tokens": 128,
+        "latency_s": 2.1810046960017644,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 9,
+        "prompt": "Explain the halting problem in simple terms. Why is it important in computer science?",
+        "output_preview": " What is the Halting Problem in simple terms? What is the Halting Problem in simple terms? What is the Halting Problem in simple terms? What is the Halting Problem in simple terms? What is the Halting",
+        "input_tokens": 18,
+        "output_tokens": 128,
+        "latency_s": 2.194700103995274,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 10,
+        "prompt": "What is the difference between NP-hard and NP-complete problems?",
+        "output_preview": "\n\nNP-hard problems are a subset of NP-complete problems that are at least as hard as the hardest problems in NP. An NP-complete problem is one of the hardest problems in NP, while an NP-hard problem i",
+        "input_tokens": 12,
+        "output_tokens": 128,
+        "latency_s": 2.164742863009451,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 11,
+        "prompt": "Explain the pigeonhole principle and give three applications.",
+        "output_preview": "\n\n<think>\nHere's a thinking process that leads to the explanation and applications of the Pigeonhole Principle:\n\n1.  **Understand the Goal:** The user wants an explanation of the Pigeonhole Principle ",
+        "input_tokens": 11,
+        "output_tokens": 128,
+        "latency_s": 2.1950669690122595,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 12,
+        "prompt": "Why is the sum of all natural numbers sometimes said to equal -1/12? Is this mathematically valid?",
+        "output_preview": "\n\nThe sum of all natural numbers is a well-known problem in mathematics. According to the formula, the sum of the first \\( n \\) natural numbers is given by the formula \\( \\frac{n(n+1)}{2} \\). This for",
+        "input_tokens": 25,
+        "output_tokens": 128,
+        "latency_s": 2.2490758139902027,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 13,
+        "prompt": "Explain G\u00f6del's incompleteness theorems in plain language.",
+        "output_preview": "\n\nTo understand G\u00f6del's incompleteness theorems in plain language, it is helpful to first distinguish between the concepts of **mathematical truth** and **logical consistency**.\n\n### The Core Problem:",
+        "input_tokens": 15,
+        "output_tokens": 128,
+        "latency_s": 2.270100113004446,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 14,
+        "prompt": "What is the difference between soundness and completeness in logic?",
+        "output_preview": "\n\nSoundness and completeness are two fundamental concepts in logic that relate to the relationship between a proof system and a logical system. Soundness states that if a proof system proves a formula",
+        "input_tokens": 12,
+        "output_tokens": 128,
+        "latency_s": 2.2511421899980633,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 15,
+        "prompt": "Explain how CRISPR-Cas9 gene editing works at a high level.",
+        "output_preview": " What is the function of the Cas9 nuclease? How does it work in a cell? What are the main factors that affect the efficiency of the editing process?\n\n<think>\n\n</think>\n\n### The High-Level Overview of ",
+        "input_tokens": 17,
+        "output_tokens": 128,
+        "latency_s": 2.232424412999535,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 16,
+        "prompt": "What is quantum entanglement and why did Einstein call it 'spooky action at a distance'?",
+        "output_preview": "\n\nQuantum entanglement is a phenomenon where particles become linked such that the state of one particle cannot be described independently of the state of the other, even when the particles are separa",
+        "input_tokens": 20,
+        "output_tokens": 128,
+        "latency_s": 2.24414856499061,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 17,
+        "prompt": "How does mRNA vaccine technology work? Explain the mechanism step by step.",
+        "output_preview": "\n\n<think>\n\n</think>\n\nThe **mRNA vaccine** is a modern biotechnology delivery system designed to induce an immune response in the body to a specific pathogen without introducing any living or dead gene",
+        "input_tokens": 14,
+        "output_tokens": 128,
+        "latency_s": 2.3768373349885223,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 18,
+        "prompt": "What is the difference between nuclear fission and nuclear fusion?",
+        "output_preview": "\n\n<think>\n\n</think>\n\n**Nuclear fission** and **nuclear fusion** are two distinct processes in which atomic nuclei are split or combined, respectively, to release energy. The fundamental difference lie",
+        "input_tokens": 12,
+        "output_tokens": 128,
+        "latency_s": 2.418539240999962,
+        "ttft_s": null
+      },
+      {
+        "prompt_idx": 19,
+        "prompt": "Explain the greenhouse effect and how it relates to climate change.",
+        "output_preview": "\n\n<think>\n\n</think>\n\nThe **greenhouse effect** is the natural phenomenon by which the Earth's atmosphere traps heat, allowing the planet to maintain a stable temperature. This process is governed by t",
+        "input_tokens": 13,
+        "output_tokens": 128,
+        "latency_s": 2.4006287939992035,
+        "ttft_s": null
+      }
+    ]
+  },
+  "vllm": {
+    "total_time_s": 9.139188670000294,
+    "total_output_tokens": 2343,
+    "throughput_tok_per_s": 256.36849009266865,
+    "avg_latency_s": 9.135743398150954,
+    "median_latency_s": 9.136212811499718,
+    "p99_latency_s": 9.138050186011242,
+    "avg_ttft_s": 7.066956777098676,
+    "num_prompts": 20,
+    "samples": [
+      {
+        "prompt_idx": 0,
+        "prompt": "Explain the difference between inductive and deductive reasoning with examples.",
+        "output_preview": "\n\n<think>\n\n</think>\n\n### Inductive Reasoning (Inference from Specific to General)\n\n**Definition:**\nInductive reasoning is a process where a specific instance of a phenomenon leads to a general conclus",
+        "input_tokens": 13,
+        "output_tokens": 110,
+        "latency_s": 9.12448361000861,
+        "ttft_s": 7.048556004010607
+      },
+      {
+        "prompt_idx": 1,
+        "prompt": "A bat and a ball together cost $1.10. The bat costs $1.00 more than the ball. How much does the ball",
+        "output_preview": "\n\nLet $ x $ represent the cost of the ball and $ y $ represent the cost of the bat.\n\nFrom the problem, we can write two equations:\n1. The cost of the bat is $1.00 more than the ball: $ y = x + 1 $\n2. ",
+        "input_tokens": 36,
+        "output_tokens": 110,
+        "latency_s": 9.137765320992912,
+        "ttft_s": 7.069133227996645
+      },
+      {
+        "prompt_idx": 2,
+        "prompt": "If all roses are flowers and some flowers fade quickly, can we conclude that some roses fade quickly",
+        "output_preview": "\n\n<think>\n\n</think>\n\n**No, we cannot conclude that some roses fade quickly.**\n\nHere is the step-by-step logical deduction:\n\n1.  **Analyze the Premise:** The first premise states, \"All roses are flower",
+        "input_tokens": 29,
+        "output_tokens": 109,
+        "latency_s": 9.138050186011242,
+        "ttft_s": 7.0701143519982
+      },
+      {
+        "prompt_idx": 3,
+        "prompt": "What is the Monty Hall problem and why is switching doors the better strategy?",
+        "output_preview": "\n\nThe Monty Hall problem is a probability puzzle that demonstrates switching doors can increase the probability of winning. Initially, you pick one of three doors. The host, who knows what's happening",
+        "input_tokens": 18,
+        "output_tokens": 136,
+        "latency_s": 9.137775320006767,
+        "ttft_s": 7.069713182005216
+      },
+      {
+        "prompt_idx": 4,
+        "prompt": "Explain the concept of proof by contradiction with a simple mathematical example.",
+        "output_preview": "\n\n<think>\n\n</think>\n\n**Proof by contradiction** (also known as proof by negation) is a logical method used to prove a statement is true by assuming the opposite of what you want to prove is true, and ",
+        "input_tokens": 15,
+        "output_tokens": 119,
+        "latency_s": 9.137350229997537,
+        "ttft_s": 7.069076890998986
+      },
+      {
+        "prompt_idx": 5,
+        "prompt": "Three friends split a hotel room costing $30. They each pay $10. The manager realizes the room is on",
+        "output_preview": "\n\nThe missing dollar is the $2 the bellboy kept. The original total cost was $30. After the friends pay $10 each, the bellboy pays $5, which is the difference between the original cost ($30) and the r",
+        "input_tokens": 72,
+        "output_tokens": 107,
+        "latency_s": 9.137506455997936,
+        "ttft_s": 7.069584541997756
+      },
+      {
+        "prompt_idx": 6,
+        "prompt": "Explain why correlation does not imply causation. Give a real-world example.",
+        "output_preview": "\n\n<think>\n\n</think>\n\n### The Philosophical Argument: Why Correlation Does Not Imply Causation\n\nCorrelation implies that two variables move together in the same direction, but it does **not** prove tha",
+        "input_tokens": 14,
+        "output_tokens": 107,
+        "latency_s": 9.137082037996151,
+        "ttft_s": 7.068910458998289
+      },
+      {
+        "prompt_idx": 7,
+        "prompt": "What is Bayes' theorem and how does it update our beliefs with new evidence?",
+        "output_preview": "\n\nBayes' theorem is a fundamental concept in statistics and machine learning that allows us to update our beliefs about an event based on new evidence. It states that the probability of an event occur",
+        "input_tokens": 18,
+        "output_tokens": 126,
+        "latency_s": 9.136431603008532,
+        "ttft_s": 7.067321524998988
+      },
+      {
+        "prompt_idx": 8,
+        "prompt": "A farmer has 17 sheep. All but 9 die. How many are left? Explain why people often get this wrong.",
+        "output_preview": "\n\n<think>\n\n</think>\n\n### Step-by-Step Deduction\n\n1.  **Identify the Total Number of Sheep**: The problem states that the farmer initially had **17** sheep.\n2.  **Identify the Number of Sheep That Die*",
+        "input_tokens": 26,
+        "output_tokens": 93,
+        "latency_s": 9.136372595996363,
+        "ttft_s": 7.06747704600275
+      },
+      {
+        "prompt_idx": 9,
+        "prompt": "Explain the halting problem in simple terms. Why is it important in computer science?",
+        "output_preview": "\n\nThe halting problem is a theoretical question that asks whether there is an algorithm that can determine for every program and every input whether the program will eventually halt (stop) or run fore",
+        "input_tokens": 18,
+        "output_tokens": 139,
+        "latency_s": 9.13667397199606,
+        "ttft_s": 7.0685794499877375
+      },
+      {
+        "prompt_idx": 10,
+        "prompt": "What is the difference between NP-hard and NP-complete problems?",
+        "output_preview": "\n\nNP-hard problems are problems that are at least as hard as the hardest problems in NP. If a problem is NP-hard, it is guaranteed to be in NP. However, not all problems in NP are NP-hard. For example",
+        "input_tokens": 11,
+        "output_tokens": 131,
+        "latency_s": 9.136053027003072,
+        "ttft_s": 7.067107380993548
+      },
+      {
+        "prompt_idx": 11,
+        "prompt": "Explain the pigeonhole principle and give three applications.",
+        "output_preview": "\n\nThe **pigehole principle** (also known as the **pigeonhole principle**) states that if you have more objects than there are possible containers (holes), then at least one container must contain more",
+        "input_tokens": 10,
+        "output_tokens": 113,
+        "latency_s": 9.136465108007542,
+        "ttft_s": 7.068449145008344
+      },
+      {
+        "prompt_idx": 12,
+        "prompt": "Why is the sum of all natural numbers sometimes said to equal -1/12? Is this mathematically valid?",
+        "output_preview": "\n\nThe sum of all natural numbers from 1 to 1000 is 500,500, which is a valid and finite sum. The sum of all natural numbers from 1 to 1000 is indeed 500,500. However, the sum of all natural numbers fr",
+        "input_tokens": 22,
+        "output_tokens": 91,
+        "latency_s": 9.135859889996937,
+        "ttft_s": 7.067397749997326
+      },
+      {
+        "prompt_idx": 13,
+        "prompt": "Explain G\u00f6del's incompleteness theorems in plain language.",
+        "output_preview": "\nAnswering the question of whether G\u00f6del's incompleteness theorems are true\n\n<think>\nHere's a thinking process that leads to the explanation and the answer:\n\n1.  **Analyze the Request:**\n    *   **Top",
+        "input_tokens": 9,
+        "output_tokens": 87,
+        "latency_s": 9.135657088991138,
+        "ttft_s": 7.067058852990158
+      },
+      {
+        "prompt_idx": 14,
+        "prompt": "What is the difference between soundness and completeness in logic?",
+        "output_preview": "\n\nSoundness and completeness are two fundamental concepts in formal logic that describe the relationship between a proof system and its proof theories. Soundness states that if a proof is sound, then ",
+        "input_tokens": 13,
+        "output_tokens": 136,
+        "latency_s": 9.135684305001632,
+        "ttft_s": 7.0674670779990265
+      },
+      {
+        "prompt_idx": 15,
+        "prompt": "Explain how CRISPR-Cas9 gene editing works at a high level.",
+        "output_preview": "\n\n<think>\n\n</think>\n\n**CRISPR-Cas9** is a revolutionary gene editing tool that allows scientists to cut, edit, or modify DNA with remarkable precision. It relies on the mechanism of **RNA interference",
+        "input_tokens": 13,
+        "output_tokens": 113,
+        "latency_s": 9.135457903990755,
+        "ttft_s": 7.067071700992528
+      },
+      {
+        "prompt_idx": 16,
+        "prompt": "What is quantum entanglement and why did Einstein call it 'spooky action at a distance'?",
+        "output_preview": "\n\nQuantum entanglement is a phenomenon where particles become linked in such a way that the state of one particle cannot be described independently of the others, even when the particles are separated",
+        "input_tokens": 19,
+        "output_tokens": 140,
+        "latency_s": 9.13514443099848,
+        "ttft_s": 7.066360450000502
+      },
+      {
+        "prompt_idx": 17,
+        "prompt": "How does mRNA vaccine technology work? Explain the mechanism step by step.",
+        "output_preview": "\n\n<think>\n\n</think>\n\n### The Mechanism of mRNA Vaccines: A Step-by-Step Guide\n\nMRNA vaccines work by delivering a specific piece of genetic material (mRNA) directly into the body's cells, which then i",
+        "input_tokens": 15,
+        "output_tokens": 117,
+        "latency_s": 9.135031391007942,
+        "ttft_s": 7.066332993999822
+      },
+      {
+        "prompt_idx": 18,
+        "prompt": "What is the difference between nuclear fission and nuclear fusion?",
+        "output_preview": "\n\nNuclear fission involves the splitting of an atomic nucleus into smaller parts, while nuclear fusion involves the joining of atomic nuclei to form a heavier nucleus. Fission releases a large amount ",
+        "input_tokens": 13,
+        "output_tokens": 132,
+        "latency_s": 9.13500910300354,
+        "ttft_s": 7.066591762995813
+      },
+      {
+        "prompt_idx": 19,
+        "prompt": "Explain the greenhouse effect and how it relates to climate change.",
+        "output_preview": "\n\n<think>\n\n</think>\n\nThe **greenhouse effect** is a natural phenomenon that occurs when certain gases in the Earth's atmosphere trap heat, causing the planet to warm up. This process is fundamentally ",
+        "input_tokens": 14,
+        "output_tokens": 127,
+        "latency_s": 9.13501438300591,
+        "ttft_s": 7.0668317480012774
+      }
+    ]
+  }
+}
