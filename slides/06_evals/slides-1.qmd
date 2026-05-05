@@ -1,0 +1,338 @@
+---
+title: "LLM Evaluation"
+subtitle: "Large Language Models : A Hands-on Approach"
+author: "CCE, IISc"
+format:
+  revealjs:
+    css: styles.css
+    center: false
+    theme: simple
+    controls: true
+    progress: true
+    slideNumber: true
+    footer: "[Large Language Models : A Hands-on Approach](https://llm-engg.github.io/)"
+    margin: 0
+    defaultPageZoom: 0.8
+    chalkboard: true
+    pointer:
+      color: "#e7298a"
+      pointerSize: 18
+title-slide-attributes:
+  data-state: "title-slide"
+---
+
+## 
+
+![](images/evals-all.png){fig-align="center"}
+
+## Overview
+
+- Understanding Evaluation
+- Benchmarks
+  - Knowledge-based benchmarks
+  - Instruction-following benchmarks
+  - Agent benchmarks
+  - Reasoning benchmarks
+  - Safety benchmarks
+
+## Evaluation
+
+- Given a model fixed model, how good it is?
+- What benchmarks can we use?
+- How are evaluations done?
+
+## Benchmarks
+
+- DeepSeek R1 ![](images/bench-1.png)
+
+## Benchmarks
+
+- Kimi K2.5 ![](images/bench-kimi.png)
+
+## Benchmarks - ArtificialAnalysis.ai
+
+[**ArtificialAnalysis.ai**](https://artificialanalysis.ai/)
+
+![](images/bench-aai.png)
+
+## Benchmarks - OpenRouter
+
+[**OpenRouter**](https://openrouter.ai/rankings?view=week)
+
+![](images/bench-open-router.png)
+
+## Benchmarks - ChatBotArena
+
+[**ChatBotArena**](https://huggingface.co/spaces/lmarena-ai/arena-leaderboard)
+
+![](images/bench-chatbot-arena.png)
+
+## Thinking about Evaluation
+
+- Not just about "accuracy" or "score"
+- What are the capabilities of the model?
+- What are the failure modes?
+- How does it perform on different types of tasks?
+- How does it perform on different types of inputs?
+
+. . .
+
+::: callout-note
+- Evaluation is a very profound and important topic
+- It determines the future of language models and their applications
+:::
+
+## Who Evaluates and Why?
+
+- End-users care about specific capabilities and failure modes
+  - User or company wants to make a purchase decision (model A or model B) for their use case (e.g., customer service chatbots).
+  - Researchers want to measure the raw capabilities of a model (e.g., intelligence).
+  - We want to understand the benefits + harms of a model (for business and policy reasons).
+  - Model developers want to get feedback to improve the model.
+- There is no one true measure of a model's performance
+
+## Evaluation Framework - Inputs
+
+**What are the inputs?**
+
+- What use cases are covered?
+- Do we have representation of difficult inputs in the tail?
+- Are the inputs adapted to the model (e.g., multi-turn)?
+
+## Evaluation Framework
+
+**How do call the language model?**
+
+- How do you prompt the language model?
+
+- Does the language model use chain-of-thought, tools, RAG, etc.?
+
+- Are we evaluating the language model or an agentic system (model developer wants former, user wants latter)?
+
+## Evaluation Framework
+
+**How do you evaluate the outputs?**
+
+- Are the reference outputs used for evaluation error-free?
+- What metrics do you use (e.g., pass\@k)?
+- How do you factor in cost (e.g., inference + training)?
+- How do you factor in asymmetric errors (e.g., hallucinations in a medical setting vs creative writing)?
+- How do you handle open-ended generation (no ground truth)?
+
+## Evaluation Framework
+
+**How to interpret the results?**
+
+- How do you interpret a number (e.g., 91%) - is it ready for deployment?
+- How do we assess generalization in the face of train-test overlap?
+- Are we evaluating the final model or the method?
+
+## Perplexity
+
+$$perplexity = exp(-1/N * sum(log(p(x_i)))) $$
+
+- Common metric for evaluating LMs, especially in the context of language modeling tasks.
+- It measures how well a language model predicts a sample of text.
+- lower perplexity =\> model is better at predicting
+- higher perplexity =\> model is worse at predicting the text.
+
+![](images/ppl-gpt2.png)
+
+## Perplexity
+
+- Not always correlated with downstream task performance (e.g., question answering, summarization).
+- Sensitive to the choice of test set and may not reflect real-world performance.
+- Does not capture the quality of generated text (e.g., coherence, relevance, factuality).
+- Still useful for measuring the raw language modeling capabilities
+
+::::: columns
+::: column
+![](images/ppl-llama.png)
+:::
+
+::: column
+![](images/ppl-llama-2.png)
+:::
+:::::
+
+. . .
+
+> Current models have shifted to downstream evaluation (e.g., question answering, summarization) rather than perplexity-based evaluation.
+
+## Knowledge-Based Benchmarks
+
+## MMLU
+
+Hendrycks et al. (2020)
+
+- Consists of multiple-choice questions across 57 subjects, designed to test a model's ability to understand and reason across a wide range of topics.
+
+- Collected by graduate and undergraduate students from freely available sources online
+
+- Really about testing knowledge, not language understanding
+
+- Evaluated on GPT-3 using few-shot prompting
+
+![](images/mmlu-plot.png)
+
+[HEML - MMLU](https://crfm.stanford.edu/helm/mmlu/latest/)
+
+## MMLU Pro
+
+Wang et all 2024
+
+![](images/mmlu-pro.png)
+
+- Removed noisy/trivial questions from MMLU
+
+- Expanded 4 choices to 10 choices
+
+- Evaluated using chain of thought (gives model more of a chance)
+
+- Accuracy of models drop by 16% to 33% (not as saturated)
+
+[HEML - MMLU Pro](https://crfm.stanford.edu/helm/capabilities/latest/#/leaderboard/mmlu_pro)
+
+## Graduate-Level Google-Proof Q&A (GPQA)
+
+::::: columns
+::: column
+:::
+
+::: column
+:::
+:::::
+
+- Questions written by PhD experts in various fields (e.g., physics, machine learning, economics)
+
+![](images/gpqa.png)
+
+## GPQA
+
+- Questions are designed to be "Google-proof" (i.e., not easily answerable by searching the web)
+- PhD experts achieve 65% accuracy, Non-experts achieve 34% over 30 minutes with access to Google
+- GPT-4 achieves **39%**
+- [HELM GPQA](https://crfm.stanford.edu/helm/capabilities/latest/#/leaderboard/gpqa)
+
+. . .
+
+![](images/gpqa-aai.png)
+
+## Humanity's Last Exam
+
+![](images/hle-0.png)
+
+## Humanity's Last Exam
+
+- 2500 questions: multimodal, many subjects, multiple-choice + short-answer
+- \$500,000 USD prize pool, with prizes of \$5,000 USD for each of the top 50 questions and \$500 USD for each of the next 500 questions
+
+![](images/hle-2.png)
+
+## Humanity's Last Exam
+
+![](images/hle.png)
+
+[Leaderboard](https://agi.safe.ai/)
+
+## Instruction-Following Benchmarks
+
+## Chatbot Arena
+
+Chiang et al. (2024) [arena.ai](https://arena.ai/)
+
+- Random person from the Internet types in prompt
+- They get response from two random (anonymized) models
+- They rate which one is better
+- ELO scores are computed based on the pairwise comparisons
+- Features: live (not static) inputs, can accomodate new models
+
+![](images/chatbot-arena.png)
+
+## Instruction-Following Eval (IFEval)
+
+![](images/ifeval.png)
+
+- Add simple synthetic constraints to instructions
+- Constraints can be automatically verified, but not the semantics of the response
+- Fairly simple instructions, constraints are a bit artificial
+
+[HELM IFEval](https://crfm.stanford.edu/helm/capabilities/latest/#/leaderboard/ifeval)
+
+Others - IFBench, Alpaca, MOSAIC, etc.
+
+## Agent Benchmarks
+
+- Consider tasks that require tool use (e.g., running code) and iterating over a period of time
+- Agent = language model + agent scaffolding (logic for deciding how to use the LM)
+
+## SWEBench
+
+- 2294 tasks across 12 Python repositories
+- Given codebase + issue description, submit a PR
+- Evaluation metric: unit tests
+
+![](images/swebench.png)
+
+## SWEBench Verified
+
+[OpenAI 2025](https://openai.com/index/introducing-swe-bench-verified/)
+
+Original SWE-bench had:
+
+- Unsolvable / underspecified tasks
+- Unreliable unit tests
+- This led to systematic underestimation of model capabilities
+- Curated \~500 high-quality tasks, verified by human engineers
+
+![](images/swe-verified.png)
+
+[Leaderboard](https://www.swebench.com/index.html)
+
+## MLEBench
+
+- 75 Kaggle competitions (require training models, processing data, etc.)
+
+![](images/mlebench.png){width="634"}
+
+![](images/ml-2.png){width="659"}
+
+[MLEBench Leaderboard](https://www.mlebench.com/)
+
+## Reasoning Benchmarksd
+
+## ARC-AGI
+
+- Can we isolate reasoning from knowledge?
+- Arguably, reasoning captures a more pure form of intelligence (isn't just about memorizing facts)
+
+![](images/arc-1.png)
+
+## ARC-AGI 2
+
+![](images/arc-2.png){width="740"}
+
+[ARGC AGI Leaderboard](https://arcprize.org/leaderboard)
+
+## Safety Benchmarks
+
+## AirBench
+
+- Based on regulatory frameworks and company policies
+- Taxonomized into 314 risk categories, 5694 prompts
+
+![](images/airbench.png)
+
+[HELM Airbench](https://crfm.stanford.edu/helm/air-bench/latest/#/leaderboard)
+
+## Jailbreaking
+
+- Language models are trained to refuse harmful instructions
+- Greedy Coordinate Gradient (GCG) automatically optimizes prompts to bypass safety fire ![](images/jailbreak.png)
+
+\[JialBreak Bench\] (https://huggingface.co/datasets/JailbreakBench/JBB-Behaviors)
+
+## Further Reading
+
+- The LLM Evaluation Guidebook (https://huggingface.co/spaces/OpenEvals/evaluation-guidebook)
+- The Anatomy of an LLM Benchmark (https://cameronrwolfe.substack.com/p/llm-bench)
