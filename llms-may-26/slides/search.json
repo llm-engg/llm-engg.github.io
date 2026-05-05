@@ -1,0 +1,217 @@
+[
+  {
+    "objectID": "orientation/slides.html#course-overview",
+    "href": "orientation/slides.html#course-overview",
+    "title": "Orientation",
+    "section": "Course Overview",
+    "text": "Course Overview\n\nDuration: ~12 Weeks\nFormat: 2-4 sessions per week (Tue-Fri, 7:00–8:30 PM IST)\nStyle: Lectures, demos and labs\nAssessment: Quizzes, assignments, and final project/presentation\nCredits: 3 + 1 (Credits added in ABC)",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#why-this-course",
+    "href": "orientation/slides.html#why-this-course",
+    "title": "Orientation",
+    "section": "Why This Course?",
+    "text": "Why This Course?\nLLMs have changed how we build intelligent applications.\nThis course aims to bridge the gap between:\nUsing LLMs via APIs -&gt; Engineering LLM systems",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#learning-outcomes",
+    "href": "orientation/slides.html#learning-outcomes",
+    "title": "Orientation",
+    "section": "Learning Outcomes",
+    "text": "Learning Outcomes\n\nUnderstand LLM architectures\nUnderstanfd GPU programming and optimization techniques\nOptimize inference for cost and latency\nFine-tune models for specific domains and tasks\nBuild robust LLM-powered applications (RAG, agents, tool use)\nEvaluate, debug, and improve model performance\nLeverage open-source ecosystems for LLM engineering",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#what-this-course-will-not-cover",
+    "href": "orientation/slides.html#what-this-course-will-not-cover",
+    "title": "Orientation",
+    "section": "What This Course Will NOT Cover",
+    "text": "What This Course Will NOT Cover\n\nMathematical foundations\nPretraining LLMs from scratch\nState of the art in research\nData engineering pipelines\nEthics and societal impacts",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#prerequisites",
+    "href": "orientation/slides.html#prerequisites",
+    "title": "Orientation",
+    "section": "Prerequisites",
+    "text": "Prerequisites\n\nProgramming: Python proficiency\nML Basics: Understanding of neural networks and deep learning\nHelpful: Familiarity with PyTorch, basic NLP concepts",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#tools-and-resources",
+    "href": "orientation/slides.html#tools-and-resources",
+    "title": "Orientation",
+    "section": "Tools and Resources",
+    "text": "Tools and Resources\nSoftware Stack\n\nPython\nPyTorch\nHuggingFace Ecosystem(models, libraries and datasets)",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#compute-stack",
+    "href": "orientation/slides.html#compute-stack",
+    "title": "Orientation",
+    "section": "Compute Stack",
+    "text": "Compute Stack\n\n\n\nOption\nCost\nNotes\n\n\n\n\nGoogle Colab\nFree\nLimited GPU, good for experiments\n\n\nGCP Free Credits\nFree\n$300 for new accounts\n\n\nColab Pro+\nPaid\nMore GPU time, better GPUs\n\n\nRunPod\nPaid\nFlexible, longer runs\n\n\nLightning AI\nPaid\nEasy setup, good UX\n\n\n\nFree options suffice for most of our course needs",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#evaluation-criteria",
+    "href": "orientation/slides.html#evaluation-criteria",
+    "title": "Orientation",
+    "section": "Evaluation Criteria",
+    "text": "Evaluation Criteria\n\n\n\nComponent\nWeight\nNotes\n\n\n\n\nQuizzes\n20%\n5 short in-class quizzes\n\n\nAssignments\n40%\n2 assignments (May and June)\n\n\nFinal Project/Presentation\n40%\nJune 3rd week onwards\n\n\n\n–",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#abc",
+    "href": "orientation/slides.html#abc",
+    "title": "Orientation",
+    "section": "ABC",
+    "text": "ABC\n\nAcademic Bank of Credits\nCredits will be added to your ABC account after successful course completion\nMore information will be shared during the course",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#final-project-option",
+    "href": "orientation/slides.html#final-project-option",
+    "title": "Orientation",
+    "section": "Final Project Option",
+    "text": "Final Project Option\nIndividual or group project (max 2).\nBuild an end-to-end LLM application:\n\nModel fine-tuning\nInference optimization\nLLM Application (RAG, Agents)\nOpen source contribution\nOther ideas welcome too\n\nDeliverables: Documentation + Demo / Presentation",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#presentation-option",
+    "href": "orientation/slides.html#presentation-option",
+    "title": "Orientation",
+    "section": "Presentation Option",
+    "text": "Presentation Option\n\nTopic: Novel concept not covered in class\nFormat: Research paper or case study\nDeliverables: Slides or summary document\nEvaluation: Depth of understanding, presentation quality\nDuration: 10 minutes, 8-10 slides",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#course-roadmap-12",
+    "href": "orientation/slides.html#course-roadmap-12",
+    "title": "Orientation",
+    "section": "Course Roadmap (1/2)",
+    "text": "Course Roadmap (1/2)\n\n\n\n\n\n\n\nModule\nTopic\n\n\n\n\n1\nLLM Foundations - Transformers, GPT-2, Modern Architectures, MoE, OSS Models\n\n\n2\nGPUs - Architecture and Programming, Multi-GPU Parallelism,\n\n\n3\nInference - Sampling, KV Caching, Quantization, Speculative Decoding, Model Serving\n\n\n4\nRAG & Agents - RAG Fundamentals, ReAct, Tools, Protocols, Agents, Finetuning\n\n\n5\nEvaluation - Moderl Evaluations, Benchmarks, LLM-as-a-Judge",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#course-roadmap-22",
+    "href": "orientation/slides.html#course-roadmap-22",
+    "title": "Orientation",
+    "section": "Course Roadmap (2/2)",
+    "text": "Course Roadmap (2/2)\n\n\n\n\n\n\n\nModule\nTopic\n\n\n\n\n6\nFine-Tuning - SFT, PEFT (LoRA, QLoRA etc),RLHF (DPO, GRPO etc), Distillation\n\n\n7\nReasoning - Chain-of-Thought (CoT), Test Time Scaling, Finetuning\n\n\n8\nMultimodal - Multimodal Architectures, Finetuning\n\n\n9\nEdge Deployment - Edge architectures, Optimization and Deployment",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#communication-channels",
+    "href": "orientation/slides.html#communication-channels",
+    "title": "Orientation",
+    "section": "Communication Channels",
+    "text": "Communication Channels\n\nIn-class: Ask questions during sessions\nEmail: For updates and announcements\nForum: Discord discussions, doubts, and sharing resources (Link to be shared)",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#making-the-best-of-this-course",
+    "href": "orientation/slides.html#making-the-best-of-this-course",
+    "title": "Orientation",
+    "section": "Making the Best of This Course",
+    "text": "Making the Best of This Course\n\nParticipate actively: Ask questions in class, engage in discussions\nPractice hands-on: Run the code, experiment with parameters\nUse AI tools: Leverage AI assistants for coding and learning\nStay connected: Use forum for async discussions",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "orientation/slides.html#qa",
+    "href": "orientation/slides.html#qa",
+    "title": "Orientation",
+    "section": "Q&A",
+    "text": "Q&A\nAny questions?",
+    "crumbs": [
+      "← Course Home",
+      "Orientation"
+    ]
+  },
+  {
+    "objectID": "arch/01-intro/slides.html#what-is-a-language-model",
+    "href": "arch/01-intro/slides.html#what-is-a-language-model",
+    "title": "Lesson 01 — Intro to LLMs",
+    "section": "What is a language model?",
+    "text": "What is a language model?\nA function that, given a prefix of tokens, returns a probability distribution over the next token.\n\nSpeaker notes: anchor the discussion in the prediction objective before introducing transformers."
+  },
+  {
+    "objectID": "arch/01-intro/slides.html#why-now",
+    "href": "arch/01-intro/slides.html#why-now",
+    "title": "Lesson 01 — Intro to LLMs",
+    "section": "Why now?",
+    "text": "Why now?\n\nCompute is cheap and parallel\nThe web gave us trillions of tokens\nAttention scales better than recurrence"
+  },
+  {
+    "objectID": "arch/01-intro/slides.html#what-well-build-toward",
+    "href": "arch/01-intro/slides.html#what-well-build-toward",
+    "title": "Lesson 01 — Intro to LLMs",
+    "section": "What we’ll build toward",
+    "text": "What we’ll build toward\n\nA working mental model of how a transformer predicts the next token\nComfort reading inference-time code (sampling, KV cache, batching)\nPractical fluency with the tradeoffs in fine-tuning vs. RAG vs. prompting"
+  },
+  {
+    "objectID": "arch/01-intro/slides.html#logistics",
+    "href": "arch/01-intro/slides.html#logistics",
+    "title": "Lesson 01 — Intro to LLMs",
+    "section": "Logistics",
+    "text": "Logistics\n\nSlides land at llm-engg.github.io/llms-may-26/slides/\nAssignments tracked in the main course site"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Large Language Models : A Hands-On Approach - May, 2026",
+    "section": "",
+    "text": "Course materials for the May 2026 offering of “Large Language Models: A Hands-On Approach” offered at CCE, IISc\n\n\n\n\n\n\n\n\n\nLesson 01 — Intro to LLMs\n\n\nWhat LLMs are, why they work, and what this course covers.\n\n\n\n\n\n\n\n\nNo matching items",
+    "crumbs": [
+      "← Course Home",
+      "index.html"
+    ]
+  }
+]
