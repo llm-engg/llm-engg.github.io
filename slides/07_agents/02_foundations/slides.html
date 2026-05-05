@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="slides_files/libs/clipboard/clipboard.min.js"></script>
+<script src="slides_files/libs/quarto-html/tabby.min.js"></script>
+<script src="slides_files/libs/quarto-html/popper.min.js"></script>
+<script src="slides_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="slides_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="slides_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="slides_files/libs/quarto-html/quarto-syntax-highlighting-73db7b5a953198da8f17fc5313e632aa.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.9.34">
+
+  <meta name="author" content="CCE, IISc">
+  <title>LLM Agents : Foundations</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="slides_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="slides_files/libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="slides_files/libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+  <link rel="stylesheet" href="styles.css">
+  <link href="slides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="slides_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="slides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="slides_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="slides_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="slides_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-state="title-slide" class="quarto-title-block center">
+  <h1 class="title">LLM Agents : Foundations</h1>
+  <p class="subtitle">Large Language Models : A Hands-on Approach</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+CCE, IISc 
+</div>
+</div>
+</div>
+
+</section>
+<section id="overview" class="slide level2">
+<h2>Overview</h2>
+<ul>
+<li>What are agents?</li>
+<li>Core components of an agent</li>
+<li>ReAct loop</li>
+<li>Implementing a minimal agent</li>
+</ul>
+</section>
+<section id="evolution-of-ai" class="slide level2">
+<h2>Evolution of AI</h2>
+
+<img data-src="images/ai-evolution.png" class="r-stretch"></section>
+<section id="motivation" class="slide level2">
+<h2>Motivation</h2>
+<ul>
+<li><strong>Remarkable capabilities</strong> - GenAI models excel across a wide range of tasks</li>
+<li><strong>Knowledge cutoff</strong> - limited by pre-training data and prompts</li>
+<li><strong>Hallucination</strong> - pre-training optimizes next-token prediction, not factual accuracy</li>
+<li><strong>Task-specific gaps</strong> - no single model is best at everything</li>
+<li><strong>Context window limits</strong> - prompts can’t grow indefinitely</li>
+<li><strong>Noise in input</strong> - irrelevant context can degrade model performance</li>
+</ul>
+</section>
+<section id="genai-arc" class="slide level2">
+<h2>GenAI Arc</h2>
+<ol type="1">
+<li><strong>Pretraining scale</strong> (2020–2022)
+<ul>
+<li>bigger models, better emergent capabilities</li>
+</ul></li>
+<li><strong>Inference-time reasoning</strong> (2023–2024)
+<ul>
+<li>o1, DeepSeek-R1, test-time compute scaling</li>
+</ul></li>
+<li><strong>Agentic systems</strong> (2024–present)
+<ul>
+<li>reasoning alone isn’t enough. The model needs to <em>act</em> in real-world environments</li>
+</ul></li>
+</ol>
+<div class="fragment">
+<blockquote>
+<p>“A reasoning model thinks. An agent thinks, acts, observes, and loops.”</p>
+</blockquote>
+</div>
+</section>
+<section id="what-changes-when-we-say-agent" class="slide level2">
+<h2>What changes when we say “Agent”</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 41%">
+<col style="width: 58%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Reasoning model</th>
+<th>Agent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Reads text, emits text</td>
+<td>Reads text + environment, emits text <em>or</em> tool calls</td>
+</tr>
+<tr class="even">
+<td>One pass through the model</td>
+<td>Loop: think -&gt; act -&gt; observe</td>
+</tr>
+<tr class="odd">
+<td>Verifier scores a single trace</td>
+<td>Verifier scores a <em>trajectory</em></td>
+</tr>
+<tr class="even">
+<td>Errors are wrong tokens</td>
+<td>Errors are wrong actions on a real system</td>
+</tr>
+<tr class="odd">
+<td>Cost is bounded by <code>max_tokens</code></td>
+<td>Cost is bounded by <code>max_steps × max_tokens × tool cost</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="demo-weather-agent" class="slide level2">
+<h2>Demo: Weather Agent</h2>
+<p><strong>User asks:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb1-1"><a href=""></a>Tell me about the current weather in Bangalore.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="fragment">
+<p><strong>Agent loop:</strong></p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Step</th>
+<th>Model decision</th>
+<th>Tool action</th>
+<th>Observation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Need current weather data for Bangalore</td>
+<td><code>get_weather("Bangalore")</code></td>
+<td><code>{"temp": 28, "condition": "Partly Cloudy", "humidity": 65, ...}</code></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Need location coordinates for more detail</td>
+<td><code>get_coordinates("Bangalore")</code></td>
+<td><code>{"lat": 12.9716, "lon": 77.5946}</code></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Fetch extended forecast</td>
+<td><code>get_forecast(lat=12.9716, lon=77.5946)</code></td>
+<td>Next 5 days: 27–31°C, chance of rain on Day 3</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Stop and answer</td>
+<td>final response</td>
+<td>Summary: 28°C, partly cloudy, humid; rain expected mid-week</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="ai-agent-llm-planning-tooling" class="slide level2">
+<h2>AI Agent: LLM + Planning + Tooling</h2>
+<p><strong>An AI agent</strong> - system that combines a large language model (LLM) with planning and tooling capabilities</p>
+
+<img data-src="images/agent-0.png" class="r-stretch"><p><strong>Common Tools:</strong></p>
+<ul>
+<li>Web search</li>
+<li>Code execution (APIs, DB, shell, etc.)</li>
+<li>Repo tools: list files, search text, read files, run tests</li>
+</ul>
+</section>
+<section id="ai-agent-llm-planning-tooling-1" class="slide level2">
+<h2>AI Agent: LLM + Planning + Tooling</h2>
+<p><strong>Example</strong></p>
+
+<img data-src="images/agent-example.png" class="r-stretch"></section>
+<section id="capabilities" class="slide level2">
+<h2>Capabilities</h2>
+
+<img data-src="images/capability-0.png" class="r-stretch"></section>
+<section id="capabilities-1" class="slide level2">
+<h2>Capabilities</h2>
+
+<img data-src="images/capability-1.png" class="r-stretch"></section>
+<section id="four-system-types" class="slide level2">
+<h2>Four System Types</h2>
+<div style="font-size: 0.8em; margin-top: 1.5em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>System Type</th>
+<th>Autonomy</th>
+<th>Structure / Predictability</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CHATBOT</td>
+<td>Low</td>
+<td>High</td>
+<td>Single-turn or multi-turn conversation; no external tools, no persistent goal</td>
+</tr>
+<tr class="even">
+<td>PIPELINE</td>
+<td>Low-Medium</td>
+<td>High</td>
+<td>Fixed sequence of transformations; no branching (e.g., chunk -&gt; embed -&gt; retrieve -&gt; generate)</td>
+</tr>
+<tr class="odd">
+<td>WORKFLOW</td>
+<td>Medium</td>
+<td>Medium-High</td>
+<td>Pre-defined graph of steps; LLM executes nodes but topology is fixed (LangGraph-style DAG)</td>
+</tr>
+<tr class="even">
+<td>AGENT</td>
+<td>High</td>
+<td>Low</td>
+<td>Decides what to do next; may deviate from plan; chooses tools; loops until goal or budget</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="what-makes-an-agent" class="slide level2">
+<h2>What makes an Agent?</h2>
+<p>Should have all the following properties:</p>
+<div style="font-size: 0.8em; margin-top: 1.5em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 24%">
+<col style="width: 55%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Meaning</th>
+<th>Counter-example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>1. Goal-directed</strong></td>
+<td>Pursues an objective, not just responds</td>
+<td>Chatbot: reactive, no persistent goal</td>
+</tr>
+<tr class="even">
+<td><strong>2. Tool-grounded</strong></td>
+<td>Can perform actions with side effects beyond text generation</td>
+<td>Pipeline where LLM only produces text</td>
+</tr>
+<tr class="odd">
+<td><strong>3. Closed-loop</strong></td>
+<td>Observes the result of actions and feeds observations back into reasoning</td>
+<td>One-shot tool call without reading the result</td>
+</tr>
+<tr class="even">
+<td><strong>4. Autonomous control</strong></td>
+<td>Decides the sequence of actions; topology is emergent</td>
+<td>Workflow where human coded the state machine</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="what-makes-an-agent-1" class="slide level2">
+<h2>What makes an Agent?</h2>
+<p>Examples:</p>
+<div class="fragment">
+<ul>
+<li><em>A system that generates a SQL query and returns it to the user, who then runs it manually.</em></li>
+</ul>
+</div>
+<div class="fragment">
+<p>→ <strong>NOT an agent</strong></p>
+</div>
+<div class="fragment">
+<ul>
+<li><em>A system that generates SQL, executes it against a database, reads the results, and generates a report based on those results.</em></li>
+</ul>
+</div>
+<div class="fragment">
+<p>→ <strong>Workflow</strong></p>
+</div>
+<div class="fragment">
+<ul>
+<li><em>A coding assistant that edits files, runs tests, reads error output, fixes bugs, and loops until tests pass.</em></li>
+</ul>
+</div>
+<div class="fragment">
+<p>→ <strong>AGENT</strong>.</p>
+</div>
+</section>
+<section id="agent-autonomy-vs.-structure" class="slide level2">
+<h2>Agent Autonomy vs.&nbsp;Structure</h2>
+<blockquote>
+<p>“How much structure should we impose on an agent, vs.&nbsp;letting the LLM figure it out?”</p>
+</blockquote>
+<ul>
+<li><p><strong>More structure</strong> =&gt; more reliable, cheaper per call, easier to debug, but lower ceiling and brittle</p></li>
+<li><p><strong>Less structure</strong> =&gt; more graceful failure recovery, but harder to verify, more expensive, and behaviour shifts with every model upgrade.</p></li>
+</ul>
+
+<img data-src="images/agent-autonomy.png" class="r-stretch"><div class="fragment">
+<blockquote>
+<p><a href="https://www.anthropic.com/engineering/building-effective-agents">Anthropic’s recommendation</a>: “Start with workflows and add agentic loops only where necessary.”</p>
+</blockquote>
+</div>
+</section>
+<section id="anatomy-of-an-agent" class="slide level2">
+<h2>Anatomy of an Agent</h2>
+</section>
+<section id="the-model" class="slide level2">
+<h2>1 - The Model</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><img data-src="images/model-component.png"></p>
+</div><div class="column" style="width:40%;">
+<p><strong>Key choices for agents</strong></p>
+<ol type="1">
+<li><p><strong>Model capability</strong></p></li>
+<li><p><strong>Context window</strong></p></li>
+<li><p><strong>Tool-calling format</strong></p></li>
+<li><p><strong>Reasoning vs.&nbsp;non-reasoning</strong></p></li>
+</ol>
+</div></div>
+</section>
+<section id="tools-the-action-space" class="slide level2">
+<h2>2 - Tools / The Action Space</h2>
+<p>The set of actions the agent can perform. Every action has:</p>
+<ul>
+<li>A <strong>name</strong> (identifier)</li>
+<li>A <strong>schema</strong> (parameters, types, constraints)</li>
+<li>An <strong>implementation</strong> (the actual function that runs)</li>
+<li>A <strong>description</strong> (natural language prompt the model sees)</li>
+</ul>
+<p><strong>Example: A <code>calculator</code> tool</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource json number-lines code-with-copy"><code class="sourceCode json"><span id="cb2-1"><a href=""></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href=""></a>  <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"calculator"</span><span class="fu">,</span></span>
+<span id="cb2-3"><a href=""></a>  <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Evaluate mathematical expressions. Use this for ALL arithmetic—do not compute in your head. Input must be a valid Python expression string. Returns the numeric result or an error message."</span><span class="fu">,</span></span>
+<span id="cb2-4"><a href=""></a>  <span class="dt">"parameters"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-5"><a href=""></a>    <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"object"</span><span class="fu">,</span></span>
+<span id="cb2-6"><a href=""></a>    <span class="dt">"properties"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-7"><a href=""></a>      <span class="dt">"expression"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-8"><a href=""></a>        <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"string"</span><span class="fu">,</span></span>
+<span id="cb2-9"><a href=""></a>        <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"A valid Python math expression, e.g., '2 + 2' or 'math.sqrt(16)'"</span></span>
+<span id="cb2-10"><a href=""></a>      <span class="fu">}</span></span>
+<span id="cb2-11"><a href=""></a>    <span class="fu">},</span></span>
+<span id="cb2-12"><a href=""></a>    <span class="dt">"required"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"expression"</span><span class="ot">]</span></span>
+<span id="cb2-13"><a href=""></a>  <span class="fu">}</span></span>
+<span id="cb2-14"><a href=""></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="tools-the-action-space-1" class="slide level2">
+<h2>2 - Tools / The Action Space</h2>
+<p><strong>Example: Repo tools</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource json number-lines code-with-copy"><code class="sourceCode json"><span id="cb3-1"><a href=""></a><span class="ot">[</span></span>
+<span id="cb3-2"><a href=""></a>  <span class="fu">{</span></span>
+<span id="cb3-3"><a href=""></a>    <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"search_repo"</span><span class="fu">,</span></span>
+<span id="cb3-4"><a href=""></a>    <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Search the repository for exact text or regex patterns. Use this before reading many files."</span><span class="fu">,</span></span>
+<span id="cb3-5"><a href=""></a>    <span class="dt">"parameters"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-6"><a href=""></a>      <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"object"</span><span class="fu">,</span></span>
+<span id="cb3-7"><a href=""></a>      <span class="dt">"properties"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-8"><a href=""></a>        <span class="dt">"query"</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">"type"</span><span class="fu">:</span> <span class="st">"string"</span><span class="fu">},</span></span>
+<span id="cb3-9"><a href=""></a>        <span class="dt">"path"</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">"type"</span><span class="fu">:</span> <span class="st">"string"</span><span class="fu">,</span> <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Optional directory or file scope"</span><span class="fu">}</span></span>
+<span id="cb3-10"><a href=""></a>      <span class="fu">},</span></span>
+<span id="cb3-11"><a href=""></a>      <span class="dt">"required"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"query"</span><span class="ot">]</span></span>
+<span id="cb3-12"><a href=""></a>    <span class="fu">}</span></span>
+<span id="cb3-13"><a href=""></a>  <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb3-14"><a href=""></a>  <span class="fu">{</span></span>
+<span id="cb3-15"><a href=""></a>    <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"read_file"</span><span class="fu">,</span></span>
+<span id="cb3-16"><a href=""></a>    <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Read a repository file by path. Use after search identifies a likely relevant file."</span><span class="fu">,</span></span>
+<span id="cb3-17"><a href=""></a>    <span class="dt">"parameters"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-18"><a href=""></a>      <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"object"</span><span class="fu">,</span></span>
+<span id="cb3-19"><a href=""></a>      <span class="dt">"properties"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-20"><a href=""></a>        <span class="dt">"path"</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">"type"</span><span class="fu">:</span> <span class="st">"string"</span><span class="fu">}</span></span>
+<span id="cb3-21"><a href=""></a>      <span class="fu">},</span></span>
+<span id="cb3-22"><a href=""></a>      <span class="dt">"required"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"path"</span><span class="ot">]</span></span>
+<span id="cb3-23"><a href=""></a>    <span class="fu">}</span></span>
+<span id="cb3-24"><a href=""></a>  <span class="fu">}</span></span>
+<span id="cb3-25"><a href=""></a><span class="ot">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="tools-the-action-space-2" class="slide level2">
+<h2>2 - Tools / The Action Space</h2>
+<div style="font-size: 0.8em; margin-top: 1.5em;">
+<p><strong>The action space spectrum</strong></p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 15%">
+<col style="width: 19%">
+<col style="width: 24%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Action Space</th>
+<th>Grounding</th>
+<th>Verification</th>
+<th>Failure Modes</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>JSON tool calls</td>
+<td>Strong (typed schema)</td>
+<td>Easy (validate against schema)</td>
+<td>Hallucinated args, wrong tool choice</td>
+<td>API agents, coding agents</td>
+</tr>
+<tr class="even">
+<td>Code execution</td>
+<td>Medium (interpreter catches syntax)</td>
+<td>Medium (tracebacks, output)</td>
+<td>Infinite loops, dangerous imports, sandbox escapes</td>
+<td>Data science, complex computation</td>
+</tr>
+<tr class="odd">
+<td>GUI actions (click, type)</td>
+<td>Weak (pixels, DOM elements)</td>
+<td>Hard (was the click registered?)</td>
+<td>Click misses, modal dialogs, visual changes</td>
+<td>Browser automation, computer use</td>
+</tr>
+<tr class="even">
+<td>Voice turns</td>
+<td>Weak (audio ambiguity)</td>
+<td>Hard (user may interrupt)</td>
+<td>Misheard commands, latency gaps</td>
+<td>Conversational agents</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="component-3-the-loop" class="slide level2">
+<h2>Component 3: The Loop</h2>
+<p>The control structure that repeatedly calls the model, executes actions, and feeds observations back.</p>
+
+<img data-src="images/agent-loop.png" class="r-stretch"></section>
+<section id="component-3-the-loop-1" class="slide level2">
+<h2>Component 3: The Loop</h2>
+<p><strong>The canonical ReAct loop (pseudo-code):</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="kw">class</span> ReActAgent:</span>
+<span id="cb4-2"><a href=""></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, model, tools, max_steps<span class="op">=</span><span class="dv">10</span>):</span>
+<span id="cb4-3"><a href=""></a>        <span class="va">self</span>.model <span class="op">=</span> model</span>
+<span id="cb4-4"><a href=""></a>        <span class="va">self</span>.tools <span class="op">=</span> {t.name: t <span class="cf">for</span> t <span class="kw">in</span> tools}</span>
+<span id="cb4-5"><a href=""></a>        <span class="va">self</span>.max_steps <span class="op">=</span> max_steps</span>
+<span id="cb4-6"><a href=""></a>        <span class="va">self</span>.state <span class="op">=</span> []  <span class="co"># conversation history</span></span>
+<span id="cb4-7"><a href=""></a>    </span>
+<span id="cb4-8"><a href=""></a>    <span class="kw">def</span> run(<span class="va">self</span>, task: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb4-9"><a href=""></a>        <span class="va">self</span>.state.append(user_message(task))</span>
+<span id="cb4-10"><a href=""></a>        </span>
+<span id="cb4-11"><a href=""></a>        <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb4-12"><a href=""></a>            <span class="co"># REASON: Model decides what to do</span></span>
+<span id="cb4-13"><a href=""></a>            response <span class="op">=</span> <span class="va">self</span>.model.generate(<span class="va">self</span>.state, available_tools<span class="op">=</span><span class="bu">list</span>(<span class="va">self</span>.tools.values()))</span>
+<span id="cb4-14"><a href=""></a>            </span>
+<span id="cb4-15"><a href=""></a>            <span class="cf">if</span> response.has_tool_calls:</span>
+<span id="cb4-16"><a href=""></a>                <span class="va">self</span>.state.append(response)</span>
+<span id="cb4-17"><a href=""></a>                <span class="co"># ACT: Execute each tool call</span></span>
+<span id="cb4-18"><a href=""></a>                <span class="cf">for</span> tool_call <span class="kw">in</span> response.tool_calls:</span>
+<span id="cb4-19"><a href=""></a>                    result <span class="op">=</span> <span class="va">self</span>.execute_tool(tool_call)</span>
+<span id="cb4-20"><a href=""></a>                    <span class="co"># OBSERVE: Append result to state</span></span>
+<span id="cb4-21"><a href=""></a>                    <span class="va">self</span>.state.append(tool_result_message(tool_call.<span class="bu">id</span>, result))</span>
+<span id="cb4-22"><a href=""></a>            <span class="cf">else</span>:</span>
+<span id="cb4-23"><a href=""></a>                <span class="co"># FINISH: Model returns final answer</span></span>
+<span id="cb4-24"><a href=""></a>                <span class="cf">return</span> response.content</span>
+<span id="cb4-25"><a href=""></a>        </span>
+<span id="cb4-26"><a href=""></a>    </span>
+<span id="cb4-27"><a href=""></a>    <span class="kw">def</span> execute_tool(<span class="va">self</span>, tool_call):</span>
+<span id="cb4-28"><a href=""></a>        tool <span class="op">=</span> <span class="va">self</span>.tools[tool_call.name]</span>
+<span id="cb4-29"><a href=""></a>        <span class="co"># Validate arguments against schema</span></span>
+<span id="cb4-30"><a href=""></a>        validated_args <span class="op">=</span> tool.schema.validate(tool_call.arguments)</span>
+<span id="cb4-31"><a href=""></a>        <span class="co"># Execute</span></span>
+<span id="cb4-32"><a href=""></a>        <span class="cf">return</span> tool.run(<span class="op">**</span>validated_args)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="component-4-state-context-memory" class="slide level2">
+<h2>Component 4: State / Context Memory</h2>
+
+<img data-src="images/agent-context.png" class="r-stretch"></section>
+<section id="component-4-state-context-memory-1" class="slide level2">
+<h2>Component 4: State / Context Memory</h2>
+<p>The information the agent can access when making its next decision.</p>
+<p>In the minimal ReAct agent, state is simply the conversation history: a list of messages:</p>
+<pre><code>[system_prompt, user_task, assistant_thought_1, tool_call_1, tool_result_1, assistant_thought_2, ...]</code></pre>
+<p>For the repo-question example, state might contain:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb6-1"><a href=""></a>User task: Where is authentication handled, and what tests cover it?</span>
+<span id="cb6-2"><a href=""></a>Tool call: search_repo("auth")</span>
+<span id="cb6-3"><a href=""></a>Observation: src/auth.py, src/middleware.py, tests/test_auth.py</span>
+<span id="cb6-4"><a href=""></a>Tool call: read_file("src/auth.py")</span>
+<span id="cb6-5"><a href=""></a>Observation: token validation and session helpers</span>
+<span id="cb6-6"><a href=""></a>...</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="component-5-stop-conditions" class="slide level2">
+<h2>Component 5: Stop Conditions</h2>
+
+<img data-src="images/stop-loop.png" class="r-stretch"></section>
+<section id="component-5-stop-conditions-1" class="slide level2">
+<h2>Component 5: Stop Conditions</h2>
+<p>The criteria that terminate the loop.</p>
+<p>Agents should not run forever. Termination can be triggered by:</p>
+<div style="font-size: 0.8em; margin-top: 1.5em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 25%">
+<col style="width: 46%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Stop Condition</th>
+<th>Type</th>
+<th>When It’s Used</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Goal achievement</strong></td>
+<td>Model-driven</td>
+<td>Agent emits final answer instead of tool call</td>
+</tr>
+<tr class="even">
+<td><strong>Step budget</strong></td>
+<td>System-enforced</td>
+<td>Max N iterations reached</td>
+</tr>
+<tr class="odd">
+<td><strong>Cost cap</strong></td>
+<td>System-enforced</td>
+<td>Max dollars/tokens spent</td>
+</tr>
+<tr class="even">
+<td><strong>Time budget</strong></td>
+<td>System-enforced</td>
+<td>Wall-clock timeout</td>
+</tr>
+<tr class="odd">
+<td><strong>Error threshold</strong></td>
+<td>System-enforced</td>
+<td>N consecutive tool failures</td>
+</tr>
+<tr class="even">
+<td><strong>Dead-end detection</strong></td>
+<td>Heuristic</td>
+<td>Agent repeating the same action</td>
+</tr>
+<tr class="odd">
+<td><strong>Human trigger</strong></td>
+<td>External</td>
+<td>User presses stop</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fragment">
+<p><strong>Stopping Criteria</strong> for Repo-question stop condition ??</p>
+
+</div>
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p><a href="https://llm-engg.github.io/">Large Language Models : A Hands-on Approach</a></p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="slides_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="slides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="slides_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': false,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

@@ -85,6 +85,14 @@
          <lastmod>2026-05-05</lastmod>
     </url>
     <url>
+         <loc>https://llm-engg.github.io/slides/07_agents/02_foundations/slides_files/libs/revealjs/plugin/reveal-chalkboard/</loc>
+         <lastmod>2026-05-05</lastmod>
+    </url>
+    <url>
+         <loc>https://llm-engg.github.io/slides/07_agents/03_tool_use/slides_files/libs/revealjs/plugin/reveal-chalkboard/</loc>
+         <lastmod>2026-05-05</lastmod>
+    </url>
+    <url>
          <loc>https://llm-engg.github.io/slides/07_moe/slides/</loc>
          <lastmod>2026-05-05</lastmod>
     </url>
