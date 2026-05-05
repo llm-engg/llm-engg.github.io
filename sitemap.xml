@@ -124,4 +124,16 @@
          <loc>https://llm-engg.github.io/slides/24_reasoning/slides_files/libs/revealjs/plugin/reveal-chalkboard/</loc>
          <lastmod>2026-05-05</lastmod>
     </url>
+    <url>
+         <loc>https://llm-engg.github.io/slides/reveal/css/theme/</loc>
+         <lastmod>2026-05-05</lastmod>
+    </url>
+    <url>
+         <loc>https://llm-engg.github.io/slides/reveal/examples/markdown/</loc>
+         <lastmod>2026-05-05</lastmod>
+    </url>
+    <url>
+         <loc>https://llm-engg.github.io/slides/reveal/test/simple/</loc>
+         <lastmod>2026-05-05</lastmod>
+    </url>
 </urlset>
