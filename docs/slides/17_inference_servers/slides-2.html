@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-<script src="slides_files/libs/clipboard/clipboard.min.js"></script>
-<script src="slides_files/libs/quarto-html/tabby.min.js"></script>
-<script src="slides_files/libs/quarto-html/popper.min.js"></script>
-<script src="slides_files/libs/quarto-html/tippy.umd.min.js"></script>
-<link href="slides_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="slides_files/libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="slides_files/libs/quarto-html/quarto-syntax-highlighting-73db7b5a953198da8f17fc5313e632aa.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<script src="slides-2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="slides-2_files/libs/quarto-html/tabby.min.js"></script>
+<script src="slides-2_files/libs/quarto-html/popper.min.js"></script>
+<script src="slides-2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="slides-2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="slides-2_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="slides-2_files/libs/quarto-html/quarto-syntax-highlighting-73db7b5a953198da8f17fc5313e632aa.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.34">
 
   <meta name="author" content="CCE, IISc">
-  <title>Inference Servers - I</title>
+  <title>Inference Servers - II</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="slides_files/libs/revealjs/dist/reset.css">
-  <link rel="stylesheet" href="slides_files/libs/revealjs/dist/reveal.css">
+  <link rel="stylesheet" href="slides-2_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="slides-2_files/libs/revealjs/dist/reveal.css">
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -98,14 +98,14 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="slides_files/libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+  <link rel="stylesheet" href="slides-2_files/libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
   <link rel="stylesheet" href="styles.css">
-  <link href="slides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
-  <link href="slides_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
-  <link href="slides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
-  <link href="slides_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
-  <link href="slides_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
-  <link href="slides_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <link href="slides-2_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="slides-2_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="slides-2_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="slides-2_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="slides-2_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="slides-2_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
     .reveal div.sourceCode {
       margin: 0;
@@ -199,7 +199,7 @@
     <div class="slides">
 
 <section id="title-slide" data-state="title-slide" class="quarto-title-block center">
-  <h1 class="title">Inference Servers - I</h1>
+  <h1 class="title">Inference Servers - II</h1>
   <p class="subtitle">Large Language Models : A Hands-on Approach</p>
 
 <div class="quarto-title-authors">
@@ -214,7 +214,6 @@ CCE, IISc
 <section id="overview" class="slide level2">
 <h2>Overview</h2>
 <ul>
-<li>Static and Continuous Batching</li>
 <li>Paged Attention</li>
 <li>vLLM</li>
 </ul>
@@ -242,321 +241,6 @@ CCE, IISc
 </ul>
 
 <img data-src="images/infer-unrolled.png" class="r-stretch"></section>
-<section id="llm-inference-challenges" class="slide level2">
-<h2>LLM Inference Challenges</h2>
-<p>Why is LLM inference harder than standard neural network inference?</p>
-<ul>
-<li>Variable-length compute : inputs and outputs have no fixed tensor shapes</li>
-<li>Batching is difficult : sequences finish at different times</li>
-<li>Need to balance <strong>TTFT</strong>, <strong>ITL</strong>, and <strong>throughput</strong> simultaneously</li>
-</ul>
-
-<img data-src="images/var-compute.png" class="r-stretch"></section>
-<section id="llm-inference-challenges-1" class="slide level2">
-<h2>LLM Inference Challenges</h2>
-<p>Why is LLM inference harder than standard neural network inference?</p>
-<ul>
-<li><strong>Two distinct phases</strong>: prefill (compute-intensive) vs decode (memory-intensive)</li>
-<li>Two different compute characteristics -&gt; need different optimizations</li>
-</ul>
-
-<img data-src="images/pd.gif" class="r-stretch"></section>
-<section id="llm-inference-challenges-2" class="slide level2">
-<h2>LLM Inference Challenges</h2>
-<p>Why is LLM inference harder than standard neural network inference?</p>
-<ul>
-<li>GPU memory management: KV caching, Prefix caching</li>
-</ul>
-
-<img data-src="images/prefix-cache.png" class="r-stretch"></section>
-<section id="model-artifacts" class="slide level2">
-<h2>Model Artifacts</h2>
-
-<img data-src="images/hf-model.png" class="r-stretch"></section>
-<section id="memory-model-parameters" class="slide level2">
-<h2>Memory : Model Parameters</h2>
-<p>Memory = Model Memory + KV Cache Memory + Activation Memory</p>
-<div style="font-size: 0.6em;">
-<p><strong>Step 1: Count Parameters</strong></p>
-<p><em>Example: LLaMA-2 13B</em></p>
-<p>(D=5,120, F=13,824, N=40, K=40, H=128, L=40, V=32,000)</p>
-<div style="font-size: 0.75em;">
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Component</th>
-<th>Formula</th>
-<th>Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Embeddings</td>
-<td><span class="math inline">\(2 \times V \times D\)</span></td>
-<td>328M</td>
-</tr>
-<tr class="even">
-<td>MLP</td>
-<td><span class="math inline">\(3 \times D \times F \times L\)</span></td>
-<td>8,488M</td>
-</tr>
-<tr class="odd">
-<td>Attention</td>
-<td><span class="math inline">\((2D^2 + 2D(K \times H)) \times L\)</span></td>
-<td>4,196M</td>
-</tr>
-<tr class="even">
-<td><strong>Total</strong></td>
-<td></td>
-<td><strong>≈ 13B</strong></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>Step 2: Compute Memory Size</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a>params_size <span class="op">=</span> num_params × bytes_per_param</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Precision</th>
-<th>Size</th>
-<th>Formula</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>BF16/FP16</td>
-<td><strong>26 GB</strong></td>
-<td>13B × 2 bytes</td>
-</tr>
-<tr class="even">
-<td>INT8</td>
-<td><strong>13 GB</strong></td>
-<td>13B × 1 byte</td>
-</tr>
-<tr class="odd">
-<td>INT4</td>
-<td><strong>6.5 GB</strong></td>
-<td>13B × 0.5 byte</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Tip</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>Rule of thumb:</strong> Memory (GB) <span class="math inline">\(\approx\)</span> num_params (B) <span class="math inline">\(\times\)</span> bytes_per_param</p>
-<p>A 7B model in FP16 needs ~14 GB. A 70B model needs ~140 GB.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="total-inference-memory" class="slide level2">
-<h2>Total Inference Memory</h2>
-<pre><code>total_memory = model_weights + kv_cache + activations (small)</code></pre>
-<p><strong>LLaMA-2 7B, BF16, S=1024, B=1:</strong></p>
-<p><span class="math display">\[13.4 \text{ GB} + 0.9 \text{ GB} \approx 14.3 \text{ GB}\]</span></p>
-<p>==&gt; Fits on a single <strong>RTX 4090</strong> (24 GB) or <strong>A100 40GB</strong></p>
-<div class="fragment">
-<table class="caption-top">
-<colgroup>
-<col style="width: 20%">
-<col style="width: 11%">
-<col style="width: 15%">
-<col style="width: 31%">
-<col style="width: 21%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Model</th>
-<th>Params</th>
-<th>BF16 Size</th>
-<th>KV Cache (S=4K, B=1)</th>
-<th>GPUs Needed</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>LLaMA-2 7B</td>
-<td>6.7B</td>
-<td>13.4 GB</td>
-<td>2 GB</td>
-<td>1× A100 40GB</td>
-</tr>
-<tr class="even">
-<td>LLaMA-2 13B</td>
-<td>13B</td>
-<td>26 GB</td>
-<td>3.2 GB</td>
-<td>1× A100 40GB</td>
-</tr>
-<tr class="odd">
-<td>LLaMA-2 70B</td>
-<td>65B</td>
-<td>130 GB</td>
-<td>5 GB (GQA)</td>
-<td>2× A100 80GB</td>
-</tr>
-<tr class="even">
-<td>LLaMA-3 405B</td>
-<td>405B</td>
-<td>810 GB</td>
-<td>~30 GB</td>
-<td>12× A100 80GB</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="arithmetic-intensity" class="slide level2">
-<h2>Arithmetic Intensity</h2>
-<p><span class="math display">\[\text{Arithmetic Intensity} = \frac{\text{Compute FLOPs}}{\text{Memory Bytes}}\]</span></p>
-<p>AI tells you whether the model is spending time <em>computing</em> (doing math) or <em>fetching</em> (moving data).</p>
-<ul>
-<li>Low AI = GPU mostly waiting for data.</li>
-<li>High AI = GPU mostly doing useful computation.</li>
-</ul>
-</section>
-<section id="prefill-vs-decode" class="slide level2">
-<h2>Prefill vs Decode</h2>
-<table class="caption-top">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 37%">
-<col style="width: 37%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Property</th>
-<th>Prefill Phase</th>
-<th>Decode Phase</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Operation type</td>
-<td>GEMM (matrix × matrix)</td>
-<td>GEMV (matrix × vector)</td>
-</tr>
-<tr class="even">
-<td>Arithmetic intensity</td>
-<td>High</td>
-<td>Very low</td>
-</tr>
-<tr class="odd">
-<td>GPU utilization</td>
-<td>High (saturates compute)</td>
-<td>Low (limited by bandwidth)</td>
-</tr>
-<tr class="even">
-<td>Bottleneck</td>
-<td>Compute (FLOPS)</td>
-<td>Memory bandwidth (GB/s)</td>
-</tr>
-<tr class="odd">
-<td>Parallelism</td>
-<td>All prompt tokens in parallel</td>
-<td>One token at a time, sequential</td>
-</tr>
-<tr class="even">
-<td>Time scaling</td>
-<td>∝ prompt_length</td>
-<td>∝ output_length × kv_cache_size</td>
-</tr>
-<tr class="odd">
-<td>Batch dimension</td>
-<td>batch_size × seq_len (large)</td>
-<td>batch_size × 1 (small)</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="the-roofline-model" class="slide level2">
-<h2>The Roofline Model</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p>Performance is bounded by:</p>
-<ol type="1">
-<li><strong>Compute</strong> : how fast GPU does math (FLOPs/s)</li>
-<li><strong>Bandwidth</strong> : how fast data moves (GB/s)</li>
-<li><strong>Capacity</strong> : whether weights + KV cache fit at all (GB)</li>
-</ol>
-<div style="font-size: 0.6em;">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>Knee point = bandwidth-bound to compute-bound transisiton -&gt; minimum AI needed to fully utilize GPU’s compute.</p>
-</div>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<p><img data-src="images/roofline.png"></p>
-<p style="font-size: 0.4em; text-align: center;">
-</p><p>Figure: Roofline model of attention operators in LLM Serving, data from A100 PCIe 80GB.</p>
-<p></p>
-</div></div>
-<p><span class="math display">\[\text{Performance} = \min(\text{Peak FLOPs}, \text{AI} \times \text{BW})\]</span></p>
-</section>
-<section id="cost-of-serving" class="slide level2">
-<h2>Cost of Serving</h2>
-<ul>
-<li>In Azure, a GPT3 175B instance requires 2 VMS, each of which has 8 NVIDIA A100 40GB GPUs</li>
-<li>At Azure East US, the VM price is $27.197/hour.
-<ul>
-<li>2 VMs = $54.394/hour -&gt; $39,707.62/month -&gt; $476,491.44/year</li>
-</ul></li>
-<li>If we need to host 400 GPT3 175B instances, $190.6M/year</li>
-</ul>
-</section>
-<section id="inference-tradeoffs" class="slide level2">
-<h2>Inference Tradeoffs</h2>
-<p>Three way tradeoff between accuracy, latency, and cost</p>
-<p><strong>Cannot optimize for all three simultaneously</strong>.</p>
-<table class="caption-top">
-<colgroup>
-<col style="width: 26%">
-<col style="width: 25%">
-<col style="width: 48%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Priority</th>
-<th>Tradeoff</th>
-<th>Engineering Bridges</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Accuracy + Low Latency</td>
-<td>Higher cost</td>
-<td>Use smaller models to reduce serving cost; recover accuracy with RAG, fine-tuning, and tool use. Quantization cuts GPU memory footprint further.</td>
-</tr>
-<tr class="even">
-<td>Accuracy + Low Cost</td>
-<td>Higher latency</td>
-<td>Batch inference, async pipelines, and queue-tolerant architectures absorb the latency gracefully.</td>
-</tr>
-<tr class="odd">
-<td>Low Latency + Low Cost</td>
-<td>Accuracy at risk</td>
-<td>Smaller or distilled models with quantization; improve accuracy via RAG, fine-tuning</td>
-</tr>
-</tbody>
-</table>
-</section>
 <section id="serving-systems" class="slide level2">
 <h2>Serving Systems</h2>
 <p><strong>Front End</strong> - API, scheduling, memory</p>
@@ -579,27 +263,6 @@ CCE, IISc
 <li>GPU utilization: 30-40% for small batches, drops to 10-20% for larger batches due to padding overhead</li>
 </ul>
 </section>
-<section id="static-batching-request-level-batching-1" class="slide level2">
-<h2>Static Batching / Request-Level Batching</h2>
-<div class="r-stack">
-<p><img data-src="images/sb-1.png" class="fragment fade-in-then-out"></p>
-<p><img data-src="images/sb-2.png" class="fragment fade-in-then-out"></p>
-<p><img data-src="images/sb-3.png" class="fragment"></p>
-</div>
-</section>
-<section id="static-batching-request-level-batching-2" class="slide level2">
-<h2>Static Batching / Request-Level Batching</h2>
-<div class="r-stack">
-<p><img data-src="images/sb-4.png" class="fragment fade-in-then-out"></p>
-<p><img data-src="images/sb-5.png" class="fragment fade-in-then-out"></p>
-<p><img data-src="images/sb-6.png" class="fragment fade-in-then-out"></p>
-</div>
-</section>
-<section id="static-batching-request-level-batching-3" class="slide level2">
-<h2>Static Batching / Request-Level Batching</h2>
-
-<img data-src="images/sb-6.png" class="r-stretch"><p><strong>Downsides</strong> : Inference server and Execution engine interact at request level. Server batches requests together, but engine processes them as a single batch. No visibility into individual request completion. They interact only at beginning and end of the batch</p>
-</section>
 <section id="continuos-batching" class="slide level2">
 <h2>Continuos Batching</h2>
 <p><a href="https://www.usenix.org/conference/osdi22/presentation/yu">Orca : A Distributed Serving System for Transformer-Based Generative Models, 2022</a></p>
@@ -611,93 +274,11 @@ CCE, IISc
 </ul>
 
 <img data-src="images/orca-batching.png" class="r-stretch"></section>
-<section id="continuous-batching" class="slide level2">
-<h2>Continuous Batching</h2>
-<div class="r-stack">
-<p><img data-src="images/ob-1.png" class="fragment fade-in-then-out"></p>
-<p><img data-src="images/ob-2.png" class="fragment fade-in-then-out"></p>
-<p><img data-src="images/ob-4.png" class="fragment fade-in-then-out"></p>
-<p><img data-src="images/ob-3.png" class="fragment fade-in-then-out"></p>
-<p><img data-src="images/ob-5.png" class="fragment fade-in-then-out"></p>
-<p><img data-src="images/ob-6.png" class="fragment fade-in-then-out"></p>
-<p><img data-src="images/ob-7.png" class="fragment fade-in-then-out"></p>
-<p><img data-src="images/ob-8.png" class="fragment fade-in"></p>
-</div>
-</section>
-<section id="continuous-batching-1" class="slide level2">
-<h2>Continuous Batching</h2>
-<p><strong>Continuous Batching</strong>:</p>
-<ul>
-<li>Dynamically batch requests at the token level, allowing for early return and better GPU utilization.</li>
-<li>As soon as one request in the batch finishes generating its next token, it can be returned to the client, while the remaining requests continue processing.</li>
-</ul>
-<blockquote>
-<p><strong>Early finished and late arrived requests are handled much more efficiently</strong>. The server can immediately return results for completed requests without waiting for the entire batch to finish, significantly reducing tail latency and improving user experience.</p>
-</blockquote>
-</section>
 <section id="prefill-and-decode-in-continuos-batching" class="slide level2">
-<h2>Prefill and Decode in continuos batching</h2>
-<ul>
-<li>Some requests can be in prefill phase while others are in decode phase</li>
-<li>We can’t batch prefill and decode together since they have different compute and memory characteristics</li>
-</ul>
-
-<img data-src="images/ob-9.png" class="r-stretch"></section>
-<section id="prefill-and-decode-in-continuos-batching-1" class="slide level2">
-<h2>Prefill and Decode in continuos batching</h2>
-<p>Requests in different phases</p>
-
-<img data-src="images/ob-10.png" class="r-stretch"></section>
-<section id="prefill-and-decode-in-continuos-batching-2" class="slide level2">
-<h2>Prefill and Decode in continuos batching</h2>
-<p>Requests have different lengths</p>
-<p><img data-src="images/ob-11.png" width="637"></p>
-<p><img data-src="images/ob-13.png" width="635"></p>
-</section>
-<section id="prefill-and-decode-in-continuos-batching-3" class="slide level2">
 <h2>Prefill and Decode in continuos batching</h2>
 <p><strong>Solution</strong>: Split the request</p>
 
 <img data-src="images/ob-12.png" class="r-stretch"></section>
-<section id="orca-results" class="slide level2">
-<h2>Orca Results</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><img data-src="images/orca-eval.png"></p>
-<blockquote>
-<p>36.9x improvement in throughput.</p>
-</blockquote>
-</div><div class="column" style="width:50%;">
-<div class="fragment">
-<p>Compared to baseline cost of ~190M/year for 400 GPT3 175B instances, Orca’s optimizations could reduce this to around $5.15M/year, making large-scale LLM deployment much more economically feasible.</p>
-</div>
-</div></div>
-</section>
-<section id="continuous-batching-mechanics" class="slide level2">
-<h2>Continuous Batching Mechanics</h2>
-<div class="columns">
-<div class="column">
-
-</div><div class="column">
-
-</div></div>
-<!-- end columns -->
-<p><strong>The Loop:</strong></p>
-<ol type="1">
-<li><strong>Selection:</strong> Choose candidate requests for next iteration</li>
-<li><strong>Batch Formation:</strong> Combine prefill chunks and decode tokens</li>
-<li><strong>Forward Pass:</strong> Run model on current batch</li>
-<li><strong>Completion Check:</strong> Identify finished sequences</li>
-<li><strong>Admission:</strong> Add new requests from queue</li>
-<li><strong>Iteration:</strong> Repeat</li>
-</ol>
-<p><strong>Benefits:</strong></p>
-<ul>
-<li><strong>No Waiting:</strong> Short requests exit immediately, don’t wait for long ones</li>
-<li><strong>GPU Saturation:</strong> Keep compute units busy 80%+ of time</li>
-</ul>
-<p>Excample code : <a href="https://github.com/Wenyueh/MinivLLM/blob/main/src/myvllm/engine/scheduler.py">MinivLLM’s continuous batching loop</a></p>
-</section>
 <section id="chunked-prefill" class="slide level2">
 <h2>Chunked Prefill</h2>
 <p>A large prefill can dominate an iteration and spike latency for decode requests.</p>
@@ -709,35 +290,328 @@ CCE, IISc
 </ul>
 <p>This is now standard in <strong>vLLM</strong> (enabled by default) and <strong>SGLang</strong>.</p>
 </section>
-<section id="scheduling-policies" class="slide level2">
-<h2>Scheduling Policies</h2>
-<div class="columns">
-<div class="column">
-<p><strong>Scheduling</strong></p>
+<section id="kv-cache" class="slide level2">
+<h2>KV Cache</h2>
+<p><strong>Generation Phase (Autoregressive Decoding):</strong></p>
 <ul>
-<li><p>First-Come-First-Served (FCFS)</p></li>
-<li><p>Priority-Based</p></li>
-<li><p>Longest Prefix Match (LPM)</p></li>
+<li>Generate tokens <strong>one at a time</strong> autoregressively</li>
+<li>At each step, compute attention over <strong>all previously generated tokens</strong></li>
+<li>Keys and Values for past tokens <strong>remain unchanged</strong></li>
+<li>Only the new token’s Query needs to attend to all previous Keys/Values</li>
 </ul>
-</div><div class="column">
-<p><img data-src="images/vllm-sch.png" style="position: absolute; top: 10; right: 0; width: 274px;"></p>
+
+<img data-src="images/1_KV-1.gif" class="r-stretch"></section>
+<section id="kv-cache-1" class="slide level2">
+<h2>KV Cache</h2>
+
+<img data-src="images/KV-2.gif" class="r-stretch"><div style="font-size: 0.6em;">
+<p><strong>Problem:</strong> Without caching, we recompute K and V for all previous tokens at every step!</p>
+<ul>
+<li>Step 1: Compute K, V for token 1</li>
+<li>Step 2: Recompute K, V for tokens 1, 2</li>
+<li>Step 3: Recompute K, V for tokens 1, 2, 3</li>
+<li>…</li>
+<li>Step N: Recompute K, V for all N tokens → <strong>O(N²) redundant computation</strong></li>
+</ul>
+</div>
+<p><strong>Solution: KV Cache</strong> — Store computed K and V vectors and reuse them</p>
+</section>
+<section id="kv-cache-2" class="slide level2">
+<h2>KV Cache</h2>
+<ul>
+<li>Reduced per-token compute from O(N) to O(1) by caching K and V for all past tokens</li>
+<li>Reduced TTFT, increased throughput</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:33%;">
+<p><img data-src="images/kv-latency.png"></p>
+</div><div class="column" style="width:33%;">
+<p><img data-src="images/kv-throuput.png"></p>
+</div><div class="column" style="width:33%;">
+<p><img data-src="images/kv-ttft.png"></p>
+</div></div>
+<div class="callout callout-important no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<div style="text-align: center; padding: 20px;">
+<p><strong>Per-token KV cache memory formula:</strong></p>
+<p><span class="math display">\[\text{KV}_{\text{per token}} = 2 \times n_{\text{layers}} \times n_{\text{kv heads}} \times d_{\text{head}} \times \text{dtype bytes}\]</span></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="kv-cache-with-attention-variants" class="slide level2">
+<h2>KV Cache with Attention Variants</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>KV Cache size for DeepSeek V3:</strong></p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Attention Type</th>
+<th>Memory per Token</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>MHA</strong></td>
+<td>4 MB</td>
+</tr>
+<tr class="even">
+<td><strong>MQA</strong></td>
+<td>32 KB</td>
+</tr>
+<tr class="odd">
+<td><strong>GQA (8 groups)</strong></td>
+<td>500 KB</td>
+</tr>
+<tr class="even">
+<td><strong>MLA</strong></td>
+<td>70 KB</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:50%;">
+<p><img data-src="images/ds-mla.png"></p>
+</div></div>
+<div class="columns">
+<div class="column" style="width:33%;">
+<p><img data-src="images/mha-2.png"></p>
+</div><div class="column" style="width:33%;">
+<p><img data-src="images/mqa.png"></p>
+</div><div class="column" style="width:33%;">
+<p><img data-src="images/gqa.png"></p>
 </div></div>
 <!-- end columns -->
-<p><strong>Preemption Strategies:</strong></p>
-<ol type="1">
-<li><p><strong>Swap:</strong> Move KV cache to CPU memory when preempting</p></li>
-<li><p><strong>Recompute:</strong> Discard KV cache, regenerate when resuming</p>
+</section>
+<section id="kv-cache-3" class="slide level2">
+<h2>KV Cache</h2>
+<p>Efficient KV cache management is critical for LLM inference performance:</p>
 <ul>
-<li>Cost: 2× compute for the prompt</li>
-<li>Benefit: No memory bandwidth cost for swap</li>
-</ul></li>
-</ol>
-<p><strong>Rule of Thumb:</strong> Swap for long sequences (KV cache &gt;&gt; compute cost), recompute for short sequences.</p>
+<li>Pre-allocate KV cache for maximum context length (e.g., 16K tokens)</li>
+<li>Store KV cache in GPU memory for fast access during decoding</li>
+<li>Implement efficient indexing to retrieve K and V for past tokens</li>
+</ul>
+<div class="columns">
+<div class="column">
+<p><img data-src="images/kv-insight-1.png" width="411"></p>
+</div><div class="column">
+<p><img data-src="images/kv-insight-2.png" width="354"></p>
+</div></div>
+<!-- end columns -->
+</section>
+<section id="kv-cache-management" class="slide level2">
+<h2>KV Cache Management</h2>
+<p><strong>Request Scheduler</strong></p>
+<p>Prompt : my cat is</p>
+
+<img data-src="images/kv-alloc-0.png" class="r-stretch"></section>
+<section id="kv-cache-management-1" class="slide level2">
+<h2>KV Cache Management</h2>
+<p><strong>Request Scheduler</strong></p>
+<div class="r-stack">
+<p><img data-src="images/kv-alloc-1.png" class="fragment fade-in-then-out"></p>
+<p><img data-src="images/kv-alloc-2.png" class="fragment fade-in-then-out"></p>
+<p><img data-src="images/kv-alloc-3.png" class="fragment fade-in-then-out"></p>
+<p><img data-src="images/kv-alloc-4.png" class="fragment fade-in-then-out"></p>
+<p><img data-src="images/kv-alloc-6.png" class="fragment fade-in-then-out"></p>
+<p><img data-src="images/kv-alloc-7.png" class="fragment fade-in-then-out"></p>
+<p><img data-src="images/kv-alloc-8.png" class="fragment"></p>
+</div>
+<p><a href="https://drive.google.com/file/d/1klm66KJDaIih4a_8Jy7BhkZR9sOfsWii/view">image source</a></p>
+</section>
+<section id="kv-cache-management-2" class="slide level2">
+<h2>KV Cache Management</h2>
+<p><strong>Solution</strong>:</p>
+<ul>
+<li>Pre-allocate KV cache for maximum context length (e.g., 16K tokens)</li>
+<li>Store KV cache in GPU memory for fast access during decoding</li>
+<li>Implement efficient indexing to retrieve K and V for past tokens</li>
+</ul>
+
+<img data-src="images/kv-alloc-9.png" class="r-stretch"></section>
+<section id="memory-waste-from-kv-cache" class="slide level2">
+<h2>Memory Waste from KV Cache</h2>
+
+<img data-src="images/kv-waste.png" class="r-stretch"><ul>
+<li>Internal fragmentation: over-allocated due to the unknown output length</li>
+<li>Reservation: not used at the current step, but used in the future</li>
+<li>External fragmentation: due to different sequence lengths</li>
+</ul>
+</section>
+<section id="paged-kv-cache" class="slide level2">
+<h2>Paged KV Cache</h2>
+<p>vLLM PagedAttention : <a href="https://arxiv.org/abs/2309.06180">Efficient Memory Management for Large Language Model Serving with PagedAttention</a></p>
+<p>Inspired by virtual memory management in operating systems:</p>
+<ul>
+<li>Allocate KV cache in smaller pages (e.g., 1K tokens)</li>
+<li>Dynamically map pages to active requests</li>
+<li>Reduced internal fragmentation</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><img data-src="images/pa-1.png"></p>
+</div><div class="column" style="width:40%;">
+<p><img data-src="images/pa-2.png"></p>
+</div></div>
+<!-- end columns -->
+</section>
+<section id="paged-kv-cache-1" class="slide level2">
+<h2>Paged KV Cache</h2>
+
+<img data-src="https://bear-images.sfo2.cdn.digitaloceanspaces.com/hamzaelshafie/pgvisualfinal.gif" class="r-stretch"><ul>
+<li><p><strong>Logical blocks</strong>: The model’s attention mechanism operates on the entire context as a single logical block (e.g., a 16K token context treated as one block for attention computations).</p></li>
+<li><p><strong>Physical blocks (pages)</strong>: Memory is divided into smaller physical blocks/pages (e.g., 16–32 tokens each), dynamically allocated and mapped to different requests as needed.</p></li>
+</ul>
+</section>
+<section id="paged-kv-cache---multiple-requests" class="slide level2">
+<h2>Paged KV Cache - Multiple Requests</h2>
+
+<img data-src="images/pa-4.png" class="r-stretch"><ul>
+<li>Each request’s KV cache is divided into multiple physical blocks (pages) that can be allocated independently.</li>
+<li>Multiple requests can share the same physical blocks if they have similar context lengths, improving memory efficiency and GPU utilization.</li>
+</ul>
+</section>
+<section id="paged-attention" class="slide level2">
+<h2>Paged Attention</h2>
+
+<img data-src="https://vllm.ai/blog-assets/figures/annimation0.gif" class="r-stretch"><ul>
+<li>PagedAttention allows storing continuous keys and values in non-contiguous memory space</li>
+<li>During the attention computation, the PagedAttention kernel identifies and fetches different KV blocks separately</li>
+<li>Computes attention across these non-contiguous blocks</li>
+<li>This is done in a custom CUDA kernel optimized for the block-table lookup pattern</li>
+</ul>
+</section>
+<section id="memory-efficiency-of-paged-kv-cache" class="slide level2">
+<h2>Memory Efficiency of Paged KV Cache</h2>
+<p><strong>Minimizes internal fragmentation</strong></p>
+<div class="columns">
+<div class="column">
+<ul>
+<li>Only happens at the last block of a sequence</li>
+<li>#num wasted tokens per sequence &lt; block size</li>
+<li>Seq len: O(100) – O(1000) tokens</li>
+<li>Block size: 16 or 32 tokens</li>
+<li>No external frgmentation</li>
+<li>On average,wasted space &lt; 4% ofKV cache</li>
+</ul>
+</div><div class="column">
+<p><img data-src="images/pa-eff.png"></p>
+</div></div>
+<!-- end columns -->
+</section>
+<section id="paging-enables-sharing" class="slide level2">
+<h2>Paging enables sharing</h2>
+<p><strong>Parallel Sampling</strong></p>
+
+<img data-src="https://vllm.ai/blog-assets/figures/annimation2.gif" class="r-stretch"><div class="columns">
+<div class="column">
+
+</div><div class="column">
+
+</div></div>
+<!-- end columns -->
+</section>
+<section id="paging-enables-sharing-1" class="slide level2">
+<h2>Paging enables sharing</h2>
+<p><strong>Parallel Sampling</strong> <img data-src="https://vllm.ai/blog-assets/figures/annimation3.gif"></p>
+</section>
+<section id="paging-enables-sharing-2" class="slide level2">
+<h2>Paging enables sharing</h2>
+<p><strong>Shared Prompts</strong> <img data-src="images/pa-sp.png"></p>
+</section>
+<section id="vllm-system-architecture" class="slide level2">
+<h2>vLLM System Architecture</h2>
+
+<img data-src="images/vllm-0.png" class="r-stretch"></section>
+<section id="vllm-system-architecture-1" class="slide level2">
+<h2>vLLM System Architecture</h2>
+
+<img data-src="images/vllm-1.png" class="r-stretch"><p><a href="https://deepwiki.com/vllm-project/vllm">Explore code at DeepWiki</a></p>
+</section>
+<section id="vllm-efficiency" class="slide level2">
+<h2>vLLM Efficiency</h2>
+<div class="columns">
+<div class="column">
+<p><img data-src="images/vllm-res-1.png" width="550"></p>
+<div style="font-size: 0.6em;">
+<p>Number of batches accomodated</p>
+</div>
+</div><div class="column">
+<p><img data-src="images/kv-waste-2.png" width="677"></p>
+<div style="font-size: 0.6em;">
+<p>Memory usage efficiency</p>
+</div>
+</div><div class="column">
+<p><img data-src="images/vllm-res-2.png" width="416"></p>
+<div style="font-size: 0.6em;">
+<p>throughput (reqs/s)</p>
+</div>
+</div></div>
+</section>
+<section id="using-vllm" class="slide level2">
+<h2>Using vLLM</h2>
+<p><strong>Python Class</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href=""></a><span class="ex">pip</span> install vllm</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a><span class="im">from</span> vllm <span class="im">import</span> LLM</span>
+<span id="cb2-2"><a href=""></a><span class="co"># Example prompts.</span></span>
+<span id="cb2-3"><a href=""></a>prompts <span class="op">=</span> [<span class="st">"Hello, my name is"</span>, <span class="st">"The capital of France is"</span>]</span>
+<span id="cb2-4"><a href=""></a><span class="co"># Create an LLM with HF model name.</span></span>
+<span id="cb2-5"><a href=""></a>llm <span class="op">=</span> LLM(model<span class="op">=</span><span class="st">"meta-llama/Meta-Llama-3.1-8B"</span>)</span>
+<span id="cb2-6"><a href=""></a><span class="co"># Generate texts from the prompts.</span></span>
+<span id="cb2-7"><a href=""></a>outputs <span class="op">=</span> llm.generate(prompts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>OpenAI-compatible server</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href=""></a><span class="co"># Start the vLLM server.</span></span>
+<span id="cb3-2"><a href=""></a><span class="ex">vllm</span> serve meta-llama/Meta-Llama-3.1-8B</span>
+<span id="cb3-3"><a href=""></a></span>
+<span id="cb3-4"><a href=""></a><span class="co"># Send a request to the server.</span></span>
+<span id="cb3-5"><a href=""></a><span class="ex">curl</span> http://localhost:8000/v1/completions <span class="dt">\</span></span>
+<span id="cb3-6"><a href=""></a>-H <span class="st">"Content-Type: application/json"</span> <span class="dt">\</span></span>
+<span id="cb3-7"><a href=""></a>-d <span class="st">'{</span></span>
+<span id="cb3-8"><a href=""></a><span class="st">"model": "meta-llama/Meta-Llama-3.1-8B",</span></span>
+<span id="cb3-9"><a href=""></a><span class="st">"prompt": "San Francisco is a",</span></span>
+<span id="cb3-10"><a href=""></a><span class="st">"max_tokens": 7,</span></span>
+<span id="cb3-11"><a href=""></a><span class="st">"temperature": 0</span></span>
+<span id="cb3-12"><a href=""></a><span class="st">}'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="key-config-options" class="slide level2">
+<h2>Key Config Options</h2>
+<p><strong>Key configuration parameters:</strong></p>
+<ul>
+<li><code>--gpu-memory-utilization 0.90</code>: Fraction of GPU memory to use for KV cache (default 0.9)</li>
+<li><code>--max-model-len 4096</code>: Maximum sequence length</li>
+<li><code>--block-size 16</code>: Number of tokens per KV block</li>
+<li><code>--tensor-parallel-size N</code>: Number of GPUs for tensor parallelism</li>
+<li><code>--enable-prefix-caching</code>: Enable automatic hash-based prefix caching</li>
+</ul>
+</section>
+<section id="vllm-model-support" class="slide level2">
+<h2>vLLM Model support</h2>
+<ul>
+<li>Transformer-like LLMs (e.g., Llama)</li>
+<li>Mixture-of-Expert LLMs (e.g., DeepSeek)</li>
+<li>Multi-modal LLMs (e.g., Qwen-VL)</li>
+<li>State-Space Models (e.g., Mamba)</li>
+<li>Embedding Models (e.g.&nbsp;E5-Mistral)</li>
+</ul>
+</section>
+<section id="vllm-other-features" class="slide level2">
+<h2>vLLM other features</h2>
+<ul>
+<li>Support for quantized models (e.g., 4-bit, 8-bit)</li>
+<li>Custom attention mechanisms (e.g., FlashAttention, Triton, FlashInfer)</li>
+<li>Custom decoding strategies (e.g., beam search, nucleus sampling)</li>
+<li>Custom decoding libraries (e.g., FlashInfer)</li>
+<li>Prefix Caching</li>
+<li>Speculative Decoding</li>
+<li>Structured outputs (e.g., JSON, XML)</li>
+</ul>
 </section>
 <section id="further-reading" class="slide level2">
 <h2>Further Reading</h2>
 <ul>
-<li><a href="https://www.usenix.org/conference/osdi22/presentation/yu">Orca: A Distributed Serving System for Transformer-Based Generative Models (OSDI 2022)</a></li>
+<li><a href="https://arxiv.org/abs/2309.06180">vLLM: Efficient Memory Management for LLM Serving with PagedAttention (2023)</a></li>
 <li><a href="https://developer.nvidia.com/blog/mastering-llm-techniques-inference-optimization/">Mastering LLM Techniques: Inference Optimization – NVIDIA Blog</a></li>
 <li><a href="https://github.com/Wenyueh/MinivLLM">MinivLLM: Minimal vLLM Implementation</a></li>
 <li><a href="https://github.com/sgl-project/mini-sglang">MiniSGLang: Minimal SGLang Implementation</a></li>
@@ -752,20 +626,20 @@ CCE, IISc
 </div></div>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script>
-  <script src="slides_files/libs/revealjs/dist/reveal.js"></script>
+  <script src="slides-2_files/libs/revealjs/dist/reveal.js"></script>
   <!-- reveal.js plugins -->
-  <script src="slides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
-  <script src="slides_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
-  <script src="slides_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
-  <script src="slides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
-  <script src="slides_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
-  <script src="slides_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  <script src="slides-2_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="slides-2_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="slides-2_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="slides-2_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="slides-2_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="slides-2_files/libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
-  <script src="slides_files/libs/revealjs/plugin/notes/notes.js"></script>
-  <script src="slides_files/libs/revealjs/plugin/search/search.js"></script>
-  <script src="slides_files/libs/revealjs/plugin/zoom/zoom.js"></script>
-  <script src="slides_files/libs/revealjs/plugin/math/math.js"></script>
+  <script src="slides-2_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="slides-2_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="slides-2_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="slides-2_files/libs/revealjs/plugin/math/math.js"></script>
   <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
 
   <script>
