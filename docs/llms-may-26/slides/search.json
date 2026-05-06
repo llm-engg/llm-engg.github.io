@@ -70,7 +70,7 @@
     "href": "orientation/slides.html#compute-stack",
     "title": "Orientation",
     "section": "Compute Stack",
-    "text": "Compute Stack\n\n\n\nOption\nCost\nNotes\n\n\n\n\nGoogle Colab\nFree\nLimited GPU, good for experiments\n\n\nGCP Free Credits\nFree\n$300 for new accounts\n\n\nColab Pro+\nPaid\nMore GPU time, better GPUs\n\n\nRunPod\nPaid\nFlexible, longer runs\n\n\nLightning AI\nPaid\nEasy setup, good UX\n\n\n\nFree options suffice for most of our course needs",
+    "text": "Compute Stack\n\n\n\nOption\nCost\nNotes\n\n\n\n\nGoogle Colab\nFree\nLimited GPU, good for experiments\n\n\nGCP Free Credits\nFree\n$300 for new accounts\n\n\nColab Pro+\nPaid\nMore GPU time, better GPUs\n\n\nRunPod, Vast.ai, PrimeIntellect etc\nPaid\nFlexible, longer runs\n\n\n\nFree options suffice for most of our course needs",
     "crumbs": [
       "← Course Home",
       "Orientation"
@@ -99,22 +99,11 @@
     ]
   },
   {
-    "objectID": "orientation/slides.html#final-project-option",
-    "href": "orientation/slides.html#final-project-option",
+    "objectID": "orientation/slides.html#final-project",
+    "href": "orientation/slides.html#final-project",
     "title": "Orientation",
-    "section": "Final Project Option",
-    "text": "Final Project Option\nIndividual or group project (max 2).\nBuild an end-to-end LLM application:\n\nModel fine-tuning\nInference optimization\nLLM Application (RAG, Agents)\nOpen source contribution\nOther ideas welcome too\n\nDeliverables: Documentation + Demo / Presentation",
-    "crumbs": [
-      "← Course Home",
-      "Orientation"
-    ]
-  },
-  {
-    "objectID": "orientation/slides.html#presentation-option",
-    "href": "orientation/slides.html#presentation-option",
-    "title": "Orientation",
-    "section": "Presentation Option",
-    "text": "Presentation Option\n\nTopic: Novel concept not covered in class\nFormat: Research paper or case study\nDeliverables: Slides or summary document\nEvaluation: Depth of understanding, presentation quality\nDuration: 10 minutes, 8-10 slides",
+    "section": "Final Project",
+    "text": "Final Project\nIndividual or group project (max 2).\nBuild an end-to-end LLM application:\n\nModel fine-tuning\nInference optimization\nLLM Application (RAG, Agents)\nOpen source contribution\nOther ideas welcome too\n\nDeliverables: Documentation + Demo / Presentation",
     "crumbs": [
       "← Course Home",
       "Orientation"
