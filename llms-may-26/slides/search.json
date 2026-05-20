@@ -165,39 +165,459 @@
     ]
   },
   {
-    "objectID": "arch/01-intro/slides.html#what-is-a-language-model",
-    "href": "arch/01-intro/slides.html#what-is-a-language-model",
-    "title": "Lesson 01 — Intro to LLMs",
-    "section": "What is a language model?",
-    "text": "What is a language model?\nA function that, given a prefix of tokens, returns a probability distribution over the next token.\n\nSpeaker notes: anchor the discussion in the prediction objective before introducing transformers."
+    "objectID": "arch/01_transformers/slides.html#topics-covered",
+    "href": "arch/01_transformers/slides.html#topics-covered",
+    "title": "Transformers - I",
+    "section": "Topics Covered",
+    "text": "Topics Covered\n\nTransformer architecture\nSelf-attention mechanism",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
   },
   {
-    "objectID": "arch/01-intro/slides.html#why-now",
-    "href": "arch/01-intro/slides.html#why-now",
-    "title": "Lesson 01 — Intro to LLMs",
-    "section": "Why now?",
-    "text": "Why now?\n\nCompute is cheap and parallel\nThe web gave us trillions of tokens\nAttention scales better than recurrence"
+    "objectID": "arch/01_transformers/slides.html#recap-tokenization",
+    "href": "arch/01_transformers/slides.html#recap-tokenization",
+    "title": "Transformers - I",
+    "section": "Recap : Tokenization",
+    "text": "Recap : Tokenization\n\nWords, Subwords, Characters level tokenization\nTokens to Embeddings",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
   },
   {
-    "objectID": "arch/01-intro/slides.html#what-well-build-toward",
-    "href": "arch/01-intro/slides.html#what-well-build-toward",
-    "title": "Lesson 01 — Intro to LLMs",
-    "section": "What we’ll build toward",
-    "text": "What we’ll build toward\n\nA working mental model of how a transformer predicts the next token\nComfort reading inference-time code (sampling, KV cache, batching)\nPractical fluency with the tradeoffs in fine-tuning vs. RAG vs. prompting"
+    "objectID": "arch/01_transformers/slides.html#text-to-token-ids",
+    "href": "arch/01_transformers/slides.html#text-to-token-ids",
+    "title": "Transformers - I",
+    "section": "Text to Token IDs",
+    "text": "Text to Token IDs\nimport tiktoken\ntokenizer = tiktoken.get_encoding(\"gpt2\")\ntext = \"This is an example.\"\ntoken_ids = tokenizer.encode(text)\n# tokens = ['This', ' is', ' an', ' example', '.']\n# token_ids = [40234, 2052, 133, 389, 12]",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
   },
   {
-    "objectID": "arch/01-intro/slides.html#logistics",
-    "href": "arch/01-intro/slides.html#logistics",
-    "title": "Lesson 01 — Intro to LLMs",
-    "section": "Logistics",
-    "text": "Logistics\n\nSlides land at llm-engg.github.io/llms-may-26/slides/\nAssignments tracked in the main course site"
+    "objectID": "arch/01_transformers/slides.html#tokens-to-embeddings",
+    "href": "arch/01_transformers/slides.html#tokens-to-embeddings",
+    "title": "Transformers - I",
+    "section": "Tokens to Embeddings",
+    "text": "Tokens to Embeddings\n\nEach token ID maps to a unique vector in the embedding matrix\nEmbedding Matrix : [vocab_size x embedding_dim]\nThese embeddings start random and are LEARNED during training\nExample : GPT-2 Small\n\nvocab_size = 50257\nembedding_dim = 768",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#transformers",
+    "href": "arch/01_transformers/slides.html#transformers",
+    "title": "Transformers - I",
+    "section": "Transformers",
+    "text": "Transformers",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#transformers-1",
+    "href": "arch/01_transformers/slides.html#transformers-1",
+    "title": "Transformers - I",
+    "section": "Transformers",
+    "text": "Transformers\n\nAll LLMs rely on the Transformer architecture, introduced in the seminal 2017 paper Attention Is All You Need\nNo Recurrent or Convolution layers, entirely based on Attention Mechanism",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#two-types-of-transformer-architectures",
+    "href": "arch/01_transformers/slides.html#two-types-of-transformer-architectures",
+    "title": "Transformers - I",
+    "section": "Two types of Transformer Architectures",
+    "text": "Two types of Transformer Architectures\n\nWrt Language modeling:\n\nEncoder-Decoder : Sequence to sequence tasks (translation, summarization)\nDecoder-Only : Language modeling tasks (text generation, completion)\nMost LLMs (GPT, Llama, etc.) use the Decoder-Only architecture",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#key-components-of-transformer",
+    "href": "arch/01_transformers/slides.html#key-components-of-transformer",
+    "title": "Transformers - I",
+    "section": "Key Components of Transformer",
+    "text": "Key Components of Transformer\n\n\nPositional Encoding \nMulti-Head Attention \nResidual Connections \nFeed Forward Networks \nLayer Normalization",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#language-modeling",
+    "href": "arch/01_transformers/slides.html#language-modeling",
+    "title": "Transformers - I",
+    "section": "Language Modeling",
+    "text": "Language Modeling\n\nGiven a sequence of tokens, predict the next token\nExample: A robot may not harm a ___ -&gt; human\n[PROMPT] -&gt; [MODEL] -&gt; [PREDICTION]",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#decoder-only-language-model",
+    "href": "arch/01_transformers/slides.html#decoder-only-language-model",
+    "title": "Transformers - I",
+    "section": "Decoder-only Language Model",
+    "text": "Decoder-only Language Model\n\nA decoder-only language model is a stack of transformer decoder blocks",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#decoder-only-llm-input-side",
+    "href": "arch/01_transformers/slides.html#decoder-only-llm-input-side",
+    "title": "Transformers - I",
+    "section": "Decoder-only LLM : Input Side",
+    "text": "Decoder-only LLM : Input Side\n\nInput tokens are passed through multiple decoder blocks\nEmbed : Text -&gt; Token IDs -&gt; Embeddings -&gt; Decoder Blocks",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#decoder-only-llm-output-side",
+    "href": "arch/01_transformers/slides.html#decoder-only-llm-output-side",
+    "title": "Transformers - I",
+    "section": "Decoder-only LLM : Output Side",
+    "text": "Decoder-only LLM : Output Side\n\nUnEmbed : The final vector is projected to vocabulary size and softmaxed to get token probabilities",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#decoder-block-internals",
+    "href": "arch/01_transformers/slides.html#decoder-block-internals",
+    "title": "Transformers - I",
+    "section": "Decoder Block Internals",
+    "text": "Decoder Block Internals\n\nMasked Multi-Head Self-Attention\nFeed Forward Network (FFN)\nResidual Connections\nLayer Normalization",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#attention-mechanism",
+    "href": "arch/01_transformers/slides.html#attention-mechanism",
+    "title": "Transformers - I",
+    "section": "Attention Mechanism",
+    "text": "Attention Mechanism",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#sequence-modeling-challenges",
+    "href": "arch/01_transformers/slides.html#sequence-modeling-challenges",
+    "title": "Transformers - I",
+    "section": "Sequence Modeling Challenges",
+    "text": "Sequence Modeling Challenges\n\nUnderstanding context and relationships between words\nNeed to keep grammatical structures aligned",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#recurrent-neural-networks-rnns-for-sequence-modeling",
+    "href": "arch/01_transformers/slides.html#recurrent-neural-networks-rnns-for-sequence-modeling",
+    "title": "Transformers - I",
+    "section": "Recurrent Neural Networks (RNNs) for Sequence Modeling",
+    "text": "Recurrent Neural Networks (RNNs) for Sequence Modeling\n\nProcess all input into a hidden state,\nPass hidden state to decoder\nDecoder uses hidden state to generate output sequence",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#rnns-attention",
+    "href": "arch/01_transformers/slides.html#rnns-attention",
+    "title": "Transformers - I",
+    "section": "RNNs + Attention",
+    "text": "RNNs + Attention\n\nLet Decoder access all Encoder hidden states\nAttend to relevant parts of input sequence when generating each output token [Bahdanau et al., 2015]",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#rnns-attention-1",
+    "href": "arch/01_transformers/slides.html#rnns-attention-1",
+    "title": "Transformers - I",
+    "section": "RNNs + Attention",
+    "text": "RNNs + Attention\nLimitations\n\nSequential processing limits parallelization\nDifficulty capturing long-range dependencies\n\nSolution:\n\nRemove recurrence, process all input tokens simultaneously\nAllow each token in the input to focus on relevant parts of the input",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#parallel-processing",
+    "href": "arch/01_transformers/slides.html#parallel-processing",
+    "title": "Transformers - I",
+    "section": "Parallel Processing",
+    "text": "Parallel Processing\n\nEncoder : Process all input tokens simultaneously\nDecoder : Generate output tokens one by one, attending to encoder states and previous tokens",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#self-attention-mechanism",
+    "href": "arch/01_transformers/slides.html#self-attention-mechanism",
+    "title": "Transformers - I",
+    "section": "Self-Attention Mechanism",
+    "text": "Self-Attention Mechanism\n\nCompute attention within the same sequence of tokens. Self = Same Sequence\nGet improved representation by mixing in information from other tokens that seem relevant.",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#self-attention-intuition",
+    "href": "arch/01_transformers/slides.html#self-attention-intuition",
+    "title": "Transformers - I",
+    "section": "Self-Attention : Intuition",
+    "text": "Self-Attention : Intuition\n\n“Self-attention is like a group conversation where everyone can hear everyone else simultaneously, rather than passing notes one by one (RNNs)”",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#self-attention-intuition-1",
+    "href": "arch/01_transformers/slides.html#self-attention-intuition-1",
+    "title": "Transformers - I",
+    "section": "Self-Attention : Intuition",
+    "text": "Self-Attention : Intuition\n\n\nEach token : “Who should I pay attention to?”\nFor every token, the model:\n\ntreats that token as the “current focus”\nassigns higher weight to tokens that help interpret it\ncreates an updated vector for the token",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#self-attention-vs-encoder-decoder-attention",
+    "href": "arch/01_transformers/slides.html#self-attention-vs-encoder-decoder-attention",
+    "title": "Transformers - I",
+    "section": "Self-Attention vs Encoder-Decoder Attention",
+    "text": "Self-Attention vs Encoder-Decoder Attention\n\nEncoder–Decoder: One sequence attends to a different sequence (e.g., translation: output attends to the input sentence).\nSelf-attention: Sequence attends to itself (tokens attending to other tokens in the same sentence).",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#simple-attention-mechanism",
+    "href": "arch/01_transformers/slides.html#simple-attention-mechanism",
+    "title": "Transformers - I",
+    "section": "Simple Attention Mechanism",
+    "text": "Simple Attention Mechanism\n\n\n\n\nInput - Sequence of vectors (X) (source)\n\\[X = [x_1, x_2, \\dots, x_n], \\quad x_i \\in \\mathbb{R}^d\\]\nOutput - Sequence of vectors (Z) (context) \\[Z = [z_1, z_2, \\dots, z_n], \\quad z_i \\in \\mathbb{R}^d\\]\n\n\nContext Vector - Weighted sum of all input vectors\n\\[z_i = \\sum_{j=1}^{n} \\text{attention_weight}_{ij} \\  . x_j\\]",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token",
+    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token",
+    "title": "Transformers - I",
+    "section": "Computing attention weights for a single token",
+    "text": "Computing attention weights for a single token\n\nYour journey starts with one step\n\nquery = \"journey\"\n\nStep 1: Compute attention scores by dot product of “journey” with all tokens\nquery = inputs[1]\n\nattn_scores_2 = torch.empty(inputs.shape[0])\n\nfor i, x_i in enumerate(inputs):\n    attn_scores_2[i] = torch.dot(x_i, query)\n\nprint(attn_scores_2)",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token-1",
+    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token-1",
+    "title": "Transformers - I",
+    "section": "Computing attention weights for a single token",
+    "text": "Computing attention weights for a single token\n\nStep 2: Apply normalization to get attention weights (normalization by sum)\n\nNormalization using softmax is more common in practice, as it ensures all weights are positive and sum to 1.\n\nattn_weights_2_tmp = attn_scores_2 / attn_scores_2.sum()\n\ndef softmax_naive(x):\n    return torch.exp(x) / torch.exp(x).sum(dim=0)\n\nattn_weights_2_naive = softmax_naive(attn_scores_2)\n\nattn_weights_2 = torch.softmax(attn_scores_2, dim=0)",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token-2",
+    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token-2",
+    "title": "Transformers - I",
+    "section": "Computing attention weights for a single token",
+    "text": "Computing attention weights for a single token\nStep 3: Compute output vector as weighted sum of value vectors\n\ncontext_vec_2 = torch.zeros(inputs.shape[1])\nfor i, x_i in enumerate(inputs):\n    context_vec_2 += attn_weights_2[i] * x_i",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-all-tokens",
+    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-all-tokens",
+    "title": "Transformers - I",
+    "section": "Computing attention weights for all tokens",
+    "text": "Computing attention weights for all tokens\n\nCompute attention scores for all tokens\n\nattn_scores = torch.zeros(inputs.shape[0], inputs.shape[0])\n\nfor i, x_i in enumerate(inputs):\n    for j, x_j in enumerate(inputs):\n        attn_scores[i, j] = torch.dot(x_i, x_j)\n\nNormalize scores to get attention weights\n\nattn_weights = torch.softmax(attn_scores, dim=-1)\n\nCompute output/context vectors for all tokens\n\noutput_vectors = torch.zeros_like(inputs)\nfor i in range(inputs.shape[0]):\n    for j in range(inputs.shape[0]):\n        output_vectors[i] += attn_weights[i, j] * inputs[j]",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-all-tokens-1",
+    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-all-tokens-1",
+    "title": "Transformers - I",
+    "section": "Computing attention weights for all tokens",
+    "text": "Computing attention weights for all tokens\n\nBetter implementation using matrix multiplication\n\n\nattn_scores = torch.zeros(inputs.shape[0], inputs.shape[0])\n\nattn_scores = inputs @ inputs.T\nattn_weights = torch.softmax(attn_scores, dim=-1)\noutput_vectors = attn_weights @ inputs",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#summary-of-self-attention-mechanism",
+    "href": "arch/01_transformers/slides.html#summary-of-self-attention-mechanism",
+    "title": "Transformers - I",
+    "section": "Summary of Self-Attention Mechanism",
+    "text": "Summary of Self-Attention Mechanism\n\n\nInput: sequence of vectors (X) (source)\n\n\n\n\nOutput: sequence of vectors (Z) (context)\n\n\n\nSteps:\n\nCompute attention scores against all input vectors\n\n\n\n\nNormalize scores to get attention weights\n\n\n\n\nCompute output vectors as weighted sum of input vectors\n\n\n\ndef self_attention(inputs):\n    # Step 1: Compute attention scores\n    attn_scores = inputs @ inputs.T\n    # Step 2: Normalize scores to get attention weights\n    attn_weights = torch.softmax(attn_scores, dim=-1)\n    # Step 3: Compute output vectors as weighted sum of input vectors\n    output_vectors = attn_weights @ inputs\n    return output_vectors\n\n\n\nHow to improve this basic self-attention mechanism? \n. . .\nLearn the weights used to compute attention scores!  We’ll see this in the next class when we introduce Query, Key, and Value projections.",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#references",
+    "href": "arch/01_transformers/slides.html#references",
+    "title": "Transformers - I",
+    "section": "References",
+    "text": "References\n\nVaswani et al., Attention Is All You Need (2017) - The original transformer paper\nBahdanau et al., Neural Machine Translation by Jointly Learning to Align and Translate (2014) - Introduced attention for seq2seq\nJay Alammar, The Illustrated Transformer\nJay Alammar, The Illustrated GPT-2\nThe Annotated Transformer - Harvard NLP\nSebastian Raschka, Build a Large Language Model from Scratch - Chapters 3-4",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
+  },
+  {
+    "objectID": "arch/01_transformers/slides.html#thank-you",
+    "href": "arch/01_transformers/slides.html#thank-you",
+    "title": "Transformers - I",
+    "section": "Thank You",
+    "text": "Thank You\nQuestions?",
+    "crumbs": [
+      "← Course Home",
+      "Architecture",
+      "Arch",
+      "01 Transformers",
+      "Transformers - I"
+    ]
   },
   {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Large Language Models : A Hands-On Approach - May, 2026",
     "section": "",
-    "text": "Course materials for the May 2026 offering of “Large Language Models: A Hands-On Approach” offered at CCE, IISc\n\n\n\n\n\n\n\n\n\nLesson 01 — Intro to LLMs\n\n\nWhat LLMs are, why they work, and what this course covers.\n\n\n\n\n\n\n\n\nNo matching items",
+    "text": "Course materials for the May 2026 offering of “Large Language Models: A Hands-On Approach” offered at CCE, IISc\n\n\n\n\n\n\n\n\n\nTransformers - I\n\n\nTransformer architecture, self-attention mechanism, and the basics of how LLMs work\n\n\n\n\n\n\n\n\nNo matching items",
     "crumbs": [
       "← Course Home",
       "index.html"
