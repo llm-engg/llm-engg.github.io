@@ -105,6 +105,174 @@
     "text": "Q&A\nAny questions?"
   },
   {
+    "objectID": "arch/02_gpt/training.html#topics-covered",
+    "href": "arch/02_gpt/training.html#topics-covered",
+    "title": "GPT-2 : Training",
+    "section": "Topics Covered",
+    "text": "Topics Covered\n\nGPT-2 Architecture Review\n\nLayer Normalization\nSelf-Attention in GPT-2\nFeed-Forward Network (FFN)\nResidual Connections\n\nTraining GPT-2\n\nText generation\nGreedy decoding loop\nTraining loop"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#gpt-2-architecture",
+    "href": "arch/02_gpt/training.html#gpt-2-architecture",
+    "title": "GPT-2 : Training",
+    "section": "GPT-2 Architecture",
+    "text": "GPT-2 Architecture\n\nGPT model stacks multiple transformer decoder blocks\nEach block has:\n\nLayer Normalization\n\nMasked Multi-Head Self-Attention layer\nFeed-Forward Neural Network (FFN)\nResidual Connections\n\nFinal output layer"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#gpt-2-architecture-1",
+    "href": "arch/02_gpt/training.html#gpt-2-architecture-1",
+    "title": "GPT-2 : Training",
+    "section": "GPT-2 Architecture",
+    "text": "GPT-2 Architecture\nGPT 2 small (124M parameters) has:\n\n12 Transformer blocks\n768-dimensional hidden states (embeddning vector size)\n12 attention heads\nVocabulary size: 50,257 tokens"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#text-generation",
+    "href": "arch/02_gpt/training.html#text-generation",
+    "title": "GPT-2 : Training",
+    "section": "Text Generation",
+    "text": "Text Generation"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#autoregressive-text-generation",
+    "href": "arch/02_gpt/training.html#autoregressive-text-generation",
+    "title": "GPT-2 : Training",
+    "section": "Autoregressive Text Generation",
+    "text": "Autoregressive Text Generation\nLLMs generate text one token at a time through an iterative process:\n\nStart with an input context (e.g., “Hello, I am”)\nModel predicts the next token probability distribution\nSelect the next token (highest probability = greedy decoding)\nAppend token to context\nRepeat until desired length\n\n\nKey Insight: The model consumes its own previous outputs as future inputs - this is the autoregressive property."
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#logits-to-token-selection",
+    "href": "arch/02_gpt/training.html#logits-to-token-selection",
+    "title": "GPT-2 : Training",
+    "section": "Logits to Token Selection",
+    "text": "Logits to Token Selection\nThe GPT output is logits, not probabilities.\n\nLogits ∈ ℝ^V\nSoftmax converts logits -&gt; probability distribution\nArgmax selects most likely token\n\nprobas = torch.softmax(logits, dim=-1)\ntoken_id = torch.argmax(probas)"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#understanding-the-generation-flow",
+    "href": "arch/02_gpt/training.html#understanding-the-generation-flow",
+    "title": "GPT-2 : Training",
+    "section": "Understanding the Generation Flow",
+    "text": "Understanding the Generation Flow\nInput -&gt; Token IDs -&gt; Model -&gt; Logits -&gt; Softmax -&gt; Token Selection -&gt; Output\n\n\n\nStep\nOperation\nShape Transformation\n\n\n\n\n1\nTokenize input\n“Hello, I am” → [15496, 11, 314, 716]\n\n\n2\nModel forward\n(1, 4) → (1, 4, 50257)\n\n\n3\nExtract last logits\n(1, 4, 50257) → (1, 50257)\n\n\n4\nSoftmax\nlogits → probabilities\n\n\n5\nArgmax\nselect token ID 257 → “a”\n\n\n6\nConcatenate\nextend sequence for next iteration"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#greedy-decoding-loop",
+    "href": "arch/02_gpt/training.html#greedy-decoding-loop",
+    "title": "GPT-2 : Training",
+    "section": "Greedy Decoding Loop",
+    "text": "Greedy Decoding Loop\nGreedy decoding selects the highest-probability token at each step.\nProperties:\n\nDeterministic\nFast\nOften repetitive / dull\n\n\nGreedy decoding = always take the most confident step.\n\nDoes Greedy Decoding produce best text?\nWhy not generate whole sentences?\nHow different from encoder and decoder models?"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#why-untrained-models-generate-gibberish",
+    "href": "arch/02_gpt/training.html#why-untrained-models-generate-gibberish",
+    "title": "GPT-2 : Training",
+    "section": "Why Untrained Models Generate Gibberish",
+    "text": "Why Untrained Models Generate Gibberish\nBefore training:\n\nWeights are random\nLogits are random\nToken probabilities are near-uniform\n\nWith vocab size = 50,257:\n\nInitial probability ≈ 1 / 50,257 ≈ 0.00002\n\nThus generated text is effectively random noise."
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#training-the-gpt",
+    "href": "arch/02_gpt/training.html#training-the-gpt",
+    "title": "GPT-2 : Training",
+    "section": "Training the GPT",
+    "text": "Training the GPT"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#training-overview",
+    "href": "arch/02_gpt/training.html#training-overview",
+    "title": "GPT-2 : Training",
+    "section": "Training Overview",
+    "text": "Training Overview\n\nTraining Loop\n\nLoss Optimization\nData Loading\n\nModel Evaluation\nUsing Pretrained weights"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#evaluating-generative-text-models",
+    "href": "arch/02_gpt/training.html#evaluating-generative-text-models",
+    "title": "GPT-2 : Training",
+    "section": "Evaluating Generative Text Models",
+    "text": "Evaluating Generative Text Models"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#why-evaluation-matters",
+    "href": "arch/02_gpt/training.html#why-evaluation-matters",
+    "title": "GPT-2 : Training",
+    "section": "Why Evaluation Matters",
+    "text": "Why Evaluation Matters\nBefore training, we need metrics to:\n\nMeasure model performance quantitatively\nTrack training progress\nDetect overfitting\nCompare different models\n\nKey Challenge: How do we numerically assess the quality of generated text?\nSolution: Use the model’s own probability estimates vs true probabilties for the “correct” next tokens."
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#cross-entropy-loss-for-language-modeling",
+    "href": "arch/02_gpt/training.html#cross-entropy-loss-for-language-modeling",
+    "title": "GPT-2 : Training",
+    "section": "Cross Entropy Loss for Language Modeling",
+    "text": "Cross Entropy Loss for Language Modeling\nThe training objective: Maximize the probability of the correct next token\nGiven:\n\nInputs: Token IDs the model sees\nTargets: Token IDs the model should predict (inputs shifted by 1)\n\ninputs = torch.tensor([[16833, 3626, 6100],   # [\"every effort moves\",\n                       [40,    1107, 588]])    #  \"I really like\"]\n\ntargets = torch.tensor([[3626, 6100, 345  ],  # [\" effort moves you\",\n                        [1107, 588, 11311]])  #  \" really like chocolate\"]\n\n\n\nCross-entropy loss measures how well the model’s predicted probabilities match the true next tokens.\nMathematical Formula:\n\\[\n\\text{Loss} = -\\frac{1}{N} \\sum_{i=1}^{N} \\log P(x_i^{\\text{target}})\n\\]\nWhere:\n\n\\(N\\) = total number of tokens\n\\(P(x_i^{\\text{target}})\\) = predicted probability for the correct token at position \\(i\\)\nThe negative sign converts it to a loss (we want to maximize probability = minimize negative log probability)"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#calculating-cross-entropy-loss",
+    "href": "arch/02_gpt/training.html#calculating-cross-entropy-loss",
+    "title": "GPT-2 : Training",
+    "section": "Calculating Cross Entropy Loss",
+    "text": "Calculating Cross Entropy Loss"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#understanding-cross-entropy-loss",
+    "href": "arch/02_gpt/training.html#understanding-cross-entropy-loss",
+    "title": "GPT-2 : Training",
+    "section": "Understanding Cross Entropy Loss",
+    "text": "Understanding Cross Entropy Loss\nStep-by-step computation\n\nGet logits from model: shape (batch, seq_len, vocab_size)\nApply softmax to get probabilities\nExtract target probabilities: probability assigned to correct tokens\nApply logarithm: log probabilities are more numerically stable\nAverage over all tokens\nNegate: we minimize negative log-likelihood"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#section",
+    "href": "arch/02_gpt/training.html#section",
+    "title": "GPT-2 : Training",
+    "section": "",
+    "text": "In PyTorch, we can compute this in one step using cross_entropy function:\n# PyTorch does all 6 steps in one function:\nloss = torch.nn.functional.cross_entropy(logits_flat, targets_flat)\nInitial loss (untrained model): ~10.99\nTarget loss (well-trained): approaches ~0"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#perplexity-interpretable-metric",
+    "href": "arch/02_gpt/training.html#perplexity-interpretable-metric",
+    "title": "GPT-2 : Training",
+    "section": "Perplexity: Interpretable Metric",
+    "text": "Perplexity: Interpretable Metric\nPerplexity = exp(cross_entropy_loss)\nInterpretation: The effective vocabulary size the model is “uncertain” about at each step.\nInterpretation:\n\nEffective number of equally likely tokens\nLower is better\n\nperplexity = torch.exp(loss)\n# For initial loss of 10.79: perplexity ≈ 48,725\n# Meaning: model is unsure among ~48,725 tokens\n\n\n\nLoss\nPerplexity\nInterpretation\n\n\n\n\n10.79\n48,725\nRandom guessing (vocab size: 50,257)\n\n\n5.0\n148\nModerate uncertainty\n\n\n2.0\n7.4\nLow uncertainty\n\n\n0.5\n1.65\nVery confident"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#processing-data-for-training",
+    "href": "arch/02_gpt/training.html#processing-data-for-training",
+    "title": "GPT-2 : Training",
+    "section": "Processing Data for Training",
+    "text": "Processing Data for Training\n\nGiven a text corpus\n\nsplit into training and validation sets\nfor each set encode it to token IDs\ncreate input-target pairs\n\nInputs and targets are created by shifting token IDs by one position\n\n\nIn Pytorch\n\nDataset Encodes all text to token IDs\nDataLoader handles batching and shuffling:"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#training-vs-validation-loss",
+    "href": "arch/02_gpt/training.html#training-vs-validation-loss",
+    "title": "GPT-2 : Training",
+    "section": "Training vs Validation Loss",
+    "text": "Training vs Validation Loss\nDuring training we split data into : - Training set - Validation set\ntrain_ratio = 0.90\nsplit_idx = int(train_ratio * len(text_data))\ntrain_data = text_data[:split_idx]\nval_data = text_data[split_idx:]\nWhat to watch for:\n\nTraining loss decreases, Validation loss decreases -&gt; Model is learning and generalizing\nTraining loss decreases, Validation loss increases -&gt; OVERFITTING!"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#the-training-loop",
+    "href": "arch/02_gpt/training.html#the-training-loop",
+    "title": "GPT-2 : Training",
+    "section": "The Training Loop",
+    "text": "The Training Loop\nDuring Training we update model weights to minimize loss through backpropagation and gradient descent.\n\nTraining Loop in code\n\n    for epoch in range(num_epochs):\n        model.train()  # Enable dropout\n\n        for input_batch, target_batch in train_loader:\n            optimizer.zero_grad()  # Reset gradients\n\n            loss = calc_loss_batch(input_batch, target_batch, model, device)\n            loss.backward()        # Calculate gradients\n            optimizer.step()       # Update weights"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#loading-and-saving-model-weights",
+    "href": "arch/02_gpt/training.html#loading-and-saving-model-weights",
+    "title": "GPT-2 : Training",
+    "section": "Loading and Saving Model Weights",
+    "text": "Loading and Saving Model Weights\nWe must save trained models to:\n\nAvoid retraining\nShare models with others\nResume training later\nDeploy to production\n\n# ============ SAVE ============\n\ntorch.save(model.state_dict(), \"model.pth\")\n\n# Save model + optimizer (for resuming training)\ntorch.save({\n    \"model_state_dict\": model.state_dict(),\n    \"optimizer_state_dict\": optimizer.state_dict(),\n}, \"model_and_optimizer.pth\")\n\n\n# ============ LOAD ============\n# Load weights into fresh model\nmodel = GPTModel(GPT_CONFIG_124M)\nmodel.load_state_dict(torch.load(\"model.pth\", map_location=device))\nmodel.eval()  # Set to evaluation mode\n\n# Resume training\ncheckpoint = torch.load(\"model_and_optimizer.pth\", map_location=device)\nmodel = GPTModel(GPT_CONFIG_124M)\nmodel.load_state_dict(checkpoint[\"model_state_dict\"])\n\noptimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.1)\noptimizer.load_state_dict(checkpoint[\"optimizer_state_dict\"])\nmodel.train()  # Set to training mode"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#llm-loss-surfaces",
+    "href": "arch/02_gpt/training.html#llm-loss-surfaces",
+    "title": "GPT-2 : Training",
+    "section": "LLM Loss Surfaces",
+    "text": "LLM Loss Surfaces\nLLM training optimizes a high-dimensional non-convex loss surface defined by:\n\nL(θ) = −E[log p_θ(tokenₜ₊₁ | contextₜ)]\n\nKey properties:\n\nBillions of parameters\nExtremely overparameterized\nMany equivalent minima\nFlat basins dominate\n\nMore details in : - Unveiling the Basin-Like Loss Landscape in Large Language Models - Visualizing the Loss Landscape of Neural Nets"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#questions",
+    "href": "arch/02_gpt/training.html#questions",
+    "title": "GPT-2 : Training",
+    "section": "Questions?",
+    "text": "Questions?"
+  },
+  {
     "objectID": "arch/01_transformers/slides.html#topics-covered",
     "href": "arch/01_transformers/slides.html#topics-covered",
     "title": "Transformers - I",
@@ -656,6 +824,237 @@
     "title": "Transformers - II",
     "section": "What We Didn’t Cover",
     "text": "What We Didn’t Cover\n\nPositional Encodings: How does attention know word order?\nFeed-Forward Networks: The other half of each transformer block\nLayer Normalization: Stabilizing training\nResidual Connections: Enabling deep networks\n\n\nThese will be covered in the next session where we implement a full transformer block and a LLM from scratch!"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#topics-covered",
+    "href": "arch/02_gpt/slides.html#topics-covered",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Topics Covered",
+    "text": "Topics Covered\n\nTransformer Architecture Review\n\nSelf-Attention Mechanism Recap\nCausal Masking in Decoder-Only Models\nMulti-Head Attention\n\nGPT-2 Architecture\n\nLayer Normalization\nSelf-Attention in GPT-2\nFeed-Forward Network (FFN)\nResidual Connections\n\nImplementing GPT-2 from Scratch"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#recap-self-attention-mechanism",
+    "href": "arch/02_gpt/slides.html#recap-self-attention-mechanism",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Recap : Self-Attention Mechanism",
+    "text": "Recap : Self-Attention Mechanism\n\nThe token embeddings alone are not sufficient.\nWe want dynamic, context-dependent representations of each token.\nSelf-attention allows each token to attend to all other tokens in the sequence to gather relevant context.\n\nVideo"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#recap-self-attention-mechanism-1",
+    "href": "arch/02_gpt/slides.html#recap-self-attention-mechanism-1",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Recap : Self-Attention Mechanism",
+    "text": "Recap : Self-Attention Mechanism\nWe project the token embedding to three learned projection spaces:\nPROJECTION === “Matrix Multiplication”\n\nQuery (Q): \\(q_i = x_i W_q\\)\nKey (K): \\(k_i = x_i W_k\\)\nValue (V): \\(v_i = x_i W_v\\)"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#introducing-q-k-v-vectors",
+    "href": "arch/02_gpt/slides.html#introducing-q-k-v-vectors",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Introducing Q, K, V vectors",
+    "text": "Introducing Q, K, V vectors\nWe transform each input token into three different vectors:\n\nToken embedding: \\(x^{(i)}\\)\nQuery (Q): What am I looking for?\nKey (K): What do I have to offer?\nValue (V): What information do I carry?"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#scaled-dot-product-attention",
+    "href": "arch/02_gpt/slides.html#scaled-dot-product-attention",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Scaled Dot-Product Attention",
+    "text": "Scaled Dot-Product Attention\n\\[\\mathbf{Attention}(Q, K, V) = \\mathbf{softmax}\\left(\\frac{QK^{\\top}}{\\sqrt{d_k}}\\right)V\\]\n\n\\(d_k \\text{ is the dimensionality of the key vectors (used for scaling).}\\)\nWithout \\(\\sqrt{d_k}\\), dot products grow with dimension -&gt; softmax saturates -&gt; tiny gradients."
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#causal-attention-masking-in-decoder-only-models",
+    "href": "arch/02_gpt/slides.html#causal-attention-masking-in-decoder-only-models",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Causal Attention (Masking) in Decoder-Only Models",
+    "text": "Causal Attention (Masking) in Decoder-Only Models\n\n\nDecoder-only models =&gt; we predict next token based on previous tokens\nNote : During training, we predict all tokens in parallel\nTo prevent information leakage from future tokens, we apply a causal mask to the attention scores\nAt all time steps, each token can only attend to earlier tokens and itself"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#multi-head-attention---stacking-multiple-attention-heads",
+    "href": "arch/02_gpt/slides.html#multi-head-attention---stacking-multiple-attention-heads",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Multi-Head Attention - Stacking multiple attention heads",
+    "text": "Multi-Head Attention - Stacking multiple attention heads\n\\(MultiHead(Q,K,V) = Concat(head_1,...,head_h)W_O\\)\n\\(head_i = Attention(QW_{q_i}, KW_{k_i}, VW_{v_i})\\)\n\n\n\nMultiple self-attention calculations in parallel\nIndependent set of learned weight matrices (Wq, Wk, Wv) and output vector for each head.\nConcatenate all to produce one context vector for each token.\nMultiple heads -&gt; attend to input sentence simultaneously -&gt; different relationships and patterns in the data."
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#gpt-2-model---architecture-and-implementation",
+    "href": "arch/02_gpt/slides.html#gpt-2-model---architecture-and-implementation",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "GPT-2 Model - Architecture and Implementation",
+    "text": "GPT-2 Model - Architecture and Implementation"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#generative-pre-trained-transformer-gpt",
+    "href": "arch/02_gpt/slides.html#generative-pre-trained-transformer-gpt",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Generative Pre-trained Transformer (GPT)",
+    "text": "Generative Pre-trained Transformer (GPT)\nRadFord et al., 2019\n\nDecoder only Transformer architecture, pre-trained on large corpus of text data (40GB of internet text) using self-supervised next-token prediction.\nDemonstrated that general purpose models for textual understanding are incredibly effective without using any task-specific architectures or modifications"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#language-modeling-objective",
+    "href": "arch/02_gpt/slides.html#language-modeling-objective",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Language Modeling Objective",
+    "text": "Language Modeling Objective\n\nPredict the next token in a sequence given all previous tokens\n\n\n\\[P(x_t) = ∏ P(x_t | x_1, ..., x_{t-1})\\]"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#auto-regressive-text-generation",
+    "href": "arch/02_gpt/slides.html#auto-regressive-text-generation",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Auto-regressive Text Generation",
+    "text": "Auto-regressive Text Generation\n\nGiven a prompt, GPT-2 generates text one token at a time\nAt each step, the model predicts the next token based on all previous tokens\nThe predicted token is appended to the input sequence for the next prediction"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#gpt-2-architecture",
+    "href": "arch/02_gpt/slides.html#gpt-2-architecture",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "GPT-2 Architecture",
+    "text": "GPT-2 Architecture\n\nGPT model stacks multiple transformer decoder blocks\nEach block has:\n\nMasked Multi-Head Self-Attention layer\nFeed-Forward Neural Network (FFN)\nLayer Normalization and Residual Connections\n\nFinal output layer\n\n\nRef : Radford et al., 2019 “Language Models are Unsupervised Multitask Learners”"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#detailed-gpt-2-architecture",
+    "href": "arch/02_gpt/slides.html#detailed-gpt-2-architecture",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Detailed GPT-2 Architecture",
+    "text": "Detailed GPT-2 Architecture\n\n\n\n\n\n\nGPT_CONFIG_124M = {\n# 50000 BPE merges + 256 byte tokens + 1 special token\n\"vocab_size\": 50257, \n# max length of input sequences\n\"context_length\": 1024, \n\"emb_dim\": 768,\n\"n_heads\": 12,\n\"n_layers\": 12,\n\"drop_rate\": 0.1,\n\"qkv_bias\": False\n}"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#inputs-to-the-gpt-2-model",
+    "href": "arch/02_gpt/slides.html#inputs-to-the-gpt-2-model",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Inputs to the GPT-2 Model",
+    "text": "Inputs to the GPT-2 Model\n\nInput Text -&gt; Tokenization -&gt; Token IDs\nInput Encodings:\n\nToken Embeddings: Represent the meaning of each token\nPositional Encodings: Represent the position of each token in the sequence\n\nCombined to form the input to the first transformer block"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#inputs-to-the-gpt-2-model-1",
+    "href": "arch/02_gpt/slides.html#inputs-to-the-gpt-2-model-1",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Inputs to the GPT-2 Model",
+    "text": "Inputs to the GPT-2 Model\n\nTransformers have no inherent notion of sequence order, Without positional info, ‘dog bites man’ = ‘man bites dog’ to the model\nGPT-2 uses LEARNED positional embeddings (vs sinusoidal in original Transformer)\nBoth embeddings are simply added element-wise (not concatenated)"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#layer-normalization",
+    "href": "arch/02_gpt/slides.html#layer-normalization",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Layer Normalization",
+    "text": "Layer Normalization\n\nGradient explosion/vanishing issues in deep networks\nNormalizes (centers) inputs across features for each token to have zero mean and unit variance\nStabilizes training and improves convergence\nIn GPT-2, applied before self-attention and feed-forward layers (Pre-LN)"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#layer-normalization-1",
+    "href": "arch/02_gpt/slides.html#layer-normalization-1",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Layer Normalization",
+    "text": "Layer Normalization\n\nNormalization\n\n\\[\\hat x = \\frac{x - \\mu}{\\sigma + \\epsilon} \\]\n\nLayerNorm formula:\n\n\\[\\text{LayerNorm}(x) = \\frac{x - \\mu}{\\sigma + \\epsilon} \\cdot \\gamma + \\beta\\]\n\n\nx: input vector for a token\nμ: mean of the elements in x\nσ: standard deviation of the elements in x\nε: small constant for numerical stability\nγ, β: learnable parameters for scaling and shifting"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#self-attention-in-gpt-2",
+    "href": "arch/02_gpt/slides.html#self-attention-in-gpt-2",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Self-Attention in GPT-2",
+    "text": "Self-Attention in GPT-2\n\nEach Transformer Block contains\n\nA Multi-Head Self-Attention layer\nEach head computes attention using Q, K, V\nCausal mask applied to prevent attending to future tokens and dropout for regularization\n\n\nGPT-2 small MHA config:\n- Multi-Head Self-Attention mechanism\n- Attention heads : 12\n- Head dimension : 64\n- Context length : 1024 tokens\n- Context Vector Size per token : 768 (12 heads * 64 dim)"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#self-attention-in-gpt-2-1",
+    "href": "arch/02_gpt/slides.html#self-attention-in-gpt-2-1",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Self-Attention in GPT-2",
+    "text": "Self-Attention in GPT-2"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#feed-forward-network-ffn",
+    "href": "arch/02_gpt/slides.html#feed-forward-network-ffn",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Feed-Forward Network (FFN)",
+    "text": "Feed-Forward Network (FFN)\n\nA Feed-Forward Network (FFN) is applied independently to each token’s representation after the self-attention layer.\nAffine transformation followed by a non-linear activation function."
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#feed-forward-network-ffn-1",
+    "href": "arch/02_gpt/slides.html#feed-forward-network-ffn-1",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Feed-Forward Network (FFN)",
+    "text": "Feed-Forward Network (FFN)\n\nA Feed-Forward Network (FFN) is applied independently to each token’s representation after the self-attention layer.\nAffine transformation followed by a non-linear activation function.\n\n\nA Linear Layer is defined as: \\(\\text{Linear}(x) = xW^T + b\\)"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#feed-forward-network-ffn-in-gpt-2",
+    "href": "arch/02_gpt/slides.html#feed-forward-network-ffn-in-gpt-2",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Feed-Forward Network (FFN) in GPT-2",
+    "text": "Feed-Forward Network (FFN) in GPT-2\n\nEach transformer block contains a Feed-Forward Network (FFN)\nFFN has two linear layers with GELU activation in between\n\n\n \\[\\text{FFN}(x) = \\text{Linear}_2(\\text{GELU}(\\text{Linear}_1(x)))\\]"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#gelu-activation-function",
+    "href": "arch/02_gpt/slides.html#gelu-activation-function",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "GELU Activation Function",
+    "text": "GELU Activation Function\n\nGaussian Error Linear Unit (GELU) is used in GPT-2’s FFN\nSmooth approximation of ReLU, allows small negative values to pass through\n\n\n\n\n\n \\(\\mathbf{GELU(x) = 0.5 \\cdot x \\cdot (1 + \\tanh[\\sqrt{2/\\pi}(x + 0.044715 \\cdot x^3)])}\\)"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#ffn-in-gpt-2",
+    "href": "arch/02_gpt/slides.html#ffn-in-gpt-2",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "FFN in GPT-2",
+    "text": "FFN in GPT-2\n\nHidden layer size is 4 times the input/output size (3072 for GPT-2 small)\nApplies non-linear transformation to each token’s representation independently\n\n\n\n\nWhy 4x?\n\nEmpirically found to work well\n\nFFN layers contain most of the model’s parameters!\n\nFor GPT-2 small: FFN has 768 -&gt; 3072 -&gt; 768, that’s 768 * 3072 * 2 ≈ 4.7M params per block\n12 blocks × 4.7 M ≈ 56M params just in FFNs (almost half the model)"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#residual-connections",
+    "href": "arch/02_gpt/slides.html#residual-connections",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Residual Connections",
+    "text": "Residual Connections\n\nHelp mitigate vanishing gradient problems in deep networks\nAdd the input of a layer to its output before passing to the next layer\nGradients get progressively smaller as they backpropagate through layers\nPreserve information from earlier layers, helping training stability"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#connecting-it-all-transformer-block-in-gpt-2",
+    "href": "arch/02_gpt/slides.html#connecting-it-all-transformer-block-in-gpt-2",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Connecting it all : Transformer Block in GPT-2",
+    "text": "Connecting it all : Transformer Block in GPT-2\n\nWe have implemented the key components of a transformer block used in GPT-2:\n\nLayer Normalization\nMulti-Head Self-Attention with Causal Masking\nResidual Connection\nFeed-Forward Network (FFN)"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#connecting-it-all-transformer-block-in-gpt-2-1",
+    "href": "arch/02_gpt/slides.html#connecting-it-all-transformer-block-in-gpt-2-1",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Connecting it all : Transformer Block in GPT-2",
+    "text": "Connecting it all : Transformer Block in GPT-2\n12 Transformer blocks are stacked in GPT-2 small"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#transformer-block-in-gpt-2",
+    "href": "arch/02_gpt/slides.html#transformer-block-in-gpt-2",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Transformer Block in GPT-2",
+    "text": "Transformer Block in GPT-2\n\n\ndef forward(self, x):\n    shortcut = x\n    x = self.norm1(x)\n    x = self.att(x)\n    x = self.dropout(x)\n    x = x + shortcut\n\n    shortcut = x\n    x = self.norm2(x)\n    x = self.ff(x)\n    x = self.dropout(x)\n    x = x + shortcut\n\n    return x"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#gpt-2-model-implementation",
+    "href": "arch/02_gpt/slides.html#gpt-2-model-implementation",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "GPT-2 Model Implementation",
+    "text": "GPT-2 Model Implementation\n\n\n\nWe have all the components to implement GPT-2 from scratch\nToken Embeddings + Positional Encodings\nStack of Transformer Blocks\nFinal Layer Normalization and Output Layer"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#gpt-2-model-implementation-1",
+    "href": "arch/02_gpt/slides.html#gpt-2-model-implementation-1",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "GPT-2 Model Implementation",
+    "text": "GPT-2 Model Implementation\nModel Initialization\n## GPT-2 Model Initialization pseudo-code\ntok_emb = nn.Embedding(vocab_size, emb_dim)\npos_emb = nn.Embedding(context_length, emb_dim)\ndrop_emb = nn.Dropout(drop_rate)\ntrf_blocks = [TransformerBlock(cfg) for _ in range(n_layers)] # \nfinal_norm = LayerNorm(emb_dim)\nout_head = nn.Linear(emb_dim, vocab_size, bias=False)\nForward Pass\nx = tok_embeds + pos_embeds\nx = self.drop_emb(x)\nx = self.trf_blocks(x)\nx = self.final_norm(x)\nlogits = self.out_head(x)"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#gpt-2-parameter-count",
+    "href": "arch/02_gpt/slides.html#gpt-2-parameter-count",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "GPT-2 Parameter Count",
+    "text": "GPT-2 Parameter Count\n\nGPT-2 small has ~124M parameters\nMajor contributors:\n\nToken Embeddings: ~38M\nTransformer Blocks: ~85M\n\nSelf-Attention layers: ~23M\nFeed-Forward Networks: ~56M\n\nOutput Layer: ~38M\n\nMost parameters are in embeddings and FFN layers"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#next-steps",
+    "href": "arch/02_gpt/slides.html#next-steps",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Next Steps",
+    "text": "Next Steps\n\nImplement training loop with cross-entropy loss\nIntegrate tokenizer for text input/output\nLoad pretrained weights from HuggingFace for GPT-2\nExperiment with text generation"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#references",
+    "href": "arch/02_gpt/slides.html#references",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "References",
+    "text": "References\n\nDecoder-Only Transformers: The Workhorse of Generative LLMs\nThe Illustrated GPT-2 (Visualizing Transformer Language Models)\nGPT-2 Paper\nAttention Is All You Need Paper\nBuild LLMs from Scratch, Sebastian Raschka, Manning Publications, 2025"
   },
   {
     "objectID": "index.html",
