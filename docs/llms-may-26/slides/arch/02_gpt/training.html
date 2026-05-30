@@ -259,20 +259,26 @@ CCE, IISc
 <section id="gpt-2-architecture-1" class="slide level2">
 <h2>GPT-2 Architecture</h2>
 <p>GPT 2 small (124M parameters) has:</p>
+<div class="columns">
+<div class="column">
 <ul>
 <li>12 Transformer blocks</li>
 <li>768-dimensional hidden states (embeddning vector size)</li>
 <li>12 attention heads</li>
 <li>Vocabulary size: 50,257 tokens</li>
 </ul>
-
-<img data-src="images/gpt2-final.png" class="r-stretch"></section>
+</div><div class="column">
+<p><img data-src="images/gpt2-final.png"></p>
+</div></div>
+</section>
 <section id="text-generation" class="slide level2">
 <h2>Text Generation</h2>
 </section>
 <section id="autoregressive-text-generation" class="slide level2">
 <h2>Autoregressive Text Generation</h2>
 <p>LLMs generate text <strong>one token at a time</strong> through an iterative process:</p>
+<div class="columns">
+<div class="column">
 <ol type="1">
 <li>Start with an input context (e.g., “Hello, I am”)</li>
 <li>Model predicts the next token probability distribution</li>
@@ -280,8 +286,10 @@ CCE, IISc
 <li>Append token to context</li>
 <li>Repeat until desired length</li>
 </ol>
-
-<img data-src="images/gen_steps.png" class="r-stretch"><p><strong>Key Insight</strong>: The model consumes its own previous outputs as future inputs - this is the <strong>autoregressive</strong> property.</p>
+</div><div class="column">
+<p><img data-src="images/gen_steps.png"></p>
+</div></div>
+<p><strong>Key Insight</strong>: The model consumes its own previous outputs as future inputs - this is the <strong>autoregressive</strong> property.</p>
 </section>
 <section id="logits-to-token-selection" class="slide level2">
 <h2>Logits to Token Selection</h2>
@@ -298,6 +306,9 @@ CCE, IISc
 <section id="understanding-the-generation-flow" class="slide level2">
 <h2>Understanding the Generation Flow</h2>
 <p><strong>Input -&gt; Token IDs -&gt; Model -&gt; Logits -&gt; Softmax -&gt; Token Selection -&gt; Output</strong></p>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div style="font-size: 0.9em;">
 <table class="caption-top">
 <thead>
 <tr class="header">
@@ -339,44 +350,28 @@ CCE, IISc
 </tr>
 </tbody>
 </table>
-
-<!-- NOTES-BLOCK
-[INSTRUCTOR] Step 3 ("Extract last logits") is the slide students most often miss: the model outputs a prediction at EVERY position (shape (1,4,50257)), but for generation we only keep the LAST row, because that's the prediction conditioned on the full context. The earlier rows are predictions for tokens we already have. (At training, by contrast, we DO use every row — good place to foreshadow.)
-[CORRECTNESS] Verified: figure and table agree — [15496,11,314,716]="Hello, I am", argmax position 257 decodes to " a". The leading space on " a" is real BPE behavior worth a one-line aside.
-[INTUITION] (should-fix) Why "(1,4)->(1,4,50257)": batch=1, 4 input tokens, and for each the model emits a 50,257-long score vector. "Every position gets its own next-token guess; generation just uses the last one." Connect to step 3.
-[Q-ADVANCED] "Why does the model bother predicting at positions 1–3 if we throw them away?" -> Because the causal mask makes each position predict its OWN next token from only its left context; at training all of these become supervised targets (teacher forcing), so the model learns from 4 predictions per sequence, not 1. Generation discards them only because we already know those answers.
--->
-<img data-src="images/gen_details.png" class="r-stretch"></section>
+</div>
+</div><div class="column" style="width:40%;">
+<p><img data-src="images/gen_details.png"></p>
+</div></div>
+</section>
 <section id="greedy-decoding-loop" class="slide level2">
 <h2>Greedy Decoding Loop</h2>
 <p>Greedy decoding selects the <strong>highest-probability token</strong> at each step.</p>
+<div class="columns">
+<div class="column" style="width:70%;">
+<p><img data-src="images/greedy.png"></p>
+</div><div class="column" style="width:30%;">
 <p>Properties:</p>
 <ul>
 <li>Deterministic</li>
 <li>Fast</li>
 <li>Often repetitive / dull</li>
 </ul>
-
-<img data-src="images/greedy.png" class="r-stretch"><p>Greedy decoding = always take the most confident step.</p>
-<ul>
-<li>Does Greedy Decoding produce best text?</li>
-<li>Why not generate whole sentences?</li>
-<li>How different from encoder and decoder models?</li>
-</ul>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] greedy.png is the classic beam-search-motivation tree (von Platen, HF "How to generate"). Use it to ANSWER question 1: greedy walks "The"->"nice"(0.5)->"woman"(0.4), joint = 0.5x0.4 = 0.20. But "The"->"dog"(0.4)->"has"(0.9) has joint 0.4x0.9 = 0.36 — higher! Greedy missed it because it committed to the locally-best first step. That single picture answers "does greedy give the best text?" — no.
-[Q-ADVANCED] (answers to the three on-slide questions)
-  1. Best text? No — greedy maximizes each step locally, not the sequence probability globally (see the tree). It also tends to loop/repeat.
-  2. Why not generate whole sentences at once? The model is autoregressive — each token's distribution is conditioned on the tokens before it, so the sentence isn't defined until you commit earlier tokens. You can approximate global search with beam search, but you still expand token by token.
-  3. Vs encoder/decoder models? Encoder-only (BERT) sees the WHOLE sequence bidirectionally and predicts masked tokens — it doesn't generate left-to-right. Encoder-decoder (T5/original Transformer) encodes a source then decodes a target. GPT is decoder-only: one causal stack, generation = its native mode.
-[INTUITION] (should-fix) Tie back the "repetitive/dull" bullet to the tree: always taking the most-confident step is like always turning toward the brightest streetlight — locally sensible, globally you circle the same block. That's why we later add temperature/top-k/top-p sampling.
-[FLOW] (should-fix) Three rhetorical questions are posed and left open. Either answer them on the next slide or move them to a "Coming up: sampling strategies" teaser — open questions on a slide read as a gap unless clearly a hook.
-[DEMO] Contrast live: generate from the same prompt with do_sample=False (greedy, watch it repeat) vs temperature=0.8/top_k=50 (varied). Cements why greedy is "dull."
-[READING] Patrick von Platen, "How to generate text with Transformers" (HF blog) — the source of this exact figure and the greedy-vs-beam-vs-sampling progression.
--->
+</div></div>
 </section>
-<section id="why-untrained-models-generate-gibberish" class="slide level2">
-<h2>Why Untrained Models Generate Gibberish</h2>
+<section id="generation-from-an-untrained-model" class="slide level2">
+<h2>Generation from an Untrained Model</h2>
 <p>Before training:</p>
 <ul>
 <li>Weights are random</li>
@@ -388,12 +383,6 @@ CCE, IISc
 <p>Initial probability ≈ 1 / 50,257 ≈ 0.00002</p>
 </blockquote>
 <p>Thus generated text is effectively random noise.</p>
-<!-- NOTES-BLOCK
-[INTUITION] This slide is the emotional payoff of the whole arc: "the architecture is correct, but the WEIGHTS are random, so the 50,257-way classifier is just guessing uniformly." It motivates everything after it — training is the process of turning that uniform guess into a sharp distribution.
-[CORRECTNESS] Verified: 1/50257 = 0.0000199 ≈ 0.00002 ✓. Pair it with the loss: uniform guessing -> -log(1/50257) = ln(50257) = 10.82 nats. This is the number the next loss slide should match. Compute: python -c "import math;print(math.log(50257))"
-[FLOW] (should-fix) This is the natural place to PLANT the loss number. Say "a uniform guesser scores loss ~10.8; watch that fall as we train." Then the ~10.99 / 10.79 on later slides isn't a surprise — and you'll want those reconciled (see deck summary).
-[INSTRUCTOR] Good demo beat: actually run an untrained GPTModel forward + greedy generate to show the gibberish, THEN reveal the loss. Seeing noise first makes the loss number land.
--->
 </section>
 <section id="training-the-gpt" class="slide level2">
 <h2>Training the GPT</h2>
@@ -442,6 +431,10 @@ CCE, IISc
 
 </div>
 <p><strong>Cross-entropy</strong> loss measures how well the model’s predicted probabilities match the true next tokens.</p>
+</section>
+<section id="cross-entropy-loss-for-language-modeling-1" class="slide level2">
+<h2>Cross Entropy Loss for Language Modeling</h2>
+<p><strong>Cross-entropy</strong> loss measures how well the model’s predicted probabilities match the true next tokens.</p>
 <p><strong>Mathematical Formula:</strong></p>
 <p><span class="math display">\[
 \text{Loss} = -\frac{1}{N} \sum_{i=1}^{N} \log P(x_i^{\text{target}})
@@ -452,23 +445,10 @@ CCE, IISc
 <li><span class="math inline">\(P(x_i^{\text{target}})\)</span> = predicted probability for the correct token at position <span class="math inline">\(i\)</span></li>
 <li>The negative sign converts it to a loss (we want to maximize probability = minimize negative log probability)</li>
 </ul>
-<!-- NOTES-BLOCK
-[CORRECTNESS] Verified: all six token IDs decode correctly — inputs "every effort moves"/"I really like", targets " effort moves you"/" really like chocolate". The targets are inputs shifted left by one; point this out on the slide ("notice targets = inputs slid one step right").
-[INTUITION] (should-fix) Why log? "Multiplying the probabilities of all correct tokens gives a tiny number that underflows; taking logs turns the product into a sum and rewards/punishes each token additively." And why negative: "a correct token with high prob has log near 0 (small loss); a correct token the model gave low prob has a very negative log -> large positive loss." This makes -log(p) feel inevitable, not arbitrary.
-[INTUITION] The one-liner from the ce-1.png figure on the next slides is gold — lift it here too: "LLM training is millions of tiny multiclass classification problems, one per token."
-[Q-ADVANCED] "Is this the same as KL divergence / why not just maximize accuracy?" -> Cross-entropy against a one-hot target equals KL(true||model) up to a constant, and unlike accuracy it's differentiable and gives gradient signal even when the top-1 token is wrong (it cares HOW MUCH probability the right token got). Accuracy is flat almost everywhere -> no gradient.
-[TERM] (should-fix) "shifted by 1" — beginners ask "shifted which way?" Gloss: "target[i] = input[i+1]; the model at each position predicts the NEXT token."
-[READING] Raschka Ch. 5.1 (cross-entropy + the exact inputs/targets tensors shown here); Goodfellow et al., Deep Learning, 5.5 (MLE = minimizing NLL).
--->
 </section>
 <section id="calculating-cross-entropy-loss" class="slide level2">
 <h2>Calculating Cross Entropy Loss</h2>
 
-<!-- NOTES-BLOCK
-[INSTRUCTOR] This figure is self-contained and excellent — walk it left to right: context "The cat sat on the" -> true next "mat" -> model gave mat=0.70 -> loss = -log(0.70) = 0.357. Verify on screen: python -c "import math;print(round(-math.log(0.70),3))" -> 0.357. The "ignores all wrong tokens" callout is the key insight: with a one-hot target only the correct token's probability enters the loss.
-[CORRECTNESS] (nice) The figure uses a DIFFERENT example ("The cat sat on the mat") than the previous slide's "every effort moves"/"I really like". That's fine (complementary), but say so, or a student will hunt for the connection.
-[INTUITION] "Low confidence on the right token is STILL punished" (figure callout) — even if mat were the argmax at 0.4, the loss -log(0.4)=0.92 is much worse than -log(0.7)=0.357. The model is pushed not just to be right, but to be CONFIDENTLY right.
--->
 <img data-src="images/ce-1.png" class="r-stretch"></section>
 <section id="understanding-cross-entropy-loss" class="slide level2">
 <h2>Understanding Cross Entropy Loss</h2>
@@ -481,21 +461,13 @@ CCE, IISc
 <li><strong>Average</strong> over all tokens</li>
 <li><strong>Negate</strong>: we minimize negative log-likelihood</li>
 </ol>
-</section>
-<section id="section" class="slide level2">
-<h2></h2>
+<div class="fragment">
 <p><strong>In PyTorch, we can compute this in one step using <code>cross_entropy</code> function:</strong></p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a><span class="co"># PyTorch does all 6 steps in one function:</span></span>
 <span id="cb3-2"><a></a>loss <span class="op">=</span> torch.nn.functional.cross_entropy(logits_flat, targets_flat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>Initial loss</strong> (untrained model): ~10.99</p>
-<p><strong>Target loss</strong> (well-trained): approaches ~0</p>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) "Target loss (well-trained): approaches ~0" is wrong for language modeling. Natural language has irreducible entropy — the next word is genuinely uncertain — so loss CANNOT go to 0 without memorizing/overfitting. Well-trained GPT-2 sits around loss ~3 (perplexity ~15–30) on held-out text. Replace with "decreases toward a floor set by the data's entropy (~3 for GPT-2 small), NOT zero." Loss near 0 on TRAIN with high VAL loss = overfitting, which the next slides warn about.
-[CORRECTNESS] (must-fix) Initial loss here is ~10.99 but the perplexity slide uses 10.79. Reconcile to one value; the principled anchor is ln(50257) = 10.82 (uniform guess). See deck summary.
-[CORRECTNESS] (should-fix) The variables logits_flat/targets_flat appear with no definition. F.cross_entropy expects logits (N, vocab) and targets (N,). The reshape is logits.flatten(0,1) -> (batch*seq, vocab) and targets.flatten() -> (batch*seq,). Show that line, or beginners can't reproduce it. Also note F.cross_entropy takes RAW LOGITS (it applies log-softmax internally) — do NOT softmax first, a very common student bug.
-[INSTRUCTOR] The "6 steps in one function" framing is good — emphasize WHY it's one call: numerical stability. log_softmax is computed in a fused, stable way; doing softmax-then-log separately overflows/underflows. This is the practical reason nobody hand-rolls the 6 steps.
-[Q-ADVANCED] "Does cross_entropy average over tokens or sum?" -> Default reduction='mean' averages over all N non-ignored tokens, which is why loss is comparable across batch/seq sizes and maps cleanly to per-token perplexity = exp(mean loss).
--->
+<p><strong>Initial loss</strong> (untrained model): ~10.82</p>
+<p><strong>Target loss</strong> (well-trained): decreases toward a floor set by the data’s entropy (~3 for GPT-2 small)</p>
+</div>
 </section>
 <section id="perplexity-interpretable-metric" class="slide level2">
 <h2>Perplexity: Interpretable Metric</h2>
@@ -507,8 +479,8 @@ CCE, IISc
 <li>Lower is better</li>
 </ul>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a>perplexity <span class="op">=</span> torch.exp(loss)</span>
-<span id="cb4-2"><a></a><span class="co"># For initial loss of 10.79: perplexity ≈ 48,725</span></span>
-<span id="cb4-3"><a></a><span class="co"># Meaning: model is unsure among ~48,725 tokens</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-2"><a></a><span class="co"># For initial loss of 10.82: perplexity ≈ 50,257</span></span>
+<span id="cb4-3"><a></a><span class="co"># Meaning: model is unsure among ~50,257 tokens</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top">
 <thead>
 <tr class="header">
@@ -519,8 +491,8 @@ CCE, IISc
 </thead>
 <tbody>
 <tr class="odd">
-<td>10.79</td>
-<td>48,725</td>
+<td>10.82</td>
+<td>50,257</td>
 <td>Random guessing (vocab size: 50,257)</td>
 </tr>
 <tr class="even">
@@ -540,16 +512,19 @@ CCE, IISc
 </tr>
 </tbody>
 </table>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) exp(10.79) = 48,533, not 48,725 (48,725 corresponds to loss 10.794). And "Random guessing (vocab 50,257)" should give perplexity = 50,257 at loss ln(50257) = 10.82. Cleanest fix: use loss 10.82 -> perplexity ≈ 50,257 on the "random guessing" row so the number literally equals the vocab size — that's the whole intuition. Verify: python -c "import math;print(math.exp(10.82), math.log(50257))"
-[CORRECTNESS] (nice) Body text says "For initial loss of 10.79" while the prior slide said 10.99 — same reconciliation needed.
-[INTUITION] Perplexity = "the effective number of equally-likely choices the model is torn between." Loss 10.82 -> ~50k means 'no idea, every word equally likely'; perplexity 7.4 -> 'it's basically choosing among ~7 words.' Lower = more decisive. The table rows 148/7.4/1.65 verify (exp of 5.0/2.0/0.5). ✓
-[Q-ADVANCED] "What perplexity is 'good'?" -> Depends on tokenizer and data; GPT-2 small reports ~29 perplexity on WikiText-103, modern large models ~10 or below. Perplexity is only comparable across models using the SAME tokenization — a frequent benchmarking gotcha.
-[READING] Jurafsky & Martin, "Speech and Language Processing" 3rd ed., Ch. 3 (perplexity, derivation as inverse geometric-mean probability).
--->
 </section>
+<section id="gpt-2-radford-et-al.-2019" class="slide level2">
+<h2>GPT-2 : Radford et al.&nbsp;(2019)</h2>
+
+<img data-src="images/gpt-evo.png" class="r-stretch"></section>
+<section id="gpt-2-radford-et-al.-2019-1" class="slide level2">
+<h2>GPT-2 : Radford et al.&nbsp;(2019)</h2>
+
+<img data-src="images/gpt-2019.png" class="r-stretch"></section>
 <section id="processing-data-for-training" class="slide level2">
 <h2>Processing Data for Training</h2>
+<div class="columns">
+<div class="column">
 <ul>
 <li>Given a text corpus
 <ul>
@@ -559,23 +534,24 @@ CCE, IISc
 </ul></li>
 <li>Inputs and targets are created by shifting token IDs by one position</li>
 </ul>
-
-<img data-src="images/data-loading.png" class="r-stretch"><p>In Pytorch</p>
+</div><div class="column">
+<p><img data-src="images/data-loading.png"></p>
+</div></div>
+<div class="fragment">
+<p>In Pytorch</p>
 <ul>
 <li><strong>Dataset</strong> Encodes all text to token IDs</li>
-<li><strong>DataLoader</strong> handles batching and shuffling:</li>
+<li><strong>DataLoader</strong> handles batching of and shuffling of sequences. Within a sequnce, no shuffling happens, the order of tokens is preserved:</li>
 </ul>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] data-loading.png is word-level for clarity, but the real Dataset uses a SLIDING WINDOW over token IDs with a stride: each training example is (chunk of context_length tokens, same chunk shifted by 1). Mention max_length (context window) and stride — stride < max_length means overlapping windows (more examples, some repetition); stride = max_length means non-overlapping.
-[CORRECTNESS] (should-fix) "DataLoader handles batching and shuffling" — true, but for LM the shuffle is over WINDOWS, not tokens; token order within a window is never shuffled (it's the sequence the model must predict). Worth a half-sentence so nobody thinks we scramble words.
-[INTUITION] (should-fix) Why split BEFORE tokenizing/windowing matters: if you window first then split, the same overlapping text can land in both train and val -> leakage and falsely low val loss. Split the raw text, then window each side.
-[Q-ADVANCED] "Why shift by exactly one — why not predict 2 ahead?" -> Next-token (shift-1) is the densest possible self-supervision: every position becomes a label, and the causal mask guarantees no peeking. Multi-token objectives exist (e.g., for speculative decoding training) but shift-1 maximizes signal per token.
-[DEMO] Print one (input, target) pair straight from the DataLoader and decode both — students SEE the one-position shift that slide text only describes.
--->
+</div>
 </section>
 <section id="training-vs-validation-loss" class="slide level2">
 <h2>Training vs Validation Loss</h2>
-<p>During training we split data into : - Training set - Validation set</p>
+<p>During training we split data into :</p>
+<ul>
+<li>Training set</li>
+<li>Validation set</li>
+</ul>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a>train_ratio <span class="op">=</span> <span class="fl">0.90</span></span>
 <span id="cb5-2"><a></a>split_idx <span class="op">=</span> <span class="bu">int</span>(train_ratio <span class="op">*</span> <span class="bu">len</span>(text_data))</span>
 <span id="cb5-3"><a></a>train_data <span class="op">=</span> text_data[:split_idx]</span>
@@ -585,19 +561,15 @@ CCE, IISc
 <li>Training loss <strong>decreases</strong>, Validation loss <strong>decreases</strong> -&gt; Model is learning and generalizing</li>
 <li>Training loss <strong>decreases</strong>, Validation loss <strong>increases</strong> -&gt; <strong>OVERFITTING!</strong></li>
 </ul>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) train_data = text_data[:split_idx] splits on CHARACTER index of the raw string (text_data is text, sliced before tokenizing). That's fine and actually the leakage-safe order — but say it explicitly: "we split the raw text, then tokenize each half," so students don't think we're slicing token IDs.
-[INTUITION] Overfitting in one line: "train loss falling while val loss rises = the model is memorizing the training text instead of learning language." The gap between the two curves IS the generalization error you can watch live.
-[INSTRUCTOR] Tie to the earlier "loss -> 0" correction: a model CAN drive TRAIN loss toward 0 by memorizing, but VAL loss bottoms out near the data's entropy. That's exactly why we watch val, not train.
-[Q-ADVANCED] "With billions of tokens and one epoch, is overfitting even possible for an LLM?" -> Large-scale pretraining is often <1 epoch, so classic overfitting is rare there; the val/train gap matters most in fine-tuning and in this small-corpus teaching setup. Good place to distinguish 'toy training' from 'frontier pretraining'.
-[DEMO] Show the twin loss curve (train vs val) from a short run — the moment val turns up is the most memorable overfitting visual you can give.
--->
 </section>
 <section id="the-training-loop" class="slide level2">
 <h2>The Training Loop</h2>
 <p>During Training we update model weights to minimize loss through <strong>backpropagation</strong> and <strong>gradient descent</strong>.</p>
-
-<img data-src="images/train-loop.png" class="r-stretch"><p><strong>Training Loop in code</strong></p>
+<div class="columns">
+<div class="column">
+<p><img data-src="images/train-loop.png"></p>
+</div><div class="column">
+<p><strong>Training Loop in code</strong></p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a></a></span>
 <span id="cb6-2"><a></a>    <span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(num_epochs):</span>
 <span id="cb6-3"><a></a>        model.train()  <span class="co"># Enable dropout</span></span>
@@ -608,17 +580,12 @@ CCE, IISc
 <span id="cb6-8"><a></a>            loss <span class="op">=</span> calc_loss_batch(input_batch, target_batch, model, device)</span>
 <span id="cb6-9"><a></a>            loss.backward()        <span class="co"># Calculate gradients</span></span>
 <span id="cb6-10"><a></a>            optimizer.step()       <span class="co"># Update weights</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] Name the three-line ritual every PyTorch loop has: zero_grad (clear last step's gradients) -> backward (compute new gradients via autograd) -> step (optimizer nudges weights down-gradient). The figure (train-loop.png) adds steps 7–8 (print losses, generate sample text) that the CODE omits — say they're the "monitoring" steps you'd add, so figure and code don't look contradictory.
-[CORRECTNESS] (must-fix) optimizer.zero_grad() is essential and easy to gloss: PyTorch ACCUMULATES gradients across backward() calls, so without it gradients from previous batches add up and the update is garbage. State why, not just "reset gradients."
-[INTUITION] (should-fix) model.train() comment says "Enable dropout" — also note it controls BatchNorm-style layers; the matching model.eval() (shown on the save/load slide) DISABLES dropout for deterministic inference. The pair belongs together; forgetting eval() is a top student bug.
-[TERM] (should-fix) "backpropagation" and "gradient descent" are used as if known. One-liners: backprop = "chain rule run backward through the network to get each weight's slice of the loss"; gradient descent = "step every weight a little in the direction that lowers loss."
-[CORRECTNESS] (should-fix) The loop never moves data to device or calls loss computation per the calc_loss_batch signature shown — it's pseudocode. Flag as "simplified; full version adds device transfer + periodic eval," so students copying it aren't surprised.
-[READING] Raschka Ch. 5.2 (this exact train_model_simple loop, 8 steps); PyTorch docs "Optimization" tutorial for the zero_grad/backward/step cycle.
--->
+</div></div>
 </section>
 <section id="loading-and-saving-model-weights" class="slide level2">
 <h2>Loading and Saving Model Weights</h2>
+<div class="columns">
+<div class="column">
 <p><strong>We must save trained models to:</strong></p>
 <ul>
 <li>Avoid retraining</li>
@@ -626,6 +593,7 @@ CCE, IISc
 <li>Resume training later</li>
 <li>Deploy to production</li>
 </ul>
+</div><div class="column">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a></a><span class="co"># ============ SAVE ============</span></span>
 <span id="cb7-2"><a></a></span>
 <span id="cb7-3"><a></a>torch.save(model.state_dict(), <span class="st">"model.pth"</span>)</span>
@@ -651,18 +619,13 @@ CCE, IISc
 <span id="cb7-23"><a></a>optimizer <span class="op">=</span> torch.optim.AdamW(model.parameters(), lr<span class="op">=</span><span class="fl">5e-4</span>, weight_decay<span class="op">=</span><span class="fl">0.1</span>)</span>
 <span id="cb7-24"><a></a>optimizer.load_state_dict(checkpoint[<span class="st">"optimizer_state_dict"</span>])</span>
 <span id="cb7-25"><a></a>model.train()  <span class="co"># Set to training mode</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] The key distinction: state_dict saves WEIGHTS only (small, portable), not the model code — you must reconstruct GPTModel(config) first, then load_state_dict into it. That's why the load side instantiates the model before loading. Say "weights are data; architecture is code; you need both."
-[CORRECTNESS] (should-fix) Resuming training needs the OPTIMIZER state too (shown — good), because AdamW carries per-parameter momentum/variance; resuming with a fresh optimizer throws those away and spikes the loss. Note also you'd typically save/restore the epoch and LR-scheduler state for a true resume.
-[CORRECTNESS] (nice) map_location=device is correct and worth a word: it lets a model saved on GPU load on a CPU-only machine (and vice-versa) instead of erroring. Common real-world pain point.
-[Q-ADVANCED] "Why model.eval() before inference and model.train() after loading a checkpoint to resume?" -> eval() disables dropout and freezes norm statistics for deterministic, full-capacity inference; train() re-enables stochastic dropout so optimization regularizes again. Mismatched mode = silently wrong loss or non-reproducible generation.
-[TERM] (nice) weight_decay=0.1 and lr=5e-4 appear unexplained — one line: "weight_decay = L2 pull toward zero that curbs overfitting; AdamW applies it correctly decoupled from the gradient step (the 'W')."
-[READING] PyTorch "Saving and Loading Models" tutorial (state_dict vs entire-model, checkpoint dict pattern); Loshchilov & Hutter 2019, "Decoupled Weight Decay Regularization" (the W in AdamW).
--->
+</div></div>
 </section>
 <section id="llm-loss-surfaces" class="slide level2">
 <h2>LLM Loss Surfaces</h2>
 <p>LLM training optimizes a <strong>high-dimensional non-convex loss surface</strong> defined by:</p>
+<div class="columns">
+<div class="column">
 <blockquote>
 <p>L(θ) = −E[log p_θ(tokenₜ₊₁ | contextₜ)]</p>
 </blockquote>
@@ -673,15 +636,14 @@ CCE, IISc
 <li>Many equivalent minima</li>
 <li>Flat basins dominate</li>
 </ul>
-<p>More details in : - <a href="https://arxiv.org/html/2505.17646v2">Unveiling the Basin-Like Loss Landscape in Large Language Models</a> - <a href="https://www.youtube.com/watch?v=lyZorUc8Gm4">Visualizing the Loss Landscape of Neural Nets</a></p>
-<!-- NOTES-BLOCK
-[FLOW] (should-fix) This slide jumps in abstraction — from a concrete PyTorch loop straight to "high-dimensional non-convex loss surface." Add one bridge sentence: "the optimizer.step() we just wrote is a single downhill step on THIS surface" so the slide connects to the code, not floats free.
-[CORRECTNESS] (should-fix) "Many equivalent minima" — be precise: the minima are equivalent by SYMMETRY (you can permute neurons/heads and rescale and get the same function). That's why the landscape has so many. "Flat basins dominate" is the empirically observed (and debated) part — present it as a finding, not a theorem.
-[INTUITION] Non-convex in one line: "unlike a bowl with one bottom, this surface has countless valleys — but in very high dimensions most are about equally good, so SGD almost always lands somewhere fine." This is why training billions of params actually works despite no global-optimum guarantee.
-[Q-ADVANCED] "If it's non-convex, how do we know SGD finds a good minimum?" -> We don't have a guarantee, but over-parameterization makes bad strict local minima rare; most critical points are saddles, and the noise in SGD escapes them. Flat minima also tend to generalize better (Keskar et al. 2017). It's empirical, not proven.
-[READING] Li et al. 2018, "Visualizing the Loss Landscape of Neural Nets" (the filter-normalized 2-D projection method behind the linked video); the linked basin-landscape paper (arXiv:2505.17646) for the LLM-specific claim.
-[INSTRUCTOR] Optional/advanced slide — flag for the class whether this is examinable or just enrichment, so beginners don't panic at the jump in difficulty right before "Questions?".
--->
+</div><div class="column">
+<p><img data-src="images/loss-basin.png"></p>
+</div></div>
+<p>More details in :</p>
+<ul>
+<li><a href="https://arxiv.org/html/2505.17646v2">Unveiling the Basin-Like Loss Landscape in Large Language Models</a></li>
+<li><a href="https://www.youtube.com/watch?v=lyZorUc8Gm4">Visualizing the Loss Landscape of Neural Nets</a></li>
+</ul>
 </section>
 <section id="questions" class="slide level2">
 <h2>Questions?</h2>
