@@ -107,231 +107,231 @@
   {
     "objectID": "arch/03_modern_arch/slides.html#topics-covered",
     "href": "arch/03_modern_arch/slides.html#topics-covered",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Topics Covered",
     "text": "Topics Covered\n\nGPT-2 Review\n\nTraining Loop\n\nModern LLM Architectures\n\nNorm Types\nActivation Functions\nPositional Encodings\nAttention Variants\nHyperparameters"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#recap-gpt-2-architecture",
     "href": "arch/03_modern_arch/slides.html#recap-gpt-2-architecture",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Recap : GPT-2 Architecture",
     "text": "Recap : GPT-2 Architecture"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#recap-gpt-2-training-loop",
     "href": "arch/03_modern_arch/slides.html#recap-gpt-2-training-loop",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Recap : GPT-2 Training Loop",
     "text": "Recap : GPT-2 Training Loop\nDuring Training we update model weights to minimize loss through backpropagation and gradient descent.\n\n\n\n\nTraining Loop in code\nfor epoch in range(num_epochs):\n    model.train()  # Enable dropout\n\n    for input_batch, target_batch in train_loader:\n        optimizer.zero_grad()  # Reset gradients\n\n        loss = calc_loss_batch(input_batch, target_batch, model, device)\n        loss.backward()        # Calculate gradients\n        optimizer.step()       # Update weights"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#loading-and-saving-model-weights",
     "href": "arch/03_modern_arch/slides.html#loading-and-saving-model-weights",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Loading and Saving Model Weights",
     "text": "Loading and Saving Model Weights\n\n\nWe must save trained models to:\n\nAvoid retraining\nShare models with others\nResume training later\nDeploy to production\n\n\n# ============ SAVE ============\n\ntorch.save(model.state_dict(), \"model.pth\")\n\n# Save model + optimizer (for resuming training)\ntorch.save({\n    \"model_state_dict\": model.state_dict(),\n    \"optimizer_state_dict\": optimizer.state_dict(),\n}, \"model_and_optimizer.pth\")\n\n\n# ============ LOAD ============\n# Load weights into fresh model\nmodel = GPTModel(GPT_CONFIG_124M)\nmodel.load_state_dict(torch.load(\"model.pth\", map_location=device))\nmodel.eval()  # Set to evaluation mode\n\n# Resume training\ncheckpoint = torch.load(\"model_and_optimizer.pth\", map_location=device)\nmodel = GPTModel(GPT_CONFIG_124M)\nmodel.load_state_dict(checkpoint[\"model_state_dict\"])\n\noptimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.1)\noptimizer.load_state_dict(checkpoint[\"optimizer_state_dict\"])\nmodel.train()  # Set to training mode"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#modern-architectures",
     "href": "arch/03_modern_arch/slides.html#modern-architectures",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Modern Architectures",
     "text": "Modern Architectures"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#gpt-2-architecture",
     "href": "arch/03_modern_arch/slides.html#gpt-2-architecture",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "GPT-2 Architecture",
     "text": "GPT-2 Architecture\n\n\nPosition embedding: learned, absolute\nFFN: GELU\n\\[ \\text{FFN}(x) = GELU(xW_1 + b_1)W_2 + b_2 \\]\nNorm type: Pre-Norm, LayerNorm"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#current-models",
     "href": "arch/03_modern_arch/slides.html#current-models",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Current Models",
     "text": "Current Models\n\n\nsource: Modern LLM Architectures"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#llama-2-llama-3-and-qwen-3-architectures",
     "href": "arch/03_modern_arch/slides.html#llama-2-llama-3-and-qwen-3-architectures",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Llama 2, Llama 3 and Qwen 3 Architectures",
     "text": "Llama 2, Llama 3 and Qwen 3 Architectures\n\n\nPosition embedding: RoPE (rotary position embeddings)\nFFN: *GLU variant (SwiGLU for LLaMA, GeGLU for Qwen)\nNorm type: Pre-Norm, RMSNorm"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#llama-2-llama-3-and-qwen-3-architectures-1",
     "href": "arch/03_modern_arch/slides.html#llama-2-llama-3-and-qwen-3-architectures-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Llama 2, Llama 3 and Qwen 3 Architectures",
     "text": "Llama 2, Llama 3 and Qwen 3 Architectures\n\n\nPosition embedding: RoPE (rotary position embeddings)\nFFN: *GLU variant (SwiGLU for LLaMA, GeGLU for Qwen)\nNorm type: Pre-Norm, RMSNorm"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#pre-norm-vs-post-norm",
     "href": "arch/03_modern_arch/slides.html#pre-norm-vs-post-norm",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Pre-Norm vs Post-Norm",
     "text": "Pre-Norm vs Post-Norm\nAlmost all models post-2020 use pre-norm.\n\nOriginal Transformer : Post Norm\nx -&gt; Attention(x) -&gt; Add -&gt; LayerNorm -&gt; FFN -&gt; Add -&gt; LayerNorm\nGPT 2 : Pre-Norm\nx -&gt; [LN -&gt; Attn] -&gt; +x -&gt; [LN -&gt; FFN] -&gt; +x"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#pre-norm-vs-post-norm-1",
     "href": "arch/03_modern_arch/slides.html#pre-norm-vs-post-norm-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Pre-Norm vs Post-Norm",
     "text": "Pre-Norm vs Post-Norm\n\nWhy pre-norm wins:\n\nBetter gradient flow through residual connections.\nPractical evidence: almost all modern LLMs use pre-norm\n\n\nNote : Double norm also used in some models, but not as common as pre-norm. It applies LayerNorm both before and after the sub-layer.\nQuestion : BERT was trained with post-norm and it was huge success. But most models use pre-norm. Why?\nRef : Xiong et al. 2020, On Layer Normalization in the Transformer Architecture"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#layernorm-vs-rmsnorm",
     "href": "arch/03_modern_arch/slides.html#layernorm-vs-rmsnorm",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "LayerNorm vs RMSNorm",
     "text": "LayerNorm vs RMSNorm\n\nStrong consensus toward RMSNorm\n\n\n\nLayerNorm (original):\nNormalize by subtracting mean and dividing by std dev, then scale (\\(\\gamma\\)) and shift (\\(\\beta\\)):\n\\[y = \\frac{x - E[x]}{\\sqrt{Var[x] + \\epsilon}} \\cdot \\gamma + \\beta\\]\nModels : GPT-1/2/3, OPT, GPT-J, BLOOM\n\nRMSNorm (modern):\nDrop the mean subtraction and bias term:\n\\[y = \\frac{x}{\\sqrt{\\frac{1}{n}||x||_2^2 + \\epsilon}} \\cdot \\gamma\\]\nModels : LLaMA family, DeepSeek V3, Qwen3 etc\n\nWhy RMSNorm\n\nFewer operations: RMSNorm requires fewer computations (no mean subtraction, no bias term) which reduces both FLOPs and memory bandwidth."
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#dropping-bias-terms-in-ffn-and-layernorm",
     "href": "arch/03_modern_arch/slides.html#dropping-bias-terms-in-ffn-and-layernorm",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Dropping Bias Terms in FFN and LayerNorm",
     "text": "Dropping Bias Terms in FFN and LayerNorm\nMost modern transformers have no bias terms in linear layers or LayerNorm.\nOriginal: \\(FFN(x) = \\max(0, xW_1 + b_1)W_2 + b_2\\)\nModern: \\(FFN(x) = \\sigma(xW_1)W_2\\)\nSiLU activation is used instead of ReLU, but the key point is that bias terms are removed.\nReasons:\n\nSame memory/data movement argument as RMSNorm – fewer parameters to load\nOptimization stability – empirically, dropping bias terms stabilizes training of very large networks\n\nLayerNorm Recap\n\nMost models use RMSNorm\nAlmost all models use pre-norm"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#activations-gated-linear-units-strong-trend-toward-swiglugeglu",
     "href": "arch/03_modern_arch/slides.html#activations-gated-linear-units-strong-trend-toward-swiglugeglu",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Activations & Gated Linear Units (Strong trend toward SwiGLU/GeGLU)",
     "text": "Activations & Gated Linear Units (Strong trend toward SwiGLU/GeGLU)\nEvolution of activations:\n\n\n\n\n\n\n\n\nActivation\nFormula\nNotable Models\n\n\n\n\nReLU\n\\(FF(x) = \\max(0, xW_1)W_2\\)\nOriginal transformer, T5, Gopher, OPT\n\n\nGeLU\n\\(FF(x) = GELU(xW_1)W_2\\) where \\(GELU(x) = x\\Phi(x)\\)\nGPT-1/2/3, GPT-J, BLOOM\n\n\nSwiGLU\n\\(FF(x) = (Swish(xW) \\otimes xV)W_2\\)\nLLaMA 1/2/3, PaLM, Mistral, most post-2023\n\n\nGeGLU\n\\(FF(x) = (GELU(xW) \\otimes xV)W_2\\)\nT5 v1.1, mT5, Phi3, Gemma 2/3\n\n\n\nwhere Swish(x) = x * sigmoid(x) and \\(\\otimes\\) is elementwise multiplication."
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu",
     "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Gated Linear Units (GLU)",
     "text": "Gated Linear Units (GLU)\nWhat do GLUs do?\n\nGLUs add a gating mechanism\nHidden representation element-wise multiplied by a gate \\(xV\\) (learned linear projection)\n\\(xV\\) controls information flow through the MLP\n\n\\[\\text{Standard:} \\quad \\sigma(xW_1) \\rightarrow \\sigma(xW_1) \\otimes (xV) \\quad \\text{(gated)}\\]"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-1",
     "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Gated Linear Units (GLU)",
     "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-2",
     "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-2",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Gated Linear Units (GLU)",
     "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)\nScale the FF Params"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-3",
     "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-3",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Gated Linear Units (GLU)",
     "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)\nScale the FF Params\n\nStandard MLP\n\n\\(W_1 \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(2 \\cdot d \\cdot d_{ff}\\) params\nTotal FFN params = \\(2 \\cdot d \\cdot 4 d\\) = \\(8 \\cdot d^2\\)."
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-4",
     "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-4",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Gated Linear Units (GLU)",
     "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)\nScale the FF Params\n\nStandard MLP\n\n\\(W_1 \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(2 \\cdot d \\cdot d_{ff}\\) params\nTotal FFN params = \\(2 \\cdot d \\cdot 4 d\\) = \\(8 \\cdot d^2\\).\n\nGated MLP:\n\n\\(W \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(V \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(3 \\cdot d \\cdot d_{ff}\\) params."
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-5",
     "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-5",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Gated Linear Units (GLU)",
     "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)\nScale the FF Params\n\nStandard MLP\n\n\\(W_1 \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(2 \\cdot d \\cdot d_{ff}\\) params\nTotal FFN params = \\(2 \\cdot d \\cdot 4 d\\) = \\(8 \\cdot d^2\\).\n\nGated MLP:\n\n\\(W \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(V \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(3 \\cdot d \\cdot d_{ff}\\) params.\n\nTo match:\n\nset \\(d_{ff}^{gated} = \\frac{2}{3} d_{ff}^{standard} = \\frac{2}{3} \\cdot 4d = \\frac{8}{3}d\\).\nTotal FFN params = \\(3 \\cdot d \\cdot \\frac{8}{3}d = 8 \\cdot d^2\\).\n\n\nScaling Factors:\n\nStandard MLP: \\(d_{ff} = 4 \\cdot d\\)\nGated MLP: \\(d_{ff} = \\frac{8}{3} \\cdot d \\approx 2.67 \\cdot d\\)"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#serial-vs-parallel-layers",
     "href": "arch/03_modern_arch/slides.html#serial-vs-parallel-layers",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Serial vs Parallel Layers",
     "text": "Serial vs Parallel Layers\nNormal transformer blocks are serial – they compute attention, then the MLP\nStandard transformer block can be written as:\n\\[y = x + \\text{MLP}(\\text{LayerNorm}(x + \\text{Attention}(\\text{LayerNorm}(x)))\\]\nWhereas the parallel formulation can be written as:\n\\[y = x + \\text{MLP}(\\text{LayerNorm}(x)) + \\text{Attention}(\\text{LayerNorm}(x))\\]\n\nimage source"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#position-encodings",
     "href": "arch/03_modern_arch/slides.html#position-encodings",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Position Encodings",
     "text": "Position Encodings\nEvolution:\n\n\n\n\n\n\n\n\nType\nHow it works\nModels\n\n\n\n\nSinusoidal\nAdd fixed sin/cos to embedding\nOriginal Transformer\n\n\nAbsolute (learned)\nAdd learned position vector \\(u_i\\) to embedding\nGPT-1/2/3, OPT\n\n\nRelative\nAdd learned bias to attention scores\nT5, Gopher, Chinchilla\n\n\nALiBi\nLinear attention bias\nBLOOM\n\n\nNoPE\nNo position embedding at all\nSmolLM3, Kimi Linear\n\n\nRoPE\nRotate query/key vectors\nGPT-J, PaLM, LLaMA, all 2024+ models"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#position-encodings-1",
     "href": "arch/03_modern_arch/slides.html#position-encodings-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Position Encodings",
     "text": "Position Encodings\nWhy do we need Position Encodings?\n\n\nAttention is a position-agnostic operation\n\nTreats the input as a set, not a sequence\nNo inherent notion of order or position\n\nExample:\nThe dog chased another dog vs Another dog chased the dog\n\nBoth have the same set of tokens\nBut different meanings\n\nSolution: Add positional encodings to inject order information into the model"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#integer-position-encoding",
     "href": "arch/03_modern_arch/slides.html#integer-position-encoding",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Integer Position Encoding",
     "text": "Integer Position Encoding\n\nAdd the integer position directly into embeddings.\nProblems:\n\nPosition encoding magnitude greater than token embedding magnitude\nModel should separately learn to handle content and position, which can make learning harder."
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#binary-position-encoding",
     "href": "arch/03_modern_arch/slides.html#binary-position-encoding",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Binary Position Encoding",
     "text": "Binary Position Encoding"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#binary-position-encoding-1",
     "href": "arch/03_modern_arch/slides.html#binary-position-encoding-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Binary Position Encoding",
     "text": "Binary Position Encoding\n\n\nProblems:\n\nHamming distance artifacts\nSparse representations (most bits are zero, which can make learning harder)\nNo learnable interpolation"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding",
     "href": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Sinusoidal Position Encoding",
     "text": "Sinusoidal Position Encoding\n\\[ PE_{(pos,2i)} = sin(pos/10000^{2i/d_{\\text{model}}}) \\]\n\\[ PE_{(pos,2i+1)} = cos(pos/10000^{2i/d_{\\text{model}}}) \\]"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding-1",
     "href": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Sinusoidal Position Encoding",
     "text": "Sinusoidal Position Encoding\nWhy sin and cos?\n\\(sin(a+b) = sin(a)cos(b) + cos(a)sin(b)\\)\n\\(cos(a+b) = cos(a)cos(b) - sin(a)sin(b)\\)\nPE(pos+k) is a linear function of PE(pos)\nSo\n\\[\n\\begin{aligned}\n\\sin(\\omega \\cdot (p+k)) &= \\sin(\\omega p)\\cos(\\omega k) + \\cos(\\omega p)\\sin(\\omega k)\n\\end{aligned}\n\\]\n\\[\n\\begin{aligned}\n\\cos(\\omega \\cdot (p+k)) &= \\cos(\\omega p)\\cos(\\omega k) - \\sin(\\omega p)\\sin(\\omega k)\n\\end{aligned}\n\\]"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding-2",
     "href": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding-2",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Sinusoidal Position Encoding",
     "text": "Sinusoidal Position Encoding\nDownsides :\nSinusoidal PE is added to embeddings: \\(x_p = x_{token} + PE(p)\\)\nThen projected: \\(q_p = W_q x_p\\), \\(k_p = W_kx_p\\)\n\nPosition and content are entangled before attention\nRelative position is implicit, not structural\nAttention must learn how to extract distance"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings",
     "href": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Absolute vs Relative Position Encodings",
     "text": "Absolute vs Relative Position Encodings\n\nAbsolute position encodings - Unique encoding to each position in the sequence.\nRelative position encodings - Encodes the relative distance between tokens, rather than their absolute position."
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings-1",
     "href": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Absolute vs Relative Position Encodings",
     "text": "Absolute vs Relative Position Encodings\nWhy do we need them?\n\n“The cat sat” should have similar relationships whether at positions [5,6,7] or [105,106,107]\nAbsolute encodings make it harder to learn patterns based on relative distance (e.g., “the word two positions to the left of X”)\n\nBenefits:\n\nLearn patterns based on relative distance between tokens\nMore important for many tasks than absolute position\nNo reliance on fixed absolute positions"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#relative-position-encoding-example",
     "href": "arch/03_modern_arch/slides.html#relative-position-encoding-example",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Relative Position Encoding Example",
     "text": "Relative Position Encoding Example\nExample sentence: “The dog chased another dog”\nWhen attending from position 2 (“chased”):\n\n\n\nPosition\nToken\nAbsolute\nRelative to pos 2\n\n\n\n\n0\nThe\n0\n-2\n\n\n1\ndog\n1\n-1\n\n\n2\nchased\n2\n0 (self)\n\n\n3\nanother\n3\n+1\n\n\n4\ndog\n4\n+2"
   },
   {
     "objectID": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings-2",
     "href": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings-2",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - I",
     "section": "Absolute vs Relative Position Encodings",
     "text": "Absolute vs Relative Position Encodings\nIn practice:\n\n# T5-style relative attention bias\n# For position i attending to position j:\nrelative_position = j - i  # e.g., \"dog\"(1) → \"chased\"(2) = 1 - 2 = -1\n\n# Bias added to attention scores (learned, not fixed):\nattention_score = (q_i @ k_j) + bias[clip(relative_position, -max_dist, max_dist)]\nKey differences from absolute:\n\nSame relative pattern at any absolute position (e.g., “-1” always means “previous token”)\nModel learns one bias per relative distance, not per absolute position"
   },
