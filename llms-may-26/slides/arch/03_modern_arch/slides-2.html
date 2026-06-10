@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.9.34">
 
   <meta name="author" content="CCE, IISc">
-  <title>Large Language Models : A Hands-On Approach - May, 2026 – Modern Architectures</title>
+  <title>Large Language Models : A Hands-On Approach - May, 2026 – Modern Architectures - II</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -199,7 +199,7 @@
     <div class="slides">
 
 <section id="title-slide" data-state="title-slide" class="quarto-title-block center">
-  <h1 class="title">Modern Architectures</h1>
+  <h1 class="title">Modern Architectures - II</h1>
   <p class="subtitle">Large Language Models : A Hands-on Approach</p>
 
 <div class="quarto-title-authors">
@@ -397,7 +397,7 @@ q_p \cdot k_n = \;&amp; \underbrace{(W_q x_{tok})\cdot(W_k x_{tok})}_{\text{cont
 \end{aligned}
 \]</span></p>
 <ul>
-<li>The rotation lived in <em>raw</em> PE space, but attention sees <span class="math inline">\(W_q\,PE\)</span>: the learned <span class="math inline">\(W_q\)</span> can scale, shear, and mix the (sin, cos) pairs across frequencies, so the guarantee is lost.</li>
+<li>The rotation lived in <em>raw</em> PE space, but attention sees <span class="math inline">\(W_q\,PE\)</span>: the learned <span class="math inline">\(W_q\)</span> can scale, shear, and mix the (sin, cos) pairs across frequencies</li>
 <li>position and content are entangled, relative distance is <em>implicit</em>, and attention must <strong>learn</strong> to extract it</li>
 </ul>
 </section>
@@ -638,6 +638,7 @@ q' \cdot k' &amp;= (R(\theta_q) q) \cdot (R(\theta_k) k) \\
 </section>
 <section id="computing-attention-with-rope" class="slide level2">
 <h2>Computing Attention with RoPE</h2>
+<p>Ref : <a href="https://github.com/meta-llama/llama/blob/main/llama/model.py#L253">LLaMa 2 Attention</a></p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a></a><span class="kw">class</span> RoPEAttention(nn.Module):</span>
 <span id="cb2-2"><a></a></span>
 <span id="cb2-3"><a></a></span>
