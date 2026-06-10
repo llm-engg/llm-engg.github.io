@@ -1304,203 +1304,203 @@
   {
     "objectID": "arch/03_modern_arch/slides-2.html#topics-covered",
     "href": "arch/03_modern_arch/slides-2.html#topics-covered",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Topics Covered",
     "text": "Topics Covered\n\nModern LLM Architectures\n\nPositional Encodings\nAttention Variants\nHyperparameters"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#position-encodings",
     "href": "arch/03_modern_arch/slides-2.html#position-encodings",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Position Encodings",
     "text": "Position Encodings\nEvolution:\n\n\n\n\n\n\n\n\nType\nHow it works\nModels\n\n\n\n\nSinusoidal\nAdd fixed sin/cos to embedding\nOriginal Transformer\n\n\nAbsolute (learned)\nAdd learned position vector \\(u_i\\) to embedding\nGPT-1/2/3, OPT\n\n\nRelative\nAdd learned bias to attention scores\nT5, Gopher, Chinchilla\n\n\nALiBi\nLinear attention bias\nBLOOM\n\n\nNoPE\nNo explicit position encoding\nSmolLM3, Kimi Linear\n\n\nRoPE\nRotate query/key vectors\nGPT-J, PaLM, LLaMA, all 2024+ models"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#position-encodings-1",
     "href": "arch/03_modern_arch/slides-2.html#position-encodings-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Position Encodings",
     "text": "Position Encodings\nWhy do we need Position Encodings?\n\n\nAttention is a position-agnostic operation\n\nTreats the input as a set, not a sequence\nNo inherent notion of order or position\n\nExample:\nThe dog chased another dog vs Another dog chased the dog\n\nBoth have the same set of tokens\nBut different meanings\n\nSolution: Add positional encodings to inject order information into the model"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#integer-position-encoding",
     "href": "arch/03_modern_arch/slides-2.html#integer-position-encoding",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Integer Position Encoding",
     "text": "Integer Position Encoding\n\nAdd the integer position directly into embeddings.\nProblems:\n\nPosition encoding magnitude greater than token embedding magnitude\nModel should separately learn to handle content and position, which can make learning harder."
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#binary-position-encoding",
     "href": "arch/03_modern_arch/slides-2.html#binary-position-encoding",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Binary Position Encoding",
     "text": "Binary Position Encoding"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#binary-position-encoding-1",
     "href": "arch/03_modern_arch/slides-2.html#binary-position-encoding-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Binary Position Encoding",
     "text": "Binary Position Encoding\n\n\nProblems:\n\nHamming distance artifacts - small position changes can flip many bits\nSparse representations (many bits are zero, which can make learning harder)\nNo learnable interpolation"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#sinusoidal-position-encoding",
     "href": "arch/03_modern_arch/slides-2.html#sinusoidal-position-encoding",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Sinusoidal Position Encoding",
     "text": "Sinusoidal Position Encoding\nA smooth, continuous version of binary encoding.\n\\[ PE_{(pos,\\,2i)} = \\sin\\!\\big(pos/10000^{\\,2i/d_{\\text{model}}}\\big), \\qquad PE_{(pos,\\,2i+1)} = \\cos\\!\\big(pos/10000^{\\,2i/d_{\\text{model}}}\\big) \\]\n\nEach dimension is a sine/cosine of a different frequency (like the hands of a clock)"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#why-a-range-of-frequencies",
     "href": "arch/03_modern_arch/slides-2.html#why-a-range-of-frequencies",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Why a range of frequencies?",
     "text": "Why a range of frequencies?\n\nHigh frequency - short wavelength: changes a lot between adjacent positions, repeats almost immediately =&gt; tiny unique range. \nLow frequency - long wavelength: adjacent positions nearly identical, repeats after long range =&gt; no resolution. \n\n\nFix : Use many frequencies, like the bits of a number:\n\nFast “hands” resolve adjacent positions; slow “hands” span the whole sequence.\nThe base \\(10000\\) sets the slowest wavelength -&gt; the longest distance you can represent.\nThe combined pattern repeats only after the LCM of all wavelengths -&gt; effectively never."
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#why-both-sin-and-cos",
     "href": "arch/03_modern_arch/slides-2.html#why-both-sin-and-cos",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Why both sin and cos?",
     "text": "Why both sin and cos?\n\nRelative position becomes a simple rotation.\n\n\nLet \\(\\omega = 1/10000^{2i/d}\\) \\[\\sin(\\omega(p+k)) = \\sin(\\omega p)\\cos(\\omega k) + \\cos(\\omega p)\\sin(\\omega k)\\]\n\\[\\cos(\\omega(p+k)) = \\cos(\\omega p)\\cos(\\omega k) - \\sin(\\omega p)\\sin(\\omega k)\\]\n\n\nThese two pairs - make a point on the unit circle at angle \\(\\omega p\\):\n\n\n\\[PE_\\omega(p) = \\big(\\sin(\\omega p),\\ \\cos(\\omega p)\\big)\\]"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#relative-position-and-rotation",
     "href": "arch/03_modern_arch/slides-2.html#relative-position-and-rotation",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Relative Position and Rotation",
     "text": "Relative Position and Rotation\nMoving \\(k\\) steps forward is exactly a rotation by \\(\\omega k\\):\n\n\n\n\n\\[\n\\begin{pmatrix}\\sin(\\omega(p{+}k))\\\\ \\cos(\\omega(p{+}k))\\end{pmatrix}\n=\n\\underbrace{\\begin{pmatrix}\\cos(\\omega k) & \\sin(\\omega k)\\\\ -\\sin(\\omega k) & \\cos(\\omega k)\\end{pmatrix}}_{\\text{rotation by }\\omega k}\n\\begin{pmatrix}\\sin(\\omega p)\\\\ \\cos(\\omega p)\\end{pmatrix}\n\\]\n\nThe rotation depends only on the shift \\(k\\), never on the absolute position \\(p\\).\nSo relative distance is, in principle, recoverable from the absolute encoding."
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#sinusoidal-pe-downsides",
     "href": "arch/03_modern_arch/slides-2.html#sinusoidal-pe-downsides",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Sinusoidal PE: Downsides",
-    "text": "Sinusoidal PE: Downsides\nPE is added to the token embedding, then projected into queries and keys:\n\\[x_p = x_{token} + PE(p), \\qquad q_p = W_q\\,x_p, \\quad k_p = W_k\\,x_p\\]\nThe attention score then splits into four terms:\n\\[\n\\begin{aligned}\nq_p \\cdot k_n = \\;& \\underbrace{(W_q x_{tok})\\cdot(W_k x_{tok})}_{\\text{content×content}} + \\underbrace{(W_q x_{tok})\\cdot(W_k PE_n)}_{\\text{content×position}} \\\\[4pt]\n+\\;& \\underbrace{(W_q PE_p)\\cdot(W_k x_{tok})}_{\\text{position×content}} + \\underbrace{(W_q PE_p)\\cdot(W_k PE_n)}_{\\text{position×position}}\n\\end{aligned}\n\\]\n\nThe rotation lived in raw PE space, but attention sees \\(W_q\\,PE\\): the learned \\(W_q\\) can scale, shear, and mix the (sin, cos) pairs across frequencies, so the guarantee is lost.\nposition and content are entangled, relative distance is implicit, and attention must learn to extract it"
+    "text": "Sinusoidal PE: Downsides\nPE is added to the token embedding, then projected into queries and keys:\n\\[x_p = x_{token} + PE(p), \\qquad q_p = W_q\\,x_p, \\quad k_p = W_k\\,x_p\\]\nThe attention score then splits into four terms:\n\\[\n\\begin{aligned}\nq_p \\cdot k_n = \\;& \\underbrace{(W_q x_{tok})\\cdot(W_k x_{tok})}_{\\text{content×content}} + \\underbrace{(W_q x_{tok})\\cdot(W_k PE_n)}_{\\text{content×position}} \\\\[4pt]\n+\\;& \\underbrace{(W_q PE_p)\\cdot(W_k x_{tok})}_{\\text{position×content}} + \\underbrace{(W_q PE_p)\\cdot(W_k PE_n)}_{\\text{position×position}}\n\\end{aligned}\n\\]\n\nThe rotation lived in raw PE space, but attention sees \\(W_q\\,PE\\): the learned \\(W_q\\) can scale, shear, and mix the (sin, cos) pairs across frequencies\nposition and content are entangled, relative distance is implicit, and attention must learn to extract it"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings",
     "href": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Absolute vs Relative Position Encodings",
     "text": "Absolute vs Relative Position Encodings\n\nAbsolute position encodings - Unique encoding to each position in the sequence.\nRelative position encodings - Encodes the relative distance between tokens, rather than their absolute position."
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings-1",
     "href": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Absolute vs Relative Position Encodings",
     "text": "Absolute vs Relative Position Encodings\nWhy do we need them?\n\n“The cat sat” should have similar relationships whether at positions [5,6,7] or [105,106,107]\nAbsolute encodings make it harder to learn patterns based on relative distance (e.g., “the word two positions to the left of X”)\n\nBenefits:\n\nLearn patterns based on relative distance between tokens\nMore important for many tasks than absolute position\nNo reliance on fixed absolute positions"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#relative-position-encoding-example",
     "href": "arch/03_modern_arch/slides-2.html#relative-position-encoding-example",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Relative Position Encoding Example",
     "text": "Relative Position Encoding Example\nExample sentence: “The dog chased another dog”\nWhen attending from position 2 (“chased”):\n\n\n\nPosition\nToken\nAbsolute\nRelative to pos 2\n\n\n\n\n0\nThe\n0\n-2\n\n\n1\ndog\n1\n-1\n\n\n2\nchased\n2\n0 (self)\n\n\n3\nanother\n3\n+1\n\n\n4\ndog\n4\n+2"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings-2",
     "href": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings-2",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Absolute vs Relative Position Encodings",
     "text": "Absolute vs Relative Position Encodings\nIn practice:\n\n# T5-style relative attention bias\n# For position i attending to position j:\nrelative_position = j - i  # e.g., \"dog\"(1) → \"chased\"(2) = 1 - 2 = -1\n\n# Bias added to attention scores (learned, not fixed):\nattention_score = (q_i @ k_j) + bias[clip(relative_position, -max_dist, max_dist)]\nKey differences from absolute:\n\nSame relative pattern at any absolute position (e.g., “-1” always means “previous token”)\nModel learns one bias per relative distance, not per absolute position"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#position-encoding-desirable-properties",
     "href": "arch/03_modern_arch/slides-2.html#position-encoding-desirable-properties",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Position Encoding : Desirable Properties",
     "text": "Position Encoding : Desirable Properties\n\nInject position information into the model\nAllow generalization to longer sequences than seen during training\nFacilitate learning of relative position patterns (e.g., “the word two positions to the left of X”)\nBe computationally efficient (not too many parameters or FLOPs)\nBe compatible with attention mechanism (e.g., allow position information to influence attention scores)"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#rotary-position-embeddings-rope",
     "href": "arch/03_modern_arch/slides-2.html#rotary-position-embeddings-rope",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Rotary Position Embeddings (RoPE)",
     "text": "Rotary Position Embeddings (RoPE)\nWe want attention scores to depend only on relative position \\((i - j)\\) (how far apart the tokens are), not absolute positions.\nMathematically, find \\(f(x, i)\\) such that:\n\\[\\langle f(x, i), f(y, j) \\rangle = g(x, y, i-j)\\]\n\n\nRoPE’s key idea:\n\nInstead of adding PE to the input x, apply rotation to the query and key vectors based on their position.\nPosition information is directly encoded in the attention scores\n\n\nVideo"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#encoding-position-as-a-rotation",
     "href": "arch/03_modern_arch/slides-2.html#encoding-position-as-a-rotation",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Encoding position as a rotation",
     "text": "Encoding position as a rotation\nRotating a 2D vector by an angle \\(\\theta\\)\n\n\\[\\begin{bmatrix}\nx' \\\\\ny'\n\\end{bmatrix} =\n\\begin{bmatrix}\n\\cos \\theta & -\\sin \\theta \\\\\n\\sin \\theta & \\cos \\theta\n\\end{bmatrix}\n\\begin{bmatrix}\nx \\\\\ny\n\\end{bmatrix}\\]\n\nRotating a word vector\nGiven a word vector \\(x = (x_1, x_2)\\) at position \\(m\\), we can rotate it by an angle \\(\\theta_m\\) to get the position-aware vector \\(x'\\):\n\n\\[\\begin{bmatrix}\nx'_1 \\\\\nx'_2\n\\end{bmatrix} =\n\\begin{bmatrix}\n\\cos \\theta_m & -\\sin \\theta_m \\\\\n\\sin \\theta_m & \\cos \\theta_m\n\\end{bmatrix}\n\\begin{bmatrix}\nx_1 \\\\\nx_2\n\\end{bmatrix}\\]"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#dot-product-of-rotated-vectors",
     "href": "arch/03_modern_arch/slides-2.html#dot-product-of-rotated-vectors",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Dot product of rotated vectors",
     "text": "Dot product of rotated vectors\nLet’s rotate two vectors \\(q\\) and \\(k\\) by angles \\(\\theta_q\\) and \\(\\theta_k\\) respectively.\n\\(q' = R_{(\\theta_q)} q\\)\n\\(k' = R_{(\\theta_k)} k\\)\nThe dot product of the rotated vectors is:\n\\[\\begin{aligned}\nq' \\cdot k' &= (R(\\theta_q) q) \\cdot (R(\\theta_k) k) \\\\\n&= q^T R(\\theta_q)^T R(\\theta_k) k \\\\\n&= q^T R(\\theta_k - \\theta_q) k\n\\end{aligned}\\]"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#dot-product-of-rotated-vectors-1",
     "href": "arch/03_modern_arch/slides-2.html#dot-product-of-rotated-vectors-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Dot product of rotated vectors",
     "text": "Dot product of rotated vectors\nDot products depend only on relative rotation.\nNow attention scores depend on : q, k, and the relative angle \\((\\theta_k - \\theta_q)\\), which encodes the relative position between the two tokens."
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#rotations-in-higher-dimensions",
     "href": "arch/03_modern_arch/slides-2.html#rotations-in-higher-dimensions",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Rotations in higher dimensions",
     "text": "Rotations in higher dimensions\n\n\n\nIn higher dimensions, we can apply rotations in multiple planes\n\nExample: In 4D space, rotate independently in \\((x_1, x_2)\\) plane and \\((x_3, x_4)\\) plane\n\nFor a \\(d\\)-dimensional vector:\n\nApply \\(\\frac{d}{2}\\) independent rotations\nEach rotation has its own angle \\(\\theta_m\\)\nEncodes position information compatible with attention mechanism"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#rotations-in-higher-dimensions-1",
     "href": "arch/03_modern_arch/slides-2.html#rotations-in-higher-dimensions-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Rotations in higher dimensions",
     "text": "Rotations in higher dimensions\n\n\n\nExample: Model with hidden dimension \\(d = 512\\)\n\nApply 256 independent rotations\nEach pair of dimensions gets rotated by different frequency\nCreates a rich positional representation"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#rotation-in-m-dimensions",
     "href": "arch/03_modern_arch/slides-2.html#rotation-in-m-dimensions",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Rotation in m dimensions",
     "text": "Rotation in m dimensions"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#rotation-in-m-dimensions-1",
     "href": "arch/03_modern_arch/slides-2.html#rotation-in-m-dimensions-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Rotation in m dimensions",
     "text": "Rotation in m dimensions\n\n\n\n\n\\(\\theta_i = B^{-2i/d} \\quad \\text{where } B \\text{ is the base (typically 10000)}\\)\nThe wavelength of dimension \\(i\\) is:\n\\[\\lambda_i = \\frac{2\\pi}{\\theta_i} = 2\\pi \\cdot B^{2i/d}\\]\nThis creates a geometric progression of wavelengths:\n\nShortest wavelength (highest freq, \\(i=0\\)): \\(\\lambda_{\\min} = 2\\pi \\approx 6.28\\) tokens\nLongest wavelength (lowest freq, \\(i=d/2-1\\)): \\(\\lambda_{\\max} = 2\\pi \\cdot B \\approx 62,832\\) tokens (when \\(B=10000\\))"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#rope-summary",
     "href": "arch/03_modern_arch/slides-2.html#rope-summary",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "RoPE Summary",
     "text": "RoPE Summary\nCore Formula:\nFor a vector \\(x\\) at position \\(m\\), RoPE applies rotation:\n\\[f(x, m) = R_{\\Theta,m} \\cdot x\\]\nwhere \\(R_{\\Theta,m}\\) is a block-diagonal rotation matrix with \\(d/2\\) independent 2D rotations.\nRotation for dimension pair \\((2i, 2i+1)\\):\n\\[\\begin{bmatrix} x'_{2i} \\\\ x'_{2i+1} \\end{bmatrix} = \\begin{bmatrix} \\cos(m\\theta_i) & -\\sin(m\\theta_i) \\\\ \\sin(m\\theta_i) & \\cos(m\\theta_i) \\end{bmatrix} \\begin{bmatrix} x_{2i} \\\\ x_{2i+1} \\end{bmatrix}\\]\nFrequency schedule: \\(\\theta_i = B^{-2i/d}\\) where \\(B = 10000\\) (base)"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#rope-summary-1",
     "href": "arch/03_modern_arch/slides-2.html#rope-summary-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "RoPE Summary",
     "text": "RoPE Summary\nKey property - relative position encoding:\n\\[\\langle R_{\\Theta,m} \\cdot q, R_{\\Theta,n} \\cdot k \\rangle = q^T R_{\\Theta,(n-m)} k\\]\nAttention scores depend only on relative position \\((n - m)\\), not absolute positions."
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#computing-attention-with-rope",
     "href": "arch/03_modern_arch/slides-2.html#computing-attention-with-rope",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Computing Attention with RoPE",
-    "text": "Computing Attention with RoPE\nclass RoPEAttention(nn.Module):\n\n\n    def forward(self, x: torch.Tensor):\n        # Apply RoPE to queries and keys\n        q = apply_rotary_emb(q, self.freqs_cis[:seq_len])\n        k = apply_rotary_emb(k, self.freqs_cis[:seq_len])\n\n        # Scaled dot-product attention\n        scores = (q @ k.transpose(-2, -1)) / (self.head_dim ** 0.5)\nKey implementation details:\n\nPrecompute frequencies: Calculate \\(\\theta_i = 10000^{-2i/d}\\) for all dimension pairs once\nApply once per forward pass: Rotate Q and K by position-dependent angles\nNo extra parameters: RoPE is fully deterministic, no learned weights"
+    "text": "Computing Attention with RoPE\nRef : LLaMa 2 Attention\nclass RoPEAttention(nn.Module):\n\n\n    def forward(self, x: torch.Tensor):\n        # Apply RoPE to queries and keys\n        q = apply_rotary_emb(q, self.freqs_cis[:seq_len])\n        k = apply_rotary_emb(k, self.freqs_cis[:seq_len])\n\n        # Scaled dot-product attention\n        scores = (q @ k.transpose(-2, -1)) / (self.head_dim ** 0.5)\nKey implementation details:\n\nPrecompute frequencies: Calculate \\(\\theta_i = 10000^{-2i/d}\\) for all dimension pairs once\nApply once per forward pass: Rotate Q and K by position-dependent angles\nNo extra parameters: RoPE is fully deterministic, no learned weights"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#other-hyperparameters",
     "href": "arch/03_modern_arch/slides-2.html#other-hyperparameters",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Other Hyperparameters",
     "text": "Other Hyperparameters\n\nHow many attention heads?\nHow many layers?\nHidden dimension size?\nFFN dimension size?\nVocab size?"
   },
   {
     "objectID": "arch/03_modern_arch/slides-2.html#other-hyperparameters-1",
     "href": "arch/03_modern_arch/slides-2.html#other-hyperparameters-1",
-    "title": "Modern Architectures",
+    "title": "Modern Architectures - II",
     "section": "Other Hyperparameters",
     "text": "Other Hyperparameters\nFFN Dimensions\n\nTypical FFN dimension is 4x the hidden dimension (\\(d_{ff} = 4 \\cdot d_{model}\\))\nin GLU variants (SwiGLU, GeGLU), use 2/3 scaling to keep parameter count same\n\nNumber of attention heads\n\nCommon choices are 16, 32, or 64 heads for large models.\nThe number of heads is often chosen to be a divisor of the hidden dimension for simplicity (e.g., 512 hidden dimension with 16 heads means each head has 32 dimensions).\n\nVocabulary size\n\nMonolingual models: 30-50K tokens (Original Transformer: 37K, GPT-2/3: 50K, LLaMA 1/2: 32K, LLaMA 3: 128K)\nMultilingual/Production: 100-250K tokens (GPT-4: 100K, PaLM: 256K, Qwen: 152K, Command A: 255K)"
   },
