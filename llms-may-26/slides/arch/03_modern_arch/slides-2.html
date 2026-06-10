@@ -214,349 +214,13 @@ CCE, IISc
 <section id="topics-covered" class="slide level2">
 <h2>Topics Covered</h2>
 <ul>
-<li><strong>GPT-2 Review</strong>
-<ul>
-<li>Training Loop</li>
-</ul></li>
 <li><strong>Modern LLM Architectures</strong>
 <ul>
-<li>Norm Types</li>
-<li>Activation Functions</li>
 <li>Positional Encodings</li>
 <li>Attention Variants</li>
 <li>Hyperparameters</li>
 </ul></li>
 </ul>
-</section>
-<section id="recap-gpt-2-architecture" class="slide level2">
-<h2>Recap : GPT-2 Architecture</h2>
-
-<img data-src="images/gpt2-final.png" class="r-stretch"></section>
-<section id="recap-gpt-2-training-loop" class="slide level2">
-<h2>Recap : GPT-2 Training Loop</h2>
-<p>During Training we update model weights to minimize loss through <strong>backpropagation</strong> and <strong>gradient descent</strong>.</p>
-<div class="columns">
-<div class="column">
-<p><img data-src="images/train-loop.png"></p>
-</div><div class="column">
-<p><em>Training Loop in code</em></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a><span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(num_epochs):</span>
-<span id="cb1-2"><a></a>    model.train()  <span class="co"># Enable dropout</span></span>
-<span id="cb1-3"><a></a></span>
-<span id="cb1-4"><a></a>    <span class="cf">for</span> input_batch, target_batch <span class="kw">in</span> train_loader:</span>
-<span id="cb1-5"><a></a>        optimizer.zero_grad()  <span class="co"># Reset gradients</span></span>
-<span id="cb1-6"><a></a></span>
-<span id="cb1-7"><a></a>        loss <span class="op">=</span> calc_loss_batch(input_batch, target_batch, model, device)</span>
-<span id="cb1-8"><a></a>        loss.backward()        <span class="co"># Calculate gradients</span></span>
-<span id="cb1-9"><a></a>        optimizer.step()       <span class="co"># Update weights</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div></div>
-</section>
-<section id="loading-and-saving-model-weights" class="slide level2">
-<h2>Loading and Saving Model Weights</h2>
-<div class="columns">
-<div class="column">
-<p><strong>We must save trained models to:</strong></p>
-<ul>
-<li>Avoid retraining</li>
-<li>Share models with others</li>
-<li>Resume training later</li>
-<li>Deploy to production</li>
-</ul>
-</div><div class="column">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a></a><span class="co"># ============ SAVE ============</span></span>
-<span id="cb2-2"><a></a></span>
-<span id="cb2-3"><a></a>torch.save(model.state_dict(), <span class="st">"model.pth"</span>)</span>
-<span id="cb2-4"><a></a></span>
-<span id="cb2-5"><a></a><span class="co"># Save model + optimizer (for resuming training)</span></span>
-<span id="cb2-6"><a></a>torch.save({</span>
-<span id="cb2-7"><a></a>    <span class="st">"model_state_dict"</span>: model.state_dict(),</span>
-<span id="cb2-8"><a></a>    <span class="st">"optimizer_state_dict"</span>: optimizer.state_dict(),</span>
-<span id="cb2-9"><a></a>}, <span class="st">"model_and_optimizer.pth"</span>)</span>
-<span id="cb2-10"><a></a></span>
-<span id="cb2-11"><a></a></span>
-<span id="cb2-12"><a></a><span class="co"># ============ LOAD ============</span></span>
-<span id="cb2-13"><a></a><span class="co"># Load weights into fresh model</span></span>
-<span id="cb2-14"><a></a>model <span class="op">=</span> GPTModel(GPT_CONFIG_124M)</span>
-<span id="cb2-15"><a></a>model.load_state_dict(torch.load(<span class="st">"model.pth"</span>, map_location<span class="op">=</span>device))</span>
-<span id="cb2-16"><a></a>model.<span class="bu">eval</span>()  <span class="co"># Set to evaluation mode</span></span>
-<span id="cb2-17"><a></a></span>
-<span id="cb2-18"><a></a><span class="co"># Resume training</span></span>
-<span id="cb2-19"><a></a>checkpoint <span class="op">=</span> torch.load(<span class="st">"model_and_optimizer.pth"</span>, map_location<span class="op">=</span>device)</span>
-<span id="cb2-20"><a></a>model <span class="op">=</span> GPTModel(GPT_CONFIG_124M)</span>
-<span id="cb2-21"><a></a>model.load_state_dict(checkpoint[<span class="st">"model_state_dict"</span>])</span>
-<span id="cb2-22"><a></a></span>
-<span id="cb2-23"><a></a>optimizer <span class="op">=</span> torch.optim.AdamW(model.parameters(), lr<span class="op">=</span><span class="fl">5e-4</span>, weight_decay<span class="op">=</span><span class="fl">0.1</span>)</span>
-<span id="cb2-24"><a></a>optimizer.load_state_dict(checkpoint[<span class="st">"optimizer_state_dict"</span>])</span>
-<span id="cb2-25"><a></a>model.train()  <span class="co"># Set to training mode</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div></div>
-</section>
-<section id="modern-architectures" class="slide level2" data-state="title-slide">
-<h2>Modern Architectures</h2>
-</section>
-<section id="gpt-2-architecture" class="slide level2">
-<h2>GPT-2 Architecture</h2>
-<div class="columns">
-<div class="column">
-<p><strong>Position embedding</strong>: learned, absolute</p>
-<p><strong>FFN</strong>: GELU</p>
-<p><span class="math display">\[ \text{FFN}(x) = GELU(xW_1 + b_1)W_2 + b_2 \]</span></p>
-<p><strong>Norm type</strong>: Pre-Norm, LayerNorm</p>
-</div><div class="column">
-<p><img data-src="images/gpt-2.png"></p>
-</div></div>
-</section>
-<section id="current-models" class="slide level2">
-<h2>Current Models</h2>
-<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQsF7QOjxAI1f7ud_oYNLRBq6qa3ZzLqtMMF_1xOKKbi5qb6atwvgeYIp4pYjuGXHDTKXMO0IdxBaVw/pubhtml?gid=1330227995&amp;single=true&amp;widget=true&amp;headers=false" style="width:100%;height:100%;border:none;">
-</iframe>
-<p>source: <a href="https://docs.google.com/spreadsheets/d/1TQevWIAX3p5nC32H-tYeGF_pkvCW7BzUU-goIV59N3E">Modern LLM Architectures</a></p>
-</section>
-<section id="llama-2-llama-3-and-qwen-3-architectures" class="slide level2">
-<h2>Llama 2, Llama 3 and Qwen 3 Architectures</h2>
-
-<img data-src="images/llama-2.png" class="r-stretch"><div style="font-size: 0.8em;">
-<p><strong>Position embedding</strong>: RoPE (rotary position embeddings)</p>
-<p><strong>FFN</strong>: *GLU variant (SwiGLU for LLaMA, GeGLU for Qwen)</p>
-<p><strong>Norm type</strong>: Pre-Norm, RMSNorm</p>
-</div>
-</section>
-<section id="llama-2-llama-3-and-qwen-3-architectures-1" class="slide level2">
-<h2>Llama 2, Llama 3 and Qwen 3 Architectures</h2>
-
-<img data-src="images/llama-qwen.png" class="r-stretch"><div style="font-size: 0.8em;">
-<p><strong>Position embedding</strong>: RoPE (rotary position embeddings)</p>
-<p><strong>FFN</strong>: *GLU variant (SwiGLU for LLaMA, GeGLU for Qwen)</p>
-<p><strong>Norm type</strong>: Pre-Norm, RMSNorm</p>
-</div>
-</section>
-<section id="pre-norm-vs-post-norm" class="slide level2">
-<h2>Pre-Norm vs Post-Norm</h2>
-<p><strong>Almost all models post-2020 use pre-norm.</strong></p>
-
-<img data-src="images/pre-post-ln.png" class="r-stretch"><p><strong>Original Transformer</strong> : Post Norm</p>
-<p><code>x -&gt; Attention(x) -&gt; Add -&gt; LayerNorm -&gt; FFN -&gt; Add -&gt; LayerNorm</code></p>
-<p><strong>GPT 2</strong> : Pre-Norm</p>
-<p><code>x -&gt; [LN -&gt; Attn] -&gt; +x -&gt; [LN -&gt; FFN] -&gt; +x</code></p>
-</section>
-<section id="pre-norm-vs-post-norm-1" class="slide level2">
-<h2>Pre-Norm vs Post-Norm</h2>
-
-<img data-src="images/pre-post-ln.png" class="r-stretch"><p><strong>Why pre-norm wins:</strong></p>
-<ul>
-<li>Better gradient flow through residual connections.</li>
-<li>Practical evidence: almost all modern LLMs use pre-norm</li>
-</ul>
-<div style="font-size: 0.8em;">
-<p><strong>Note</strong> : Double norm also used in some models, but not as common as pre-norm. It applies LayerNorm both before and after the sub-layer.</p>
-<p><em>Question</em> : <code>BERT was trained with post-norm and it was huge success. But most models use pre-norm. Why?</code></p>
-<p>Ref : <em>Xiong et al.&nbsp;2020, On Layer Normalization in the Transformer Architecture</em></p>
-</div>
-</section>
-<section id="layernorm-vs-rmsnorm" class="slide level2">
-<h2>LayerNorm vs RMSNorm</h2>
-<div style="text-align: center;">
-<p>Strong consensus toward RMSNorm</p>
-</div>
-<div class="columns">
-<div class="column">
-<p><strong>LayerNorm</strong> (original):</p>
-<p>Normalize by subtracting mean and dividing by std dev, then scale (<span class="math inline">\(\gamma\)</span>) and shift (<span class="math inline">\(\beta\)</span>):</p>
-<p><span class="math display">\[y = \frac{x - E[x]}{\sqrt{Var[x] + \epsilon}} \cdot \gamma + \beta\]</span></p>
-<p><em>Models</em> : GPT-1/2/3, OPT, GPT-J, BLOOM</p>
-</div><div class="column">
-<p><strong>RMSNorm</strong> (modern):</p>
-<p>Drop the mean subtraction and bias term:</p>
-<p><span class="math display">\[y = \frac{x}{\sqrt{\frac{1}{n}||x||_2^2 + \epsilon}} \cdot \gamma\]</span></p>
-<p><em>Models</em> : LLaMA family, DeepSeek V3, Qwen3 etc</p>
-</div></div>
-<p><strong>Why RMSNorm</strong></p>
-<ul>
-<li>Fewer operations: RMSNorm requires fewer computations (no mean subtraction, no bias term) which reduces both FLOPs and memory bandwidth.</li>
-</ul>
-</section>
-<section id="dropping-bias-terms-in-ffn-and-layernorm" class="slide level2">
-<h2>Dropping Bias Terms in FFN and LayerNorm</h2>
-<p>Most modern transformers have <strong>no bias terms</strong> in linear layers or LayerNorm.</p>
-<p>Original: <span class="math inline">\(FFN(x) = \max(0, xW_1 + b_1)W_2 + b_2\)</span></p>
-<p>Modern: <span class="math inline">\(FFN(x) = \sigma(xW_1)W_2\)</span></p>
-<p>SiLU activation is used instead of ReLU, but the key point is that <strong>bias terms are removed</strong>.</p>
-<p><strong>Reasons:</strong></p>
-<ol type="1">
-<li>Same memory/data movement argument as RMSNorm – fewer parameters to load</li>
-<li><strong>Optimization stability</strong> – empirically, dropping bias terms stabilizes training of very large networks</li>
-</ol>
-<p><strong><em>LayerNorm Recap</em></strong></p>
-<ul>
-<li>Most models use RMSNorm</li>
-<li>Almost all models use pre-norm</li>
-</ul>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) The "Modern: $FFN(x)=\sigma(xW_1)W_2$" line is a non-gated 2-matrix FFN, but the very next section shows the real modern FFN is GATED with 3 matrices (SwiGLU). Add a half-line bridge: "this slide isolates the *bias removal* change; the gating change comes next." Otherwise students think modern FFN = 2 matrices, then get whiplash at SwiGLU.
-[TERM] (should-fix) $\sigma$ is overloaded. Earlier in the deck $\sigma$ reads as sigmoid; here it means a generic nonlinearity (actually SiLU/Swish). State it: "SiLU(x) = x*sigmoid(x); we write $\sigma$ loosely for 'the activation'." Pin down the symbol so beginners don't equate it with plain sigmoid.
-[INTUITION] Why drop biases at all: in a Pre-Norm net the LayerNorm/RMSNorm right before each Linear already removes any constant offset, so the bias term is largely redundant -- it mostly adds parameters and a tiny instability. "The norm already handles the shift, so the bias has nothing left to do."
-[INSTRUCTOR] Quantify the stakes: biases are a *tiny* fraction of params, so the win is NOT memory size -- it's (a) data movement / kernel simplicity and (b) empirical training stability at scale. Be explicit that this is a "free simplification," not a big compression.
-[READING] Chowdhery et al. 2022 (PaLM) explicitly notes "no biases" improved training stability for large models -- good primary citation.
--->
-</section>
-<section id="activations-gated-linear-units-strong-trend-toward-swiglugeglu" class="slide level2">
-<h2>Activations &amp; Gated Linear Units (Strong trend toward SwiGLU/GeGLU)</h2>
-<p><strong>Evolution of activations:</strong></p>
-<table class="caption-top">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Activation</th>
-<th>Formula</th>
-<th>Notable Models</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>ReLU</td>
-<td><span class="math inline">\(FF(x) = \max(0, xW_1)W_2\)</span></td>
-<td>Original transformer, T5, Gopher, OPT</td>
-</tr>
-<tr class="even">
-<td>GeLU</td>
-<td><span class="math inline">\(FF(x) = GELU(xW_1)W_2\)</span> where <span class="math inline">\(GELU(x) = x\Phi(x)\)</span></td>
-<td>GPT-1/2/3, GPT-J, BLOOM</td>
-</tr>
-<tr class="odd">
-<td>SwiGLU</td>
-<td><span class="math inline">\(FF(x) = (Swish(xW) \otimes xV)W_2\)</span></td>
-<td>LLaMA 1/2/3, PaLM, Mistral, <em>most post-2023</em></td>
-</tr>
-<tr class="even">
-<td>GeGLU</td>
-<td><span class="math inline">\(FF(x) = (GELU(xW) \otimes xV)W_2\)</span></td>
-<td>T5 v1.1, mT5, Phi3, Gemma 2/3</td>
-</tr>
-</tbody>
-</table>
-<p>where <code>Swish(x) = x * sigmoid(x)</code> and <span class="math inline">\(\otimes\)</span> is elementwise multiplication.</p>
-<!-- NOTES-BLOCK
-[TERM] (must-fix) $\Phi(x)$ in "GELU(x) = x$\Phi$(x)" is undefined and will lose beginners. Gloss: "$\Phi$ is the cumulative distribution function (CDF) of the standard normal -- the probability a N(0,1) draw is below x." Intuition: GELU is a 'soft ReLU' that weights each input by how likely it is to be positive, instead of hard-gating at 0.
-[TERM] Swish and SiLU are the SAME function (x*sigmoid(x)) -- different papers, different names. Say so once; the table uses "Swish" but earlier slides say "SiLU".
-[INTUITION] (should-fix) One-line story for the whole table: the FFN nonlinearity evolved from a hard switch (ReLU: off below 0) -> a smooth switch (GELU/Swish: gentle near 0, differentiable everywhere) -> a *learned* switch (GLU: the model learns its own gate per dimension). Each step gives the optimizer a smoother surface and more control.
-[Q-ADVANCED] "ReLU is cheaper and sparsifies -- why did everyone abandon it?" Answer: smooth activations (GELU/Swish) give nonzero gradients near 0, which helps optimization; and gated variants (SwiGLU) consistently win by ~0.2-0.4 perplexity at fixed params in controlled studies. ReLU survives where activation sparsity is exploited for speed (some MoE/inference setups).
-[READING] Shazeer 2020, "GLU Variants Improve Transformer" -- Table 1 is literally this comparison (and the source of the famous "we offer no explanation... divine benevolence" line about why SwiGLU works).
--->
-</section>
-<section id="gated-linear-units-glu" class="slide level2">
-<h2>Gated Linear Units (GLU)</h2>
-<p><strong>What do GLUs do?</strong></p>
-<ul>
-<li>GLUs add a <strong>gating mechanism</strong></li>
-<li>Hidden representation element-wise multiplied by a gate <span class="math inline">\(xV\)</span> (learned linear projection)</li>
-<li><span class="math inline">\(xV\)</span> controls information flow through the MLP</li>
-</ul>
-<p><span class="math display">\[\text{Standard:} \quad \sigma(xW_1) \rightarrow \sigma(xW_1) \otimes (xV) \quad \text{(gated)}\]</span></p>
-
-<!-- NOTES-BLOCK
-[INTUITION] (must-fix) The plain-language model of gating: $xV$ is a learned "volume knob," computed per dimension from the same input. The network produces a candidate signal AND, in parallel, decides how much of each channel to let through (0 = mute, large = amplify). It's the MLP equivalent of LSTM gates -- content and a learned mask, multiplied. Beginners grasp "knob you multiply by" far faster than "gating mechanism."
-[INSTRUCTOR] glu.png shows the actual code diff (Raschka): the regular FFN is `gelu(fc1(x))` -> `fc2`; the GLU FFN computes TWO projections `fc1(x)` and `fc2(x)`, does `silu(fc1(x)) * fc2(x)`, then a third `fc3`. Walk the three nn.Linear layers on screen so "extra matrix V" becomes concrete code, not algebra.
-[DEMO] Tiny live numeric demo: take a 4-vector, show silu(a) elementwise, then silu(a)*g for a gate g=[1,0,1,0] -- students literally see two channels muted. Cements "gate = multiply".
--->
-<img data-src="images/glu.png" class="r-stretch"></section>
-<section id="gated-linear-units-glu-1" class="slide level2">
-<h2>Gated Linear Units (GLU)</h2>
-<p><strong>More number of parameters?</strong></p>
-<p><em>The extra parameter V</em> means GLU models have 3 weight matrices <em>(W, V, W2)</em> instead of 2.</p>
-<p>How to keep parameter count the same? (memory is the real bottleneck, not compute)</p>
-</section>
-<section id="gated-linear-units-glu-2" class="slide level2">
-<h2>Gated Linear Units (GLU)</h2>
-<p><strong>More number of parameters?</strong></p>
-<p><em>The extra parameter V</em> means GLU models have 3 weight matrices <em>(W, V, W2)</em> instead of 2.</p>
-<p>How to keep parameter count the same? (memory is the real bottleneck, not compute)</p>
-<p><strong>Scale the FF Params</strong></p>
-</section>
-<section id="gated-linear-units-glu-3" class="slide level2">
-<h2>Gated Linear Units (GLU)</h2>
-<p><strong>More number of parameters?</strong></p>
-<p><em>The extra parameter V</em> means GLU models have 3 weight matrices <em>(W, V, W2)</em> instead of 2.</p>
-<p>How to keep parameter count the same? (memory is the real bottleneck, not compute)</p>
-<p><strong>Scale the FF Params</strong></p>
-<ul>
-<li>Standard MLP
-<ul>
-<li><span class="math inline">\(W_1 \in \mathbb{R}^{d \times d_{ff}}\)</span> + <span class="math inline">\(W_2 \in \mathbb{R}^{d_{ff} \times d}\)</span> = <span class="math inline">\(2 \cdot d \cdot d_{ff}\)</span> params</li>
-<li>Total FFN params = <span class="math inline">\(2 \cdot d \cdot 4 d\)</span> = <span class="math inline">\(8 \cdot d^2\)</span>.</li>
-</ul></li>
-</ul>
-</section>
-<section id="gated-linear-units-glu-4" class="slide level2">
-<h2>Gated Linear Units (GLU)</h2>
-<p><strong>More number of parameters?</strong></p>
-<p><em>The extra parameter V</em> means GLU models have 3 weight matrices <em>(W, V, W2)</em> instead of 2.</p>
-<p>How to keep parameter count the same? (memory is the real bottleneck, not compute)</p>
-<p><strong>Scale the FF Params</strong></p>
-<ul>
-<li>Standard MLP
-<ul>
-<li><span class="math inline">\(W_1 \in \mathbb{R}^{d \times d_{ff}}\)</span> + <span class="math inline">\(W_2 \in \mathbb{R}^{d_{ff} \times d}\)</span> = <span class="math inline">\(2 \cdot d \cdot d_{ff}\)</span> params</li>
-<li>Total FFN params = <span class="math inline">\(2 \cdot d \cdot 4 d\)</span> = <span class="math inline">\(8 \cdot d^2\)</span>.</li>
-</ul></li>
-<li>Gated MLP:
-<ul>
-<li><span class="math inline">\(W \in \mathbb{R}^{d \times d_{ff}}\)</span> + <span class="math inline">\(V \in \mathbb{R}^{d \times d_{ff}}\)</span> + <span class="math inline">\(W_2 \in \mathbb{R}^{d_{ff} \times d}\)</span> = <span class="math inline">\(3 \cdot d \cdot d_{ff}\)</span> params.</li>
-</ul></li>
-</ul>
-</section>
-<section id="gated-linear-units-glu-5" class="slide level2">
-<h2>Gated Linear Units (GLU)</h2>
-<p><strong>More number of parameters?</strong></p>
-<p><em>The extra parameter V</em> means GLU models have 3 weight matrices <em>(W, V, W2)</em> instead of 2.</p>
-<p>How to keep parameter count the same? (memory is the real bottleneck, not compute)</p>
-<p><strong>Scale the FF Params</strong></p>
-<ul>
-<li>Standard MLP
-<ul>
-<li><span class="math inline">\(W_1 \in \mathbb{R}^{d \times d_{ff}}\)</span> + <span class="math inline">\(W_2 \in \mathbb{R}^{d_{ff} \times d}\)</span> = <span class="math inline">\(2 \cdot d \cdot d_{ff}\)</span> params</li>
-<li>Total FFN params = <span class="math inline">\(2 \cdot d \cdot 4 d\)</span> = <span class="math inline">\(8 \cdot d^2\)</span>.</li>
-</ul></li>
-<li>Gated MLP:
-<ul>
-<li><span class="math inline">\(W \in \mathbb{R}^{d \times d_{ff}}\)</span> + <span class="math inline">\(V \in \mathbb{R}^{d \times d_{ff}}\)</span> + <span class="math inline">\(W_2 \in \mathbb{R}^{d_{ff} \times d}\)</span> = <span class="math inline">\(3 \cdot d \cdot d_{ff}\)</span> params.</li>
-</ul></li>
-<li>To match:
-<ul>
-<li>set <span class="math inline">\(d_{ff}^{gated} = \frac{2}{3} d_{ff}^{standard} = \frac{2}{3} \cdot 4d = \frac{8}{3}d\)</span>.</li>
-<li>Total FFN params = <span class="math inline">\(3 \cdot d \cdot \frac{8}{3}d = 8 \cdot d^2\)</span>.</li>
-</ul></li>
-</ul>
-<p><strong>Scaling Factors:</strong></p>
-<ul>
-<li>Standard MLP: <span class="math inline">\(d_{ff} = 4 \cdot d\)</span></li>
-<li>Gated MLP: <span class="math inline">\(d_{ff} = \frac{8}{3} \cdot d \approx 2.67 \cdot d\)</span></li>
-</ul>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (nice) Math checks out: 3 matrices x d x (8/3 d) = 8d^2 = the standard 2 x d x 4d. Good. One real-world caveat to mention: implementations round d_ff to a hardware-friendly multiple (Llama uses multiple_of=256), so the actual number is "approximately 8/3 d, rounded up" -- e.g. Llama2-7B is 11008, not exactly 2.67x4096=10923.
-[FLOW] (should-fix) Five near-identical slides build this result by progressive reveal -- great in the room, but as a static .qmd they read as duplicates. Consider collapsing to ONE slide with reveal fragments, or add a one-word title delta ("...the cost", "...the fix") so a reader of the source/PDF isn't confused.
-[INTUITION] The takeaway in one breath: "gating would cost 50% more FFN params (2 matrices -> 3), so we shrink the hidden width by 2/3 to break even -- same params, strictly better function." That's the whole reason GLU variants are 'free'.
-[Q-ADVANCED] "Why is memory, not compute, called the bottleneck here?" Answer: at inference, generation is memory-bandwidth bound -- you stream weights and KV-cache from HBM each step and the matmuls are tiny (batch of 1 token). So param COUNT (bytes to move) matters more than FLOPs. This framing recurs in the attention-variant section.
--->
-</section>
-<section id="serial-vs-parallel-layers" class="slide level2">
-<h2>Serial vs Parallel Layers</h2>
-<p><strong>Normal transformer blocks are serial – they compute attention, then the MLP</strong></p>
-<p>Standard transformer block can be written as:</p>
-<p><span class="math display">\[y = x + \text{MLP}(\text{LayerNorm}(x + \text{Attention}(\text{LayerNorm}(x)))\]</span></p>
-<p>Whereas the parallel formulation can be written as:</p>
-<p><span class="math display">\[y = x + \text{MLP}(\text{LayerNorm}(x)) + \text{Attention}(\text{LayerNorm}(x))\]</span></p>
-
-<img data-src="images/parallel.png" class="r-stretch"><p><a href="https://arxiv.org/html/2311.01906">image source</a></p>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) The serial formula is missing a closing parenthesis: `y = x + MLP(LayerNorm(x + Attention(LayerNorm(x)))` has 4 opens, 3 closes. Add one ")": `y = x + \text{MLP}(\text{LayerNorm}(x + \text{Attention}(\text{LayerNorm}(x))))`. (MathJax may still render, but it's wrong as written.)
-[INTUITION] (must-fix) Why parallel is faster: in the serial block the MLP must WAIT for attention to finish (it reads attention's output). In the parallel block, attention and MLP both read the SAME normalized x, so they run independently -- you can fuse their input projections into one big matmul and overlap the two branches. Less latency, fewer kernel launches. Trade-off: slightly less expressive (MLP can't react to attention's result within the block); works fine at large scale (GPT-J, PaLM, Falcon use it).
-[CORRECTNESS] (nice) parallel.png is from a different paper and labels a third "Ours/Shaped Attention" panel that isn't discussed -- crop to just the Pre-LN vs Parallel panels, or note the extra panel is unrelated so it doesn't distract.
-[Q-ADVANCED] "Did parallel layers hurt quality?" Answer: PaLM reported a small quality cost at small scale that VANISHES at large scale, for a ~15% training speedup -- a good trade for 100B+ models, less compelling for small ones. That's why it's common in big models but not universal.
-[READING] Chowdhery et al. 2022 (PaLM), Section 2 "Parallel Layers"; also Wang & Komatsuzaki 2021 (GPT-J) which popularized the design.
--->
 </section>
 <section id="position-encodings" class="slide level2">
 <h2>Position Encodings</h2>
@@ -597,7 +261,7 @@ CCE, IISc
 </tr>
 <tr class="odd">
 <td><strong>NoPE</strong></td>
-<td>No position embedding at all</td>
+<td>No explicit position encoding</td>
 <td>SmolLM3, Kimi Linear</td>
 </tr>
 <tr class="even">
@@ -607,13 +271,6 @@ CCE, IISc
 </tr>
 </tbody>
 </table>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) "NoPE: No position embedding at all" needs a caveat. Pure NoPE works ONLY in decoder-only models because the CAUSAL MASK already breaks permutation symmetry (token i can see only 0..i, which leaks position). And SmolLM3 isn't fully NoPE -- it INTERLEAVES (NoPE on ~every 4th layer, RoPE elsewhere). notes.md captures this: "long-range info via NoPE, short-range via RoPE + SWA." Reword to "No *explicit* position encoding (relies on the causal mask); used in some layers, e.g. SmolLM3."
-[INTUITION] (must-fix) Beginners ask "how can NoPE possibly know order?" One-liner: a causal-masked model is like reading a book where you can only look left -- the *count of words you're allowed to see* already tells you your position. So a decoder doesn't strictly NEED an added position signal; encoders (bidirectional) do.
-[INSTRUCTOR] This table is the roadmap for the next ~10 slides. Say "we'll walk this column top-to-bottom, and each row fixes a flaw in the row above" -- gives the upcoming integer/binary/sinusoidal/relative/RoPE sequence a clear narrative spine.
-[Q-ADVANCED] "Why did the field converge on RoPE specifically over ALiBi or T5 relative bias?" Answer: RoPE adds NO parameters, plays well with FlashAttention, and extrapolates/interpolates to longer context via simple base-frequency scaling (NTK / YaRN). ALiBi extrapolates but is less expressive; T5 bias adds params and is slower. RoPE hit the sweet spot.
-[READING] Su et al. 2021, "RoFormer" (RoPE); Press et al. 2022, "ALiBi"; Raffel et al. 2020 (T5) for relative bias.
--->
 </section>
 <section id="position-encodings-1" class="slide level2">
 <h2>Position Encodings</h2>
@@ -635,11 +292,6 @@ CCE, IISc
 </div><div class="column">
 <p><img data-src="images/tok_pos.png"></p>
 </div></div>
-<!-- NOTES-BLOCK
-[INTUITION] (should-fix) Nail the "set vs sequence" point with a one-liner: "To raw attention, a sentence is a BAG of words -- 'dog bites man' and 'man bites dog' look identical. Positional encoding is the tag that says which word sat where." The slide's two-dog example is good; add the bag metaphor for the absolute beginners.
-[DEMO] 30-second live demo: feed a tiny attention layer the same tokens in two different orders WITHOUT positions and show identical outputs; then add positions and show they diverge. Makes "position-agnostic" visceral.
-[Q-ADVANCED] "Doesn't the causal mask already give order (as on the NoPE slide)?" Answer: yes for decoders it leaks coarse order, but explicit encodings give the model a much sharper, learnable sense of *distance*, which the next slides build toward. Good forward-reference.
--->
 </section>
 <section id="integer-position-encoding" class="slide level2">
 <h2>Integer Position Encoding</h2>
@@ -653,11 +305,6 @@ CCE, IISc
 </ul>
 <video controls="" src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/you-could-have-designed-SOTA-positional-encoding/IntegerEncoding.mp4" title="Int Encoding">
 </video>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] The killer problem to emphasize: integers are UNBOUNDED. Position 1 adds ~1 to the embedding; position 4000 adds ~4000, swamping token values that live around O(1). The model can't even compute attention sanely because magnitude explodes with length -- and it can never generalize past the longest integer it saw in training.
-[CORRECTNESS] (nice) The .mp4s are remote HF URLs -- they need network to play and will be blank in offline/PDF export. The render-check tolerates this, but have the clips downloaded locally for class in case wifi is flaky. (clip is from the Fleetwood HF blog.)
-[READING] HF blog, "You could have designed state-of-the-art positional encoding" -- the entire integer -> binary -> sinusoidal -> RoPE motivation chain in this deck follows this post; cite it on the first PE slide.
--->
 </section>
 <section id="binary-position-encoding" class="slide level2">
 <h2>Binary Position Encoding</h2>
@@ -670,58 +317,89 @@ CCE, IISc
 </video>
 <p><strong>Problems</strong>:</p>
 <ul>
-<li>Hamming distance artifacts</li>
-<li>Sparse representations (most bits are zero, which can make learning harder)</li>
-<li>No lernable interpolation</li>
+<li>Hamming distance artifacts - small position changes can flip many bits</li>
+<li>Sparse representations (many bits are zero, which can make learning harder)</li>
+<li>No learnable interpolation</li>
 </ul>
-<!-- NOTES-BLOCK
-[FIX] (must-fix) Typo: "No lernable interpolation" -> "No learnable interpolation".
-[CORRECTNESS] (should-fix) "Sparse representations (most bits are zero)" is not quite the right critique -- across positions roughly half the bits are 1 on average, not "most zero." The real flaw is that binary codes are DISCRETE and NON-SMOOTH: incrementing the position can flip many bits at once (1000 -> 1111... wait 0111->1000 flips 4 bits), so nearby positions can be far apart in code space and the function isn't differentiable-friendly. Reword to "Discrete / non-smooth: small position changes cause abrupt multi-bit jumps."
-[INTUITION] (must-fix) The bridge to sinusoidal that makes the whole section click: "Binary already uses different FREQUENCIES -- the lowest bit flips every step, the next every 2 steps, then every 4... Sinusoidal is just the SMOOTH, continuous version of binary counting: replace each on/off bit with a sine wave of a different frequency." Say this here and the next slide feels inevitable rather than magical.
-[DEMO] Show a binary counter 0..15 as a grid of bits, then morph each column into a sine wave (the Fleetwood blog has exactly this animation -- BinaryPositionalEncodingPlot.mp4 is already on the prior slide). The visual "bits become waves" is the aha moment.
--->
 </section>
 <section id="sinusoidal-position-encoding" class="slide level2">
 <h2>Sinusoidal Position Encoding</h2>
-<p><span class="math display">\[ PE_{(pos,2i)} = sin(pos/10000^{2i/d_{\text{model}}}) \]</span></p>
-<p><span class="math display">\[ PE_{(pos,2i+1)} = cos(pos/10000^{2i/d_{\text{model}}}) \]</span></p>
+<p><em>A smooth, continuous version of binary encoding.</em></p>
+<p><span class="math display">\[ PE_{(pos,\,2i)} = \sin\!\big(pos/10000^{\,2i/d_{\text{model}}}\big), \qquad PE_{(pos,\,2i+1)} = \cos\!\big(pos/10000^{\,2i/d_{\text{model}}}\big) \]</span></p>
+<ul>
+<li>Each dimension is a sine/cosine of a different <strong>frequency</strong> (like the hands of a clock)</li>
+</ul>
 <video controls="" src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/you-could-have-designed-SOTA-positional-encoding/SteppedPositionalEncodingPlot.mp4" title="Title">
 </video>
 </section>
-<section id="sinusoidal-position-encoding-1" class="slide level2">
-<h2>Sinusoidal Position Encoding</h2>
-<p><em>Why <strong>sin</strong> and <strong>cos</strong></em>?</p>
-<p><span class="math inline">\(sin(a+b) = sin(a)cos(b) + cos(a)sin(b)\)</span></p>
-<p><span class="math inline">\(cos(a+b) = cos(a)cos(b) - sin(a)sin(b)\)</span></p>
-<p><em>PE(pos+k)</em> is a linear function of <em>PE(pos)</em></p>
-<p>So</p>
-<p><span class="math display">\[
-\begin{aligned}
-\sin(\omega \cdot (p+k)) &amp;= \sin(\omega p)\cos(\omega k) + \cos(\omega p)\sin(\omega k)
-\end{aligned}
-\]</span></p>
-<p><span class="math display">\[
-\begin{aligned}
-\cos(\omega \cdot (p+k)) &amp;= \cos(\omega p)\cos(\omega k) - \sin(\omega p)\sin(\omega k)
-\end{aligned}
-\]</span></p>
-</section>
-<section id="sinusoidal-position-encoding-2" class="slide level2">
-<h2>Sinusoidal Position Encoding</h2>
-<p><strong>Downsides</strong> :</p>
-<p>Sinusoidal PE is added to embeddings: <span class="math inline">\(x_p = x_{token} + PE(p)\)</span></p>
-<p>Then projected: <span class="math inline">\(q_p = W_q x_p\)</span>, <span class="math inline">\(k_p = W_kx_p\)</span></p>
+<section id="why-a-range-of-frequencies" class="slide level2">
+<h2>Why a <em>range</em> of frequencies?</h2>
 <ul>
-<li>Position and content are entangled before attention</li>
-<li>Relative position is implicit, not structural</li>
-<li>Attention must learn how to extract distance</li>
+<li><strong>High frequency</strong> - short wavelength: changes a lot between adjacent positions, repeats almost immediately =&gt; tiny unique range. <img data-src="images/high-freq.png"></li>
+<li><strong>Low frequency</strong> - long wavelength: adjacent positions nearly identical, repeats after long range =&gt; no resolution. <img data-src="images/low-freq.png"></li>
 </ul>
-<!-- NOTES-BLOCK
-[INTUITION] (should-fix) Why the sin/cos identity matters, in words: because sin(w(p+k)) is a fixed linear combination of sin(wp) and cos(wp), shifting a position by k is just a ROTATION in each (sin,cos) pair. So "move 5 steps right" is the same linear operation regardless of where you start -- the model CAN, in principle, recover relative distance. This is the seed of RoPE, which makes that rotation explicit and structural instead of leaving attention to discover it.
-[INSTRUCTOR] Connect the "Downsides" box directly to RoPE's pitch coming up: sinusoidal ADDS position to the input (entangled with content), so attention has to disentangle distance. RoPE instead ROTATES Q and K, baking relative distance straight into the dot product -- it fixes exactly the three bullets listed here. Foreshadow this explicitly.
-[Q-ADVANCED] "Does the base 10000 matter?" Answer: it sets the longest wavelength (~2*pi*10000 tokens). Too small and far-apart positions alias; too large wastes resolution. RoPE inherits this base and long-context methods (NTK-aware scaling, YaRN) tune it to extend context -- a nice forward hook.
-[READING] Vaswani et al. 2017, "Attention Is All You Need," Section 3.5 (sinusoidal PE rationale); Fleetwood HF blog for the smooth-binary intuition.
--->
+<div class="fragment">
+<p><strong>Fix : Use many frequencies, like the bits of a number:</strong></p>
+<ul>
+<li>Fast “hands” resolve adjacent positions; slow “hands” span the whole sequence.</li>
+<li>The base <span class="math inline">\(10000\)</span> sets the slowest wavelength -&gt; the longest distance you can represent.</li>
+<li>The combined pattern repeats only after the LCM of all wavelengths -&gt; effectively never.</li>
+</ul>
+</div>
+</section>
+<section id="why-both-sin-and-cos" class="slide level2">
+<h2>Why both <em>sin</em> and <em>cos</em>?</h2>
+<div class="fragment">
+<p><em>Relative position becomes a simple <strong>rotation</strong>.</em></p>
+</div>
+<div class="fragment">
+<p>Let <span class="math inline">\(\omega = 1/10000^{2i/d}\)</span> <span class="math display">\[\sin(\omega(p+k)) = \sin(\omega p)\cos(\omega k) + \cos(\omega p)\sin(\omega k)\]</span></p>
+<p><span class="math display">\[\cos(\omega(p+k)) = \cos(\omega p)\cos(\omega k) - \sin(\omega p)\sin(\omega k)\]</span></p>
+</div>
+<div class="fragment">
+<p>These two pairs - make a point on the unit circle at angle <span class="math inline">\(\omega p\)</span>:</p>
+<div class="columns">
+<div class="column">
+<p><span class="math display">\[PE_\omega(p) = \big(\sin(\omega p),\ \cos(\omega p)\big)\]</span></p>
+</div><div class="column">
+<p><img data-src="images/sinpe-circle.png"></p>
+</div></div>
+</div>
+</section>
+<section id="relative-position-and-rotation" class="slide level2">
+<h2>Relative Position and Rotation</h2>
+<p>Moving <span class="math inline">\(k\)</span> steps forward is exactly a <strong>rotation by <span class="math inline">\(\omega k\)</span></strong>:</p>
+<div class="columns">
+<div class="column">
+<p><img data-src="images/sinpe-rota.png"></p>
+</div><div class="column">
+<p><span class="math display">\[
+\begin{pmatrix}\sin(\omega(p{+}k))\\ \cos(\omega(p{+}k))\end{pmatrix}
+=
+\underbrace{\begin{pmatrix}\cos(\omega k) &amp; \sin(\omega k)\\ -\sin(\omega k) &amp; \cos(\omega k)\end{pmatrix}}_{\text{rotation by }\omega k}
+\begin{pmatrix}\sin(\omega p)\\ \cos(\omega p)\end{pmatrix}
+\]</span></p>
+<ul>
+<li>The rotation depends <strong>only on the shift <span class="math inline">\(k\)</span></strong>, never on the absolute position <span class="math inline">\(p\)</span>.</li>
+<li>So relative distance is, in principle, <strong>recoverable</strong> from the absolute encoding.</li>
+</ul>
+</div></div>
+</section>
+<section id="sinusoidal-pe-downsides" class="slide level2">
+<h2>Sinusoidal PE: Downsides</h2>
+<p>PE is <strong>added</strong> to the token embedding, then projected into queries and keys:</p>
+<p><span class="math display">\[x_p = x_{token} + PE(p), \qquad q_p = W_q\,x_p, \quad k_p = W_k\,x_p\]</span></p>
+<p>The attention score then splits into <strong>four</strong> terms:</p>
+<p><span class="math display">\[
+\begin{aligned}
+q_p \cdot k_n = \;&amp; \underbrace{(W_q x_{tok})\cdot(W_k x_{tok})}_{\text{content×content}} + \underbrace{(W_q x_{tok})\cdot(W_k PE_n)}_{\text{content×position}} \\[4pt]
++\;&amp; \underbrace{(W_q PE_p)\cdot(W_k x_{tok})}_{\text{position×content}} + \underbrace{(W_q PE_p)\cdot(W_k PE_n)}_{\text{position×position}}
+\end{aligned}
+\]</span></p>
+<ul>
+<li>The rotation lived in <em>raw</em> PE space, but attention sees <span class="math inline">\(W_q\,PE\)</span>: the learned <span class="math inline">\(W_q\)</span> can scale, shear, and mix the (sin, cos) pairs across frequencies, so the guarantee is lost.</li>
+<li>position and content are entangled, relative distance is <em>implicit</em>, and attention must <strong>learn</strong> to extract it</li>
+</ul>
 </section>
 <section id="absolute-vs-relative-position-encodings" class="slide level2">
 <h2>Absolute vs Relative Position Encodings</h2>
@@ -744,11 +422,6 @@ CCE, IISc
 <li>More important for many tasks than absolute position</li>
 <li>No reliance on fixed absolute positions</li>
 </ul>
-<!-- NOTES-BLOCK
-[INTUITION] (should-fix) The example "[5,6,7] vs [105,106,107]" is the right idea -- spell out the payoff: with relative encoding the model learns ONE rule ("the token 1 to my left modifies me") and reuses it everywhere; with absolute encoding it must re-learn that rule separately at position 6 and at position 106. Relative = parameter sharing across positions, which is why it generalizes to longer/unseen lengths.
-[INSTRUCTOR] rel_pos.png shows word 3 attending to relative offsets -2, -1, +1. Note it deliberately omits 0 (self). Mention that relative schemes still include a "0 = me" bucket; the figure just highlights neighbors.
-[Q-ADVANCED] "Is RoPE absolute or relative?" Answer: it APPLIES an absolute rotation (angle proportional to absolute position m) but the DOT PRODUCT depends only on the difference (m-n) -- so it's 'absolute in implementation, relative in effect.' This is the cleanest one-line way to place RoPE in this taxonomy; flag it now, prove it two slides later.
--->
 </section>
 <section id="relative-position-encoding-example" class="slide level2">
 <h2>Relative Position Encoding Example</h2>
@@ -801,24 +474,17 @@ CCE, IISc
 <h2>Absolute vs Relative Position Encodings</h2>
 <p><strong>In practice:</strong></p>
 
-<img data-src="images/qk_rel.png" class="r-stretch"><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a><span class="co"># T5-style relative attention bias</span></span>
-<span id="cb3-2"><a></a><span class="co"># For position i attending to position j:</span></span>
-<span id="cb3-3"><a></a>relative_position <span class="op">=</span> j <span class="op">-</span> i  <span class="co"># e.g., "dog"(1) → "chased"(2) = 1 - 2 = -1</span></span>
-<span id="cb3-4"><a></a></span>
-<span id="cb3-5"><a></a><span class="co"># Bias added to attention scores (learned, not fixed):</span></span>
-<span id="cb3-6"><a></a>attention_score <span class="op">=</span> (q_i <span class="op">@</span> k_j) <span class="op">+</span> bias[clip(relative_position, <span class="op">-</span>max_dist, max_dist)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<img data-src="images/qk_rel.png" class="r-stretch"><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a><span class="co"># T5-style relative attention bias</span></span>
+<span id="cb1-2"><a></a><span class="co"># For position i attending to position j:</span></span>
+<span id="cb1-3"><a></a>relative_position <span class="op">=</span> j <span class="op">-</span> i  <span class="co"># e.g., "dog"(1) → "chased"(2) = 1 - 2 = -1</span></span>
+<span id="cb1-4"><a></a></span>
+<span id="cb1-5"><a></a><span class="co"># Bias added to attention scores (learned, not fixed):</span></span>
+<span id="cb1-6"><a></a>attention_score <span class="op">=</span> (q_i <span class="op">@</span> k_j) <span class="op">+</span> bias[clip(relative_position, <span class="op">-</span>max_dist, max_dist)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>Key differences from absolute:</strong></p>
 <ul>
 <li>Same relative pattern at any absolute position (e.g., “-1” always means “previous token”)</li>
 <li>Model learns one bias per relative distance, not per absolute position</li>
 </ul>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) Sign inconsistency in the code. Line declares `relative_position = j - i` but the comment computes `"dog"(1) -> "chased"(2) = 1 - 2 = -1`, which is i - j, not j - i. The TABLE above is framed as "query = chased (pos 2), key = dog (pos 1) -> relative -1" (= key_pos - query_pos). To match the table, set i = query, j = key and write the comment as: `# query "chased"(2) attends to key "dog"(1): rel = j - i = 1 - 2 = -1`. As written, formula and comment disagree on direction.
-[FIX] Make i/j roles explicit one line above: `# i = query position, j = key position`. Then `q_i @ k_j` and `relative_position = j - i` read unambiguously and the worked number is correct.
-[INSTRUCTOR] This is the T5 mechanism: the bias is a LEARNED scalar per relative-distance bucket, added to the logit BEFORE softmax (qk_rel.png: score = q.k/sqrt(d) + b_(i-j)). T5 also BUCKETS distances (log-spaced) and shares one bias across all heads-of-a-layer? -- actually per head; mention distances are clipped/bucketed so a 4096-long context doesn't need 4096 separate biases.
-[Q-ADVANCED] "Why clip/bucket relative distances?" Answer: without clipping you'd need a learned bias for every possible distance (unbounded, and most are rare). Clipping to +/-max_dist (T5 then log-buckets beyond ~128) keeps params finite and gives graceful behavior on lengths longer than training.
-[READING] Raffel et al. 2020 (T5), Section on "simplified relative position embeddings"; Shaw et al. 2018, "Self-Attention with Relative Position Representations" (the original).
--->
 </section>
 <section id="position-encoding-desirable-properties" class="slide level2">
 <h2>Position Encoding : Desirable Properties</h2>
@@ -829,34 +495,28 @@ CCE, IISc
 <li><strong>Be computationally efficient</strong> (not too many parameters or FLOPs)</li>
 <li><strong>Be compatible with attention mechanism</strong> (e.g., allow position information to influence attention scores)</li>
 </ol>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] Turn this into a SCORECARD students fill in as RoPE is introduced: integer (fails 1,2,4), sinusoidal (passes 1,2; weak on 3,5), relative bias (passes 3,5; costs params, slower), RoPE (passes all 5). Revisit this list on the RoPE Summary slide and check every box -- that "RoPE wins on every criterion" payoff is the reason it took over.
-[FLOW] This slide is the hinge between "why position encoding is hard" and "RoPE solves it." Keep it -- it's the rubric that makes RoPE feel earned rather than asserted.
--->
 </section>
 <section id="rotary-position-embeddings-rope" class="slide level2">
 <h2>Rotary Position Embeddings (RoPE)</h2>
-<p>We want attention scores to depend only on <em>relative</em> position <span class="math inline">\((i - j)\)</span>, not absolute positions.</p>
+<p>We want attention scores to depend only on <em>relative</em> position <span class="math inline">\((i - j)\)</span> (how far apart the tokens are), not absolute positions.</p>
 <p>Mathematically, find <span class="math inline">\(f(x, i)\)</span> such that:</p>
 <p><span class="math display">\[\langle f(x, i), f(y, j) \rangle = g(x, y, i-j)\]</span></p>
+<div class="columns">
+<div class="column">
 <p><strong>RoPE’s key idea:</strong></p>
 <ul>
 <li>Instead of adding PE to the input <code>x</code>, apply rotation to the query and key vectors based on their position.</li>
 <li>Position information is directly encoded in the attention scores</li>
 </ul>
-
-<!-- NOTES-BLOCK
-[INTUITION] (must-fix) State the goal as an equation in words BEFORE the math: "We want the attention score between two tokens to depend only on HOW FAR APART they are, not WHERE they sit." The formula <f(x,i), f(y,j)> = g(x,y, i-j) says exactly that -- read it aloud as "the inner product is a function of the gap (i-j), full stop." Beginners need this translation or the next four slides are symbol soup.
-[INTUITION] Why a ROTATION (not a shift/scale)? Rotations preserve length (so they don't corrupt the token's content/magnitude) and they COMPOSE by adding angles (rotate by a, then b = rotate by a+b). That additivity is exactly what turns "absolute angle per position" into "dot product depends on angle DIFFERENCE." Length-preserving + angle-additive = the two properties that make RoPE work.
-[DEMO] images/clip_3m05s_3m39s.mp4 exists alongside the .gif -- the MP4 is higher quality and seekable; consider swapping the <img> gif for a <video> if you want to pause on a frame in class. (Don't create a new clip; this one is the RoPE rotation animation.)
--->
-<img data-src="images/clip_3m05s_3m39s.gif" class="r-stretch"></section>
+</div><div class="column">
+<p><video data-src="images/clip_3m05s_3m39s.mp4" controls=""><a href="images/clip_3m05s_3m39s.mp4">Video</a></video></p>
+</div></div>
+</section>
 <section id="encoding-position-as-a-rotation" class="slide level2">
 <h2>Encoding position as a rotation</h2>
-<p><strong>Rotating a 2D vector by an angle <span class="math inline">\(\theta\)</span></strong></p>
+<p><strong>Rotating a 2D vector by an angle</strong> <span class="math inline">\(\theta\)</span></p>
 <div style="text-align:center">
-<p><span class="math display">\[
-\begin{bmatrix}
+<p><span class="math display">\[\begin{bmatrix}
 x' \\
 y'
 \end{bmatrix} =
@@ -867,14 +527,12 @@ y'
 \begin{bmatrix}
 x \\
 y
-\end{bmatrix}
-\]</span></p>
+\end{bmatrix}\]</span></p>
 </div>
 <p><strong>Rotating a word vector</strong></p>
 <p>Given a word vector <span class="math inline">\(x = (x_1, x_2)\)</span> at position <span class="math inline">\(m\)</span>, we can rotate it by an angle <span class="math inline">\(\theta_m\)</span> to get the position-aware vector <span class="math inline">\(x'\)</span>:</p>
 <div style="text-align:center">
-<p><span class="math display">\[
-\begin{bmatrix}
+<p><span class="math display">\[\begin{bmatrix}
 x'_1 \\
 x'_2
 \end{bmatrix} =
@@ -885,8 +543,7 @@ x'_2
 \begin{bmatrix}
 x_1 \\
 x_2
-\end{bmatrix}
-\]</span></p>
+\end{bmatrix}\]</span></p>
 </div>
 </section>
 <section id="dot-product-of-rotated-vectors" class="slide level2">
@@ -900,15 +557,12 @@ q' \cdot k' &amp;= (R(\theta_q) q) \cdot (R(\theta_k) k) \\
 &amp;= q^T R(\theta_q)^T R(\theta_k) k \\
 &amp;= q^T R(\theta_k - \theta_q) k
 \end{aligned}\]</span></p>
+</section>
+<section id="dot-product-of-rotated-vectors-1" class="slide level2">
+<h2>Dot product of rotated vectors</h2>
 <p><strong>Dot products depend only on relative rotation.</strong></p>
 <p>Now attention scores depend on : <code>q</code>, <code>k</code>, and the <strong>relative angle</strong> <span class="math inline">\((\theta_k - \theta_q)\)</span>, which encodes the relative position between the two tokens.</p>
 
-<!-- NOTES-BLOCK
-[CORRECTNESS] (nice) Math is correct, but it leans on TWO facts students may not have: (1) rotation matrices are orthogonal, so R(theta)^T = R(-theta); (2) rotations compose additively, R(-a)R(b) = R(b-a). Add a one-line reminder of both -- the step q^T R(theta_q)^T R(theta_k) k = q^T R(theta_k - theta_q) k is invisible magic without them.
-[INTUITION] (should-fix) Plain-language version of the whole derivation: "Rotate the query by its position's angle, rotate the key by its position's angle, take the dot product -- and the two absolute angles cancel, leaving only the difference." The cancellation IS the punchline; say it before the algebra.
-[INSTRUCTOR] rot_attn.png is a great concrete anchor: "dog" at position 6 gets angle 6*theta, "I" at position 3 gets 3*theta, and the score depends on 6-3=3. Walk those exact numbers; it grounds theta_q, theta_k in the worked example. (Caption uses theta_m = m*theta where m is the integer position.)
-[Q-ADVANCED] "The example uses theta_q and theta_k as if scalar -- but a vector has many dimension-pairs each with its own frequency. Does the cancellation still hold?" Answer: yes, independently in every 2D sub-plane, because the big rotation matrix is block-diagonal -- each block cancels on its own. That's the bridge to the next slide.
--->
 <img data-src="images/rot_attn.png" class="r-stretch"></section>
 <section id="rotations-in-higher-dimensions" class="slide level2">
 <h2>Rotations in higher dimensions</h2>
@@ -965,12 +619,6 @@ q' \cdot k' &amp;= (R(\theta_q) q) \cdot (R(\theta_k) k) \\
 <li><strong>Longest wavelength</strong> (lowest freq, <span class="math inline">\(i=d/2-1\)</span>): <span class="math inline">\(\lambda_{\max} = 2\pi \cdot B \approx 62,832\)</span> tokens (when <span class="math inline">\(B=10000\)</span>)</li>
 </ul>
 </div></div>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (nice) Numbers verified (lambda_min=6.28, lambda_max=62,832). One indexing wrinkle: the prose uses 0-indexing (i=0..d/2-1, theta_i = B^{-2i/d}) but the figure rot_mdim.png labels angles theta_1..theta_l (1-indexed). Harmless, but say which convention you're using so a sharp student doesn't think the formula is off-by-one.
-[INTUITION] (must-fix) Why a SPECTRUM of frequencies (this is the key design idea): fast-rotating pairs (small i) act like a clock's second hand -- great resolution for nearby tokens but they wrap around quickly, so they're ambiguous over long distances. Slow-rotating pairs (large i) are the hour hand -- coarse but unambiguous across the whole context. Together the d/2 frequencies form a multi-scale 'positional clock' that pins down distance from 1 token to ~60k tokens. Same trick as binary place-values, made continuous.
-[INSTRUCTOR] This frequency schedule is the single lever for LONG-CONTEXT extension. Increasing base B (or NTK/YaRN scaling) stretches the longest wavelength so the model can address positions beyond its training length. Worth a sentence: "every '128k context' headline you read is mostly this base being rescaled."
-[READING] Su et al. 2021 (RoFormer) Section 3.4 for the frequency schedule; bloc97's "NTK-Aware Scaled RoPE" and Peng et al. 2023 "YaRN" for the long-context extensions.
--->
 </section>
 <section id="rope-summary" class="slide level2">
 <h2>RoPE Summary</h2>
@@ -978,10 +626,8 @@ q' \cdot k' &amp;= (R(\theta_q) q) \cdot (R(\theta_k) k) \\
 <p>For a vector <span class="math inline">\(x\)</span> at position <span class="math inline">\(m\)</span>, RoPE applies rotation:</p>
 <p><span class="math display">\[f(x, m) = R_{\Theta,m} \cdot x\]</span></p>
 <p>where <span class="math inline">\(R_{\Theta,m}\)</span> is a block-diagonal rotation matrix with <span class="math inline">\(d/2\)</span> independent 2D rotations.</p>
-<p><strong>Rotation for dimension pair <span class="math inline">\((2i, 2i+1)\)</span>:</strong></p>
-<p><span class="math display">\[
-\begin{bmatrix} x'_{2i} \\ x'_{2i+1} \end{bmatrix} = \begin{bmatrix} \cos(m\theta_i) &amp; -\sin(m\theta_i) \\ \sin(m\theta_i) &amp; \cos(m\theta_i) \end{bmatrix} \begin{bmatrix} x_{2i} \\ x_{2i+1} \end{bmatrix}
-\]</span></p>
+<p><strong>Rotation for dimension pair</strong> <span class="math inline">\((2i, 2i+1)\)</span>:</p>
+<p><span class="math display">\[\begin{bmatrix} x'_{2i} \\ x'_{2i+1} \end{bmatrix} = \begin{bmatrix} \cos(m\theta_i) &amp; -\sin(m\theta_i) \\ \sin(m\theta_i) &amp; \cos(m\theta_i) \end{bmatrix} \begin{bmatrix} x_{2i} \\ x_{2i+1} \end{bmatrix}\]</span></p>
 <p><strong>Frequency schedule:</strong> <span class="math inline">\(\theta_i = B^{-2i/d}\)</span> where <span class="math inline">\(B = 10000\)</span> (base)</p>
 </section>
 <section id="rope-summary-1" class="slide level2">
@@ -992,30 +638,22 @@ q' \cdot k' &amp;= (R(\theta_q) q) \cdot (R(\theta_k) k) \\
 </section>
 <section id="computing-attention-with-rope" class="slide level2">
 <h2>Computing Attention with RoPE</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a><span class="kw">class</span> RoPEAttention(nn.Module):</span>
-<span id="cb4-2"><a></a></span>
-<span id="cb4-3"><a></a>    <span class="op">-----</span></span>
-<span id="cb4-4"><a></a></span>
-<span id="cb4-5"><a></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x: torch.Tensor):</span>
-<span id="cb4-6"><a></a>        <span class="co"># Apply RoPE to queries and keys</span></span>
-<span id="cb4-7"><a></a>        q <span class="op">=</span> apply_rotary_emb(q, <span class="va">self</span>.freqs_cis[:seq_len])</span>
-<span id="cb4-8"><a></a>        k <span class="op">=</span> apply_rotary_emb(k, <span class="va">self</span>.freqs_cis[:seq_len])</span>
-<span id="cb4-9"><a></a></span>
-<span id="cb4-10"><a></a>        <span class="co"># Scaled dot-product attention</span></span>
-<span id="cb4-11"><a></a>        scores <span class="op">=</span> (q <span class="op">@</span> k.transpose(<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>)) <span class="op">/</span> (<span class="va">self</span>.head_dim <span class="op">**</span> <span class="fl">0.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a></a><span class="kw">class</span> RoPEAttention(nn.Module):</span>
+<span id="cb2-2"><a></a></span>
+<span id="cb2-3"><a></a></span>
+<span id="cb2-4"><a></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x: torch.Tensor):</span>
+<span id="cb2-5"><a></a>        <span class="co"># Apply RoPE to queries and keys</span></span>
+<span id="cb2-6"><a></a>        q <span class="op">=</span> apply_rotary_emb(q, <span class="va">self</span>.freqs_cis[:seq_len])</span>
+<span id="cb2-7"><a></a>        k <span class="op">=</span> apply_rotary_emb(k, <span class="va">self</span>.freqs_cis[:seq_len])</span>
+<span id="cb2-8"><a></a></span>
+<span id="cb2-9"><a></a>        <span class="co"># Scaled dot-product attention</span></span>
+<span id="cb2-10"><a></a>        scores <span class="op">=</span> (q <span class="op">@</span> k.transpose(<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>)) <span class="op">/</span> (<span class="va">self</span>.head_dim <span class="op">**</span> <span class="fl">0.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>Key implementation details:</strong></p>
 <ol type="1">
 <li><strong>Precompute frequencies</strong>: Calculate <span class="math inline">\(\theta_i = 10000^{-2i/d}\)</span> for all dimension pairs once</li>
 <li><strong>Apply once per forward pass</strong>: Rotate Q and K by position-dependent angles</li>
 <li><strong>No extra parameters</strong>: RoPE is fully deterministic, no learned weights</li>
 </ol>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) The bare `-----` line inside the python block renders LITERALLY as "-----" on the slide and looks like broken code. Replace with a real comment, e.g. `# ... __init__: project x -> q, k, v; precompute freqs_cis ...`. Also q and k appear in forward() without being defined in the snippet (the q/k/v projection is hidden) -- add a line `q, k, v = self.qkv_proj(x).chunk(3, dim=-1)` so the snippet is self-contained, and define seq_len.
-[CORRECTNESS] (nice) Subtle but important: RoPE is applied to Q and K but NOT to V (only the score should carry relative position; values are content). The snippet gets this right -- call it out explicitly, it's a common student error to "rotate everything."
-[INSTRUCTOR] Reinforce the "no learned weights" point with the deployment consequence: because RoPE is pure arithmetic on Q/K, you can CHANGE the frequency base at inference time to extend context without retraining -- impossible with a learned position table. Ties back to the long-context note.
-[Q-ADVANCED] "freqs_cis -- why 'cis' and why complex numbers?" Answer: cis(x) = cos x + i*sin x; many implementations (Llama) represent each rotation pair as a complex number and rotate by complex MULTIPLICATION, which is exactly a 2D rotation but one line of code. Mathematically identical to the 2x2 matrix on the prior slides.
-[READING] Meta's Llama reference implementation (apply_rotary_emb / precompute_freqs_cis in model.py) is the canonical 20-line version -- show it as the 'real' code behind this sketch.
--->
 </section>
 <section id="other-hyperparameters" class="slide level2">
 <h2>Other Hyperparameters</h2>
@@ -1044,316 +682,6 @@ q' \cdot k' &amp;= (R(\theta_q) q) \cdot (R(\theta_k) k) \\
 <li><p><em>Monolingual models:</em> 30-50K tokens (Original Transformer: 37K, GPT-2/3: 50K, LLaMA 1/2: 32K, LLaMA 3: 128K)</p></li>
 <li><p><em>Multilingual/Production:</em> 100-250K tokens (GPT-4: 100K, PaLM: 256K, Qwen: 152K, Command A: 255K)</p></li>
 </ul>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) "LLaMA: 32K" is true for LLaMA 1/2 only -- LLaMA 3 jumped to a 128K vocab (tiktoken-based). Since the deck's title slide features Llama 3, add "(LLaMA 3: 128K)" so it isn't self-contradictory. Other numbers are right (GPT-2/3 ~50K, GPT-4 ~100K cl100k, Qwen ~152K, PaLM 256K, Command A 255K).
-[INTUITION] (should-fix) Why bigger vocab for multilingual: a 32K English-centric tokenizer shreds other scripts into many tokens (Hindi/Chinese words become 5-10 tokens), wasting context and compute. A larger multilingual vocab keeps words whole. Trade-off: vocab size inflates the embedding + output-softmax matrices (vocab x d_model), so it's not free.
-[INSTRUCTOR] On heads: the constraint is head_dim = d_model / n_heads must be an integer (and is usually 64 or 128 for good kernel/FlashAttention performance). GQA/MLA (next section) decouple the NUMBER of KV heads from query heads, so 'heads' is about to get more nuanced -- foreshadow it.
-[Q-ADVANCED] "Does more heads always help?" Answer: no -- past a point, extra heads each get too few dims to be useful, and many heads are prunable post-training (Michel et al. 2019, 'Are Sixteen Heads Really Better than One?'). The trend is FEWER, larger KV heads (GQA) for efficiency, not more.
--->
-</section>
-<section id="efficient-attention-variants" class="slide level2" data-state="title-slide">
-<h2>Efficient Attention Variants</h2>
-</section>
-<section id="mha-overview" class="slide level2">
-<h2>MHA Overview</h2>
-<p><span class="math inline">\(\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V\)</span></p>
-<p><span class="math display">\[
-\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \dots, \text{head}_h)W^O
-\]</span></p>
-<ul>
-<li><strong>Scaled Dot-Product Attention</strong>:</li>
-<li><span class="math inline">\(Q, K, V\)</span>: Query, Key, and Value matrices derived from input embeddings</li>
-<li><span class="math inline">\(d_k\)</span>: The dimensionality of the keys (and queries)</li>
-<li><span class="math inline">\(W^O\)</span>: Output projection matrix that combines the outputs of all heads into a single vector.</li>
-<li><span class="math inline">\(h\)</span>: The number of parallel attention heads.</li>
-</ul>
-
-<!-- NOTES-BLOCK
-[INTUITION] (should-fix) One-line "why multiple heads": each head is a separate question the token asks the sequence -- one head tracks syntax, another tracks the subject of the sentence, another long-range topic. Splitting d_model into h smaller subspaces lets the model run h relationship-detectors in parallel for the same cost as one big one. W^O then blends their answers back together.
-[TERM] sqrt(d_k) scaling -- gloss it: dot products of d_k-dim vectors grow like sqrt(d_k); dividing by sqrt(d_k) keeps the logits in a sane range so softmax doesn't saturate into a near-one-hot (vanishing gradients). This exact failure mode is what QK-Norm (last slide) also targets -- worth linking.
-[INSTRUCTOR] This slide is the BASELINE for the efficiency story to come. Plant the flag now: "MHA gives every query head its own K and V. That's maximally expressive and maximally expensive to cache -- the next four slides each shrink the K/V side while trying to keep the quality."
--->
-<img data-src="images/mha.png" class="r-stretch"></section>
-<section id="mha---generation-phase" class="slide level2">
-<h2>MHA - Generation Phase</h2>
-<p><strong>Generation Phase (Autoregressive Decoding):</strong></p>
-<ul>
-<li>Generate tokens <strong>one at a time</strong> autoregressively</li>
-<li>At each step, compute attention over <strong>all previously generated tokens</strong></li>
-<li>Keys and Values for past tokens <strong>remain unchanged</strong></li>
-<li>Only the new token’s Query needs to attend to all previous Keys/Values</li>
-</ul>
-
-<img data-src="images/1_KV-1.gif" class="r-stretch"></section>
-<section id="mha---generation-phase-1" class="slide level2">
-<h2>MHA - Generation Phase</h2>
-<p><strong>Problem:</strong> Without caching, we recompute K and V for all previous tokens at every step!</p>
-<ul>
-<li>Step 1: Compute K, V for token 1</li>
-<li>Step 2: Recompute K, V for tokens 1, 2</li>
-<li>Step 3: Recompute K, V for tokens 1, 2, 3</li>
-<li>…</li>
-<li>Step N: Recompute K, V for all N tokens → <strong>O(N²) redundant computation</strong></li>
-</ul>
-<p><strong>Solution: KV Cache</strong> — Store computed K and V vectors and reuse them</p>
-
-<!-- NOTES-BLOCK
-[CORRECTNESS] (nice) Small precision point: KV caching turns the PER-STEP work for K/V from re-computing all past tokens into computing just the one new token, so total generation cost drops from O(N^2) (slide's framing) toward O(N) for the projection step (attention itself is still O(N) per step / O(N^2) total). The "O(N^2) redundant computation" label is about the WASTED recompute, which is the right teaching point -- just don't let students conclude attention becomes free.
-[INTUITION] (must-fix) Why we cache K and V but NOT Q: past tokens' keys/values never change (token 3's K is the same at step 4, 5, 6...), so recomputing them is pure waste -- cache them. But each new step has a BRAND-NEW query (the latest token) that must attend to everyone, so Q is never reused. "Keys/values are the library (store it); the query is today's question (always new)."
-[INSTRUCTOR] This is the pivot of the whole section: KV cache trades COMPUTE for MEMORY. We stop recomputing... but now we must STORE K,V for every token x every layer x every head. The next slide shows that store explodes to 100+ GB -- which is the entire motivation for MQA/GQA/MLA. Make the trade explicit.
-[DEMO] KV-2.gif (already here) contrasts with/without cache step-by-step -- pause on "Without cache" recomputing the full K column vs "With cache" reusing it. Let the visual do the work before the memory math.
--->
-<img data-src="images/KV-2.gif" class="r-stretch"></section>
-<section id="kv-cache-memory-usage" class="slide level2">
-<h2>KV Cache Memory Usage</h2>
-<div class="columns">
-<div class="column">
-<p><strong>KV Cache size needed for MHA:</strong></p>
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>KV head dim</td>
-<td>128</td>
-</tr>
-<tr class="even">
-<td>Sequence length</td>
-<td>32,768</td>
-</tr>
-<tr class="odd">
-<td>Num KV heads</td>
-<td>128</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Per-layer calculation:</strong></p>
-<p><span class="math display">\[\text{KV cache} = \text{seq_len} \times \text{num_heads} \times \text{head_dim} \times 2 \times 2\]</span></p>
-<p><span class="math display">\[= 32768 \times 128 \times 128 \times 2 \times 2 = \textbf{2.14 GB per layer}\]</span></p>
-<p><strong>Total for 61 layers:</strong> ~ 131 GB (~ 4 MB per token)</p>
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Attention Type</th>
-<th>Memory per Token</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>MHA</strong></td>
-<td>4 MB</td>
-</tr>
-</tbody>
-</table>
-</div><div class="column">
-<p><img data-src="images/kv-calc.png"></p>
-</div></div>
-<p><strong>Solution:</strong> Reduce KV heads to 1 (MQA) or use more efficient attention variants (GQA, MLA)</p>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (nice) Arithmetic VERIFIED: 32768 x 128 x 128 x 2 x 2 = 2.147 GB/layer; x61 = 131 GB; /seq -> ~4 MB/token. All correct. The config (128 heads, head_dim 128, 61 layers) is DeepSeek-V3-shaped -- worth saying "MHA numbers here are a hypothetical: what DeepSeek's cache WOULD cost in plain MHA," since DeepSeek actually uses MLA.
-[INSTRUCTOR] (must-fix) Spell out the two "x 2" factors -- students always ask. First x2 = K and V (two tensors). Second x2 = 2 bytes per number (fp16/bf16). So the formula is seq_len x n_heads x head_dim x (K&V) x (bytes). If you ever quote fp8 or fp32, only the second 2 changes.
-[INTUITION] Make 131 GB land: that's MORE than a single 80 GB H100 can hold, for ONE request's cache, before you've stored a single model weight. THIS is why the next three slides exist -- the cache, not the parameters, is what blows up long-context serving.
-[Q-ADVANCED] "Does batching make this worse?" Answer: yes, linearly -- KV cache scales with batch_size x seq_len, while model weights are shared across the batch. So at serving time the KV cache, not the weights, usually caps how many concurrent users / how long a context you can support. That economic pressure is the real driver of MQA/GQA/MLA.
-[READING] Pope et al. 2022, "Efficiently Scaling Transformer Inference" (the paper that framed KV cache as THE inference bottleneck).
--->
-</section>
-<section id="multi-query-attention-mqa" class="slide level2">
-<h2>Multi-Query Attention (MQA)</h2>
-<div class="columns">
-<div class="column">
-<p><img data-src="images/mha-2.png"></p>
-</div><div class="column">
-<p><img data-src="images/mqa.png"></p>
-</div></div>
-<p><strong>Key Insight:</strong> Reduce number of KV heads to 1 = <strong>MQA (Multi-Query Attention)</strong></p>
-<p><span class="math display">\[\text{KV Cache} = 32768 \times 128 \times 1 \times 2 \times 2 = \textbf{16 MB per layer}\]</span></p>
-<p>For all 61 layers: <strong>~1 GB total</strong> (~32 KB per token)</p>
-<p><strong>128× reduction in KV cache memory!</strong></p>
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Attention Type</th>
-<th>Memory per Token</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>MHA</strong></td>
-<td>4 MB</td>
-</tr>
-<tr class="even">
-<td><strong>MQA</strong></td>
-<td>32 KB</td>
-</tr>
-</tbody>
-</table>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (nice) Verified: 1 KV head -> 16 MB/layer -> ~1 GB total -> 32 KB/token, a 128x cut (= the 128 -> 1 head ratio). Numbers are right.
-[INTUITION] (must-fix) What MQA actually does, in words: all 128 query heads SHARE one key and one value. Each head still asks its own question (own Q), but they all consult the SAME shared K/V memory. mqa.png shows it: many Q boxes funneling into a single K and single V.
-[INSTRUCTOR] (should-fix) Give the cost, not just the win: MQA's single shared K/V is a real expressivity bottleneck -- it can degrade quality and was reported to be trickier to train stably at scale. That downside is EXACTLY why GQA (next slide) exists as the compromise. Don't present MQA as a free lunch.
-[Q-ADVANCED] "If MQA shares K/V across heads, why have multiple heads at all?" Answer: the heads still have independent QUERIES and independent output mixing (W^O), so they attend to different positions and extract different features from the SHARED values. You lose per-head key/value SUBSPACES, not per-head attention patterns. GQA buys some of those subspaces back.
-[READING] Shazeer 2019, "Fast Transformer Decoding: One Write-Head is All You Need" (the MQA paper).
--->
-</section>
-<section id="grouped-query-attention-gqa" class="slide level2">
-<h2>Grouped-Query Attention (GQA)</h2>
-<div class="columns">
-<div class="column">
-<p><img data-src="images/mha-2.png"></p>
-</div><div class="column">
-<p><img data-src="images/gqa.png"></p>
-</div></div>
-<p><strong>Key Insight:</strong> Use 1 KV head for each group of query heads (e.g., 1 KV head for 8 query heads)</p>
-<ul>
-<li>Balance between MHA (full expressivity) and MQA (maximum efficiency)</li>
-<li>If 8 Query heads share 1 KV head</li>
-</ul>
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Attention Type</th>
-<th>Memory per Token</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>MHA</strong></td>
-<td>4 MB</td>
-</tr>
-<tr class="even">
-<td><strong>MQA</strong></td>
-<td>32 KB</td>
-</tr>
-<tr class="odd">
-<td><strong>GQA</strong></td>
-<td>500 KB</td>
-</tr>
-</tbody>
-</table>
-<p><strong>8× reduction compared to MHA, while preserving more expressivity than MQA</strong></p>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) Figure vs text mismatch on group size. The text/number assume groups of 8 (128 query heads -> 16 KV heads -> 8x = 500 KB/token; verified). But gqa.png shows 8 query heads sharing 4 KV heads (groups of 2), i.e. only a 2x reduction. Either annotate the figure as "illustrative (group size 2)" or, better, say "in our 128-head example we use groups of 8" so the picture and the 8x number don't fight. Right now a careful student will notice the picture shows 2, the words say 8.
-[INTUITION] (must-fix) GQA = the dial between MHA and MQA. MHA: every head has its own K/V (group size 1). MQA: all heads share one K/V (group size = n_heads). GQA: heads share K/V in small GROUPS (e.g. 8 query heads per KV head). It's literally a tunable knob -- group size 1 IS MHA, group size n IS MQA, everything between trades memory for expressivity. This framing makes MHA/MQA/GQA one idea, not three.
-[INSTRUCTOR] Why GQA became the DEFAULT (Llama 2 70B, Llama 3, Mistral, Qwen2 all use it): it recovers nearly all of MHA's quality at a fraction of the cache, and unlike MQA it trains stably. It's the boring, reliable middle -- emphasize that "boring and reliable" is why it won.
-[Q-ADVANCED] "How do you pick the number of groups?" Answer: usually n_kv_heads = 8 regardless of model size (Llama 3 uses 8 KV heads from 8B to 405B), chosen to fit tensor-parallel shards and to keep quality loss negligible. It's tuned empirically, not derived.
-[READING] Ainslie et al. 2023, "GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints" (also covers 'uptraining' MHA -> GQA cheaply).
--->
-</section>
-<section id="multi-head-latent-attention-mla" class="slide level2">
-<h2>Multi-head Latent Attention (MLA)</h2>
-<div class="columns">
-<div class="column">
-<p><img data-src="images/ds-mha.png"></p>
-</div><div class="column">
-<p><img data-src="images/ds-mla.png"></p>
-</div></div>
-<p><strong>Key Insight:</strong> Compress K and V into a low-dimensional <strong>latent vector</strong> before caching</p>
-<ul>
-<li>Project hidden states into a compressed latent representation <span class="math inline">\(c^{KV}\)</span> (e.g., 512 dims)</li>
-<li>Cache only the compressed latent, not full K and V</li>
-<li>Reconstruct K and V from latent during attention computation</li>
-</ul>
-<!-- NOTES-BLOCK
-[INTUITION] (must-fix) MLA in one analogy: instead of storing every token's full K and V (big), store a SMALL compressed summary (the latent, ~512 dims) and re-expand it to K/V on the fly when needed. Like zipping the cache: you keep the .zip in memory and unzip per attention step. ds-mha.png vs ds-mla.png show exactly this -- 'KV Down' compresses [7168 -> 512], 'Key Up'/'Value Up' decompress [512 -> 7168].
-[INSTRUCTOR] (should-fix) The clever part to flag: MLA could be slow (decompress every step) but DeepSeek ABSORBS the up-projection matrices into W_Q and W_O via matrix associativity, so at inference you attend directly in the compressed space -- you get the memory win WITHOUT a big compute penalty. This 'weight absorption' trick is the non-obvious bit; mention it exists even if you don't derive it.
-[CORRECTNESS] (should-fix) MLA needs ONE caveat that the intro glosses over: RoPE doesn't commute with the compress/decompress, so DeepSeek splits each head into a compressed (no-RoPE) part PLUS a small separate RoPE part (d_r=64 on the next slide). That's why the next slide's formula has (d_c + d_r), not just d_c. Plant that here so the +64 isn't a surprise.
-[Q-ADVANCED] "Isn't compressing K/V just GQA by another name?" Answer: no -- GQA shares FULL-rank K/V across heads (fewer heads); MLA keeps per-head expressivity but stores a LOW-RANK shared latent that ALL heads reconstruct from. MLA reports BETTER quality than GQA at smaller cache -- it's the current frontier (DeepSeek V2/V3).
-[READING] DeepSeek-V2 technical report (Section 2.1, MLA derivation incl. weight absorption); DeepSeek-V3 report for the exact dims used next slide.
--->
-</section>
-<section id="deepseek-v3-mla" class="slide level2">
-<h2>DeepSeek V3 MLA</h2>
-<p><strong>KV Cache size for MLA (DeepSeek V3):</strong></p>
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>KV compression dim (<span class="math inline">\(d_c\)</span>)</td>
-<td>512</td>
-</tr>
-<tr class="even">
-<td>RoPE dim (<span class="math inline">\(d_r\)</span>)</td>
-<td>64</td>
-</tr>
-<tr class="odd">
-<td>Sequence length</td>
-<td>32,768</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Per-layer calculation:</strong></p>
-<p><span class="math display">\[\text{MLA cache} = \text{seq\_len} \times (d_c + d_r) \times 2\]</span></p>
-<p><span class="math display">\[= 32768 \times (512 + 64) \times 2 = \textbf{37.7 MB per layer}\]</span></p>
-<p><strong>Total for 61 layers:</strong> ~ 2.3 GB (~ 70 KB per token)</p>
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Attention Type</th>
-<th>Memory per Token</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>MHA</strong></td>
-<td>4 MB</td>
-</tr>
-<tr class="even">
-<td><strong>MQA</strong></td>
-<td>32 KB</td>
-</tr>
-<tr class="odd">
-<td><strong>GQA (8 groups)</strong></td>
-<td>500 KB</td>
-</tr>
-<tr class="even">
-<td><strong>MLA</strong></td>
-<td>70 KB</td>
-</tr>
-</tbody>
-</table>
-<p><strong>~57× reduction compared to MHA, ~7× reduction compared to GQA</strong></p>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix to explain) The MLA formula has only ONE x2, while MHA had x2 x2 -- students WILL ask why. Reason: MHA caches K AND V separately (-> first x2) at 2 bytes each (-> second x2). MLA caches a SINGLE shared latent (d_c + d_r) that reconstructs both K and V, so there's no 'K and V' doubling -- just the latent x 2 bytes. Add a one-line note on the slide: "single latent replaces separate K,V, so the 'x2 for K&V' disappears." Numbers verified: 32768 x 576 x 2 = 37.7 MB/layer -> 2.3 GB -> 70 KB/token; 4MB/70KB = 57x, 500KB/70KB = 7x. Correct.
-[CORRECTNESS] (nice) d_c=512, d_r=64, 61 layers, 128 heads all match DeepSeek-V3's real config -- good to state "these are DeepSeek-V3's actual hyperparameters," it adds credibility.
-[INTUITION] The summary table (MHA 4MB -> MQA 32KB -> GQA 500KB -> MLA 70KB) is the payoff slide of the whole section. Read it as a story: "we went from 4 megabytes per token to 70 kilobytes -- a ~57x cut -- while DeepSeek reports MLA also beats GQA on quality. Memory AND quality, which is why it's the current frontier." Note MQA looks cheapest (32KB) but its quality cost is why MLA/GQA, not MQA, are what big models actually ship.
-[Q-ADVANCED] "If MQA's 32KB is smaller than MLA's 70KB, why prefer MLA?" Answer: MQA's aggressive sharing hurts quality; MLA gets near-MHA quality at ~70KB. The metric that matters is quality-per-byte, not bytes alone -- MLA wins there. Good place to stress that 'smallest cache' is not the objective.
--->
-</section>
-<section id="qk-norm-attention-softmax-stability" class="slide level2">
-<h2>QK-Norm (Attention Softmax Stability)</h2>
-<p><strong>Concept</strong>: Apply LayerNorm to Query (<span class="math inline">\(Q\)</span>) and Key (<span class="math inline">\(K\)</span>) vectors before computing dot-product attention.</p>
-<p>LayerNorm has evolved from Post-Norm (Transformer) to Pre-Norm (GPT-2) and now directly into the attention mechanism (QK-Norm)</p>
-
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) The slide says "Apply LayerNorm to Q and K," but in practice modern QK-Norm uses RMSNorm (Qwen3, Gemma 2 use QK-RMSNorm), applied PER-HEAD and typically BEFORE RoPE. Soften to "apply a norm (usually RMSNorm) to Q and K, per head, before the dot product." Ties to the deck's own theme that RMSNorm displaced LayerNorm.
-[INTUITION] (must-fix) Why this helps -- the mechanism the title hints at but the body never states: as models scale, some Q.K dot products grow huge, pushing softmax into a near-one-hot spike where gradients vanish ('attention entropy collapse'). Normalizing Q and K caps their magnitudes, so logits stay in a sane range and training doesn't destabilize. "QK-Norm = a seatbelt on the attention logits."
-[INSTRUCTOR] qkv_norm.png is Figure 1 of a norm-placement paper and shows FOUR variants: (a) Post-Norm, (b) Pre-Norm, (c) Pre-Norm+QK-Norm, (d) HybridNorm (norm on Q,K AND V). Point at panel (c) for QK-Norm; panel (d) connects back to the 'double norm' aside early in the deck. Good full-circle closer for the normalization thread.
-[Q-ADVANCED] "Is QK-Norm the same as the 1/sqrt(d_k) scaling we already do?" Answer: related but stronger. The 1/sqrt(d_k) is a FIXED constant assuming unit-variance inputs; QK-Norm actively RE-normalizes the actual Q,K vectors each forward pass, so it adapts when activations drift during training. Belt (scaling) AND suspenders (QK-Norm).
-[READING] Henry et al. 2020, "Query-Key Normalization for Transformers"; Dehghani et al. 2023 (ViT-22B) popularized QK-norm for stability at scale; Zhai et al. 2023 on attention entropy collapse.
--->
-<img data-src="images/qkv_norm.png" class="r-stretch"></section>
-<section id="further-reading" class="slide level2">
-<h2>Further Reading</h2>
-<p><a href="https://magazine.sebastianraschka.com/p/the-big-llm-architecture-comparison">The Big LLM Architecture Comparison</a></p>
-<!-- NOTES-BLOCK
-[READING] (should-fix) One link is thin for a deck this broad. Suggested additions, grouped by section so students can go deep on what interested them:
-- Norms: Xiong et al. 2020 (Pre-LN); Zhang & Sennrich 2019 (RMSNorm); Wang et al. 2022 (DeepNet/Post-Norm at depth).
-- Activations/GLU: Shazeer 2020 "GLU Variants Improve Transformer".
-- Position: Su et al. 2021 (RoFormer/RoPE); Fleetwood HF blog "You could have designed SOTA positional encoding" (the source of this deck's PE animations); Press et al. 2022 (ALiBi); Peng et al. 2023 (YaRN, long context).
-- Attention efficiency: Shazeer 2019 (MQA); Ainslie et al. 2023 (GQA); DeepSeek-V2/V3 reports (MLA); Pope et al. 2022 (KV cache as the inference bottleneck).
-- Stability: Henry et al. 2020 (QK-Norm); Dehghani et al. 2023 (ViT-22B).
-[INSTRUCTOR] Close the loop: revisit the "5 desirable properties" scorecard and the "memory bandwidth is the bottleneck" thesis from the opening -- one sentence each -- so the lecture lands as one argument, not 50 slides of trivia.
-[DEMO] If time allows, end by re-opening Raschka's spreadsheet and having students NAME the design of a 2025 model they haven't seen (e.g. Llama 4, Kimi) using only the columns -- proves they internalized the taxonomy.
--->
 
 
 </section>
