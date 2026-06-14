@@ -105,641 +105,690 @@
     "text": "Q&A\nAny questions?"
   },
   {
-    "objectID": "arch/03_modern_arch/slides.html#topics-covered",
-    "href": "arch/03_modern_arch/slides.html#topics-covered",
-    "title": "Modern Architectures - I",
+    "objectID": "arch/04_moe/slides.html#overview",
+    "href": "arch/04_moe/slides.html#overview",
+    "title": "Mixture of Experts",
+    "section": "Overview",
+    "text": "Overview\n\nScaling Laws\nMoE Architecture\nWhat do MoEs look like in LLMs?\nDense vs Sparse MoE\nRouting Mechanisms\nExpert Configuration\nDeepSeek V3 MoE Architecture\nModel Examples"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#scaling-to-larger-models",
+    "href": "arch/04_moe/slides.html#scaling-to-larger-models",
+    "title": "Mixture of Experts",
+    "section": "Scaling to Larger Models",
+    "text": "Scaling to Larger Models\n\n\nTrain larger models over more data =&gt; better results"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#power-law",
+    "href": "arch/04_moe/slides.html#power-law",
+    "title": "Mixture of Experts",
+    "section": "Power Law",
+    "text": "Power Law\n\\(y = a \\cdot x^p + c\\)"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#scaling-laws-for-neural-language-models",
+    "href": "arch/04_moe/slides.html#scaling-laws-for-neural-language-models",
+    "title": "Mixture of Experts",
+    "section": "Scaling Laws for Neural Language Models",
+    "text": "Scaling Laws for Neural Language Models\n\nThe loss scales as a power-law with model size, dataset size, and the amount of compute used for training\nScaling laws make training larger models more predictable and efficient"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#scaling-laws-for-neural-language-models-1",
+    "href": "arch/04_moe/slides.html#scaling-laws-for-neural-language-models-1",
+    "title": "Mixture of Experts",
+    "section": "Scaling Laws for Neural Language Models",
+    "text": "Scaling Laws for Neural Language Models"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#training-compute-optimal-models",
+    "href": "arch/04_moe/slides.html#training-compute-optimal-models",
+    "title": "Mixture of Experts",
+    "section": "Training Compute-Optimal Models",
+    "text": "Training Compute-Optimal Models\n\nHow much data to train on for a given model size?\nLarge models need to be trained over more data to reach their best performance\n\n\nFor compute-optimal training: \\(D \\approx 20 \\times N\\)"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#emergent-abilities",
+    "href": "arch/04_moe/slides.html#emergent-abilities",
+    "title": "Mixture of Experts",
+    "section": "Emergent Abilities",
+    "text": "Emergent Abilities\n\n\n\n\nAbility\nEmerges Around\n\n\n\n\nIn-context learning\n10B+ params\n\n\nChain-of-thought reasoning\n100B+ params\n\n\nArithmetic\n10B+ params\n\n\nCode generation\n10B+ params\n\n\nTruthful QA improvement\n100B+ params"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#decoder-only-llms-parmeter-distribution",
+    "href": "arch/04_moe/slides.html#decoder-only-llms-parmeter-distribution",
+    "title": "Mixture of Experts",
+    "section": "Decoder-only LLMs: Parmeter Distribution",
+    "text": "Decoder-only LLMs: Parmeter Distribution\n\n\n\nDecoder-only is the predominant architecture for LLMs\nCore components\n\nSelf-attention\nFeedforward Network (FFN) / MLP\nLayerNorm and residual connections\n\nMost parameters are in the FFN layers\nAttention: 4d^2 weights, FFN has about 8d^2"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#decoder-only-llms-flops-distribution",
+    "href": "arch/04_moe/slides.html#decoder-only-llms-flops-distribution",
+    "title": "Mixture of Experts",
+    "section": "Decoder-only LLMs : Flops Distribution",
+    "text": "Decoder-only LLMs : Flops Distribution\n\n\n\nMost parameters are in the FFN layers\nThe FFN layers are the main bottleneck for scaling up model capacity\nFFN parameters scale as ~8*d_model^2, leading to quadratic growth in parameters and compute"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#moe-architecture",
+    "href": "arch/04_moe/slides.html#moe-architecture",
+    "title": "Mixture of Experts",
+    "section": "MoE Architecture",
+    "text": "MoE Architecture\n\nReplace big FFN with multiple smaller FFNs (experts)\nOnly a subset of experts are active for each input token\nRouting mechanism decides which experts to activate\nIncrease parameters without increasing compute"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#current-trends-in-sota-architectures",
+    "href": "arch/04_moe/slides.html#current-trends-in-sota-architectures",
+    "title": "Mixture of Experts",
+    "section": "Current Trends in SoTA Architectures",
+    "text": "Current Trends in SoTA Architectures\n\n\nSince 2024 nearly every frontier model (GPT-4, Grok, Mixtral, DeepSeek, Qwen, Llama 4) is an MoE"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#moe-architecture-1",
+    "href": "arch/04_moe/slides.html#moe-architecture-1",
+    "title": "Mixture of Experts",
+    "section": "MoE Architecture",
+    "text": "MoE Architecture\n\nAll layers can be MoE\nSome layers (e.g., every 2nd layer) can be MoE in an interleaved fashion.\n\ndef moe_layer(token, experts, router, k): \n    # Ask the router \"which experts should handle this token?\" \n    logits = router(token) \n    \n    # With N total experts, pick only top_k (top_k &lt;&lt; N) \n    top_k_logits, top_k_experts = top_k(logits, k) \n\n    # Compute experts' mixing weights\n    weights = softmax(top_k_logits)\n\n    # Mix only top_k experts together to provide the final output    \n    output = 0 \n    for i, expert_idx in enumerate(top_k_experts): \n        output += weights[i] * experts[expert_idx](token) \n    return output"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#why-are-moes-getting-popular",
+    "href": "arch/04_moe/slides.html#why-are-moes-getting-popular",
+    "title": "Mixture of Experts",
+    "section": "Why are MoEs getting popular?",
+    "text": "Why are MoEs getting popular?\n\nEfficient Scaling: Add model capacity (total parameters) without increasing active parameters (compute) significantly\nEfficient Pretraining and Inference - Faster training and inference compared to dense models of similar capacity"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#why-are-moes-getting-popular-1",
+    "href": "arch/04_moe/slides.html#why-are-moes-getting-popular-1",
+    "title": "Mixture of Experts",
+    "section": "Why are MoEs getting popular?",
+    "text": "Why are MoEs getting popular?\n\nImproved Performance: Better performance on many tasks by leveraging specialization and ensemble effects\nDeepSeek V2 236B MoE with 21B active parameters outperforms dense models with 100B+ parameters"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#moe-architectures",
+    "href": "arch/04_moe/slides.html#moe-architectures",
+    "title": "Mixture of Experts",
+    "section": "MoE Architectures",
+    "text": "MoE Architectures\nThree things vary across MoE architectures:\n\nRouting function - how tokens get assigned to experts\nExpert sizes - how many experts, how large each one is, shared vs routed\nTraining objectives - how to train the router and keep experts balanced"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#routing-mechanisms",
+    "href": "arch/04_moe/slides.html#routing-mechanisms",
+    "title": "Mixture of Experts",
+    "section": "Routing Mechanisms",
+    "text": "Routing Mechanisms\nLearned:\n\nToken choice top K : each token picks its top-K experts\nExpert choice top K : each expert picks its top-K tokens\nGlobal assignment (e.g., BASE layers) : a global assignment of tokens to experts, fixed across batches\n\nNon-learned: - Hash-based routing : expert fixed by hashing the token id"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#top-k-routing-in-detail",
+    "href": "arch/04_moe/slides.html#top-k-routing-in-detail",
+    "title": "Mixture of Experts",
+    "section": "Top-K routing in detail",
+    "text": "Top-K routing in detail\n\n\n1. Compute Gating Scores (e.g., dot product)\n\\[s_{i,t} = \\text{Softmax}_i\\left(\\mathbf{u}_t^{lT} \\mathbf{e}_i^l\\right)\\]\n\n\\(\\mathbf{u}_t^l\\) : input token representation at layer \\(l\\)\n\\(\\mathbf{e}_i^l\\) : expert embedding for expert \\(i\\) at layer \\(l\\)\n\n2. Select Top-K Experts\n\\[g_{i,t} = \\begin{cases} s_{i,t}, & s_{i,t} \\in \\text{Topk}(\\{s_{j,t} \\mid 1 \\leq j \\leq N\\},\\, K) \\\\ 0, & \\text{otherwise} \\end{cases}\\]\n3. Compute Mixed Output\n\\[ \\mathbf{h}_t = \\sum_{i=1}^{N} g_{i,t} \\cdot \\text{FFN}_i(\\mathbf{u}_t) + \\mathbf{u}_t \\]\nwhere \\(\\text{FFN}_i\\) is the feedforward network for expert \\(i\\)\n\ndef moe_layer(token, experts, router, k): \n\n    # ── Step 1: Compute gating scores ──────────────────────\n    # s_{i,t} = Softmax_i( u_t^T e_i )\n    # router is nn.Linear(d_model, N)  →  token @ W_router\n    # \"e_i\": a learned embedding vector, one per expert, stored in the router's weight matrix W_router\n    logits = router(token)          # shape: [N]\n    scores = softmax(logits)        # s_{i,t} for all i\n\n\n    # ── Step 2: Select top-K experts ───────────────────────\n    # g_{i,t} = s_{i,t}  if i in TopK, else 0\n    top_k_scores, top_k_idx = top_k(scores, k)\n    # all other g_{i,t} are implicitly 0\n\n\n    # ── Step 3: Compute mixed output ───────────────────────\n    # h_t = Σ g_{i,t} · FFN_i(u_t)  +  u_t  (residual)\n    output = 0\n    for rank, expert_idx in enumerate(top_k_idx):\n        output += top_k_scores[rank] * experts[expert_idx](token)\n    return output          # + residual added outside"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#top-k-routing-in-more-detail",
+    "href": "arch/04_moe/slides.html#top-k-routing-in-more-detail",
+    "title": "Mixture of Experts",
+    "section": "Top-K routing in more detail",
+    "text": "Top-K routing in more detail\nWhy not just softmax without top-K?\n\n\nYou immediately lose the systems efficiency\n\n\n\n\nWithout top-K, you pay the training cost of all N experts per token\n\n\n\n\nThe whole point of MoE is sparse activation during both training and inference"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#router-collapse",
+    "href": "arch/04_moe/slides.html#router-collapse",
+    "title": "Mixture of Experts",
+    "section": "Router Collapse",
+    "text": "Router Collapse\nThe Problem\n\nGating network routes tokens to only a small subset of experts\nLeaves most experts underutilized or completely inactive\nThe “Rich-get-richer” effect: Specialized experts attract more tokens =&gt; get more gradients =&gt; become better =&gt; attract even more tokens\nDegenerate policy: Router learns \\(s_{i,t} \\approx 0\\) for most experts\n\n\\[\\text{Effective capacity} \\ll N \\times \\text{expert size}\\]\nConsequences\n\nWasted memory: Unused experts consume GPU memory but add no value\nReduced model quality: Equivalent to training a much smaller dense model\nPoor generalization: Active experts become overloaded and overfit"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#mitigating-router-collapse",
+    "href": "arch/04_moe/slides.html#mitigating-router-collapse",
+    "title": "Mixture of Experts",
+    "section": "Mitigating Router Collapse",
+    "text": "Mitigating Router Collapse\nStrategies\n\nAuxiliary Balancing Loss: Penalize uneven distribution (e.g., \\(F \\cdot P\\) loss)\nExpert Capacity: Limit the number of tokens an expert can process per batch\nRandom Noise: Add noise to router logits to encourage exploration\nExpert Choice: Experts pick tokens (rather than tokens picking experts)\n\nCurrent consensus: Auxiliary balancing loss and expert capacity are the most effective and widely used solutions in practice."
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#expert-configuration",
+    "href": "arch/04_moe/slides.html#expert-configuration",
+    "title": "Mixture of Experts",
+    "section": "Expert Configuration",
+    "text": "Expert Configuration\nFine-Grained Experts\n\nMake experts smaller and use more of them.\nInstead of \\(N\\) full-sized FFN copies, make each expert much smaller (1/4 to 1/14 of standard FFN size)\n\nThe fine-grained ratio = (expert intermediate dim) / (standard FFN intermediate dim)"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#expert-configuration-1",
+    "href": "arch/04_moe/slides.html#expert-configuration-1",
+    "title": "Mixture of Experts",
+    "section": "Expert Configuration",
+    "text": "Expert Configuration\nShared Experts\n\nOne or more experts that process all tokens regardless of routing\nShared experts provide a common processing pathway for all tokens, ensuring that every token benefits from some shared knowledge.\nRouted experts can specialize on different subsets of tokens. This hybrid approach can improve performance and stability."
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#expert-configuration-2",
+    "href": "arch/04_moe/slides.html#expert-configuration-2",
+    "title": "Mixture of Experts",
+    "section": "Expert Configuration",
+    "text": "Expert Configuration"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#expert-routing-configurations-for-major-moes",
+    "href": "arch/04_moe/slides.html#expert-routing-configurations-for-major-moes",
+    "title": "Mixture of Experts",
+    "section": "Expert Routing Configurations for Major MoEs",
+    "text": "Expert Routing Configurations for Major MoEs\n\n\n\nModel\nExperts\nActive\nShared\nFine-grained ratio\n\n\n\n\nGShard\n2048\n2\n0\n–\n\n\nSwitch Transformer\n64\n1\n0\n–\n\n\nMixtral\n8\n2\n0\n–\n\n\nDBRX\n16\n4\n0\n–\n\n\nGrok\n8\n2\n0\n–\n\n\nDeepSeek V1\n64\n6\n2\n1/4\n\n\nQwen 1.5\n60\n4\n4\n1/8\n\n\nDeepSeek V3\n256\n8\n1\n1/14\n\n\nOLMoE\n64\n8\n0\n1/8\n\n\nMiniMax\n32\n2\n0\n~1/4\n\n\nLlama 4 (Maverick)\n128\n1\n1\n1/2"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#training-moes",
+    "href": "arch/04_moe/slides.html#training-moes",
+    "title": "Mixture of Experts",
+    "section": "Training MoEs",
+    "text": "Training MoEs\nThe Core Challenge\n\nSparsity vs. Differentiability: We need sparsity for training-time efficiency.\nProblem: Sparse gating decision (top-K selection) is not differentiable.\nGradient descent cannot directly optimize the discrete “choice” of an expert.\n\nThe Efficiency Trade-off\n\nActivating all experts simplifies gradients but destroys compute efficiency.\nFLOPs Cost: “Having a model that’s 256 times more expensive to train is a total no-go.”\nGoal: Maintain sparse execution while ensuring the routing mechanism can still be trained effectively."
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#heuristic-balancing-losses",
+    "href": "arch/04_moe/slides.html#heuristic-balancing-losses",
+    "title": "Mixture of Experts",
+    "section": "Heuristic Balancing Losses",
+    "text": "Heuristic Balancing Losses\nSwitch Transformer F*P Loss (Standard)\n\nwhere:\n\n\\(f_i = \\frac{1}{T} \\sum_{x \\in \\mathcal{B}} \\mathbb{1}\\{\\text{argmax } p(x) = i\\}\\) is the fraction of tokens dispatched to expert \\(i\\)\n\\(P_i = \\frac{1}{T} \\sum_{x \\in \\mathcal{B}} p_i(x)\\) is the mean router probability for expert \\(i\\)\n\\(\\alpha\\) is the balancing coefficient\n\\(N\\) is the number of experts\n\\(T\\) is the number of tokens in batch \\(\\mathcal{B}\\)\n\nTotal Loss = \\(\\mathcal{L}_{\\text{LM}} + \\alpha \\cdot F \\cdot P\\)"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#expert-capacity",
+    "href": "arch/04_moe/slides.html#expert-capacity",
+    "title": "Mixture of Experts",
+    "section": "Expert Capacity",
+    "text": "Expert Capacity\nHardware Efficiency vs. Dynamic Routing\nExpert Capacity: The maximum number of tokens assigned to each expert per batch.\n\\[ \\text{Expert Capacity} = \\frac{\\text{Tokens per Batch}}{\\text{Number of Experts}} \\times \\text{Capacity Factor} \\]\n\n\nHandling Overflow (Dropped Tokens)\n\nToken Dropping: Occurs when the number of tokens routed to an expert exceeds its capacity.\nResidual Bypass: Dropped tokens skip expert computation and flow directly through the residual connection to the next layer."
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#computing-output-of-moe-layer",
+    "href": "arch/04_moe/slides.html#computing-output-of-moe-layer",
+    "title": "Mixture of Experts",
+    "section": "Computing output of MoE layer",
+    "text": "Computing output of MoE layer\n\nFor each selected expert, compute the output for the assigned tokens\nCombine the outputs from the selected experts (e.g., weighted sum) and add the residual connection\n\n\nExample MoE Training code"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#total-vs-active-parameters",
+    "href": "arch/04_moe/slides.html#total-vs-active-parameters",
+    "title": "Mixture of Experts",
+    "section": "Total vs Active Parameters",
+    "text": "Total vs Active Parameters\n\nTotal / Sparse Parameters: The entire set of model parameters, including all available experts (both active and inactive).\nActive Parameters: The parameters actually triggered to process a single input token. This determines the compute cost (FLOPs) per token.\nKey Advantage: MoEs scale model capacity (Total) while maintaining the inference latency and training cost of a much smaller dense model (Active)."
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#total-vs-active-parameters-1",
+    "href": "arch/04_moe/slides.html#total-vs-active-parameters-1",
+    "title": "Mixture of Experts",
+    "section": "Total vs Active Parameters",
+    "text": "Total vs Active Parameters\nMixtral 8x7B MoE\n\n\n\nTotal Parameters: ~46.7B\nActive Parameters: ~12.9B\nConfiguration:\n\n8 experts per layer\nTop-2 gating (\\(K=2\\) experts active per token)\n\nParameter Sharing:\n\nOnly the Feed-Forward Network (FFN) blocks are replicated.\nShared components: Attention layers, LayerNorms, and Embeddings.\n\n\n\\[ \\text{Active Params} = \\text{Shared} + (K \\times \\text{Expert FFN}) \\] \\[ \\text{Total Params} = \\text{Shared} + (N \\times \\text{Expert FFN}) \\]"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#deepseek-moe",
+    "href": "arch/04_moe/slides.html#deepseek-moe",
+    "title": "Mixture of Experts",
+    "section": "DeepSeek MoE",
+    "text": "DeepSeek MoE\nDeepSeek V2\n\na 236 billion parameter MoE with 21 billion active parameters\n\n\nDeepSeek V3\n\na 671B parameter MoE with 37B active parameters"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#deepseek-v3-architecture",
+    "href": "arch/04_moe/slides.html#deepseek-v3-architecture",
+    "title": "Mixture of Experts",
+    "section": "DeepSeek V3 Architecture",
+    "text": "DeepSeek V3 Architecture\n\n\n\nSparse Activation: 671B total parameters, only 37B active per token\nShared + Routed Experts: 256 fine-grained routed experts, 8 activated per token, plus 1 shared expert that sees every token (9 experts run per token)\nMulti-Head Latent Attention (MLA): Compresses KV cache into latent space, synergizes with sparse MoE for efficient inference\nMulti-Token Prediction: Jointly optimizes predicting multiple tokens in parallel for improved training signal and throughput"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#qwen-3-moe",
+    "href": "arch/04_moe/slides.html#qwen-3-moe",
+    "title": "Mixture of Experts",
+    "section": "Qwen 3 MoE",
+    "text": "Qwen 3 MoE"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#kimi-k2-thinking",
+    "href": "arch/04_moe/slides.html#kimi-k2-thinking",
+    "title": "Mixture of Experts",
+    "section": "Kimi K2 / Thinking",
+    "text": "Kimi K2 / Thinking"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#sarvam-30b-and-105",
+    "href": "arch/04_moe/slides.html#sarvam-30b-and-105",
+    "title": "Mixture of Experts",
+    "section": "Sarvam 30B and 105",
+    "text": "Sarvam 30B and 105"
+  },
+  {
+    "objectID": "arch/04_moe/slides.html#questions",
+    "href": "arch/04_moe/slides.html#questions",
+    "title": "Mixture of Experts",
+    "section": "Questions?",
+    "text": "Questions?"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#topics-covered",
+    "href": "arch/03_modern_arch/slides-2.html#topics-covered",
+    "title": "Modern Architectures - II",
     "section": "Topics Covered",
-    "text": "Topics Covered\n\nGPT-2 Review\n\nTraining Loop\n\nModern LLM Architectures\n\nNorm Types\nActivation Functions\nPositional Encodings\nAttention Variants\nHyperparameters"
+    "text": "Topics Covered\n\nModern LLM Architectures\n\nPositional Encodings\nAttention Variants\nHyperparameters"
   },
   {
-    "objectID": "arch/03_modern_arch/slides.html#recap-gpt-2-architecture",
-    "href": "arch/03_modern_arch/slides.html#recap-gpt-2-architecture",
-    "title": "Modern Architectures - I",
-    "section": "Recap : GPT-2 Architecture",
-    "text": "Recap : GPT-2 Architecture"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#recap-gpt-2-training-loop",
-    "href": "arch/03_modern_arch/slides.html#recap-gpt-2-training-loop",
-    "title": "Modern Architectures - I",
-    "section": "Recap : GPT-2 Training Loop",
-    "text": "Recap : GPT-2 Training Loop\nDuring Training we update model weights to minimize loss through backpropagation and gradient descent.\n\n\n\n\nTraining Loop in code\nfor epoch in range(num_epochs):\n    model.train()  # Enable dropout\n\n    for input_batch, target_batch in train_loader:\n        optimizer.zero_grad()  # Reset gradients\n\n        loss = calc_loss_batch(input_batch, target_batch, model, device)\n        loss.backward()        # Calculate gradients\n        optimizer.step()       # Update weights"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#loading-and-saving-model-weights",
-    "href": "arch/03_modern_arch/slides.html#loading-and-saving-model-weights",
-    "title": "Modern Architectures - I",
-    "section": "Loading and Saving Model Weights",
-    "text": "Loading and Saving Model Weights\n\n\nWe must save trained models to:\n\nAvoid retraining\nShare models with others\nResume training later\nDeploy to production\n\n\n# ============ SAVE ============\n\ntorch.save(model.state_dict(), \"model.pth\")\n\n# Save model + optimizer (for resuming training)\ntorch.save({\n    \"model_state_dict\": model.state_dict(),\n    \"optimizer_state_dict\": optimizer.state_dict(),\n}, \"model_and_optimizer.pth\")\n\n\n# ============ LOAD ============\n# Load weights into fresh model\nmodel = GPTModel(GPT_CONFIG_124M)\nmodel.load_state_dict(torch.load(\"model.pth\", map_location=device))\nmodel.eval()  # Set to evaluation mode\n\n# Resume training\ncheckpoint = torch.load(\"model_and_optimizer.pth\", map_location=device)\nmodel = GPTModel(GPT_CONFIG_124M)\nmodel.load_state_dict(checkpoint[\"model_state_dict\"])\n\noptimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.1)\noptimizer.load_state_dict(checkpoint[\"optimizer_state_dict\"])\nmodel.train()  # Set to training mode"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#modern-architectures",
-    "href": "arch/03_modern_arch/slides.html#modern-architectures",
-    "title": "Modern Architectures - I",
-    "section": "Modern Architectures",
-    "text": "Modern Architectures"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#gpt-2-architecture",
-    "href": "arch/03_modern_arch/slides.html#gpt-2-architecture",
-    "title": "Modern Architectures - I",
-    "section": "GPT-2 Architecture",
-    "text": "GPT-2 Architecture\n\n\nPosition embedding: learned, absolute\nFFN: GELU\n\\[ \\text{FFN}(x) = GELU(xW_1 + b_1)W_2 + b_2 \\]\nNorm type: Pre-Norm, LayerNorm"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#current-models",
-    "href": "arch/03_modern_arch/slides.html#current-models",
-    "title": "Modern Architectures - I",
-    "section": "Current Models",
-    "text": "Current Models\n\n\nsource: Modern LLM Architectures"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#llama-2-llama-3-and-qwen-3-architectures",
-    "href": "arch/03_modern_arch/slides.html#llama-2-llama-3-and-qwen-3-architectures",
-    "title": "Modern Architectures - I",
-    "section": "Llama 2, Llama 3 and Qwen 3 Architectures",
-    "text": "Llama 2, Llama 3 and Qwen 3 Architectures\n\n\nPosition embedding: RoPE (rotary position embeddings)\nFFN: *GLU variant (SwiGLU for LLaMA, GeGLU for Qwen)\nNorm type: Pre-Norm, RMSNorm"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#llama-2-llama-3-and-qwen-3-architectures-1",
-    "href": "arch/03_modern_arch/slides.html#llama-2-llama-3-and-qwen-3-architectures-1",
-    "title": "Modern Architectures - I",
-    "section": "Llama 2, Llama 3 and Qwen 3 Architectures",
-    "text": "Llama 2, Llama 3 and Qwen 3 Architectures\n\n\nPosition embedding: RoPE (rotary position embeddings)\nFFN: *GLU variant (SwiGLU for LLaMA, GeGLU for Qwen)\nNorm type: Pre-Norm, RMSNorm"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#pre-norm-vs-post-norm",
-    "href": "arch/03_modern_arch/slides.html#pre-norm-vs-post-norm",
-    "title": "Modern Architectures - I",
-    "section": "Pre-Norm vs Post-Norm",
-    "text": "Pre-Norm vs Post-Norm\nAlmost all models post-2020 use pre-norm.\n\nOriginal Transformer : Post Norm\nx -&gt; Attention(x) -&gt; Add -&gt; LayerNorm -&gt; FFN -&gt; Add -&gt; LayerNorm\nGPT 2 : Pre-Norm\nx -&gt; [LN -&gt; Attn] -&gt; +x -&gt; [LN -&gt; FFN] -&gt; +x"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#pre-norm-vs-post-norm-1",
-    "href": "arch/03_modern_arch/slides.html#pre-norm-vs-post-norm-1",
-    "title": "Modern Architectures - I",
-    "section": "Pre-Norm vs Post-Norm",
-    "text": "Pre-Norm vs Post-Norm\n\nWhy pre-norm wins:\n\nBetter gradient flow through residual connections.\nPractical evidence: almost all modern LLMs use pre-norm\n\n\nNote : Double norm also used in some models, but not as common as pre-norm. It applies LayerNorm both before and after the sub-layer.\nQuestion : BERT was trained with post-norm and it was huge success. But most models use pre-norm. Why?\nRef : Xiong et al. 2020, On Layer Normalization in the Transformer Architecture"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#layernorm-vs-rmsnorm",
-    "href": "arch/03_modern_arch/slides.html#layernorm-vs-rmsnorm",
-    "title": "Modern Architectures - I",
-    "section": "LayerNorm vs RMSNorm",
-    "text": "LayerNorm vs RMSNorm\n\nStrong consensus toward RMSNorm\n\n\n\nLayerNorm (original):\nNormalize by subtracting mean and dividing by std dev, then scale (\\(\\gamma\\)) and shift (\\(\\beta\\)):\n\\[y = \\frac{x - E[x]}{\\sqrt{Var[x] + \\epsilon}} \\cdot \\gamma + \\beta\\]\nModels : GPT-1/2/3, OPT, GPT-J, BLOOM\n\nRMSNorm (modern):\nDrop the mean subtraction and bias term:\n\\[y = \\frac{x}{\\sqrt{\\frac{1}{n}||x||_2^2 + \\epsilon}} \\cdot \\gamma\\]\nModels : LLaMA family, DeepSeek V3, Qwen3 etc\n\nWhy RMSNorm\n\nFewer operations: RMSNorm requires fewer computations (no mean subtraction, no bias term) which reduces both FLOPs and memory bandwidth."
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#dropping-bias-terms-in-ffn-and-layernorm",
-    "href": "arch/03_modern_arch/slides.html#dropping-bias-terms-in-ffn-and-layernorm",
-    "title": "Modern Architectures - I",
-    "section": "Dropping Bias Terms in FFN and LayerNorm",
-    "text": "Dropping Bias Terms in FFN and LayerNorm\nMost modern transformers have no bias terms in linear layers or LayerNorm.\nOriginal: \\(FFN(x) = \\max(0, xW_1 + b_1)W_2 + b_2\\)\nModern: \\(FFN(x) = \\sigma(xW_1)W_2\\)\nSiLU activation is used instead of ReLU, but the key point is that bias terms are removed.\nReasons:\n\nSame memory/data movement argument as RMSNorm – fewer parameters to load\nOptimization stability – empirically, dropping bias terms stabilizes training of very large networks\n\nLayerNorm Recap\n\nMost models use RMSNorm\nAlmost all models use pre-norm"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#activations-gated-linear-units-strong-trend-toward-swiglugeglu",
-    "href": "arch/03_modern_arch/slides.html#activations-gated-linear-units-strong-trend-toward-swiglugeglu",
-    "title": "Modern Architectures - I",
-    "section": "Activations & Gated Linear Units (Strong trend toward SwiGLU/GeGLU)",
-    "text": "Activations & Gated Linear Units (Strong trend toward SwiGLU/GeGLU)\nEvolution of activations:\n\n\n\n\n\n\n\n\nActivation\nFormula\nNotable Models\n\n\n\n\nReLU\n\\(FF(x) = \\max(0, xW_1)W_2\\)\nOriginal transformer, T5, Gopher, OPT\n\n\nGeLU\n\\(FF(x) = GELU(xW_1)W_2\\) where \\(GELU(x) = x\\Phi(x)\\)\nGPT-1/2/3, GPT-J, BLOOM\n\n\nSwiGLU\n\\(FF(x) = (Swish(xW) \\otimes xV)W_2\\)\nLLaMA 1/2/3, PaLM, Mistral, most post-2023\n\n\nGeGLU\n\\(FF(x) = (GELU(xW) \\otimes xV)W_2\\)\nT5 v1.1, mT5, Phi3, Gemma 2/3\n\n\n\nwhere Swish(x) = x * sigmoid(x) and \\(\\otimes\\) is elementwise multiplication."
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu",
-    "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu",
-    "title": "Modern Architectures - I",
-    "section": "Gated Linear Units (GLU)",
-    "text": "Gated Linear Units (GLU)\nWhat do GLUs do?\n\nGLUs add a gating mechanism\nHidden representation element-wise multiplied by a gate \\(xV\\) (learned linear projection)\n\\(xV\\) controls information flow through the MLP\n\n\\[\\text{Standard:} \\quad \\sigma(xW_1) \\rightarrow \\sigma(xW_1) \\otimes (xV) \\quad \\text{(gated)}\\]"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-1",
-    "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-1",
-    "title": "Modern Architectures - I",
-    "section": "Gated Linear Units (GLU)",
-    "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-2",
-    "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-2",
-    "title": "Modern Architectures - I",
-    "section": "Gated Linear Units (GLU)",
-    "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)\nScale the FF Params"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-3",
-    "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-3",
-    "title": "Modern Architectures - I",
-    "section": "Gated Linear Units (GLU)",
-    "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)\nScale the FF Params\n\nStandard MLP\n\n\\(W_1 \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(2 \\cdot d \\cdot d_{ff}\\) params\nTotal FFN params = \\(2 \\cdot d \\cdot 4 d\\) = \\(8 \\cdot d^2\\)."
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-4",
-    "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-4",
-    "title": "Modern Architectures - I",
-    "section": "Gated Linear Units (GLU)",
-    "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)\nScale the FF Params\n\nStandard MLP\n\n\\(W_1 \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(2 \\cdot d \\cdot d_{ff}\\) params\nTotal FFN params = \\(2 \\cdot d \\cdot 4 d\\) = \\(8 \\cdot d^2\\).\n\nGated MLP:\n\n\\(W \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(V \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(3 \\cdot d \\cdot d_{ff}\\) params."
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-5",
-    "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-5",
-    "title": "Modern Architectures - I",
-    "section": "Gated Linear Units (GLU)",
-    "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)\nScale the FF Params\n\nStandard MLP\n\n\\(W_1 \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(2 \\cdot d \\cdot d_{ff}\\) params\nTotal FFN params = \\(2 \\cdot d \\cdot 4 d\\) = \\(8 \\cdot d^2\\).\n\nGated MLP:\n\n\\(W \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(V \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(3 \\cdot d \\cdot d_{ff}\\) params.\n\nTo match:\n\nset \\(d_{ff}^{gated} = \\frac{2}{3} d_{ff}^{standard} = \\frac{2}{3} \\cdot 4d = \\frac{8}{3}d\\).\nTotal FFN params = \\(3 \\cdot d \\cdot \\frac{8}{3}d = 8 \\cdot d^2\\).\n\n\nScaling Factors:\n\nStandard MLP: \\(d_{ff} = 4 \\cdot d\\)\nGated MLP: \\(d_{ff} = \\frac{8}{3} \\cdot d \\approx 2.67 \\cdot d\\)"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#serial-vs-parallel-layers",
-    "href": "arch/03_modern_arch/slides.html#serial-vs-parallel-layers",
-    "title": "Modern Architectures - I",
-    "section": "Serial vs Parallel Layers",
-    "text": "Serial vs Parallel Layers\nNormal transformer blocks are serial – they compute attention, then the MLP\nStandard transformer block can be written as:\n\\[y = x + \\text{MLP}(\\text{LayerNorm}(x + \\text{Attention}(\\text{LayerNorm}(x)))\\]\nWhereas the parallel formulation can be written as:\n\\[y = x + \\text{MLP}(\\text{LayerNorm}(x)) + \\text{Attention}(\\text{LayerNorm}(x))\\]\n\nimage source"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides.html#position-encodings",
-    "href": "arch/03_modern_arch/slides.html#position-encodings",
-    "title": "Modern Architectures - I",
+    "objectID": "arch/03_modern_arch/slides-2.html#position-encodings",
+    "href": "arch/03_modern_arch/slides-2.html#position-encodings",
+    "title": "Modern Architectures - II",
     "section": "Position Encodings",
-    "text": "Position Encodings\nEvolution:\n\n\n\n\n\n\n\n\nType\nHow it works\nModels\n\n\n\n\nSinusoidal\nAdd fixed sin/cos to embedding\nOriginal Transformer\n\n\nAbsolute (learned)\nAdd learned position vector \\(u_i\\) to embedding\nGPT-1/2/3, OPT\n\n\nRelative\nAdd learned bias to attention scores\nT5, Gopher, Chinchilla\n\n\nALiBi\nLinear attention bias\nBLOOM\n\n\nNoPE\nNo position embedding at all\nSmolLM3, Kimi Linear\n\n\nRoPE\nRotate query/key vectors\nGPT-J, PaLM, LLaMA, all 2024+ models"
+    "text": "Position Encodings\nEvolution:\n\n\n\n\n\n\n\n\nType\nHow it works\nModels\n\n\n\n\nSinusoidal\nAdd fixed sin/cos to embedding\nOriginal Transformer\n\n\nAbsolute (learned)\nAdd learned position vector \\(u_i\\) to embedding\nGPT-1/2/3, OPT\n\n\nRelative\nAdd learned bias to attention scores\nT5, Gopher, Chinchilla\n\n\nALiBi\nLinear attention bias\nBLOOM\n\n\nNoPE\nNo explicit position encoding\nSmolLM3, Kimi Linear\n\n\nRoPE\nRotate query/key vectors\nGPT-J, PaLM, LLaMA, all 2024+ models"
   },
   {
-    "objectID": "arch/03_modern_arch/slides.html#position-encodings-1",
-    "href": "arch/03_modern_arch/slides.html#position-encodings-1",
-    "title": "Modern Architectures - I",
+    "objectID": "arch/03_modern_arch/slides-2.html#position-encodings-1",
+    "href": "arch/03_modern_arch/slides-2.html#position-encodings-1",
+    "title": "Modern Architectures - II",
     "section": "Position Encodings",
     "text": "Position Encodings\nWhy do we need Position Encodings?\n\n\nAttention is a position-agnostic operation\n\nTreats the input as a set, not a sequence\nNo inherent notion of order or position\n\nExample:\nThe dog chased another dog vs Another dog chased the dog\n\nBoth have the same set of tokens\nBut different meanings\n\nSolution: Add positional encodings to inject order information into the model"
   },
   {
-    "objectID": "arch/03_modern_arch/slides.html#integer-position-encoding",
-    "href": "arch/03_modern_arch/slides.html#integer-position-encoding",
-    "title": "Modern Architectures - I",
+    "objectID": "arch/03_modern_arch/slides-2.html#integer-position-encoding",
+    "href": "arch/03_modern_arch/slides-2.html#integer-position-encoding",
+    "title": "Modern Architectures - II",
     "section": "Integer Position Encoding",
     "text": "Integer Position Encoding\n\nAdd the integer position directly into embeddings.\nProblems:\n\nPosition encoding magnitude greater than token embedding magnitude\nModel should separately learn to handle content and position, which can make learning harder."
   },
   {
-    "objectID": "arch/03_modern_arch/slides.html#binary-position-encoding",
-    "href": "arch/03_modern_arch/slides.html#binary-position-encoding",
-    "title": "Modern Architectures - I",
+    "objectID": "arch/03_modern_arch/slides-2.html#binary-position-encoding",
+    "href": "arch/03_modern_arch/slides-2.html#binary-position-encoding",
+    "title": "Modern Architectures - II",
     "section": "Binary Position Encoding",
     "text": "Binary Position Encoding"
   },
   {
-    "objectID": "arch/03_modern_arch/slides.html#binary-position-encoding-1",
-    "href": "arch/03_modern_arch/slides.html#binary-position-encoding-1",
-    "title": "Modern Architectures - I",
+    "objectID": "arch/03_modern_arch/slides-2.html#binary-position-encoding-1",
+    "href": "arch/03_modern_arch/slides-2.html#binary-position-encoding-1",
+    "title": "Modern Architectures - II",
     "section": "Binary Position Encoding",
-    "text": "Binary Position Encoding\n\n\nProblems:\n\nHamming distance artifacts\nSparse representations (most bits are zero, which can make learning harder)\nNo learnable interpolation"
+    "text": "Binary Position Encoding\n\n\nProblems:\n\nHamming distance artifacts - small position changes can flip many bits\nSparse representations (many bits are zero, which can make learning harder)\nNo learnable interpolation"
   },
   {
-    "objectID": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding",
-    "href": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding",
-    "title": "Modern Architectures - I",
+    "objectID": "arch/03_modern_arch/slides-2.html#sinusoidal-position-encoding",
+    "href": "arch/03_modern_arch/slides-2.html#sinusoidal-position-encoding",
+    "title": "Modern Architectures - II",
     "section": "Sinusoidal Position Encoding",
-    "text": "Sinusoidal Position Encoding\n\\[ PE_{(pos,2i)} = sin(pos/10000^{2i/d_{\\text{model}}}) \\]\n\\[ PE_{(pos,2i+1)} = cos(pos/10000^{2i/d_{\\text{model}}}) \\]"
+    "text": "Sinusoidal Position Encoding\nA smooth, continuous version of binary encoding.\n\\[ PE_{(pos,\\,2i)} = \\sin\\!\\big(pos/10000^{\\,2i/d_{\\text{model}}}\\big), \\qquad PE_{(pos,\\,2i+1)} = \\cos\\!\\big(pos/10000^{\\,2i/d_{\\text{model}}}\\big) \\]\n\nEach dimension is a sine/cosine of a different frequency (like the hands of a clock)"
   },
   {
-    "objectID": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding-1",
-    "href": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding-1",
-    "title": "Modern Architectures - I",
-    "section": "Sinusoidal Position Encoding",
-    "text": "Sinusoidal Position Encoding\nWhy sin and cos?\n\\(sin(a+b) = sin(a)cos(b) + cos(a)sin(b)\\)\n\\(cos(a+b) = cos(a)cos(b) - sin(a)sin(b)\\)\nPE(pos+k) is a linear function of PE(pos)\nSo\n\\[\n\\begin{aligned}\n\\sin(\\omega \\cdot (p+k)) &= \\sin(\\omega p)\\cos(\\omega k) + \\cos(\\omega p)\\sin(\\omega k)\n\\end{aligned}\n\\]\n\\[\n\\begin{aligned}\n\\cos(\\omega \\cdot (p+k)) &= \\cos(\\omega p)\\cos(\\omega k) - \\sin(\\omega p)\\sin(\\omega k)\n\\end{aligned}\n\\]"
+    "objectID": "arch/03_modern_arch/slides-2.html#why-a-range-of-frequencies",
+    "href": "arch/03_modern_arch/slides-2.html#why-a-range-of-frequencies",
+    "title": "Modern Architectures - II",
+    "section": "Why a range of frequencies?",
+    "text": "Why a range of frequencies?\n\nHigh frequency - short wavelength: changes a lot between adjacent positions, repeats almost immediately =&gt; tiny unique range. \nLow frequency - long wavelength: adjacent positions nearly identical, repeats after long range =&gt; no resolution. \n\n\nFix : Use many frequencies, like the bits of a number:\n\nFast “hands” resolve adjacent positions; slow “hands” span the whole sequence.\nThe base \\(10000\\) sets the slowest wavelength -&gt; the longest distance you can represent.\nThe combined pattern repeats only after the LCM of all wavelengths -&gt; effectively never."
   },
   {
-    "objectID": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding-2",
-    "href": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding-2",
-    "title": "Modern Architectures - I",
-    "section": "Sinusoidal Position Encoding",
-    "text": "Sinusoidal Position Encoding\nDownsides :\nSinusoidal PE is added to embeddings: \\(x_p = x_{token} + PE(p)\\)\nThen projected: \\(q_p = W_q x_p\\), \\(k_p = W_kx_p\\)\n\nPosition and content are entangled before attention\nRelative position is implicit, not structural\nAttention must learn how to extract distance"
+    "objectID": "arch/03_modern_arch/slides-2.html#why-both-sin-and-cos",
+    "href": "arch/03_modern_arch/slides-2.html#why-both-sin-and-cos",
+    "title": "Modern Architectures - II",
+    "section": "Why both sin and cos?",
+    "text": "Why both sin and cos?\n\nRelative position becomes a simple rotation.\n\n\nLet \\(\\omega = 1/10000^{2i/d}\\) \\[\\sin(\\omega(p+k)) = \\sin(\\omega p)\\cos(\\omega k) + \\cos(\\omega p)\\sin(\\omega k)\\]\n\\[\\cos(\\omega(p+k)) = \\cos(\\omega p)\\cos(\\omega k) - \\sin(\\omega p)\\sin(\\omega k)\\]\n\n\nThese two pairs - make a point on the unit circle at angle \\(\\omega p\\):\n\n\n\\[PE_\\omega(p) = \\big(\\sin(\\omega p),\\ \\cos(\\omega p)\\big)\\]"
   },
   {
-    "objectID": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings",
-    "href": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings",
-    "title": "Modern Architectures - I",
+    "objectID": "arch/03_modern_arch/slides-2.html#relative-position-and-rotation",
+    "href": "arch/03_modern_arch/slides-2.html#relative-position-and-rotation",
+    "title": "Modern Architectures - II",
+    "section": "Relative Position and Rotation",
+    "text": "Relative Position and Rotation\nMoving \\(k\\) steps forward is exactly a rotation by \\(\\omega k\\):\n\n\n\n\n\\[\n\\begin{pmatrix}\\sin(\\omega(p{+}k))\\\\ \\cos(\\omega(p{+}k))\\end{pmatrix}\n=\n\\underbrace{\\begin{pmatrix}\\cos(\\omega k) & \\sin(\\omega k)\\\\ -\\sin(\\omega k) & \\cos(\\omega k)\\end{pmatrix}}_{\\text{rotation by }\\omega k}\n\\begin{pmatrix}\\sin(\\omega p)\\\\ \\cos(\\omega p)\\end{pmatrix}\n\\]\n\nThe rotation depends only on the shift \\(k\\), never on the absolute position \\(p\\).\nSo relative distance is, in principle, recoverable from the absolute encoding."
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#sinusoidal-pe-downsides",
+    "href": "arch/03_modern_arch/slides-2.html#sinusoidal-pe-downsides",
+    "title": "Modern Architectures - II",
+    "section": "Sinusoidal PE: Downsides",
+    "text": "Sinusoidal PE: Downsides\nPE is added to the token embedding, then projected into queries and keys:\n\\[x_p = x_{token} + PE(p), \\qquad q_p = W_q\\,x_p, \\quad k_p = W_k\\,x_p\\]\nThe attention score then splits into four terms:\n\\[\n\\begin{aligned}\nq_p \\cdot k_n = \\;& \\underbrace{(W_q x_{tok})\\cdot(W_k x_{tok})}_{\\text{content×content}} + \\underbrace{(W_q x_{tok})\\cdot(W_k PE_n)}_{\\text{content×position}} \\\\[4pt]\n+\\;& \\underbrace{(W_q PE_p)\\cdot(W_k x_{tok})}_{\\text{position×content}} + \\underbrace{(W_q PE_p)\\cdot(W_k PE_n)}_{\\text{position×position}}\n\\end{aligned}\n\\]\n\nThe rotation lived in raw PE space, but attention sees \\(W_q\\,PE\\): the learned \\(W_q\\) can scale, shear, and mix the (sin, cos) pairs across frequencies\nposition and content are entangled, relative distance is implicit, and attention must learn to extract it"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings",
+    "href": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings",
+    "title": "Modern Architectures - II",
     "section": "Absolute vs Relative Position Encodings",
     "text": "Absolute vs Relative Position Encodings\n\nAbsolute position encodings - Unique encoding to each position in the sequence.\nRelative position encodings - Encodes the relative distance between tokens, rather than their absolute position."
   },
   {
-    "objectID": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings-1",
-    "href": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings-1",
-    "title": "Modern Architectures - I",
+    "objectID": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings-1",
+    "href": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings-1",
+    "title": "Modern Architectures - II",
     "section": "Absolute vs Relative Position Encodings",
     "text": "Absolute vs Relative Position Encodings\nWhy do we need them?\n\n“The cat sat” should have similar relationships whether at positions [5,6,7] or [105,106,107]\nAbsolute encodings make it harder to learn patterns based on relative distance (e.g., “the word two positions to the left of X”)\n\nBenefits:\n\nLearn patterns based on relative distance between tokens\nMore important for many tasks than absolute position\nNo reliance on fixed absolute positions"
   },
   {
-    "objectID": "arch/03_modern_arch/slides.html#relative-position-encoding-example",
-    "href": "arch/03_modern_arch/slides.html#relative-position-encoding-example",
-    "title": "Modern Architectures - I",
+    "objectID": "arch/03_modern_arch/slides-2.html#relative-position-encoding-example",
+    "href": "arch/03_modern_arch/slides-2.html#relative-position-encoding-example",
+    "title": "Modern Architectures - II",
     "section": "Relative Position Encoding Example",
     "text": "Relative Position Encoding Example\nExample sentence: “The dog chased another dog”\nWhen attending from position 2 (“chased”):\n\n\n\nPosition\nToken\nAbsolute\nRelative to pos 2\n\n\n\n\n0\nThe\n0\n-2\n\n\n1\ndog\n1\n-1\n\n\n2\nchased\n2\n0 (self)\n\n\n3\nanother\n3\n+1\n\n\n4\ndog\n4\n+2"
   },
   {
-    "objectID": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings-2",
-    "href": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings-2",
-    "title": "Modern Architectures - I",
+    "objectID": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings-2",
+    "href": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings-2",
+    "title": "Modern Architectures - II",
     "section": "Absolute vs Relative Position Encodings",
     "text": "Absolute vs Relative Position Encodings\nIn practice:\n\n# T5-style relative attention bias\n# For position i attending to position j:\nrelative_position = j - i  # e.g., \"dog\"(1) → \"chased\"(2) = 1 - 2 = -1\n\n# Bias added to attention scores (learned, not fixed):\nattention_score = (q_i @ k_j) + bias[clip(relative_position, -max_dist, max_dist)]\nKey differences from absolute:\n\nSame relative pattern at any absolute position (e.g., “-1” always means “previous token”)\nModel learns one bias per relative distance, not per absolute position"
   },
   {
-    "objectID": "arch/02_gpt/training.html#topics-covered",
-    "href": "arch/02_gpt/training.html#topics-covered",
-    "title": "GPT-2 : Training",
+    "objectID": "arch/03_modern_arch/slides-2.html#position-encoding-desirable-properties",
+    "href": "arch/03_modern_arch/slides-2.html#position-encoding-desirable-properties",
+    "title": "Modern Architectures - II",
+    "section": "Position Encoding : Desirable Properties",
+    "text": "Position Encoding : Desirable Properties\n\nInject position information into the model\nAllow generalization to longer sequences than seen during training\nFacilitate learning of relative position patterns (e.g., “the word two positions to the left of X”)\nBe computationally efficient (not too many parameters or FLOPs)\nBe compatible with attention mechanism (e.g., allow position information to influence attention scores)"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#rotary-position-embeddings-rope",
+    "href": "arch/03_modern_arch/slides-2.html#rotary-position-embeddings-rope",
+    "title": "Modern Architectures - II",
+    "section": "Rotary Position Embeddings (RoPE)",
+    "text": "Rotary Position Embeddings (RoPE)\nWe want attention scores to depend only on relative position \\((i - j)\\) (how far apart the tokens are), not absolute positions.\nMathematically, find \\(f(x, i)\\) such that:\n\\[\\langle f(x, i), f(y, j) \\rangle = g(x, y, i-j)\\]\n\n\nRoPE’s key idea:\n\nInstead of adding PE to the input x, apply rotation to the query and key vectors based on their position.\nPosition information is directly encoded in the attention scores\n\n\nVideo"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#encoding-position-as-a-rotation",
+    "href": "arch/03_modern_arch/slides-2.html#encoding-position-as-a-rotation",
+    "title": "Modern Architectures - II",
+    "section": "Encoding position as a rotation",
+    "text": "Encoding position as a rotation\nRotating a 2D vector by an angle \\(\\theta\\)\n\n\\[\\begin{bmatrix}\nx' \\\\\ny'\n\\end{bmatrix} =\n\\begin{bmatrix}\n\\cos \\theta & -\\sin \\theta \\\\\n\\sin \\theta & \\cos \\theta\n\\end{bmatrix}\n\\begin{bmatrix}\nx \\\\\ny\n\\end{bmatrix}\\]\n\nRotating a word vector\nGiven a word vector \\(x = (x_1, x_2)\\) at position \\(m\\), we can rotate it by an angle \\(\\theta_m\\) to get the position-aware vector \\(x'\\):\n\n\\[\\begin{bmatrix}\nx'_1 \\\\\nx'_2\n\\end{bmatrix} =\n\\begin{bmatrix}\n\\cos \\theta_m & -\\sin \\theta_m \\\\\n\\sin \\theta_m & \\cos \\theta_m\n\\end{bmatrix}\n\\begin{bmatrix}\nx_1 \\\\\nx_2\n\\end{bmatrix}\\]"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#dot-product-of-rotated-vectors",
+    "href": "arch/03_modern_arch/slides-2.html#dot-product-of-rotated-vectors",
+    "title": "Modern Architectures - II",
+    "section": "Dot product of rotated vectors",
+    "text": "Dot product of rotated vectors\nLet’s rotate two vectors \\(q\\) and \\(k\\) by angles \\(\\theta_q\\) and \\(\\theta_k\\) respectively.\n\\(q' = R_{(\\theta_q)} q\\)\n\\(k' = R_{(\\theta_k)} k\\)\nThe dot product of the rotated vectors is:\n\\[\\begin{aligned}\nq' \\cdot k' &= (R(\\theta_q) q) \\cdot (R(\\theta_k) k) \\\\\n&= q^T R(\\theta_q)^T R(\\theta_k) k \\\\\n&= q^T R(\\theta_k - \\theta_q) k\n\\end{aligned}\\]"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#dot-product-of-rotated-vectors-1",
+    "href": "arch/03_modern_arch/slides-2.html#dot-product-of-rotated-vectors-1",
+    "title": "Modern Architectures - II",
+    "section": "Dot product of rotated vectors",
+    "text": "Dot product of rotated vectors\nDot products depend only on relative rotation.\nNow attention scores depend on : q, k, and the relative angle \\((\\theta_k - \\theta_q)\\), which encodes the relative position between the two tokens."
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#rotations-in-higher-dimensions",
+    "href": "arch/03_modern_arch/slides-2.html#rotations-in-higher-dimensions",
+    "title": "Modern Architectures - II",
+    "section": "Rotations in higher dimensions",
+    "text": "Rotations in higher dimensions\n\n\n\nIn higher dimensions, we can apply rotations in multiple planes\n\nExample: In 4D space, rotate independently in \\((x_1, x_2)\\) plane and \\((x_3, x_4)\\) plane\n\nFor a \\(d\\)-dimensional vector:\n\nApply \\(\\frac{d}{2}\\) independent rotations\nEach rotation has its own angle \\(\\theta_m\\)\nEncodes position information compatible with attention mechanism"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#rotations-in-higher-dimensions-1",
+    "href": "arch/03_modern_arch/slides-2.html#rotations-in-higher-dimensions-1",
+    "title": "Modern Architectures - II",
+    "section": "Rotations in higher dimensions",
+    "text": "Rotations in higher dimensions\n\n\n\nExample: Model with hidden dimension \\(d = 512\\)\n\nApply 256 independent rotations\nEach pair of dimensions gets rotated by different frequency\nCreates a rich positional representation"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#rotation-in-m-dimensions",
+    "href": "arch/03_modern_arch/slides-2.html#rotation-in-m-dimensions",
+    "title": "Modern Architectures - II",
+    "section": "Rotation in m dimensions",
+    "text": "Rotation in m dimensions"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#rotation-in-m-dimensions-1",
+    "href": "arch/03_modern_arch/slides-2.html#rotation-in-m-dimensions-1",
+    "title": "Modern Architectures - II",
+    "section": "Rotation in m dimensions",
+    "text": "Rotation in m dimensions\n\n\n\n\n\\(\\theta_i = B^{-2i/d} \\quad \\text{where } B \\text{ is the base (typically 10000)}\\)\nThe wavelength of dimension \\(i\\) is:\n\\[\\lambda_i = \\frac{2\\pi}{\\theta_i} = 2\\pi \\cdot B^{2i/d}\\]\nThis creates a geometric progression of wavelengths:\n\nShortest wavelength (highest freq, \\(i=0\\)): \\(\\lambda_{\\min} = 2\\pi \\approx 6.28\\) tokens\nLongest wavelength (lowest freq, \\(i=d/2-1\\)): \\(\\lambda_{\\max} = 2\\pi \\cdot B \\approx 62,832\\) tokens (when \\(B=10000\\))"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#rope-summary",
+    "href": "arch/03_modern_arch/slides-2.html#rope-summary",
+    "title": "Modern Architectures - II",
+    "section": "RoPE Summary",
+    "text": "RoPE Summary\nCore Formula:\nFor a vector \\(x\\) at position \\(m\\), RoPE applies rotation:\n\\[f(x, m) = R_{\\Theta,m} \\cdot x\\]\nwhere \\(R_{\\Theta,m}\\) is a block-diagonal rotation matrix with \\(d/2\\) independent 2D rotations.\nRotation for dimension pair \\((2i, 2i+1)\\):\n\\[\\begin{bmatrix} x'_{2i} \\\\ x'_{2i+1} \\end{bmatrix} = \\begin{bmatrix} \\cos(m\\theta_i) & -\\sin(m\\theta_i) \\\\ \\sin(m\\theta_i) & \\cos(m\\theta_i) \\end{bmatrix} \\begin{bmatrix} x_{2i} \\\\ x_{2i+1} \\end{bmatrix}\\]\nFrequency schedule: \\(\\theta_i = B^{-2i/d}\\) where \\(B = 10000\\) (base)"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#rope-summary-1",
+    "href": "arch/03_modern_arch/slides-2.html#rope-summary-1",
+    "title": "Modern Architectures - II",
+    "section": "RoPE Summary",
+    "text": "RoPE Summary\nKey property - relative position encoding:\n\\[\\langle R_{\\Theta,m} \\cdot q, R_{\\Theta,n} \\cdot k \\rangle = q^T R_{\\Theta,(n-m)} k\\]\nAttention scores depend only on relative position \\((n - m)\\), not absolute positions."
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#computing-attention-with-rope",
+    "href": "arch/03_modern_arch/slides-2.html#computing-attention-with-rope",
+    "title": "Modern Architectures - II",
+    "section": "Computing Attention with RoPE",
+    "text": "Computing Attention with RoPE\nRef : LLaMa 2 Attention\nclass RoPEAttention(nn.Module):\n\n\n    def forward(self, x: torch.Tensor):\n        # Apply RoPE to queries and keys\n        q = apply_rotary_emb(q, self.freqs_cis[:seq_len])\n        k = apply_rotary_emb(k, self.freqs_cis[:seq_len])\n\n        # Scaled dot-product attention\n        scores = (q @ k.transpose(-2, -1)) / (self.head_dim ** 0.5)\nKey implementation details:\n\nPrecompute frequencies: Calculate \\(\\theta_i = 10000^{-2i/d}\\) for all dimension pairs once\nApply once per forward pass: Rotate Q and K by position-dependent angles\nNo extra parameters: RoPE is fully deterministic, no learned weights"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#other-hyperparameters",
+    "href": "arch/03_modern_arch/slides-2.html#other-hyperparameters",
+    "title": "Modern Architectures - II",
+    "section": "Other Hyperparameters",
+    "text": "Other Hyperparameters\n\nHow many attention heads?\nHow many layers?\nHidden dimension size?\nFFN dimension size?\nVocab size?"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides-2.html#other-hyperparameters-1",
+    "href": "arch/03_modern_arch/slides-2.html#other-hyperparameters-1",
+    "title": "Modern Architectures - II",
+    "section": "Other Hyperparameters",
+    "text": "Other Hyperparameters\nFFN Dimensions\n\nTypical FFN dimension is 4x the hidden dimension (\\(d_{ff} = 4 \\cdot d_{model}\\))\nin GLU variants (SwiGLU, GeGLU), use 2/3 scaling to keep parameter count same\n\nNumber of attention heads\n\nCommon choices are 16, 32, or 64 heads for large models.\nThe number of heads is often chosen to be a divisor of the hidden dimension for simplicity (e.g., 512 hidden dimension with 16 heads means each head has 32 dimensions).\n\nVocabulary size\n\nMonolingual models: 30-50K tokens (Original Transformer: 37K, GPT-2/3: 50K, LLaMA 1/2: 32K, LLaMA 3: 128K)\nMultilingual/Production: 100-250K tokens (GPT-4: 100K, PaLM: 256K, Qwen: 152K, Command A: 255K)"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#topics-covered",
+    "href": "arch/02_gpt/slides.html#topics-covered",
+    "title": "GPT-2 : Model Architecture and Implementation",
     "section": "Topics Covered",
-    "text": "Topics Covered\n\nGPT-2 Architecture Review\n\nLayer Normalization\nSelf-Attention in GPT-2\nFeed-Forward Network (FFN)\nResidual Connections\n\nTraining GPT-2\n\nText generation\nGreedy decoding loop\nTraining loop"
+    "text": "Topics Covered\n\nTransformer Architecture Review\n\nSelf-Attention Mechanism Recap\nCausal Masking in Decoder-Only Models\nMulti-Head Attention\n\nGPT-2 Architecture\n\nLayer Normalization\nSelf-Attention in GPT-2\nFeed-Forward Network (FFN)\nResidual Connections\n\nImplementing GPT-2 from Scratch"
   },
   {
-    "objectID": "arch/02_gpt/training.html#gpt-2-architecture",
-    "href": "arch/02_gpt/training.html#gpt-2-architecture",
-    "title": "GPT-2 : Training",
+    "objectID": "arch/02_gpt/slides.html#recap-self-attention-mechanism",
+    "href": "arch/02_gpt/slides.html#recap-self-attention-mechanism",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Recap : Self-Attention Mechanism",
+    "text": "Recap : Self-Attention Mechanism\n\nThe token embeddings alone are not sufficient.\nWe want dynamic, context-dependent representations of each token.\nSelf-attention allows each token to attend to all other tokens in the sequence to gather relevant context.\n\nVideo"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#recap-self-attention-mechanism-1",
+    "href": "arch/02_gpt/slides.html#recap-self-attention-mechanism-1",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Recap : Self-Attention Mechanism",
+    "text": "Recap : Self-Attention Mechanism\nWe project the token embedding to three learned projection spaces:\nPROJECTION === “Matrix Multiplication”\n\nQuery (Q): \\(q_i = x_i W_q\\)\nKey (K): \\(k_i = x_i W_k\\)\nValue (V): \\(v_i = x_i W_v\\)"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#introducing-q-k-v-vectors",
+    "href": "arch/02_gpt/slides.html#introducing-q-k-v-vectors",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Introducing Q, K, V vectors",
+    "text": "Introducing Q, K, V vectors\nWe transform each input token into three different vectors:\n\nToken embedding: \\(x^{(i)}\\)\nQuery (Q): What am I looking for?\nKey (K): What do I have to offer?\nValue (V): What information do I carry?"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#scaled-dot-product-attention",
+    "href": "arch/02_gpt/slides.html#scaled-dot-product-attention",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Scaled Dot-Product Attention",
+    "text": "Scaled Dot-Product Attention\n\\[\\mathbf{Attention}(Q, K, V) = \\mathbf{softmax}\\left(\\frac{QK^{\\top}}{\\sqrt{d_k}}\\right)V\\]\n\n\\(d_k \\text{ is the dimensionality of the key vectors (used for scaling).}\\)\nWithout \\(\\sqrt{d_k}\\), dot products grow with dimension -&gt; softmax saturates -&gt; tiny gradients."
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#causal-attention-masking-in-decoder-only-models",
+    "href": "arch/02_gpt/slides.html#causal-attention-masking-in-decoder-only-models",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Causal Attention (Masking) in Decoder-Only Models",
+    "text": "Causal Attention (Masking) in Decoder-Only Models\n\n\nDecoder-only models =&gt; we predict next token based on previous tokens\nNote : During training, we predict all tokens in parallel\nTo prevent information leakage from future tokens, we apply a causal mask to the attention scores\nAt all time steps, each token can only attend to earlier tokens and itself"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#multi-head-attention---stacking-multiple-attention-heads",
+    "href": "arch/02_gpt/slides.html#multi-head-attention---stacking-multiple-attention-heads",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Multi-Head Attention - Stacking multiple attention heads",
+    "text": "Multi-Head Attention - Stacking multiple attention heads\n\\(MultiHead(Q,K,V) = Concat(head_1,...,head_h)W_O\\)\n\\(head_i = Attention(QW_{q_i}, KW_{k_i}, VW_{v_i})\\)\n\n\n\nMultiple self-attention calculations in parallel\nIndependent set of learned weight matrices (Wq, Wk, Wv) and output vector for each head.\nConcatenate all to produce one context vector for each token.\nMultiple heads -&gt; attend to input sentence simultaneously -&gt; different relationships and patterns in the data."
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#gpt-2-model---architecture-and-implementation",
+    "href": "arch/02_gpt/slides.html#gpt-2-model---architecture-and-implementation",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "GPT-2 Model - Architecture and Implementation",
+    "text": "GPT-2 Model - Architecture and Implementation"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#generative-pre-trained-transformer-gpt",
+    "href": "arch/02_gpt/slides.html#generative-pre-trained-transformer-gpt",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Generative Pre-trained Transformer (GPT)",
+    "text": "Generative Pre-trained Transformer (GPT)\nRadFord et al., 2019\n\nDecoder only Transformer architecture, pre-trained on large corpus of text data (40GB of internet text) using self-supervised next-token prediction.\nDemonstrated that general purpose models for textual understanding are incredibly effective without using any task-specific architectures or modifications"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#language-modeling-objective",
+    "href": "arch/02_gpt/slides.html#language-modeling-objective",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Language Modeling Objective",
+    "text": "Language Modeling Objective\n\nPredict the next token in a sequence given all previous tokens\n\n\n\\[P(x_t) = ∏ P(x_t | x_1, ..., x_{t-1})\\]"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#auto-regressive-text-generation",
+    "href": "arch/02_gpt/slides.html#auto-regressive-text-generation",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Auto-regressive Text Generation",
+    "text": "Auto-regressive Text Generation\n\nGiven a prompt, GPT-2 generates text one token at a time\nAt each step, the model predicts the next token based on all previous tokens\nThe predicted token is appended to the input sequence for the next prediction"
+  },
+  {
+    "objectID": "arch/02_gpt/slides.html#gpt-2-architecture",
+    "href": "arch/02_gpt/slides.html#gpt-2-architecture",
+    "title": "GPT-2 : Model Architecture and Implementation",
     "section": "GPT-2 Architecture",
-    "text": "GPT-2 Architecture\n\nGPT model stacks multiple transformer decoder blocks\nEach block has:\n\nLayer Normalization\n\nMasked Multi-Head Self-Attention layer\nFeed-Forward Neural Network (FFN)\nResidual Connections\n\nFinal output layer"
+    "text": "GPT-2 Architecture\n\nGPT model stacks multiple transformer decoder blocks\nEach block has:\n\nMasked Multi-Head Self-Attention layer\nFeed-Forward Neural Network (FFN)\nLayer Normalization and Residual Connections\n\nFinal output layer\n\n\nRef : Radford et al., 2019 “Language Models are Unsupervised Multitask Learners”"
   },
   {
-    "objectID": "arch/02_gpt/training.html#gpt-2-architecture-1",
-    "href": "arch/02_gpt/training.html#gpt-2-architecture-1",
-    "title": "GPT-2 : Training",
-    "section": "GPT-2 Architecture",
-    "text": "GPT-2 Architecture\nGPT 2 small (124M parameters) has:\n\n\n\n12 Transformer blocks\n768-dimensional hidden states (embeddning vector size)\n12 attention heads\nVocabulary size: 50,257 tokens"
+    "objectID": "arch/02_gpt/slides.html#detailed-gpt-2-architecture",
+    "href": "arch/02_gpt/slides.html#detailed-gpt-2-architecture",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Detailed GPT-2 Architecture",
+    "text": "Detailed GPT-2 Architecture\n\n\n\n\n\n\nGPT_CONFIG_124M = {\n# 50000 BPE merges + 256 byte tokens + 1 special token\n\"vocab_size\": 50257, \n# max length of input sequences\n\"context_length\": 1024, \n\"emb_dim\": 768,\n\"n_heads\": 12,\n\"n_layers\": 12,\n\"drop_rate\": 0.1,\n\"qkv_bias\": False\n}"
   },
   {
-    "objectID": "arch/02_gpt/training.html#text-generation",
-    "href": "arch/02_gpt/training.html#text-generation",
-    "title": "GPT-2 : Training",
-    "section": "Text Generation",
-    "text": "Text Generation"
+    "objectID": "arch/02_gpt/slides.html#inputs-to-the-gpt-2-model",
+    "href": "arch/02_gpt/slides.html#inputs-to-the-gpt-2-model",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Inputs to the GPT-2 Model",
+    "text": "Inputs to the GPT-2 Model\n\nInput Text -&gt; Tokenization -&gt; Token IDs\nInput Encodings:\n\nToken Embeddings: Represent the meaning of each token\nPositional Encodings: Represent the position of each token in the sequence\n\nCombined to form the input to the first transformer block"
   },
   {
-    "objectID": "arch/02_gpt/training.html#autoregressive-text-generation",
-    "href": "arch/02_gpt/training.html#autoregressive-text-generation",
-    "title": "GPT-2 : Training",
-    "section": "Autoregressive Text Generation",
-    "text": "Autoregressive Text Generation\nLLMs generate text one token at a time through an iterative process:\n\n\n\nStart with an input context (e.g., “Hello, I am”)\nModel predicts the next token probability distribution\nSelect the next token (highest probability = greedy decoding)\nAppend token to context\nRepeat until desired length\n\n\n\n\nKey Insight: The model consumes its own previous outputs as future inputs - this is the autoregressive property."
+    "objectID": "arch/02_gpt/slides.html#inputs-to-the-gpt-2-model-1",
+    "href": "arch/02_gpt/slides.html#inputs-to-the-gpt-2-model-1",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Inputs to the GPT-2 Model",
+    "text": "Inputs to the GPT-2 Model\n\nTransformers have no inherent notion of sequence order, Without positional info, ‘dog bites man’ = ‘man bites dog’ to the model\nGPT-2 uses LEARNED positional embeddings (vs sinusoidal in original Transformer)\nBoth embeddings are simply added element-wise (not concatenated)"
   },
   {
-    "objectID": "arch/02_gpt/training.html#logits-to-token-selection",
-    "href": "arch/02_gpt/training.html#logits-to-token-selection",
-    "title": "GPT-2 : Training",
-    "section": "Logits to Token Selection",
-    "text": "Logits to Token Selection\nThe GPT output is logits, not probabilities.\n\nLogits ∈ ℝ^V\nSoftmax converts logits -&gt; probability distribution\nArgmax selects most likely token\n\nprobas = torch.softmax(logits, dim=-1)\ntoken_id = torch.argmax(probas)"
+    "objectID": "arch/02_gpt/slides.html#layer-normalization",
+    "href": "arch/02_gpt/slides.html#layer-normalization",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Layer Normalization",
+    "text": "Layer Normalization\n\nGradient explosion/vanishing issues in deep networks\nNormalizes (centers) inputs across features for each token to have zero mean and unit variance\nStabilizes training and improves convergence\nIn GPT-2, applied before self-attention and feed-forward layers (Pre-LN)"
   },
   {
-    "objectID": "arch/02_gpt/training.html#understanding-the-generation-flow",
-    "href": "arch/02_gpt/training.html#understanding-the-generation-flow",
-    "title": "GPT-2 : Training",
-    "section": "Understanding the Generation Flow",
-    "text": "Understanding the Generation Flow\nInput -&gt; Token IDs -&gt; Model -&gt; Logits -&gt; Softmax -&gt; Token Selection -&gt; Output\n\n\n\n\n\n\nStep\nOperation\nShape Transformation\n\n\n\n\n1\nTokenize input\n“Hello, I am” → [15496, 11, 314, 716]\n\n\n2\nModel forward\n(1, 4) → (1, 4, 50257)\n\n\n3\nExtract last logits\n(1, 4, 50257) → (1, 50257)\n\n\n4\nSoftmax\nlogits → probabilities\n\n\n5\nArgmax\nselect token ID 257 → “a”\n\n\n6\nConcatenate\nextend sequence for next iteration"
+    "objectID": "arch/02_gpt/slides.html#layer-normalization-1",
+    "href": "arch/02_gpt/slides.html#layer-normalization-1",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Layer Normalization",
+    "text": "Layer Normalization\n\nNormalization\n\n\\[\\hat x = \\frac{x - \\mu}{\\sigma + \\epsilon} \\]\n\nLayerNorm formula:\n\n\\[\\text{LayerNorm}(x) = \\frac{x - \\mu}{\\sigma + \\epsilon} \\cdot \\gamma + \\beta\\]\n\n\nx: input vector for a token\nμ: mean of the elements in x\nσ: standard deviation of the elements in x\nε: small constant for numerical stability\nγ, β: learnable parameters for scaling and shifting"
   },
   {
-    "objectID": "arch/02_gpt/training.html#greedy-decoding-loop",
-    "href": "arch/02_gpt/training.html#greedy-decoding-loop",
-    "title": "GPT-2 : Training",
-    "section": "Greedy Decoding Loop",
-    "text": "Greedy Decoding Loop\nGreedy decoding selects the highest-probability token at each step.\n\n\n\n\nProperties:\n\nDeterministic\nFast\nOften repetitive / dull"
+    "objectID": "arch/02_gpt/slides.html#self-attention-in-gpt-2",
+    "href": "arch/02_gpt/slides.html#self-attention-in-gpt-2",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Self-Attention in GPT-2",
+    "text": "Self-Attention in GPT-2\n\nEach Transformer Block contains\n\nA Multi-Head Self-Attention layer\nEach head computes attention using Q, K, V\nCausal mask applied to prevent attending to future tokens and dropout for regularization\n\n\nGPT-2 small MHA config:\n- Multi-Head Self-Attention mechanism\n- Attention heads : 12\n- Head dimension : 64\n- Context length : 1024 tokens\n- Context Vector Size per token : 768 (12 heads * 64 dim)"
   },
   {
-    "objectID": "arch/02_gpt/training.html#generation-from-an-untrained-model",
-    "href": "arch/02_gpt/training.html#generation-from-an-untrained-model",
-    "title": "GPT-2 : Training",
-    "section": "Generation from an Untrained Model",
-    "text": "Generation from an Untrained Model\nBefore training:\n\nWeights are random\nLogits are random\nToken probabilities are near-uniform\n\nWith vocab size = 50,257:\n\nInitial probability ≈ 1 / 50,257 ≈ 0.00002\n\nThus generated text is effectively random noise."
+    "objectID": "arch/02_gpt/slides.html#self-attention-in-gpt-2-1",
+    "href": "arch/02_gpt/slides.html#self-attention-in-gpt-2-1",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Self-Attention in GPT-2",
+    "text": "Self-Attention in GPT-2"
   },
   {
-    "objectID": "arch/02_gpt/training.html#training-the-gpt",
-    "href": "arch/02_gpt/training.html#training-the-gpt",
-    "title": "GPT-2 : Training",
-    "section": "Training the GPT",
-    "text": "Training the GPT"
+    "objectID": "arch/02_gpt/slides.html#feed-forward-network-ffn",
+    "href": "arch/02_gpt/slides.html#feed-forward-network-ffn",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Feed-Forward Network (FFN)",
+    "text": "Feed-Forward Network (FFN)\n\nA Feed-Forward Network (FFN) is applied independently to each token’s representation after the self-attention layer.\nAffine transformation followed by a non-linear activation function."
   },
   {
-    "objectID": "arch/02_gpt/training.html#training-overview",
-    "href": "arch/02_gpt/training.html#training-overview",
-    "title": "GPT-2 : Training",
-    "section": "Training Overview",
-    "text": "Training Overview\n\nTraining Loop\n\nLoss Optimization\nData Loading\n\nModel Evaluation\nUsing Pretrained weights"
+    "objectID": "arch/02_gpt/slides.html#feed-forward-network-ffn-1",
+    "href": "arch/02_gpt/slides.html#feed-forward-network-ffn-1",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Feed-Forward Network (FFN)",
+    "text": "Feed-Forward Network (FFN)\n\nA Feed-Forward Network (FFN) is applied independently to each token’s representation after the self-attention layer.\nAffine transformation followed by a non-linear activation function.\n\n\nA Linear Layer is defined as: \\(\\text{Linear}(x) = xW^T + b\\)"
   },
   {
-    "objectID": "arch/02_gpt/training.html#evaluating-generative-text-models",
-    "href": "arch/02_gpt/training.html#evaluating-generative-text-models",
-    "title": "GPT-2 : Training",
-    "section": "Evaluating Generative Text Models",
-    "text": "Evaluating Generative Text Models"
+    "objectID": "arch/02_gpt/slides.html#feed-forward-network-ffn-in-gpt-2",
+    "href": "arch/02_gpt/slides.html#feed-forward-network-ffn-in-gpt-2",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Feed-Forward Network (FFN) in GPT-2",
+    "text": "Feed-Forward Network (FFN) in GPT-2\n\nEach transformer block contains a Feed-Forward Network (FFN)\nFFN has two linear layers with GELU activation in between\n\n\n \\[\\text{FFN}(x) = \\text{Linear}_2(\\text{GELU}(\\text{Linear}_1(x)))\\]"
   },
   {
-    "objectID": "arch/02_gpt/training.html#why-evaluation-matters",
-    "href": "arch/02_gpt/training.html#why-evaluation-matters",
-    "title": "GPT-2 : Training",
-    "section": "Why Evaluation Matters",
-    "text": "Why Evaluation Matters\nBefore training, we need metrics to:\n\nMeasure model performance quantitatively\nTrack training progress\nDetect overfitting\nCompare different models\n\nKey Challenge: How do we numerically assess the quality of generated text?\nSolution: Use the model’s own probability estimates vs true probabilties for the “correct” next tokens."
+    "objectID": "arch/02_gpt/slides.html#gelu-activation-function",
+    "href": "arch/02_gpt/slides.html#gelu-activation-function",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "GELU Activation Function",
+    "text": "GELU Activation Function\n\nGaussian Error Linear Unit (GELU) is used in GPT-2’s FFN\nSmooth approximation of ReLU, allows small negative values to pass through\n\n\n\n\n\n \\(\\mathbf{GELU(x) = 0.5 \\cdot x \\cdot (1 + \\tanh[\\sqrt{2/\\pi}(x + 0.044715 \\cdot x^3)])}\\)"
   },
   {
-    "objectID": "arch/02_gpt/training.html#cross-entropy-loss-for-language-modeling",
-    "href": "arch/02_gpt/training.html#cross-entropy-loss-for-language-modeling",
-    "title": "GPT-2 : Training",
-    "section": "Cross Entropy Loss for Language Modeling",
-    "text": "Cross Entropy Loss for Language Modeling\nThe training objective: Maximize the probability of the correct next token\nGiven:\n\nInputs: Token IDs the model sees\nTargets: Token IDs the model should predict (inputs shifted by 1)\n\ninputs = torch.tensor([[16833, 3626, 6100],   # [\"every effort moves\",\n                       [40,    1107, 588]])    #  \"I really like\"]\n\ntargets = torch.tensor([[3626, 6100, 345  ],  # [\" effort moves you\",\n                        [1107, 588, 11311]])  #  \" really like chocolate\"]\n\n\n\nCross-entropy loss measures how well the model’s predicted probabilities match the true next tokens."
+    "objectID": "arch/02_gpt/slides.html#ffn-in-gpt-2",
+    "href": "arch/02_gpt/slides.html#ffn-in-gpt-2",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "FFN in GPT-2",
+    "text": "FFN in GPT-2\n\nHidden layer size is 4 times the input/output size (3072 for GPT-2 small)\nApplies non-linear transformation to each token’s representation independently\n\n\n\n\nWhy 4x?\n\nEmpirically found to work well\n\nFFN layers contain most of the model’s parameters!\n\nFor GPT-2 small: FFN has 768 -&gt; 3072 -&gt; 768, that’s 768 * 3072 * 2 ≈ 4.7M params per block\n12 blocks × 4.7 M ≈ 56M params just in FFNs (almost half the model)"
   },
   {
-    "objectID": "arch/02_gpt/training.html#cross-entropy-loss-for-language-modeling-1",
-    "href": "arch/02_gpt/training.html#cross-entropy-loss-for-language-modeling-1",
-    "title": "GPT-2 : Training",
-    "section": "Cross Entropy Loss for Language Modeling",
-    "text": "Cross Entropy Loss for Language Modeling\nCross-entropy loss measures how well the model’s predicted probabilities match the true next tokens.\nMathematical Formula:\n\\[\n\\text{Loss} = -\\frac{1}{N} \\sum_{i=1}^{N} \\log P(x_i^{\\text{target}})\n\\]\nWhere:\n\n\\(N\\) = total number of tokens\n\\(P(x_i^{\\text{target}})\\) = predicted probability for the correct token at position \\(i\\)\nThe negative sign converts it to a loss (we want to maximize probability = minimize negative log probability)"
+    "objectID": "arch/02_gpt/slides.html#residual-connections",
+    "href": "arch/02_gpt/slides.html#residual-connections",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Residual Connections",
+    "text": "Residual Connections\n\nHelp mitigate vanishing gradient problems in deep networks\nAdd the input of a layer to its output before passing to the next layer\nGradients get progressively smaller as they backpropagate through layers\nPreserve information from earlier layers, helping training stability"
   },
   {
-    "objectID": "arch/02_gpt/training.html#calculating-cross-entropy-loss",
-    "href": "arch/02_gpt/training.html#calculating-cross-entropy-loss",
-    "title": "GPT-2 : Training",
-    "section": "Calculating Cross Entropy Loss",
-    "text": "Calculating Cross Entropy Loss"
+    "objectID": "arch/02_gpt/slides.html#connecting-it-all-transformer-block-in-gpt-2",
+    "href": "arch/02_gpt/slides.html#connecting-it-all-transformer-block-in-gpt-2",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Connecting it all : Transformer Block in GPT-2",
+    "text": "Connecting it all : Transformer Block in GPT-2\n\nWe have implemented the key components of a transformer block used in GPT-2:\n\nLayer Normalization\nMulti-Head Self-Attention with Causal Masking\nResidual Connection\nFeed-Forward Network (FFN)"
   },
   {
-    "objectID": "arch/02_gpt/training.html#understanding-cross-entropy-loss",
-    "href": "arch/02_gpt/training.html#understanding-cross-entropy-loss",
-    "title": "GPT-2 : Training",
-    "section": "Understanding Cross Entropy Loss",
-    "text": "Understanding Cross Entropy Loss\nStep-by-step computation\n\nGet logits from model: shape (batch, seq_len, vocab_size)\nApply softmax to get probabilities\nExtract target probabilities: probability assigned to correct tokens\nApply logarithm: log probabilities are more numerically stable\nAverage over all tokens\nNegate: we minimize negative log-likelihood\n\n\nIn PyTorch, we can compute this in one step using cross_entropy function:\n# PyTorch does all 6 steps in one function:\nloss = torch.nn.functional.cross_entropy(logits_flat, targets_flat)\nInitial loss (untrained model): ~10.82\nTarget loss (well-trained): decreases toward a floor set by the data’s entropy (~3 for GPT-2 small)"
+    "objectID": "arch/02_gpt/slides.html#connecting-it-all-transformer-block-in-gpt-2-1",
+    "href": "arch/02_gpt/slides.html#connecting-it-all-transformer-block-in-gpt-2-1",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Connecting it all : Transformer Block in GPT-2",
+    "text": "Connecting it all : Transformer Block in GPT-2\n12 Transformer blocks are stacked in GPT-2 small"
   },
   {
-    "objectID": "arch/02_gpt/training.html#perplexity-interpretable-metric",
-    "href": "arch/02_gpt/training.html#perplexity-interpretable-metric",
-    "title": "GPT-2 : Training",
-    "section": "Perplexity: Interpretable Metric",
-    "text": "Perplexity: Interpretable Metric\nPerplexity = exp(cross_entropy_loss)\nInterpretation: The effective vocabulary size the model is “uncertain” about at each step.\nInterpretation:\n\nEffective number of equally likely tokens\nLower is better\n\nperplexity = torch.exp(loss)\n# For initial loss of 10.82: perplexity ≈ 50,257\n# Meaning: model is unsure among ~50,257 tokens\n\n\n\nLoss\nPerplexity\nInterpretation\n\n\n\n\n10.82\n50,257\nRandom guessing (vocab size: 50,257)\n\n\n5.0\n148\nModerate uncertainty\n\n\n2.0\n7.4\nLow uncertainty\n\n\n0.5\n1.65\nVery confident"
+    "objectID": "arch/02_gpt/slides.html#transformer-block-in-gpt-2",
+    "href": "arch/02_gpt/slides.html#transformer-block-in-gpt-2",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Transformer Block in GPT-2",
+    "text": "Transformer Block in GPT-2\n\n\ndef forward(self, x):\n    shortcut = x\n    x = self.norm1(x)\n    x = self.att(x)\n    x = self.dropout(x)\n    x = x + shortcut\n\n    shortcut = x\n    x = self.norm2(x)\n    x = self.ff(x)\n    x = self.dropout(x)\n    x = x + shortcut\n\n    return x"
   },
   {
-    "objectID": "arch/02_gpt/training.html#gpt-2-radford-et-al.-2019",
-    "href": "arch/02_gpt/training.html#gpt-2-radford-et-al.-2019",
-    "title": "GPT-2 : Training",
-    "section": "GPT-2 : Radford et al. (2019)",
-    "text": "GPT-2 : Radford et al. (2019)"
+    "objectID": "arch/02_gpt/slides.html#gpt-2-model-implementation",
+    "href": "arch/02_gpt/slides.html#gpt-2-model-implementation",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "GPT-2 Model Implementation",
+    "text": "GPT-2 Model Implementation\n\n\n\nWe have all the components to implement GPT-2 from scratch\nToken Embeddings + Positional Encodings\nStack of Transformer Blocks\nFinal Layer Normalization and Output Layer"
   },
   {
-    "objectID": "arch/02_gpt/training.html#gpt-2-radford-et-al.-2019-1",
-    "href": "arch/02_gpt/training.html#gpt-2-radford-et-al.-2019-1",
-    "title": "GPT-2 : Training",
-    "section": "GPT-2 : Radford et al. (2019)",
-    "text": "GPT-2 : Radford et al. (2019)"
+    "objectID": "arch/02_gpt/slides.html#gpt-2-model-implementation-1",
+    "href": "arch/02_gpt/slides.html#gpt-2-model-implementation-1",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "GPT-2 Model Implementation",
+    "text": "GPT-2 Model Implementation\nModel Initialization\n## GPT-2 Model Initialization pseudo-code\ntok_emb = nn.Embedding(vocab_size, emb_dim)\npos_emb = nn.Embedding(context_length, emb_dim)\ndrop_emb = nn.Dropout(drop_rate)\ntrf_blocks = [TransformerBlock(cfg) for _ in range(n_layers)] # \nfinal_norm = LayerNorm(emb_dim)\nout_head = nn.Linear(emb_dim, vocab_size, bias=False)\nForward Pass\nx = tok_embeds + pos_embeds\nx = self.drop_emb(x)\nx = self.trf_blocks(x)\nx = self.final_norm(x)\nlogits = self.out_head(x)"
   },
   {
-    "objectID": "arch/02_gpt/training.html#processing-data-for-training",
-    "href": "arch/02_gpt/training.html#processing-data-for-training",
-    "title": "GPT-2 : Training",
-    "section": "Processing Data for Training",
-    "text": "Processing Data for Training\n\n\n\nGiven a text corpus\n\nsplit into training and validation sets\nfor each set encode it to token IDs\ncreate input-target pairs\n\nInputs and targets are created by shifting token IDs by one position\n\n\n\n\n\nIn Pytorch\n\nDataset Encodes all text to token IDs\nDataLoader handles batching of and shuffling of sequences. Within a sequnce, no shuffling happens, the order of tokens is preserved:"
+    "objectID": "arch/02_gpt/slides.html#gpt-2-parameter-count",
+    "href": "arch/02_gpt/slides.html#gpt-2-parameter-count",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "GPT-2 Parameter Count",
+    "text": "GPT-2 Parameter Count\n\nGPT-2 small has ~124M parameters\nMajor contributors:\n\nToken Embeddings: ~38M\nTransformer Blocks: ~85M\n\nSelf-Attention layers: ~23M\nFeed-Forward Networks: ~56M\n\nOutput Layer: ~38M\n\nMost parameters are in embeddings and FFN layers"
   },
   {
-    "objectID": "arch/02_gpt/training.html#training-vs-validation-loss",
-    "href": "arch/02_gpt/training.html#training-vs-validation-loss",
-    "title": "GPT-2 : Training",
-    "section": "Training vs Validation Loss",
-    "text": "Training vs Validation Loss\nDuring training we split data into :\n\nTraining set\nValidation set\n\ntrain_ratio = 0.90\nsplit_idx = int(train_ratio * len(text_data))\ntrain_data = text_data[:split_idx]\nval_data = text_data[split_idx:]\nWhat to watch for:\n\nTraining loss decreases, Validation loss decreases -&gt; Model is learning and generalizing\nTraining loss decreases, Validation loss increases -&gt; OVERFITTING!"
+    "objectID": "arch/02_gpt/slides.html#next-steps",
+    "href": "arch/02_gpt/slides.html#next-steps",
+    "title": "GPT-2 : Model Architecture and Implementation",
+    "section": "Next Steps",
+    "text": "Next Steps\n\nImplement training loop with cross-entropy loss\nIntegrate tokenizer for text input/output\nLoad pretrained weights from HuggingFace for GPT-2\nExperiment with text generation"
   },
   {
-    "objectID": "arch/02_gpt/training.html#the-training-loop",
-    "href": "arch/02_gpt/training.html#the-training-loop",
-    "title": "GPT-2 : Training",
-    "section": "The Training Loop",
-    "text": "The Training Loop\nDuring Training we update model weights to minimize loss through backpropagation and gradient descent.\n\n\n\n\nTraining Loop in code\n\n    for epoch in range(num_epochs):\n        model.train()  # Enable dropout\n\n        for input_batch, target_batch in train_loader:\n            optimizer.zero_grad()  # Reset gradients\n\n            loss = calc_loss_batch(input_batch, target_batch, model, device)\n            loss.backward()        # Calculate gradients\n            optimizer.step()       # Update weights"
-  },
-  {
-    "objectID": "arch/02_gpt/training.html#loading-and-saving-model-weights",
-    "href": "arch/02_gpt/training.html#loading-and-saving-model-weights",
-    "title": "GPT-2 : Training",
-    "section": "Loading and Saving Model Weights",
-    "text": "Loading and Saving Model Weights\n\n\nWe must save trained models to:\n\nAvoid retraining\nShare models with others\nResume training later\nDeploy to production\n\n\n# ============ SAVE ============\n\ntorch.save(model.state_dict(), \"model.pth\")\n\n# Save model + optimizer (for resuming training)\ntorch.save({\n    \"model_state_dict\": model.state_dict(),\n    \"optimizer_state_dict\": optimizer.state_dict(),\n}, \"model_and_optimizer.pth\")\n\n\n# ============ LOAD ============\n# Load weights into fresh model\nmodel = GPTModel(GPT_CONFIG_124M)\nmodel.load_state_dict(torch.load(\"model.pth\", map_location=device))\nmodel.eval()  # Set to evaluation mode\n\n# Resume training\ncheckpoint = torch.load(\"model_and_optimizer.pth\", map_location=device)\nmodel = GPTModel(GPT_CONFIG_124M)\nmodel.load_state_dict(checkpoint[\"model_state_dict\"])\n\noptimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.1)\noptimizer.load_state_dict(checkpoint[\"optimizer_state_dict\"])\nmodel.train()  # Set to training mode"
-  },
-  {
-    "objectID": "arch/02_gpt/training.html#llm-loss-surfaces",
-    "href": "arch/02_gpt/training.html#llm-loss-surfaces",
-    "title": "GPT-2 : Training",
-    "section": "LLM Loss Surfaces",
-    "text": "LLM Loss Surfaces\nLLM training optimizes a high-dimensional non-convex loss surface defined by:\n\n\n\nL(θ) = −E[log p_θ(tokenₜ₊₁ | contextₜ)]\n\nKey properties:\n\nBillions of parameters\nExtremely overparameterized\nMany equivalent minima\nFlat basins dominate\n\n\n\n\nMore details in :\n\nUnveiling the Basin-Like Loss Landscape in Large Language Models\nVisualizing the Loss Landscape of Neural Nets"
-  },
-  {
-    "objectID": "arch/02_gpt/training.html#questions",
-    "href": "arch/02_gpt/training.html#questions",
-    "title": "GPT-2 : Training",
-    "section": "Questions?",
-    "text": "Questions?\n…"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#topics-covered",
-    "href": "arch/01_transformers/slides.html#topics-covered",
-    "title": "Transformers - I",
-    "section": "Topics Covered",
-    "text": "Topics Covered\n\nTransformer architecture\nSelf-attention mechanism"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#recap-tokenization",
-    "href": "arch/01_transformers/slides.html#recap-tokenization",
-    "title": "Transformers - I",
-    "section": "Recap : Tokenization",
-    "text": "Recap : Tokenization\n\nWords, Subwords, Characters level tokenization\nTokens to Embeddings"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#text-to-token-ids",
-    "href": "arch/01_transformers/slides.html#text-to-token-ids",
-    "title": "Transformers - I",
-    "section": "Text to Token IDs",
-    "text": "Text to Token IDs\nimport tiktoken\ntokenizer = tiktoken.get_encoding(\"gpt2\")\ntext = \"This is an example.\"\ntoken_ids = tokenizer.encode(text)\n# tokens = ['This', ' is', ' an', ' example', '.']\n# token_ids = [40234, 2052, 133, 389, 12]"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#tokens-to-embeddings",
-    "href": "arch/01_transformers/slides.html#tokens-to-embeddings",
-    "title": "Transformers - I",
-    "section": "Tokens to Embeddings",
-    "text": "Tokens to Embeddings\n\nEach token ID maps to a unique vector in the embedding matrix\nEmbedding Matrix : [vocab_size x embedding_dim]\nThese embeddings start random and are LEARNED during training\nExample : GPT-2 Small\n\nvocab_size = 50257\nembedding_dim = 768"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#transformers",
-    "href": "arch/01_transformers/slides.html#transformers",
-    "title": "Transformers - I",
-    "section": "Transformers",
-    "text": "Transformers"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#transformers-1",
-    "href": "arch/01_transformers/slides.html#transformers-1",
-    "title": "Transformers - I",
-    "section": "Transformers",
-    "text": "Transformers\n\nAll LLMs rely on the Transformer architecture, introduced in the seminal 2017 paper Attention Is All You Need\nNo Recurrent or Convolution layers, entirely based on Attention Mechanism"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#two-types-of-transformer-architectures",
-    "href": "arch/01_transformers/slides.html#two-types-of-transformer-architectures",
-    "title": "Transformers - I",
-    "section": "Two types of Transformer Architectures",
-    "text": "Two types of Transformer Architectures\n\nWrt Language modeling:\n\nEncoder-Decoder : Sequence to sequence tasks (translation, summarization)\nDecoder-Only : Language modeling tasks (text generation, completion)\nMost LLMs (GPT, Llama, etc.) use the Decoder-Only architecture"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#key-components-of-transformer",
-    "href": "arch/01_transformers/slides.html#key-components-of-transformer",
-    "title": "Transformers - I",
-    "section": "Key Components of Transformer",
-    "text": "Key Components of Transformer\n\n\nPositional Encoding \nMulti-Head Attention \nResidual Connections \nFeed Forward Networks \nLayer Normalization"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#language-modeling",
-    "href": "arch/01_transformers/slides.html#language-modeling",
-    "title": "Transformers - I",
-    "section": "Language Modeling",
-    "text": "Language Modeling\n\nGiven a sequence of tokens, predict the next token\nExample: A robot may not harm a ___ -&gt; human\n[PROMPT] -&gt; [MODEL] -&gt; [PREDICTION]"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#decoder-only-language-model",
-    "href": "arch/01_transformers/slides.html#decoder-only-language-model",
-    "title": "Transformers - I",
-    "section": "Decoder-only Language Model",
-    "text": "Decoder-only Language Model\n\nA decoder-only language model is a stack of transformer decoder blocks"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#decoder-only-llm-input-side",
-    "href": "arch/01_transformers/slides.html#decoder-only-llm-input-side",
-    "title": "Transformers - I",
-    "section": "Decoder-only LLM : Input Side",
-    "text": "Decoder-only LLM : Input Side\n\nInput tokens are passed through multiple decoder blocks\nEmbed : Text -&gt; Token IDs -&gt; Embeddings -&gt; Decoder Blocks"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#decoder-only-llm-output-side",
-    "href": "arch/01_transformers/slides.html#decoder-only-llm-output-side",
-    "title": "Transformers - I",
-    "section": "Decoder-only LLM : Output Side",
-    "text": "Decoder-only LLM : Output Side\n\nUnEmbed : The final vector is projected to vocabulary size and softmaxed to get token probabilities"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#decoder-block-internals",
-    "href": "arch/01_transformers/slides.html#decoder-block-internals",
-    "title": "Transformers - I",
-    "section": "Decoder Block Internals",
-    "text": "Decoder Block Internals\n\nMasked Multi-Head Self-Attention\nFeed Forward Network (FFN)\nResidual Connections\nLayer Normalization"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#attention-mechanism",
-    "href": "arch/01_transformers/slides.html#attention-mechanism",
-    "title": "Transformers - I",
-    "section": "Attention Mechanism",
-    "text": "Attention Mechanism"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#sequence-modeling-challenges",
-    "href": "arch/01_transformers/slides.html#sequence-modeling-challenges",
-    "title": "Transformers - I",
-    "section": "Sequence Modeling Challenges",
-    "text": "Sequence Modeling Challenges\n\nUnderstanding context and relationships between words\nNeed to keep grammatical structures aligned"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#recurrent-neural-networks-rnns-for-sequence-modeling",
-    "href": "arch/01_transformers/slides.html#recurrent-neural-networks-rnns-for-sequence-modeling",
-    "title": "Transformers - I",
-    "section": "Recurrent Neural Networks (RNNs) for Sequence Modeling",
-    "text": "Recurrent Neural Networks (RNNs) for Sequence Modeling\n\nProcess all input into a hidden state,\nPass hidden state to decoder\nDecoder uses hidden state to generate output sequence"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#rnns-attention",
-    "href": "arch/01_transformers/slides.html#rnns-attention",
-    "title": "Transformers - I",
-    "section": "RNNs + Attention",
-    "text": "RNNs + Attention\n\nLet Decoder access all Encoder hidden states\nAttend to relevant parts of input sequence when generating each output token [Bahdanau et al., 2015]"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#rnns-attention-1",
-    "href": "arch/01_transformers/slides.html#rnns-attention-1",
-    "title": "Transformers - I",
-    "section": "RNNs + Attention",
-    "text": "RNNs + Attention\nLimitations\n\nSequential processing limits parallelization\nDifficulty capturing long-range dependencies\n\nSolution:\n\nRemove recurrence, process all input tokens simultaneously\nAllow each token in the input to focus on relevant parts of the input"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#parallel-processing",
-    "href": "arch/01_transformers/slides.html#parallel-processing",
-    "title": "Transformers - I",
-    "section": "Parallel Processing",
-    "text": "Parallel Processing\n\nEncoder : Process all input tokens simultaneously\nDecoder : Generate output tokens one by one, attending to encoder states and previous tokens"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#self-attention-mechanism",
-    "href": "arch/01_transformers/slides.html#self-attention-mechanism",
-    "title": "Transformers - I",
-    "section": "Self-Attention Mechanism",
-    "text": "Self-Attention Mechanism\n\nCompute attention within the same sequence of tokens. Self = Same Sequence\nGet improved representation by mixing in information from other tokens that seem relevant."
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#self-attention-intuition",
-    "href": "arch/01_transformers/slides.html#self-attention-intuition",
-    "title": "Transformers - I",
-    "section": "Self-Attention : Intuition",
-    "text": "Self-Attention : Intuition\n\n“Self-attention is like a group conversation where everyone can hear everyone else simultaneously, rather than passing notes one by one (RNNs)”"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#self-attention-intuition-1",
-    "href": "arch/01_transformers/slides.html#self-attention-intuition-1",
-    "title": "Transformers - I",
-    "section": "Self-Attention : Intuition",
-    "text": "Self-Attention : Intuition\n\n\nEach token : “Who should I pay attention to?”\nFor every token, the model:\n\ntreats that token as the “current focus”\nassigns higher weight to tokens that help interpret it\ncreates an updated vector for the token"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#self-attention-vs-encoder-decoder-attention",
-    "href": "arch/01_transformers/slides.html#self-attention-vs-encoder-decoder-attention",
-    "title": "Transformers - I",
-    "section": "Self-Attention vs Encoder-Decoder Attention",
-    "text": "Self-Attention vs Encoder-Decoder Attention\n\nEncoder–Decoder: One sequence attends to a different sequence (e.g., translation: output attends to the input sentence).\nSelf-attention: Sequence attends to itself (tokens attending to other tokens in the same sentence)."
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#simple-attention-mechanism",
-    "href": "arch/01_transformers/slides.html#simple-attention-mechanism",
-    "title": "Transformers - I",
-    "section": "Simple Attention Mechanism",
-    "text": "Simple Attention Mechanism\n\n\n\n\nInput - Sequence of vectors (X) (source)\n\\[X = [x_1, x_2, \\dots, x_n], \\quad x_i \\in \\mathbb{R}^d\\]\nOutput - Sequence of vectors (Z) (context) \\[Z = [z_1, z_2, \\dots, z_n], \\quad z_i \\in \\mathbb{R}^d\\]\n\n\nContext Vector - Weighted sum of all input vectors\n\\[z_i = \\sum_{j=1}^{n} \\text{attention_weight}_{ij} \\  . x_j\\]"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token",
-    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token",
-    "title": "Transformers - I",
-    "section": "Computing attention weights for a single token",
-    "text": "Computing attention weights for a single token\n\nYour journey starts with one step\n\nquery = \"journey\"\n\nStep 1: Compute attention scores by dot product of “journey” with all tokens\nquery = inputs[1]\n\nattn_scores_2 = torch.empty(inputs.shape[0])\n\nfor i, x_i in enumerate(inputs):\n    attn_scores_2[i] = torch.dot(x_i, query)\n\nprint(attn_scores_2)"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token-1",
-    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token-1",
-    "title": "Transformers - I",
-    "section": "Computing attention weights for a single token",
-    "text": "Computing attention weights for a single token\n\nStep 2: Apply normalization to get attention weights (normalization by sum)\n\nNormalization using softmax is more common in practice, as it ensures all weights are positive and sum to 1.\n\nattn_weights_2_tmp = attn_scores_2 / attn_scores_2.sum()\n\ndef softmax_naive(x):\n    return torch.exp(x) / torch.exp(x).sum(dim=0)\n\nattn_weights_2_naive = softmax_naive(attn_scores_2)\n\nattn_weights_2 = torch.softmax(attn_scores_2, dim=0)"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token-2",
-    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token-2",
-    "title": "Transformers - I",
-    "section": "Computing attention weights for a single token",
-    "text": "Computing attention weights for a single token\nStep 3: Compute output vector as weighted sum of value vectors\n\ncontext_vec_2 = torch.zeros(inputs.shape[1])\nfor i, x_i in enumerate(inputs):\n    context_vec_2 += attn_weights_2[i] * x_i"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-all-tokens",
-    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-all-tokens",
-    "title": "Transformers - I",
-    "section": "Computing attention weights for all tokens",
-    "text": "Computing attention weights for all tokens\n\nCompute attention scores for all tokens\n\nattn_scores = torch.zeros(inputs.shape[0], inputs.shape[0])\n\nfor i, x_i in enumerate(inputs):\n    for j, x_j in enumerate(inputs):\n        attn_scores[i, j] = torch.dot(x_i, x_j)\n\nNormalize scores to get attention weights\n\nattn_weights = torch.softmax(attn_scores, dim=-1)\n\nCompute output/context vectors for all tokens\n\noutput_vectors = torch.zeros_like(inputs)\nfor i in range(inputs.shape[0]):\n    for j in range(inputs.shape[0]):\n        output_vectors[i] += attn_weights[i, j] * inputs[j]"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-all-tokens-1",
-    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-all-tokens-1",
-    "title": "Transformers - I",
-    "section": "Computing attention weights for all tokens",
-    "text": "Computing attention weights for all tokens\n\nBetter implementation using matrix multiplication\n\n\nattn_scores = torch.zeros(inputs.shape[0], inputs.shape[0])\n\nattn_scores = inputs @ inputs.T\nattn_weights = torch.softmax(attn_scores, dim=-1)\noutput_vectors = attn_weights @ inputs"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#summary-of-self-attention-mechanism",
-    "href": "arch/01_transformers/slides.html#summary-of-self-attention-mechanism",
-    "title": "Transformers - I",
-    "section": "Summary of Self-Attention Mechanism",
-    "text": "Summary of Self-Attention Mechanism\n\n\nInput: sequence of vectors (X) (source)\n\n\n\n\nOutput: sequence of vectors (Z) (context)\n\n\n\nSteps:\n\nCompute attention scores against all input vectors\n\n\n\n\nNormalize scores to get attention weights\n\n\n\n\nCompute output vectors as weighted sum of input vectors\n\n\n\ndef self_attention(inputs):\n    # Step 1: Compute attention scores\n    attn_scores = inputs @ inputs.T\n    # Step 2: Normalize scores to get attention weights\n    attn_weights = torch.softmax(attn_scores, dim=-1)\n    # Step 3: Compute output vectors as weighted sum of input vectors\n    output_vectors = attn_weights @ inputs\n    return output_vectors\n\n\n\nHow to improve this basic self-attention mechanism? \n. . .\nLearn the weights used to compute attention scores!  We’ll see this in the next class when we introduce Query, Key, and Value projections."
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#references",
-    "href": "arch/01_transformers/slides.html#references",
-    "title": "Transformers - I",
+    "objectID": "arch/02_gpt/slides.html#references",
+    "href": "arch/02_gpt/slides.html#references",
+    "title": "GPT-2 : Model Architecture and Implementation",
     "section": "References",
-    "text": "References\n\nVaswani et al., Attention Is All You Need (2017) - The original transformer paper\nBahdanau et al., Neural Machine Translation by Jointly Learning to Align and Translate (2014) - Introduced attention for seq2seq\nJay Alammar, The Illustrated Transformer\nJay Alammar, The Illustrated GPT-2\nThe Annotated Transformer - Harvard NLP\nSebastian Raschka, Build a Large Language Model from Scratch - Chapters 3-4"
-  },
-  {
-    "objectID": "arch/01_transformers/slides.html#thank-you",
-    "href": "arch/01_transformers/slides.html#thank-you",
-    "title": "Transformers - I",
-    "section": "Thank You",
-    "text": "Thank You\nQuestions?"
+    "text": "References\n\nDecoder-Only Transformers: The Workhorse of Generative LLMs\nThe Illustrated GPT-2 (Visualizing Transformer Language Models)\nGPT-2 Paper\nAttention Is All You Need Paper\nBuild LLMs from Scratch, Sebastian Raschka, Manning Publications, 2025"
   },
   {
     "objectID": "arch/01_transformers/slides-2.html#topics-covered",
@@ -1071,438 +1120,641 @@
     "text": "What We Didn’t Cover\n\nPositional Encodings: How does attention know word order?\nFeed-Forward Networks: The other half of each transformer block\nLayer Normalization: Stabilizing training\nResidual Connections: Enabling deep networks\n\n\nThese will be covered in the next session where we implement a full transformer block and a LLM from scratch!"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#topics-covered",
-    "href": "arch/02_gpt/slides.html#topics-covered",
-    "title": "GPT-2 : Model Architecture and Implementation",
+    "objectID": "arch/01_transformers/slides.html#topics-covered",
+    "href": "arch/01_transformers/slides.html#topics-covered",
+    "title": "Transformers - I",
     "section": "Topics Covered",
-    "text": "Topics Covered\n\nTransformer Architecture Review\n\nSelf-Attention Mechanism Recap\nCausal Masking in Decoder-Only Models\nMulti-Head Attention\n\nGPT-2 Architecture\n\nLayer Normalization\nSelf-Attention in GPT-2\nFeed-Forward Network (FFN)\nResidual Connections\n\nImplementing GPT-2 from Scratch"
+    "text": "Topics Covered\n\nTransformer architecture\nSelf-attention mechanism"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#recap-self-attention-mechanism",
-    "href": "arch/02_gpt/slides.html#recap-self-attention-mechanism",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Recap : Self-Attention Mechanism",
-    "text": "Recap : Self-Attention Mechanism\n\nThe token embeddings alone are not sufficient.\nWe want dynamic, context-dependent representations of each token.\nSelf-attention allows each token to attend to all other tokens in the sequence to gather relevant context.\n\nVideo"
+    "objectID": "arch/01_transformers/slides.html#recap-tokenization",
+    "href": "arch/01_transformers/slides.html#recap-tokenization",
+    "title": "Transformers - I",
+    "section": "Recap : Tokenization",
+    "text": "Recap : Tokenization\n\nWords, Subwords, Characters level tokenization\nTokens to Embeddings"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#recap-self-attention-mechanism-1",
-    "href": "arch/02_gpt/slides.html#recap-self-attention-mechanism-1",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Recap : Self-Attention Mechanism",
-    "text": "Recap : Self-Attention Mechanism\nWe project the token embedding to three learned projection spaces:\nPROJECTION === “Matrix Multiplication”\n\nQuery (Q): \\(q_i = x_i W_q\\)\nKey (K): \\(k_i = x_i W_k\\)\nValue (V): \\(v_i = x_i W_v\\)"
+    "objectID": "arch/01_transformers/slides.html#text-to-token-ids",
+    "href": "arch/01_transformers/slides.html#text-to-token-ids",
+    "title": "Transformers - I",
+    "section": "Text to Token IDs",
+    "text": "Text to Token IDs\nimport tiktoken\ntokenizer = tiktoken.get_encoding(\"gpt2\")\ntext = \"This is an example.\"\ntoken_ids = tokenizer.encode(text)\n# tokens = ['This', ' is', ' an', ' example', '.']\n# token_ids = [40234, 2052, 133, 389, 12]"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#introducing-q-k-v-vectors",
-    "href": "arch/02_gpt/slides.html#introducing-q-k-v-vectors",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Introducing Q, K, V vectors",
-    "text": "Introducing Q, K, V vectors\nWe transform each input token into three different vectors:\n\nToken embedding: \\(x^{(i)}\\)\nQuery (Q): What am I looking for?\nKey (K): What do I have to offer?\nValue (V): What information do I carry?"
+    "objectID": "arch/01_transformers/slides.html#tokens-to-embeddings",
+    "href": "arch/01_transformers/slides.html#tokens-to-embeddings",
+    "title": "Transformers - I",
+    "section": "Tokens to Embeddings",
+    "text": "Tokens to Embeddings\n\nEach token ID maps to a unique vector in the embedding matrix\nEmbedding Matrix : [vocab_size x embedding_dim]\nThese embeddings start random and are LEARNED during training\nExample : GPT-2 Small\n\nvocab_size = 50257\nembedding_dim = 768"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#scaled-dot-product-attention",
-    "href": "arch/02_gpt/slides.html#scaled-dot-product-attention",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Scaled Dot-Product Attention",
-    "text": "Scaled Dot-Product Attention\n\\[\\mathbf{Attention}(Q, K, V) = \\mathbf{softmax}\\left(\\frac{QK^{\\top}}{\\sqrt{d_k}}\\right)V\\]\n\n\\(d_k \\text{ is the dimensionality of the key vectors (used for scaling).}\\)\nWithout \\(\\sqrt{d_k}\\), dot products grow with dimension -&gt; softmax saturates -&gt; tiny gradients."
+    "objectID": "arch/01_transformers/slides.html#transformers",
+    "href": "arch/01_transformers/slides.html#transformers",
+    "title": "Transformers - I",
+    "section": "Transformers",
+    "text": "Transformers"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#causal-attention-masking-in-decoder-only-models",
-    "href": "arch/02_gpt/slides.html#causal-attention-masking-in-decoder-only-models",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Causal Attention (Masking) in Decoder-Only Models",
-    "text": "Causal Attention (Masking) in Decoder-Only Models\n\n\nDecoder-only models =&gt; we predict next token based on previous tokens\nNote : During training, we predict all tokens in parallel\nTo prevent information leakage from future tokens, we apply a causal mask to the attention scores\nAt all time steps, each token can only attend to earlier tokens and itself"
+    "objectID": "arch/01_transformers/slides.html#transformers-1",
+    "href": "arch/01_transformers/slides.html#transformers-1",
+    "title": "Transformers - I",
+    "section": "Transformers",
+    "text": "Transformers\n\nAll LLMs rely on the Transformer architecture, introduced in the seminal 2017 paper Attention Is All You Need\nNo Recurrent or Convolution layers, entirely based on Attention Mechanism"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#multi-head-attention---stacking-multiple-attention-heads",
-    "href": "arch/02_gpt/slides.html#multi-head-attention---stacking-multiple-attention-heads",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Multi-Head Attention - Stacking multiple attention heads",
-    "text": "Multi-Head Attention - Stacking multiple attention heads\n\\(MultiHead(Q,K,V) = Concat(head_1,...,head_h)W_O\\)\n\\(head_i = Attention(QW_{q_i}, KW_{k_i}, VW_{v_i})\\)\n\n\n\nMultiple self-attention calculations in parallel\nIndependent set of learned weight matrices (Wq, Wk, Wv) and output vector for each head.\nConcatenate all to produce one context vector for each token.\nMultiple heads -&gt; attend to input sentence simultaneously -&gt; different relationships and patterns in the data."
+    "objectID": "arch/01_transformers/slides.html#two-types-of-transformer-architectures",
+    "href": "arch/01_transformers/slides.html#two-types-of-transformer-architectures",
+    "title": "Transformers - I",
+    "section": "Two types of Transformer Architectures",
+    "text": "Two types of Transformer Architectures\n\nWrt Language modeling:\n\nEncoder-Decoder : Sequence to sequence tasks (translation, summarization)\nDecoder-Only : Language modeling tasks (text generation, completion)\nMost LLMs (GPT, Llama, etc.) use the Decoder-Only architecture"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#gpt-2-model---architecture-and-implementation",
-    "href": "arch/02_gpt/slides.html#gpt-2-model---architecture-and-implementation",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "GPT-2 Model - Architecture and Implementation",
-    "text": "GPT-2 Model - Architecture and Implementation"
+    "objectID": "arch/01_transformers/slides.html#key-components-of-transformer",
+    "href": "arch/01_transformers/slides.html#key-components-of-transformer",
+    "title": "Transformers - I",
+    "section": "Key Components of Transformer",
+    "text": "Key Components of Transformer\n\n\nPositional Encoding \nMulti-Head Attention \nResidual Connections \nFeed Forward Networks \nLayer Normalization"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#generative-pre-trained-transformer-gpt",
-    "href": "arch/02_gpt/slides.html#generative-pre-trained-transformer-gpt",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Generative Pre-trained Transformer (GPT)",
-    "text": "Generative Pre-trained Transformer (GPT)\nRadFord et al., 2019\n\nDecoder only Transformer architecture, pre-trained on large corpus of text data (40GB of internet text) using self-supervised next-token prediction.\nDemonstrated that general purpose models for textual understanding are incredibly effective without using any task-specific architectures or modifications"
+    "objectID": "arch/01_transformers/slides.html#language-modeling",
+    "href": "arch/01_transformers/slides.html#language-modeling",
+    "title": "Transformers - I",
+    "section": "Language Modeling",
+    "text": "Language Modeling\n\nGiven a sequence of tokens, predict the next token\nExample: A robot may not harm a ___ -&gt; human\n[PROMPT] -&gt; [MODEL] -&gt; [PREDICTION]"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#language-modeling-objective",
-    "href": "arch/02_gpt/slides.html#language-modeling-objective",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Language Modeling Objective",
-    "text": "Language Modeling Objective\n\nPredict the next token in a sequence given all previous tokens\n\n\n\\[P(x_t) = ∏ P(x_t | x_1, ..., x_{t-1})\\]"
+    "objectID": "arch/01_transformers/slides.html#decoder-only-language-model",
+    "href": "arch/01_transformers/slides.html#decoder-only-language-model",
+    "title": "Transformers - I",
+    "section": "Decoder-only Language Model",
+    "text": "Decoder-only Language Model\n\nA decoder-only language model is a stack of transformer decoder blocks"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#auto-regressive-text-generation",
-    "href": "arch/02_gpt/slides.html#auto-regressive-text-generation",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Auto-regressive Text Generation",
-    "text": "Auto-regressive Text Generation\n\nGiven a prompt, GPT-2 generates text one token at a time\nAt each step, the model predicts the next token based on all previous tokens\nThe predicted token is appended to the input sequence for the next prediction"
+    "objectID": "arch/01_transformers/slides.html#decoder-only-llm-input-side",
+    "href": "arch/01_transformers/slides.html#decoder-only-llm-input-side",
+    "title": "Transformers - I",
+    "section": "Decoder-only LLM : Input Side",
+    "text": "Decoder-only LLM : Input Side\n\nInput tokens are passed through multiple decoder blocks\nEmbed : Text -&gt; Token IDs -&gt; Embeddings -&gt; Decoder Blocks"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#gpt-2-architecture",
-    "href": "arch/02_gpt/slides.html#gpt-2-architecture",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "GPT-2 Architecture",
-    "text": "GPT-2 Architecture\n\nGPT model stacks multiple transformer decoder blocks\nEach block has:\n\nMasked Multi-Head Self-Attention layer\nFeed-Forward Neural Network (FFN)\nLayer Normalization and Residual Connections\n\nFinal output layer\n\n\nRef : Radford et al., 2019 “Language Models are Unsupervised Multitask Learners”"
+    "objectID": "arch/01_transformers/slides.html#decoder-only-llm-output-side",
+    "href": "arch/01_transformers/slides.html#decoder-only-llm-output-side",
+    "title": "Transformers - I",
+    "section": "Decoder-only LLM : Output Side",
+    "text": "Decoder-only LLM : Output Side\n\nUnEmbed : The final vector is projected to vocabulary size and softmaxed to get token probabilities"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#detailed-gpt-2-architecture",
-    "href": "arch/02_gpt/slides.html#detailed-gpt-2-architecture",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Detailed GPT-2 Architecture",
-    "text": "Detailed GPT-2 Architecture\n\n\n\n\n\n\nGPT_CONFIG_124M = {\n# 50000 BPE merges + 256 byte tokens + 1 special token\n\"vocab_size\": 50257, \n# max length of input sequences\n\"context_length\": 1024, \n\"emb_dim\": 768,\n\"n_heads\": 12,\n\"n_layers\": 12,\n\"drop_rate\": 0.1,\n\"qkv_bias\": False\n}"
+    "objectID": "arch/01_transformers/slides.html#decoder-block-internals",
+    "href": "arch/01_transformers/slides.html#decoder-block-internals",
+    "title": "Transformers - I",
+    "section": "Decoder Block Internals",
+    "text": "Decoder Block Internals\n\nMasked Multi-Head Self-Attention\nFeed Forward Network (FFN)\nResidual Connections\nLayer Normalization"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#inputs-to-the-gpt-2-model",
-    "href": "arch/02_gpt/slides.html#inputs-to-the-gpt-2-model",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Inputs to the GPT-2 Model",
-    "text": "Inputs to the GPT-2 Model\n\nInput Text -&gt; Tokenization -&gt; Token IDs\nInput Encodings:\n\nToken Embeddings: Represent the meaning of each token\nPositional Encodings: Represent the position of each token in the sequence\n\nCombined to form the input to the first transformer block"
+    "objectID": "arch/01_transformers/slides.html#attention-mechanism",
+    "href": "arch/01_transformers/slides.html#attention-mechanism",
+    "title": "Transformers - I",
+    "section": "Attention Mechanism",
+    "text": "Attention Mechanism"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#inputs-to-the-gpt-2-model-1",
-    "href": "arch/02_gpt/slides.html#inputs-to-the-gpt-2-model-1",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Inputs to the GPT-2 Model",
-    "text": "Inputs to the GPT-2 Model\n\nTransformers have no inherent notion of sequence order, Without positional info, ‘dog bites man’ = ‘man bites dog’ to the model\nGPT-2 uses LEARNED positional embeddings (vs sinusoidal in original Transformer)\nBoth embeddings are simply added element-wise (not concatenated)"
+    "objectID": "arch/01_transformers/slides.html#sequence-modeling-challenges",
+    "href": "arch/01_transformers/slides.html#sequence-modeling-challenges",
+    "title": "Transformers - I",
+    "section": "Sequence Modeling Challenges",
+    "text": "Sequence Modeling Challenges\n\nUnderstanding context and relationships between words\nNeed to keep grammatical structures aligned"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#layer-normalization",
-    "href": "arch/02_gpt/slides.html#layer-normalization",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Layer Normalization",
-    "text": "Layer Normalization\n\nGradient explosion/vanishing issues in deep networks\nNormalizes (centers) inputs across features for each token to have zero mean and unit variance\nStabilizes training and improves convergence\nIn GPT-2, applied before self-attention and feed-forward layers (Pre-LN)"
+    "objectID": "arch/01_transformers/slides.html#recurrent-neural-networks-rnns-for-sequence-modeling",
+    "href": "arch/01_transformers/slides.html#recurrent-neural-networks-rnns-for-sequence-modeling",
+    "title": "Transformers - I",
+    "section": "Recurrent Neural Networks (RNNs) for Sequence Modeling",
+    "text": "Recurrent Neural Networks (RNNs) for Sequence Modeling\n\nProcess all input into a hidden state,\nPass hidden state to decoder\nDecoder uses hidden state to generate output sequence"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#layer-normalization-1",
-    "href": "arch/02_gpt/slides.html#layer-normalization-1",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Layer Normalization",
-    "text": "Layer Normalization\n\nNormalization\n\n\\[\\hat x = \\frac{x - \\mu}{\\sigma + \\epsilon} \\]\n\nLayerNorm formula:\n\n\\[\\text{LayerNorm}(x) = \\frac{x - \\mu}{\\sigma + \\epsilon} \\cdot \\gamma + \\beta\\]\n\n\nx: input vector for a token\nμ: mean of the elements in x\nσ: standard deviation of the elements in x\nε: small constant for numerical stability\nγ, β: learnable parameters for scaling and shifting"
+    "objectID": "arch/01_transformers/slides.html#rnns-attention",
+    "href": "arch/01_transformers/slides.html#rnns-attention",
+    "title": "Transformers - I",
+    "section": "RNNs + Attention",
+    "text": "RNNs + Attention\n\nLet Decoder access all Encoder hidden states\nAttend to relevant parts of input sequence when generating each output token [Bahdanau et al., 2015]"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#self-attention-in-gpt-2",
-    "href": "arch/02_gpt/slides.html#self-attention-in-gpt-2",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Self-Attention in GPT-2",
-    "text": "Self-Attention in GPT-2\n\nEach Transformer Block contains\n\nA Multi-Head Self-Attention layer\nEach head computes attention using Q, K, V\nCausal mask applied to prevent attending to future tokens and dropout for regularization\n\n\nGPT-2 small MHA config:\n- Multi-Head Self-Attention mechanism\n- Attention heads : 12\n- Head dimension : 64\n- Context length : 1024 tokens\n- Context Vector Size per token : 768 (12 heads * 64 dim)"
+    "objectID": "arch/01_transformers/slides.html#rnns-attention-1",
+    "href": "arch/01_transformers/slides.html#rnns-attention-1",
+    "title": "Transformers - I",
+    "section": "RNNs + Attention",
+    "text": "RNNs + Attention\nLimitations\n\nSequential processing limits parallelization\nDifficulty capturing long-range dependencies\n\nSolution:\n\nRemove recurrence, process all input tokens simultaneously\nAllow each token in the input to focus on relevant parts of the input"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#self-attention-in-gpt-2-1",
-    "href": "arch/02_gpt/slides.html#self-attention-in-gpt-2-1",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Self-Attention in GPT-2",
-    "text": "Self-Attention in GPT-2"
+    "objectID": "arch/01_transformers/slides.html#parallel-processing",
+    "href": "arch/01_transformers/slides.html#parallel-processing",
+    "title": "Transformers - I",
+    "section": "Parallel Processing",
+    "text": "Parallel Processing\n\nEncoder : Process all input tokens simultaneously\nDecoder : Generate output tokens one by one, attending to encoder states and previous tokens"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#feed-forward-network-ffn",
-    "href": "arch/02_gpt/slides.html#feed-forward-network-ffn",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Feed-Forward Network (FFN)",
-    "text": "Feed-Forward Network (FFN)\n\nA Feed-Forward Network (FFN) is applied independently to each token’s representation after the self-attention layer.\nAffine transformation followed by a non-linear activation function."
+    "objectID": "arch/01_transformers/slides.html#self-attention-mechanism",
+    "href": "arch/01_transformers/slides.html#self-attention-mechanism",
+    "title": "Transformers - I",
+    "section": "Self-Attention Mechanism",
+    "text": "Self-Attention Mechanism\n\nCompute attention within the same sequence of tokens. Self = Same Sequence\nGet improved representation by mixing in information from other tokens that seem relevant."
   },
   {
-    "objectID": "arch/02_gpt/slides.html#feed-forward-network-ffn-1",
-    "href": "arch/02_gpt/slides.html#feed-forward-network-ffn-1",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Feed-Forward Network (FFN)",
-    "text": "Feed-Forward Network (FFN)\n\nA Feed-Forward Network (FFN) is applied independently to each token’s representation after the self-attention layer.\nAffine transformation followed by a non-linear activation function.\n\n\nA Linear Layer is defined as: \\(\\text{Linear}(x) = xW^T + b\\)"
+    "objectID": "arch/01_transformers/slides.html#self-attention-intuition",
+    "href": "arch/01_transformers/slides.html#self-attention-intuition",
+    "title": "Transformers - I",
+    "section": "Self-Attention : Intuition",
+    "text": "Self-Attention : Intuition\n\n“Self-attention is like a group conversation where everyone can hear everyone else simultaneously, rather than passing notes one by one (RNNs)”"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#feed-forward-network-ffn-in-gpt-2",
-    "href": "arch/02_gpt/slides.html#feed-forward-network-ffn-in-gpt-2",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Feed-Forward Network (FFN) in GPT-2",
-    "text": "Feed-Forward Network (FFN) in GPT-2\n\nEach transformer block contains a Feed-Forward Network (FFN)\nFFN has two linear layers with GELU activation in between\n\n\n \\[\\text{FFN}(x) = \\text{Linear}_2(\\text{GELU}(\\text{Linear}_1(x)))\\]"
+    "objectID": "arch/01_transformers/slides.html#self-attention-intuition-1",
+    "href": "arch/01_transformers/slides.html#self-attention-intuition-1",
+    "title": "Transformers - I",
+    "section": "Self-Attention : Intuition",
+    "text": "Self-Attention : Intuition\n\n\nEach token : “Who should I pay attention to?”\nFor every token, the model:\n\ntreats that token as the “current focus”\nassigns higher weight to tokens that help interpret it\ncreates an updated vector for the token"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#gelu-activation-function",
-    "href": "arch/02_gpt/slides.html#gelu-activation-function",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "GELU Activation Function",
-    "text": "GELU Activation Function\n\nGaussian Error Linear Unit (GELU) is used in GPT-2’s FFN\nSmooth approximation of ReLU, allows small negative values to pass through\n\n\n\n\n\n \\(\\mathbf{GELU(x) = 0.5 \\cdot x \\cdot (1 + \\tanh[\\sqrt{2/\\pi}(x + 0.044715 \\cdot x^3)])}\\)"
+    "objectID": "arch/01_transformers/slides.html#self-attention-vs-encoder-decoder-attention",
+    "href": "arch/01_transformers/slides.html#self-attention-vs-encoder-decoder-attention",
+    "title": "Transformers - I",
+    "section": "Self-Attention vs Encoder-Decoder Attention",
+    "text": "Self-Attention vs Encoder-Decoder Attention\n\nEncoder–Decoder: One sequence attends to a different sequence (e.g., translation: output attends to the input sentence).\nSelf-attention: Sequence attends to itself (tokens attending to other tokens in the same sentence)."
   },
   {
-    "objectID": "arch/02_gpt/slides.html#ffn-in-gpt-2",
-    "href": "arch/02_gpt/slides.html#ffn-in-gpt-2",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "FFN in GPT-2",
-    "text": "FFN in GPT-2\n\nHidden layer size is 4 times the input/output size (3072 for GPT-2 small)\nApplies non-linear transformation to each token’s representation independently\n\n\n\n\nWhy 4x?\n\nEmpirically found to work well\n\nFFN layers contain most of the model’s parameters!\n\nFor GPT-2 small: FFN has 768 -&gt; 3072 -&gt; 768, that’s 768 * 3072 * 2 ≈ 4.7M params per block\n12 blocks × 4.7 M ≈ 56M params just in FFNs (almost half the model)"
+    "objectID": "arch/01_transformers/slides.html#simple-attention-mechanism",
+    "href": "arch/01_transformers/slides.html#simple-attention-mechanism",
+    "title": "Transformers - I",
+    "section": "Simple Attention Mechanism",
+    "text": "Simple Attention Mechanism\n\n\n\n\nInput - Sequence of vectors (X) (source)\n\\[X = [x_1, x_2, \\dots, x_n], \\quad x_i \\in \\mathbb{R}^d\\]\nOutput - Sequence of vectors (Z) (context) \\[Z = [z_1, z_2, \\dots, z_n], \\quad z_i \\in \\mathbb{R}^d\\]\n\n\nContext Vector - Weighted sum of all input vectors\n\\[z_i = \\sum_{j=1}^{n} \\text{attention_weight}_{ij} \\  . x_j\\]"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#residual-connections",
-    "href": "arch/02_gpt/slides.html#residual-connections",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Residual Connections",
-    "text": "Residual Connections\n\nHelp mitigate vanishing gradient problems in deep networks\nAdd the input of a layer to its output before passing to the next layer\nGradients get progressively smaller as they backpropagate through layers\nPreserve information from earlier layers, helping training stability"
+    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token",
+    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token",
+    "title": "Transformers - I",
+    "section": "Computing attention weights for a single token",
+    "text": "Computing attention weights for a single token\n\nYour journey starts with one step\n\nquery = \"journey\"\n\nStep 1: Compute attention scores by dot product of “journey” with all tokens\nquery = inputs[1]\n\nattn_scores_2 = torch.empty(inputs.shape[0])\n\nfor i, x_i in enumerate(inputs):\n    attn_scores_2[i] = torch.dot(x_i, query)\n\nprint(attn_scores_2)"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#connecting-it-all-transformer-block-in-gpt-2",
-    "href": "arch/02_gpt/slides.html#connecting-it-all-transformer-block-in-gpt-2",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Connecting it all : Transformer Block in GPT-2",
-    "text": "Connecting it all : Transformer Block in GPT-2\n\nWe have implemented the key components of a transformer block used in GPT-2:\n\nLayer Normalization\nMulti-Head Self-Attention with Causal Masking\nResidual Connection\nFeed-Forward Network (FFN)"
+    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token-1",
+    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token-1",
+    "title": "Transformers - I",
+    "section": "Computing attention weights for a single token",
+    "text": "Computing attention weights for a single token\n\nStep 2: Apply normalization to get attention weights (normalization by sum)\n\nNormalization using softmax is more common in practice, as it ensures all weights are positive and sum to 1.\n\nattn_weights_2_tmp = attn_scores_2 / attn_scores_2.sum()\n\ndef softmax_naive(x):\n    return torch.exp(x) / torch.exp(x).sum(dim=0)\n\nattn_weights_2_naive = softmax_naive(attn_scores_2)\n\nattn_weights_2 = torch.softmax(attn_scores_2, dim=0)"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#connecting-it-all-transformer-block-in-gpt-2-1",
-    "href": "arch/02_gpt/slides.html#connecting-it-all-transformer-block-in-gpt-2-1",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Connecting it all : Transformer Block in GPT-2",
-    "text": "Connecting it all : Transformer Block in GPT-2\n12 Transformer blocks are stacked in GPT-2 small"
+    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token-2",
+    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-a-single-token-2",
+    "title": "Transformers - I",
+    "section": "Computing attention weights for a single token",
+    "text": "Computing attention weights for a single token\nStep 3: Compute output vector as weighted sum of value vectors\n\ncontext_vec_2 = torch.zeros(inputs.shape[1])\nfor i, x_i in enumerate(inputs):\n    context_vec_2 += attn_weights_2[i] * x_i"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#transformer-block-in-gpt-2",
-    "href": "arch/02_gpt/slides.html#transformer-block-in-gpt-2",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Transformer Block in GPT-2",
-    "text": "Transformer Block in GPT-2\n\n\ndef forward(self, x):\n    shortcut = x\n    x = self.norm1(x)\n    x = self.att(x)\n    x = self.dropout(x)\n    x = x + shortcut\n\n    shortcut = x\n    x = self.norm2(x)\n    x = self.ff(x)\n    x = self.dropout(x)\n    x = x + shortcut\n\n    return x"
+    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-all-tokens",
+    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-all-tokens",
+    "title": "Transformers - I",
+    "section": "Computing attention weights for all tokens",
+    "text": "Computing attention weights for all tokens\n\nCompute attention scores for all tokens\n\nattn_scores = torch.zeros(inputs.shape[0], inputs.shape[0])\n\nfor i, x_i in enumerate(inputs):\n    for j, x_j in enumerate(inputs):\n        attn_scores[i, j] = torch.dot(x_i, x_j)\n\nNormalize scores to get attention weights\n\nattn_weights = torch.softmax(attn_scores, dim=-1)\n\nCompute output/context vectors for all tokens\n\noutput_vectors = torch.zeros_like(inputs)\nfor i in range(inputs.shape[0]):\n    for j in range(inputs.shape[0]):\n        output_vectors[i] += attn_weights[i, j] * inputs[j]"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#gpt-2-model-implementation",
-    "href": "arch/02_gpt/slides.html#gpt-2-model-implementation",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "GPT-2 Model Implementation",
-    "text": "GPT-2 Model Implementation\n\n\n\nWe have all the components to implement GPT-2 from scratch\nToken Embeddings + Positional Encodings\nStack of Transformer Blocks\nFinal Layer Normalization and Output Layer"
+    "objectID": "arch/01_transformers/slides.html#computing-attention-weights-for-all-tokens-1",
+    "href": "arch/01_transformers/slides.html#computing-attention-weights-for-all-tokens-1",
+    "title": "Transformers - I",
+    "section": "Computing attention weights for all tokens",
+    "text": "Computing attention weights for all tokens\n\nBetter implementation using matrix multiplication\n\n\nattn_scores = torch.zeros(inputs.shape[0], inputs.shape[0])\n\nattn_scores = inputs @ inputs.T\nattn_weights = torch.softmax(attn_scores, dim=-1)\noutput_vectors = attn_weights @ inputs"
   },
   {
-    "objectID": "arch/02_gpt/slides.html#gpt-2-model-implementation-1",
-    "href": "arch/02_gpt/slides.html#gpt-2-model-implementation-1",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "GPT-2 Model Implementation",
-    "text": "GPT-2 Model Implementation\nModel Initialization\n## GPT-2 Model Initialization pseudo-code\ntok_emb = nn.Embedding(vocab_size, emb_dim)\npos_emb = nn.Embedding(context_length, emb_dim)\ndrop_emb = nn.Dropout(drop_rate)\ntrf_blocks = [TransformerBlock(cfg) for _ in range(n_layers)] # \nfinal_norm = LayerNorm(emb_dim)\nout_head = nn.Linear(emb_dim, vocab_size, bias=False)\nForward Pass\nx = tok_embeds + pos_embeds\nx = self.drop_emb(x)\nx = self.trf_blocks(x)\nx = self.final_norm(x)\nlogits = self.out_head(x)"
+    "objectID": "arch/01_transformers/slides.html#summary-of-self-attention-mechanism",
+    "href": "arch/01_transformers/slides.html#summary-of-self-attention-mechanism",
+    "title": "Transformers - I",
+    "section": "Summary of Self-Attention Mechanism",
+    "text": "Summary of Self-Attention Mechanism\n\n\nInput: sequence of vectors (X) (source)\n\n\n\n\nOutput: sequence of vectors (Z) (context)\n\n\n\nSteps:\n\nCompute attention scores against all input vectors\n\n\n\n\nNormalize scores to get attention weights\n\n\n\n\nCompute output vectors as weighted sum of input vectors\n\n\n\ndef self_attention(inputs):\n    # Step 1: Compute attention scores\n    attn_scores = inputs @ inputs.T\n    # Step 2: Normalize scores to get attention weights\n    attn_weights = torch.softmax(attn_scores, dim=-1)\n    # Step 3: Compute output vectors as weighted sum of input vectors\n    output_vectors = attn_weights @ inputs\n    return output_vectors\n\n\n\nHow to improve this basic self-attention mechanism? \n. . .\nLearn the weights used to compute attention scores!  We’ll see this in the next class when we introduce Query, Key, and Value projections."
   },
   {
-    "objectID": "arch/02_gpt/slides.html#gpt-2-parameter-count",
-    "href": "arch/02_gpt/slides.html#gpt-2-parameter-count",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "GPT-2 Parameter Count",
-    "text": "GPT-2 Parameter Count\n\nGPT-2 small has ~124M parameters\nMajor contributors:\n\nToken Embeddings: ~38M\nTransformer Blocks: ~85M\n\nSelf-Attention layers: ~23M\nFeed-Forward Networks: ~56M\n\nOutput Layer: ~38M\n\nMost parameters are in embeddings and FFN layers"
-  },
-  {
-    "objectID": "arch/02_gpt/slides.html#next-steps",
-    "href": "arch/02_gpt/slides.html#next-steps",
-    "title": "GPT-2 : Model Architecture and Implementation",
-    "section": "Next Steps",
-    "text": "Next Steps\n\nImplement training loop with cross-entropy loss\nIntegrate tokenizer for text input/output\nLoad pretrained weights from HuggingFace for GPT-2\nExperiment with text generation"
-  },
-  {
-    "objectID": "arch/02_gpt/slides.html#references",
-    "href": "arch/02_gpt/slides.html#references",
-    "title": "GPT-2 : Model Architecture and Implementation",
+    "objectID": "arch/01_transformers/slides.html#references",
+    "href": "arch/01_transformers/slides.html#references",
+    "title": "Transformers - I",
     "section": "References",
-    "text": "References\n\nDecoder-Only Transformers: The Workhorse of Generative LLMs\nThe Illustrated GPT-2 (Visualizing Transformer Language Models)\nGPT-2 Paper\nAttention Is All You Need Paper\nBuild LLMs from Scratch, Sebastian Raschka, Manning Publications, 2025"
+    "text": "References\n\nVaswani et al., Attention Is All You Need (2017) - The original transformer paper\nBahdanau et al., Neural Machine Translation by Jointly Learning to Align and Translate (2014) - Introduced attention for seq2seq\nJay Alammar, The Illustrated Transformer\nJay Alammar, The Illustrated GPT-2\nThe Annotated Transformer - Harvard NLP\nSebastian Raschka, Build a Large Language Model from Scratch - Chapters 3-4"
   },
   {
-    "objectID": "arch/03_modern_arch/slides-2.html#topics-covered",
-    "href": "arch/03_modern_arch/slides-2.html#topics-covered",
-    "title": "Modern Architectures - II",
+    "objectID": "arch/01_transformers/slides.html#thank-you",
+    "href": "arch/01_transformers/slides.html#thank-you",
+    "title": "Transformers - I",
+    "section": "Thank You",
+    "text": "Thank You\nQuestions?"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#topics-covered",
+    "href": "arch/02_gpt/training.html#topics-covered",
+    "title": "GPT-2 : Training",
     "section": "Topics Covered",
-    "text": "Topics Covered\n\nModern LLM Architectures\n\nPositional Encodings\nAttention Variants\nHyperparameters"
+    "text": "Topics Covered\n\nGPT-2 Architecture Review\n\nLayer Normalization\nSelf-Attention in GPT-2\nFeed-Forward Network (FFN)\nResidual Connections\n\nTraining GPT-2\n\nText generation\nGreedy decoding loop\nTraining loop"
   },
   {
-    "objectID": "arch/03_modern_arch/slides-2.html#position-encodings",
-    "href": "arch/03_modern_arch/slides-2.html#position-encodings",
-    "title": "Modern Architectures - II",
+    "objectID": "arch/02_gpt/training.html#gpt-2-architecture",
+    "href": "arch/02_gpt/training.html#gpt-2-architecture",
+    "title": "GPT-2 : Training",
+    "section": "GPT-2 Architecture",
+    "text": "GPT-2 Architecture\n\nGPT model stacks multiple transformer decoder blocks\nEach block has:\n\nLayer Normalization\n\nMasked Multi-Head Self-Attention layer\nFeed-Forward Neural Network (FFN)\nResidual Connections\n\nFinal output layer"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#gpt-2-architecture-1",
+    "href": "arch/02_gpt/training.html#gpt-2-architecture-1",
+    "title": "GPT-2 : Training",
+    "section": "GPT-2 Architecture",
+    "text": "GPT-2 Architecture\nGPT 2 small (124M parameters) has:\n\n\n\n12 Transformer blocks\n768-dimensional hidden states (embeddning vector size)\n12 attention heads\nVocabulary size: 50,257 tokens"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#text-generation",
+    "href": "arch/02_gpt/training.html#text-generation",
+    "title": "GPT-2 : Training",
+    "section": "Text Generation",
+    "text": "Text Generation"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#autoregressive-text-generation",
+    "href": "arch/02_gpt/training.html#autoregressive-text-generation",
+    "title": "GPT-2 : Training",
+    "section": "Autoregressive Text Generation",
+    "text": "Autoregressive Text Generation\nLLMs generate text one token at a time through an iterative process:\n\n\n\nStart with an input context (e.g., “Hello, I am”)\nModel predicts the next token probability distribution\nSelect the next token (highest probability = greedy decoding)\nAppend token to context\nRepeat until desired length\n\n\n\n\nKey Insight: The model consumes its own previous outputs as future inputs - this is the autoregressive property."
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#logits-to-token-selection",
+    "href": "arch/02_gpt/training.html#logits-to-token-selection",
+    "title": "GPT-2 : Training",
+    "section": "Logits to Token Selection",
+    "text": "Logits to Token Selection\nThe GPT output is logits, not probabilities.\n\nLogits ∈ ℝ^V\nSoftmax converts logits -&gt; probability distribution\nArgmax selects most likely token\n\nprobas = torch.softmax(logits, dim=-1)\ntoken_id = torch.argmax(probas)"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#understanding-the-generation-flow",
+    "href": "arch/02_gpt/training.html#understanding-the-generation-flow",
+    "title": "GPT-2 : Training",
+    "section": "Understanding the Generation Flow",
+    "text": "Understanding the Generation Flow\nInput -&gt; Token IDs -&gt; Model -&gt; Logits -&gt; Softmax -&gt; Token Selection -&gt; Output\n\n\n\n\n\n\nStep\nOperation\nShape Transformation\n\n\n\n\n1\nTokenize input\n“Hello, I am” → [15496, 11, 314, 716]\n\n\n2\nModel forward\n(1, 4) → (1, 4, 50257)\n\n\n3\nExtract last logits\n(1, 4, 50257) → (1, 50257)\n\n\n4\nSoftmax\nlogits → probabilities\n\n\n5\nArgmax\nselect token ID 257 → “a”\n\n\n6\nConcatenate\nextend sequence for next iteration"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#greedy-decoding-loop",
+    "href": "arch/02_gpt/training.html#greedy-decoding-loop",
+    "title": "GPT-2 : Training",
+    "section": "Greedy Decoding Loop",
+    "text": "Greedy Decoding Loop\nGreedy decoding selects the highest-probability token at each step.\n\n\n\n\nProperties:\n\nDeterministic\nFast\nOften repetitive / dull"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#generation-from-an-untrained-model",
+    "href": "arch/02_gpt/training.html#generation-from-an-untrained-model",
+    "title": "GPT-2 : Training",
+    "section": "Generation from an Untrained Model",
+    "text": "Generation from an Untrained Model\nBefore training:\n\nWeights are random\nLogits are random\nToken probabilities are near-uniform\n\nWith vocab size = 50,257:\n\nInitial probability ≈ 1 / 50,257 ≈ 0.00002\n\nThus generated text is effectively random noise."
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#training-the-gpt",
+    "href": "arch/02_gpt/training.html#training-the-gpt",
+    "title": "GPT-2 : Training",
+    "section": "Training the GPT",
+    "text": "Training the GPT"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#training-overview",
+    "href": "arch/02_gpt/training.html#training-overview",
+    "title": "GPT-2 : Training",
+    "section": "Training Overview",
+    "text": "Training Overview\n\nTraining Loop\n\nLoss Optimization\nData Loading\n\nModel Evaluation\nUsing Pretrained weights"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#evaluating-generative-text-models",
+    "href": "arch/02_gpt/training.html#evaluating-generative-text-models",
+    "title": "GPT-2 : Training",
+    "section": "Evaluating Generative Text Models",
+    "text": "Evaluating Generative Text Models"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#why-evaluation-matters",
+    "href": "arch/02_gpt/training.html#why-evaluation-matters",
+    "title": "GPT-2 : Training",
+    "section": "Why Evaluation Matters",
+    "text": "Why Evaluation Matters\nBefore training, we need metrics to:\n\nMeasure model performance quantitatively\nTrack training progress\nDetect overfitting\nCompare different models\n\nKey Challenge: How do we numerically assess the quality of generated text?\nSolution: Use the model’s own probability estimates vs true probabilties for the “correct” next tokens."
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#cross-entropy-loss-for-language-modeling",
+    "href": "arch/02_gpt/training.html#cross-entropy-loss-for-language-modeling",
+    "title": "GPT-2 : Training",
+    "section": "Cross Entropy Loss for Language Modeling",
+    "text": "Cross Entropy Loss for Language Modeling\nThe training objective: Maximize the probability of the correct next token\nGiven:\n\nInputs: Token IDs the model sees\nTargets: Token IDs the model should predict (inputs shifted by 1)\n\ninputs = torch.tensor([[16833, 3626, 6100],   # [\"every effort moves\",\n                       [40,    1107, 588]])    #  \"I really like\"]\n\ntargets = torch.tensor([[3626, 6100, 345  ],  # [\" effort moves you\",\n                        [1107, 588, 11311]])  #  \" really like chocolate\"]\n\n\n\nCross-entropy loss measures how well the model’s predicted probabilities match the true next tokens."
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#cross-entropy-loss-for-language-modeling-1",
+    "href": "arch/02_gpt/training.html#cross-entropy-loss-for-language-modeling-1",
+    "title": "GPT-2 : Training",
+    "section": "Cross Entropy Loss for Language Modeling",
+    "text": "Cross Entropy Loss for Language Modeling\nCross-entropy loss measures how well the model’s predicted probabilities match the true next tokens.\nMathematical Formula:\n\\[\n\\text{Loss} = -\\frac{1}{N} \\sum_{i=1}^{N} \\log P(x_i^{\\text{target}})\n\\]\nWhere:\n\n\\(N\\) = total number of tokens\n\\(P(x_i^{\\text{target}})\\) = predicted probability for the correct token at position \\(i\\)\nThe negative sign converts it to a loss (we want to maximize probability = minimize negative log probability)"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#calculating-cross-entropy-loss",
+    "href": "arch/02_gpt/training.html#calculating-cross-entropy-loss",
+    "title": "GPT-2 : Training",
+    "section": "Calculating Cross Entropy Loss",
+    "text": "Calculating Cross Entropy Loss"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#understanding-cross-entropy-loss",
+    "href": "arch/02_gpt/training.html#understanding-cross-entropy-loss",
+    "title": "GPT-2 : Training",
+    "section": "Understanding Cross Entropy Loss",
+    "text": "Understanding Cross Entropy Loss\nStep-by-step computation\n\nGet logits from model: shape (batch, seq_len, vocab_size)\nApply softmax to get probabilities\nExtract target probabilities: probability assigned to correct tokens\nApply logarithm: log probabilities are more numerically stable\nAverage over all tokens\nNegate: we minimize negative log-likelihood\n\n\nIn PyTorch, we can compute this in one step using cross_entropy function:\n# PyTorch does all 6 steps in one function:\nloss = torch.nn.functional.cross_entropy(logits_flat, targets_flat)\nInitial loss (untrained model): ~10.82\nTarget loss (well-trained): decreases toward a floor set by the data’s entropy (~3 for GPT-2 small)"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#perplexity-interpretable-metric",
+    "href": "arch/02_gpt/training.html#perplexity-interpretable-metric",
+    "title": "GPT-2 : Training",
+    "section": "Perplexity: Interpretable Metric",
+    "text": "Perplexity: Interpretable Metric\nPerplexity = exp(cross_entropy_loss)\nInterpretation: The effective vocabulary size the model is “uncertain” about at each step.\nInterpretation:\n\nEffective number of equally likely tokens\nLower is better\n\nperplexity = torch.exp(loss)\n# For initial loss of 10.82: perplexity ≈ 50,257\n# Meaning: model is unsure among ~50,257 tokens\n\n\n\nLoss\nPerplexity\nInterpretation\n\n\n\n\n10.82\n50,257\nRandom guessing (vocab size: 50,257)\n\n\n5.0\n148\nModerate uncertainty\n\n\n2.0\n7.4\nLow uncertainty\n\n\n0.5\n1.65\nVery confident"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#gpt-2-radford-et-al.-2019",
+    "href": "arch/02_gpt/training.html#gpt-2-radford-et-al.-2019",
+    "title": "GPT-2 : Training",
+    "section": "GPT-2 : Radford et al. (2019)",
+    "text": "GPT-2 : Radford et al. (2019)"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#gpt-2-radford-et-al.-2019-1",
+    "href": "arch/02_gpt/training.html#gpt-2-radford-et-al.-2019-1",
+    "title": "GPT-2 : Training",
+    "section": "GPT-2 : Radford et al. (2019)",
+    "text": "GPT-2 : Radford et al. (2019)"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#processing-data-for-training",
+    "href": "arch/02_gpt/training.html#processing-data-for-training",
+    "title": "GPT-2 : Training",
+    "section": "Processing Data for Training",
+    "text": "Processing Data for Training\n\n\n\nGiven a text corpus\n\nsplit into training and validation sets\nfor each set encode it to token IDs\ncreate input-target pairs\n\nInputs and targets are created by shifting token IDs by one position\n\n\n\n\n\nIn Pytorch\n\nDataset Encodes all text to token IDs\nDataLoader handles batching of and shuffling of sequences. Within a sequnce, no shuffling happens, the order of tokens is preserved:"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#training-vs-validation-loss",
+    "href": "arch/02_gpt/training.html#training-vs-validation-loss",
+    "title": "GPT-2 : Training",
+    "section": "Training vs Validation Loss",
+    "text": "Training vs Validation Loss\nDuring training we split data into :\n\nTraining set\nValidation set\n\ntrain_ratio = 0.90\nsplit_idx = int(train_ratio * len(text_data))\ntrain_data = text_data[:split_idx]\nval_data = text_data[split_idx:]\nWhat to watch for:\n\nTraining loss decreases, Validation loss decreases -&gt; Model is learning and generalizing\nTraining loss decreases, Validation loss increases -&gt; OVERFITTING!"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#the-training-loop",
+    "href": "arch/02_gpt/training.html#the-training-loop",
+    "title": "GPT-2 : Training",
+    "section": "The Training Loop",
+    "text": "The Training Loop\nDuring Training we update model weights to minimize loss through backpropagation and gradient descent.\n\n\n\n\nTraining Loop in code\n\n    for epoch in range(num_epochs):\n        model.train()  # Enable dropout\n\n        for input_batch, target_batch in train_loader:\n            optimizer.zero_grad()  # Reset gradients\n\n            loss = calc_loss_batch(input_batch, target_batch, model, device)\n            loss.backward()        # Calculate gradients\n            optimizer.step()       # Update weights"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#loading-and-saving-model-weights",
+    "href": "arch/02_gpt/training.html#loading-and-saving-model-weights",
+    "title": "GPT-2 : Training",
+    "section": "Loading and Saving Model Weights",
+    "text": "Loading and Saving Model Weights\n\n\nWe must save trained models to:\n\nAvoid retraining\nShare models with others\nResume training later\nDeploy to production\n\n\n# ============ SAVE ============\n\ntorch.save(model.state_dict(), \"model.pth\")\n\n# Save model + optimizer (for resuming training)\ntorch.save({\n    \"model_state_dict\": model.state_dict(),\n    \"optimizer_state_dict\": optimizer.state_dict(),\n}, \"model_and_optimizer.pth\")\n\n\n# ============ LOAD ============\n# Load weights into fresh model\nmodel = GPTModel(GPT_CONFIG_124M)\nmodel.load_state_dict(torch.load(\"model.pth\", map_location=device))\nmodel.eval()  # Set to evaluation mode\n\n# Resume training\ncheckpoint = torch.load(\"model_and_optimizer.pth\", map_location=device)\nmodel = GPTModel(GPT_CONFIG_124M)\nmodel.load_state_dict(checkpoint[\"model_state_dict\"])\n\noptimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.1)\noptimizer.load_state_dict(checkpoint[\"optimizer_state_dict\"])\nmodel.train()  # Set to training mode"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#llm-loss-surfaces",
+    "href": "arch/02_gpt/training.html#llm-loss-surfaces",
+    "title": "GPT-2 : Training",
+    "section": "LLM Loss Surfaces",
+    "text": "LLM Loss Surfaces\nLLM training optimizes a high-dimensional non-convex loss surface defined by:\n\n\n\nL(θ) = −E[log p_θ(tokenₜ₊₁ | contextₜ)]\n\nKey properties:\n\nBillions of parameters\nExtremely overparameterized\nMany equivalent minima\nFlat basins dominate\n\n\n\n\nMore details in :\n\nUnveiling the Basin-Like Loss Landscape in Large Language Models\nVisualizing the Loss Landscape of Neural Nets"
+  },
+  {
+    "objectID": "arch/02_gpt/training.html#questions",
+    "href": "arch/02_gpt/training.html#questions",
+    "title": "GPT-2 : Training",
+    "section": "Questions?",
+    "text": "Questions?\n…"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#topics-covered",
+    "href": "arch/03_modern_arch/slides.html#topics-covered",
+    "title": "Modern Architectures - I",
+    "section": "Topics Covered",
+    "text": "Topics Covered\n\nGPT-2 Review\n\nTraining Loop\n\nModern LLM Architectures\n\nNorm Types\nActivation Functions\nPositional Encodings\nAttention Variants\nHyperparameters"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#recap-gpt-2-architecture",
+    "href": "arch/03_modern_arch/slides.html#recap-gpt-2-architecture",
+    "title": "Modern Architectures - I",
+    "section": "Recap : GPT-2 Architecture",
+    "text": "Recap : GPT-2 Architecture"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#recap-gpt-2-training-loop",
+    "href": "arch/03_modern_arch/slides.html#recap-gpt-2-training-loop",
+    "title": "Modern Architectures - I",
+    "section": "Recap : GPT-2 Training Loop",
+    "text": "Recap : GPT-2 Training Loop\nDuring Training we update model weights to minimize loss through backpropagation and gradient descent.\n\n\n\n\nTraining Loop in code\nfor epoch in range(num_epochs):\n    model.train()  # Enable dropout\n\n    for input_batch, target_batch in train_loader:\n        optimizer.zero_grad()  # Reset gradients\n\n        loss = calc_loss_batch(input_batch, target_batch, model, device)\n        loss.backward()        # Calculate gradients\n        optimizer.step()       # Update weights"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#loading-and-saving-model-weights",
+    "href": "arch/03_modern_arch/slides.html#loading-and-saving-model-weights",
+    "title": "Modern Architectures - I",
+    "section": "Loading and Saving Model Weights",
+    "text": "Loading and Saving Model Weights\n\n\nWe must save trained models to:\n\nAvoid retraining\nShare models with others\nResume training later\nDeploy to production\n\n\n# ============ SAVE ============\n\ntorch.save(model.state_dict(), \"model.pth\")\n\n# Save model + optimizer (for resuming training)\ntorch.save({\n    \"model_state_dict\": model.state_dict(),\n    \"optimizer_state_dict\": optimizer.state_dict(),\n}, \"model_and_optimizer.pth\")\n\n\n# ============ LOAD ============\n# Load weights into fresh model\nmodel = GPTModel(GPT_CONFIG_124M)\nmodel.load_state_dict(torch.load(\"model.pth\", map_location=device))\nmodel.eval()  # Set to evaluation mode\n\n# Resume training\ncheckpoint = torch.load(\"model_and_optimizer.pth\", map_location=device)\nmodel = GPTModel(GPT_CONFIG_124M)\nmodel.load_state_dict(checkpoint[\"model_state_dict\"])\n\noptimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.1)\noptimizer.load_state_dict(checkpoint[\"optimizer_state_dict\"])\nmodel.train()  # Set to training mode"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#modern-architectures",
+    "href": "arch/03_modern_arch/slides.html#modern-architectures",
+    "title": "Modern Architectures - I",
+    "section": "Modern Architectures",
+    "text": "Modern Architectures"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#gpt-2-architecture",
+    "href": "arch/03_modern_arch/slides.html#gpt-2-architecture",
+    "title": "Modern Architectures - I",
+    "section": "GPT-2 Architecture",
+    "text": "GPT-2 Architecture\n\n\nPosition embedding: learned, absolute\nFFN: GELU\n\\[ \\text{FFN}(x) = GELU(xW_1 + b_1)W_2 + b_2 \\]\nNorm type: Pre-Norm, LayerNorm"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#current-models",
+    "href": "arch/03_modern_arch/slides.html#current-models",
+    "title": "Modern Architectures - I",
+    "section": "Current Models",
+    "text": "Current Models\n\n\nsource: Modern LLM Architectures"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#llama-2-llama-3-and-qwen-3-architectures",
+    "href": "arch/03_modern_arch/slides.html#llama-2-llama-3-and-qwen-3-architectures",
+    "title": "Modern Architectures - I",
+    "section": "Llama 2, Llama 3 and Qwen 3 Architectures",
+    "text": "Llama 2, Llama 3 and Qwen 3 Architectures\n\n\nPosition embedding: RoPE (rotary position embeddings)\nFFN: *GLU variant (SwiGLU for LLaMA, GeGLU for Qwen)\nNorm type: Pre-Norm, RMSNorm"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#llama-2-llama-3-and-qwen-3-architectures-1",
+    "href": "arch/03_modern_arch/slides.html#llama-2-llama-3-and-qwen-3-architectures-1",
+    "title": "Modern Architectures - I",
+    "section": "Llama 2, Llama 3 and Qwen 3 Architectures",
+    "text": "Llama 2, Llama 3 and Qwen 3 Architectures\n\n\nPosition embedding: RoPE (rotary position embeddings)\nFFN: *GLU variant (SwiGLU for LLaMA, GeGLU for Qwen)\nNorm type: Pre-Norm, RMSNorm"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#pre-norm-vs-post-norm",
+    "href": "arch/03_modern_arch/slides.html#pre-norm-vs-post-norm",
+    "title": "Modern Architectures - I",
+    "section": "Pre-Norm vs Post-Norm",
+    "text": "Pre-Norm vs Post-Norm\nAlmost all models post-2020 use pre-norm.\n\nOriginal Transformer : Post Norm\nx -&gt; Attention(x) -&gt; Add -&gt; LayerNorm -&gt; FFN -&gt; Add -&gt; LayerNorm\nGPT 2 : Pre-Norm\nx -&gt; [LN -&gt; Attn] -&gt; +x -&gt; [LN -&gt; FFN] -&gt; +x"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#pre-norm-vs-post-norm-1",
+    "href": "arch/03_modern_arch/slides.html#pre-norm-vs-post-norm-1",
+    "title": "Modern Architectures - I",
+    "section": "Pre-Norm vs Post-Norm",
+    "text": "Pre-Norm vs Post-Norm\n\nWhy pre-norm wins:\n\nBetter gradient flow through residual connections.\nPractical evidence: almost all modern LLMs use pre-norm\n\n\nNote : Double norm also used in some models, but not as common as pre-norm. It applies LayerNorm both before and after the sub-layer.\nQuestion : BERT was trained with post-norm and it was huge success. But most models use pre-norm. Why?\nRef : Xiong et al. 2020, On Layer Normalization in the Transformer Architecture"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#layernorm-vs-rmsnorm",
+    "href": "arch/03_modern_arch/slides.html#layernorm-vs-rmsnorm",
+    "title": "Modern Architectures - I",
+    "section": "LayerNorm vs RMSNorm",
+    "text": "LayerNorm vs RMSNorm\n\nStrong consensus toward RMSNorm\n\n\n\nLayerNorm (original):\nNormalize by subtracting mean and dividing by std dev, then scale (\\(\\gamma\\)) and shift (\\(\\beta\\)):\n\\[y = \\frac{x - E[x]}{\\sqrt{Var[x] + \\epsilon}} \\cdot \\gamma + \\beta\\]\nModels : GPT-1/2/3, OPT, GPT-J, BLOOM\n\nRMSNorm (modern):\nDrop the mean subtraction and bias term:\n\\[y = \\frac{x}{\\sqrt{\\frac{1}{n}||x||_2^2 + \\epsilon}} \\cdot \\gamma\\]\nModels : LLaMA family, DeepSeek V3, Qwen3 etc\n\nWhy RMSNorm\n\nFewer operations: RMSNorm requires fewer computations (no mean subtraction, no bias term) which reduces both FLOPs and memory bandwidth."
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#dropping-bias-terms-in-ffn-and-layernorm",
+    "href": "arch/03_modern_arch/slides.html#dropping-bias-terms-in-ffn-and-layernorm",
+    "title": "Modern Architectures - I",
+    "section": "Dropping Bias Terms in FFN and LayerNorm",
+    "text": "Dropping Bias Terms in FFN and LayerNorm\nMost modern transformers have no bias terms in linear layers or LayerNorm.\nOriginal: \\(FFN(x) = \\max(0, xW_1 + b_1)W_2 + b_2\\)\nModern: \\(FFN(x) = \\sigma(xW_1)W_2\\)\nSiLU activation is used instead of ReLU, but the key point is that bias terms are removed.\nReasons:\n\nSame memory/data movement argument as RMSNorm – fewer parameters to load\nOptimization stability – empirically, dropping bias terms stabilizes training of very large networks\n\nLayerNorm Recap\n\nMost models use RMSNorm\nAlmost all models use pre-norm"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#activations-gated-linear-units-strong-trend-toward-swiglugeglu",
+    "href": "arch/03_modern_arch/slides.html#activations-gated-linear-units-strong-trend-toward-swiglugeglu",
+    "title": "Modern Architectures - I",
+    "section": "Activations & Gated Linear Units (Strong trend toward SwiGLU/GeGLU)",
+    "text": "Activations & Gated Linear Units (Strong trend toward SwiGLU/GeGLU)\nEvolution of activations:\n\n\n\n\n\n\n\n\nActivation\nFormula\nNotable Models\n\n\n\n\nReLU\n\\(FF(x) = \\max(0, xW_1)W_2\\)\nOriginal transformer, T5, Gopher, OPT\n\n\nGeLU\n\\(FF(x) = GELU(xW_1)W_2\\) where \\(GELU(x) = x\\Phi(x)\\)\nGPT-1/2/3, GPT-J, BLOOM\n\n\nSwiGLU\n\\(FF(x) = (Swish(xW) \\otimes xV)W_2\\)\nLLaMA 1/2/3, PaLM, Mistral, most post-2023\n\n\nGeGLU\n\\(FF(x) = (GELU(xW) \\otimes xV)W_2\\)\nT5 v1.1, mT5, Phi3, Gemma 2/3\n\n\n\nwhere Swish(x) = x * sigmoid(x) and \\(\\otimes\\) is elementwise multiplication."
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu",
+    "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu",
+    "title": "Modern Architectures - I",
+    "section": "Gated Linear Units (GLU)",
+    "text": "Gated Linear Units (GLU)\nWhat do GLUs do?\n\nGLUs add a gating mechanism\nHidden representation element-wise multiplied by a gate \\(xV\\) (learned linear projection)\n\\(xV\\) controls information flow through the MLP\n\n\\[\\text{Standard:} \\quad \\sigma(xW_1) \\rightarrow \\sigma(xW_1) \\otimes (xV) \\quad \\text{(gated)}\\]"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-1",
+    "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-1",
+    "title": "Modern Architectures - I",
+    "section": "Gated Linear Units (GLU)",
+    "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-2",
+    "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-2",
+    "title": "Modern Architectures - I",
+    "section": "Gated Linear Units (GLU)",
+    "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)\nScale the FF Params"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-3",
+    "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-3",
+    "title": "Modern Architectures - I",
+    "section": "Gated Linear Units (GLU)",
+    "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)\nScale the FF Params\n\nStandard MLP\n\n\\(W_1 \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(2 \\cdot d \\cdot d_{ff}\\) params\nTotal FFN params = \\(2 \\cdot d \\cdot 4 d\\) = \\(8 \\cdot d^2\\)."
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-4",
+    "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-4",
+    "title": "Modern Architectures - I",
+    "section": "Gated Linear Units (GLU)",
+    "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)\nScale the FF Params\n\nStandard MLP\n\n\\(W_1 \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(2 \\cdot d \\cdot d_{ff}\\) params\nTotal FFN params = \\(2 \\cdot d \\cdot 4 d\\) = \\(8 \\cdot d^2\\).\n\nGated MLP:\n\n\\(W \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(V \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(3 \\cdot d \\cdot d_{ff}\\) params."
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#gated-linear-units-glu-5",
+    "href": "arch/03_modern_arch/slides.html#gated-linear-units-glu-5",
+    "title": "Modern Architectures - I",
+    "section": "Gated Linear Units (GLU)",
+    "text": "Gated Linear Units (GLU)\nMore number of parameters?\nThe extra parameter V means GLU models have 3 weight matrices (W, V, W2) instead of 2.\nHow to keep parameter count the same? (memory is the real bottleneck, not compute)\nScale the FF Params\n\nStandard MLP\n\n\\(W_1 \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(2 \\cdot d \\cdot d_{ff}\\) params\nTotal FFN params = \\(2 \\cdot d \\cdot 4 d\\) = \\(8 \\cdot d^2\\).\n\nGated MLP:\n\n\\(W \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(V \\in \\mathbb{R}^{d \\times d_{ff}}\\) + \\(W_2 \\in \\mathbb{R}^{d_{ff} \\times d}\\) = \\(3 \\cdot d \\cdot d_{ff}\\) params.\n\nTo match:\n\nset \\(d_{ff}^{gated} = \\frac{2}{3} d_{ff}^{standard} = \\frac{2}{3} \\cdot 4d = \\frac{8}{3}d\\).\nTotal FFN params = \\(3 \\cdot d \\cdot \\frac{8}{3}d = 8 \\cdot d^2\\).\n\n\nScaling Factors:\n\nStandard MLP: \\(d_{ff} = 4 \\cdot d\\)\nGated MLP: \\(d_{ff} = \\frac{8}{3} \\cdot d \\approx 2.67 \\cdot d\\)"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#serial-vs-parallel-layers",
+    "href": "arch/03_modern_arch/slides.html#serial-vs-parallel-layers",
+    "title": "Modern Architectures - I",
+    "section": "Serial vs Parallel Layers",
+    "text": "Serial vs Parallel Layers\nNormal transformer blocks are serial – they compute attention, then the MLP\nStandard transformer block can be written as:\n\\[y = x + \\text{MLP}(\\text{LayerNorm}(x + \\text{Attention}(\\text{LayerNorm}(x)))\\]\nWhereas the parallel formulation can be written as:\n\\[y = x + \\text{MLP}(\\text{LayerNorm}(x)) + \\text{Attention}(\\text{LayerNorm}(x))\\]\n\nimage source"
+  },
+  {
+    "objectID": "arch/03_modern_arch/slides.html#position-encodings",
+    "href": "arch/03_modern_arch/slides.html#position-encodings",
+    "title": "Modern Architectures - I",
     "section": "Position Encodings",
-    "text": "Position Encodings\nEvolution:\n\n\n\n\n\n\n\n\nType\nHow it works\nModels\n\n\n\n\nSinusoidal\nAdd fixed sin/cos to embedding\nOriginal Transformer\n\n\nAbsolute (learned)\nAdd learned position vector \\(u_i\\) to embedding\nGPT-1/2/3, OPT\n\n\nRelative\nAdd learned bias to attention scores\nT5, Gopher, Chinchilla\n\n\nALiBi\nLinear attention bias\nBLOOM\n\n\nNoPE\nNo explicit position encoding\nSmolLM3, Kimi Linear\n\n\nRoPE\nRotate query/key vectors\nGPT-J, PaLM, LLaMA, all 2024+ models"
+    "text": "Position Encodings\nEvolution:\n\n\n\n\n\n\n\n\nType\nHow it works\nModels\n\n\n\n\nSinusoidal\nAdd fixed sin/cos to embedding\nOriginal Transformer\n\n\nAbsolute (learned)\nAdd learned position vector \\(u_i\\) to embedding\nGPT-1/2/3, OPT\n\n\nRelative\nAdd learned bias to attention scores\nT5, Gopher, Chinchilla\n\n\nALiBi\nLinear attention bias\nBLOOM\n\n\nNoPE\nNo position embedding at all\nSmolLM3, Kimi Linear\n\n\nRoPE\nRotate query/key vectors\nGPT-J, PaLM, LLaMA, all 2024+ models"
   },
   {
-    "objectID": "arch/03_modern_arch/slides-2.html#position-encodings-1",
-    "href": "arch/03_modern_arch/slides-2.html#position-encodings-1",
-    "title": "Modern Architectures - II",
+    "objectID": "arch/03_modern_arch/slides.html#position-encodings-1",
+    "href": "arch/03_modern_arch/slides.html#position-encodings-1",
+    "title": "Modern Architectures - I",
     "section": "Position Encodings",
     "text": "Position Encodings\nWhy do we need Position Encodings?\n\n\nAttention is a position-agnostic operation\n\nTreats the input as a set, not a sequence\nNo inherent notion of order or position\n\nExample:\nThe dog chased another dog vs Another dog chased the dog\n\nBoth have the same set of tokens\nBut different meanings\n\nSolution: Add positional encodings to inject order information into the model"
   },
   {
-    "objectID": "arch/03_modern_arch/slides-2.html#integer-position-encoding",
-    "href": "arch/03_modern_arch/slides-2.html#integer-position-encoding",
-    "title": "Modern Architectures - II",
+    "objectID": "arch/03_modern_arch/slides.html#integer-position-encoding",
+    "href": "arch/03_modern_arch/slides.html#integer-position-encoding",
+    "title": "Modern Architectures - I",
     "section": "Integer Position Encoding",
     "text": "Integer Position Encoding\n\nAdd the integer position directly into embeddings.\nProblems:\n\nPosition encoding magnitude greater than token embedding magnitude\nModel should separately learn to handle content and position, which can make learning harder."
   },
   {
-    "objectID": "arch/03_modern_arch/slides-2.html#binary-position-encoding",
-    "href": "arch/03_modern_arch/slides-2.html#binary-position-encoding",
-    "title": "Modern Architectures - II",
+    "objectID": "arch/03_modern_arch/slides.html#binary-position-encoding",
+    "href": "arch/03_modern_arch/slides.html#binary-position-encoding",
+    "title": "Modern Architectures - I",
     "section": "Binary Position Encoding",
     "text": "Binary Position Encoding"
   },
   {
-    "objectID": "arch/03_modern_arch/slides-2.html#binary-position-encoding-1",
-    "href": "arch/03_modern_arch/slides-2.html#binary-position-encoding-1",
-    "title": "Modern Architectures - II",
+    "objectID": "arch/03_modern_arch/slides.html#binary-position-encoding-1",
+    "href": "arch/03_modern_arch/slides.html#binary-position-encoding-1",
+    "title": "Modern Architectures - I",
     "section": "Binary Position Encoding",
-    "text": "Binary Position Encoding\n\n\nProblems:\n\nHamming distance artifacts - small position changes can flip many bits\nSparse representations (many bits are zero, which can make learning harder)\nNo learnable interpolation"
+    "text": "Binary Position Encoding\n\n\nProblems:\n\nHamming distance artifacts\nSparse representations (most bits are zero, which can make learning harder)\nNo learnable interpolation"
   },
   {
-    "objectID": "arch/03_modern_arch/slides-2.html#sinusoidal-position-encoding",
-    "href": "arch/03_modern_arch/slides-2.html#sinusoidal-position-encoding",
-    "title": "Modern Architectures - II",
+    "objectID": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding",
+    "href": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding",
+    "title": "Modern Architectures - I",
     "section": "Sinusoidal Position Encoding",
-    "text": "Sinusoidal Position Encoding\nA smooth, continuous version of binary encoding.\n\\[ PE_{(pos,\\,2i)} = \\sin\\!\\big(pos/10000^{\\,2i/d_{\\text{model}}}\\big), \\qquad PE_{(pos,\\,2i+1)} = \\cos\\!\\big(pos/10000^{\\,2i/d_{\\text{model}}}\\big) \\]\n\nEach dimension is a sine/cosine of a different frequency (like the hands of a clock)"
+    "text": "Sinusoidal Position Encoding\n\\[ PE_{(pos,2i)} = sin(pos/10000^{2i/d_{\\text{model}}}) \\]\n\\[ PE_{(pos,2i+1)} = cos(pos/10000^{2i/d_{\\text{model}}}) \\]"
   },
   {
-    "objectID": "arch/03_modern_arch/slides-2.html#why-a-range-of-frequencies",
-    "href": "arch/03_modern_arch/slides-2.html#why-a-range-of-frequencies",
-    "title": "Modern Architectures - II",
-    "section": "Why a range of frequencies?",
-    "text": "Why a range of frequencies?\n\nHigh frequency - short wavelength: changes a lot between adjacent positions, repeats almost immediately =&gt; tiny unique range. \nLow frequency - long wavelength: adjacent positions nearly identical, repeats after long range =&gt; no resolution. \n\n\nFix : Use many frequencies, like the bits of a number:\n\nFast “hands” resolve adjacent positions; slow “hands” span the whole sequence.\nThe base \\(10000\\) sets the slowest wavelength -&gt; the longest distance you can represent.\nThe combined pattern repeats only after the LCM of all wavelengths -&gt; effectively never."
+    "objectID": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding-1",
+    "href": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding-1",
+    "title": "Modern Architectures - I",
+    "section": "Sinusoidal Position Encoding",
+    "text": "Sinusoidal Position Encoding\nWhy sin and cos?\n\\(sin(a+b) = sin(a)cos(b) + cos(a)sin(b)\\)\n\\(cos(a+b) = cos(a)cos(b) - sin(a)sin(b)\\)\nPE(pos+k) is a linear function of PE(pos)\nSo\n\\[\n\\begin{aligned}\n\\sin(\\omega \\cdot (p+k)) &= \\sin(\\omega p)\\cos(\\omega k) + \\cos(\\omega p)\\sin(\\omega k)\n\\end{aligned}\n\\]\n\\[\n\\begin{aligned}\n\\cos(\\omega \\cdot (p+k)) &= \\cos(\\omega p)\\cos(\\omega k) - \\sin(\\omega p)\\sin(\\omega k)\n\\end{aligned}\n\\]"
   },
   {
-    "objectID": "arch/03_modern_arch/slides-2.html#why-both-sin-and-cos",
-    "href": "arch/03_modern_arch/slides-2.html#why-both-sin-and-cos",
-    "title": "Modern Architectures - II",
-    "section": "Why both sin and cos?",
-    "text": "Why both sin and cos?\n\nRelative position becomes a simple rotation.\n\n\nLet \\(\\omega = 1/10000^{2i/d}\\) \\[\\sin(\\omega(p+k)) = \\sin(\\omega p)\\cos(\\omega k) + \\cos(\\omega p)\\sin(\\omega k)\\]\n\\[\\cos(\\omega(p+k)) = \\cos(\\omega p)\\cos(\\omega k) - \\sin(\\omega p)\\sin(\\omega k)\\]\n\n\nThese two pairs - make a point on the unit circle at angle \\(\\omega p\\):\n\n\n\\[PE_\\omega(p) = \\big(\\sin(\\omega p),\\ \\cos(\\omega p)\\big)\\]"
+    "objectID": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding-2",
+    "href": "arch/03_modern_arch/slides.html#sinusoidal-position-encoding-2",
+    "title": "Modern Architectures - I",
+    "section": "Sinusoidal Position Encoding",
+    "text": "Sinusoidal Position Encoding\nDownsides :\nSinusoidal PE is added to embeddings: \\(x_p = x_{token} + PE(p)\\)\nThen projected: \\(q_p = W_q x_p\\), \\(k_p = W_kx_p\\)\n\nPosition and content are entangled before attention\nRelative position is implicit, not structural\nAttention must learn how to extract distance"
   },
   {
-    "objectID": "arch/03_modern_arch/slides-2.html#relative-position-and-rotation",
-    "href": "arch/03_modern_arch/slides-2.html#relative-position-and-rotation",
-    "title": "Modern Architectures - II",
-    "section": "Relative Position and Rotation",
-    "text": "Relative Position and Rotation\nMoving \\(k\\) steps forward is exactly a rotation by \\(\\omega k\\):\n\n\n\n\n\\[\n\\begin{pmatrix}\\sin(\\omega(p{+}k))\\\\ \\cos(\\omega(p{+}k))\\end{pmatrix}\n=\n\\underbrace{\\begin{pmatrix}\\cos(\\omega k) & \\sin(\\omega k)\\\\ -\\sin(\\omega k) & \\cos(\\omega k)\\end{pmatrix}}_{\\text{rotation by }\\omega k}\n\\begin{pmatrix}\\sin(\\omega p)\\\\ \\cos(\\omega p)\\end{pmatrix}\n\\]\n\nThe rotation depends only on the shift \\(k\\), never on the absolute position \\(p\\).\nSo relative distance is, in principle, recoverable from the absolute encoding."
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#sinusoidal-pe-downsides",
-    "href": "arch/03_modern_arch/slides-2.html#sinusoidal-pe-downsides",
-    "title": "Modern Architectures - II",
-    "section": "Sinusoidal PE: Downsides",
-    "text": "Sinusoidal PE: Downsides\nPE is added to the token embedding, then projected into queries and keys:\n\\[x_p = x_{token} + PE(p), \\qquad q_p = W_q\\,x_p, \\quad k_p = W_k\\,x_p\\]\nThe attention score then splits into four terms:\n\\[\n\\begin{aligned}\nq_p \\cdot k_n = \\;& \\underbrace{(W_q x_{tok})\\cdot(W_k x_{tok})}_{\\text{content×content}} + \\underbrace{(W_q x_{tok})\\cdot(W_k PE_n)}_{\\text{content×position}} \\\\[4pt]\n+\\;& \\underbrace{(W_q PE_p)\\cdot(W_k x_{tok})}_{\\text{position×content}} + \\underbrace{(W_q PE_p)\\cdot(W_k PE_n)}_{\\text{position×position}}\n\\end{aligned}\n\\]\n\nThe rotation lived in raw PE space, but attention sees \\(W_q\\,PE\\): the learned \\(W_q\\) can scale, shear, and mix the (sin, cos) pairs across frequencies\nposition and content are entangled, relative distance is implicit, and attention must learn to extract it"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings",
-    "href": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings",
-    "title": "Modern Architectures - II",
+    "objectID": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings",
+    "href": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings",
+    "title": "Modern Architectures - I",
     "section": "Absolute vs Relative Position Encodings",
     "text": "Absolute vs Relative Position Encodings\n\nAbsolute position encodings - Unique encoding to each position in the sequence.\nRelative position encodings - Encodes the relative distance between tokens, rather than their absolute position."
   },
   {
-    "objectID": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings-1",
-    "href": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings-1",
-    "title": "Modern Architectures - II",
+    "objectID": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings-1",
+    "href": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings-1",
+    "title": "Modern Architectures - I",
     "section": "Absolute vs Relative Position Encodings",
     "text": "Absolute vs Relative Position Encodings\nWhy do we need them?\n\n“The cat sat” should have similar relationships whether at positions [5,6,7] or [105,106,107]\nAbsolute encodings make it harder to learn patterns based on relative distance (e.g., “the word two positions to the left of X”)\n\nBenefits:\n\nLearn patterns based on relative distance between tokens\nMore important for many tasks than absolute position\nNo reliance on fixed absolute positions"
   },
   {
-    "objectID": "arch/03_modern_arch/slides-2.html#relative-position-encoding-example",
-    "href": "arch/03_modern_arch/slides-2.html#relative-position-encoding-example",
-    "title": "Modern Architectures - II",
+    "objectID": "arch/03_modern_arch/slides.html#relative-position-encoding-example",
+    "href": "arch/03_modern_arch/slides.html#relative-position-encoding-example",
+    "title": "Modern Architectures - I",
     "section": "Relative Position Encoding Example",
     "text": "Relative Position Encoding Example\nExample sentence: “The dog chased another dog”\nWhen attending from position 2 (“chased”):\n\n\n\nPosition\nToken\nAbsolute\nRelative to pos 2\n\n\n\n\n0\nThe\n0\n-2\n\n\n1\ndog\n1\n-1\n\n\n2\nchased\n2\n0 (self)\n\n\n3\nanother\n3\n+1\n\n\n4\ndog\n4\n+2"
   },
   {
-    "objectID": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings-2",
-    "href": "arch/03_modern_arch/slides-2.html#absolute-vs-relative-position-encodings-2",
-    "title": "Modern Architectures - II",
+    "objectID": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings-2",
+    "href": "arch/03_modern_arch/slides.html#absolute-vs-relative-position-encodings-2",
+    "title": "Modern Architectures - I",
     "section": "Absolute vs Relative Position Encodings",
     "text": "Absolute vs Relative Position Encodings\nIn practice:\n\n# T5-style relative attention bias\n# For position i attending to position j:\nrelative_position = j - i  # e.g., \"dog\"(1) → \"chased\"(2) = 1 - 2 = -1\n\n# Bias added to attention scores (learned, not fixed):\nattention_score = (q_i @ k_j) + bias[clip(relative_position, -max_dist, max_dist)]\nKey differences from absolute:\n\nSame relative pattern at any absolute position (e.g., “-1” always means “previous token”)\nModel learns one bias per relative distance, not per absolute position"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#position-encoding-desirable-properties",
-    "href": "arch/03_modern_arch/slides-2.html#position-encoding-desirable-properties",
-    "title": "Modern Architectures - II",
-    "section": "Position Encoding : Desirable Properties",
-    "text": "Position Encoding : Desirable Properties\n\nInject position information into the model\nAllow generalization to longer sequences than seen during training\nFacilitate learning of relative position patterns (e.g., “the word two positions to the left of X”)\nBe computationally efficient (not too many parameters or FLOPs)\nBe compatible with attention mechanism (e.g., allow position information to influence attention scores)"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#rotary-position-embeddings-rope",
-    "href": "arch/03_modern_arch/slides-2.html#rotary-position-embeddings-rope",
-    "title": "Modern Architectures - II",
-    "section": "Rotary Position Embeddings (RoPE)",
-    "text": "Rotary Position Embeddings (RoPE)\nWe want attention scores to depend only on relative position \\((i - j)\\) (how far apart the tokens are), not absolute positions.\nMathematically, find \\(f(x, i)\\) such that:\n\\[\\langle f(x, i), f(y, j) \\rangle = g(x, y, i-j)\\]\n\n\nRoPE’s key idea:\n\nInstead of adding PE to the input x, apply rotation to the query and key vectors based on their position.\nPosition information is directly encoded in the attention scores\n\n\nVideo"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#encoding-position-as-a-rotation",
-    "href": "arch/03_modern_arch/slides-2.html#encoding-position-as-a-rotation",
-    "title": "Modern Architectures - II",
-    "section": "Encoding position as a rotation",
-    "text": "Encoding position as a rotation\nRotating a 2D vector by an angle \\(\\theta\\)\n\n\\[\\begin{bmatrix}\nx' \\\\\ny'\n\\end{bmatrix} =\n\\begin{bmatrix}\n\\cos \\theta & -\\sin \\theta \\\\\n\\sin \\theta & \\cos \\theta\n\\end{bmatrix}\n\\begin{bmatrix}\nx \\\\\ny\n\\end{bmatrix}\\]\n\nRotating a word vector\nGiven a word vector \\(x = (x_1, x_2)\\) at position \\(m\\), we can rotate it by an angle \\(\\theta_m\\) to get the position-aware vector \\(x'\\):\n\n\\[\\begin{bmatrix}\nx'_1 \\\\\nx'_2\n\\end{bmatrix} =\n\\begin{bmatrix}\n\\cos \\theta_m & -\\sin \\theta_m \\\\\n\\sin \\theta_m & \\cos \\theta_m\n\\end{bmatrix}\n\\begin{bmatrix}\nx_1 \\\\\nx_2\n\\end{bmatrix}\\]"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#dot-product-of-rotated-vectors",
-    "href": "arch/03_modern_arch/slides-2.html#dot-product-of-rotated-vectors",
-    "title": "Modern Architectures - II",
-    "section": "Dot product of rotated vectors",
-    "text": "Dot product of rotated vectors\nLet’s rotate two vectors \\(q\\) and \\(k\\) by angles \\(\\theta_q\\) and \\(\\theta_k\\) respectively.\n\\(q' = R_{(\\theta_q)} q\\)\n\\(k' = R_{(\\theta_k)} k\\)\nThe dot product of the rotated vectors is:\n\\[\\begin{aligned}\nq' \\cdot k' &= (R(\\theta_q) q) \\cdot (R(\\theta_k) k) \\\\\n&= q^T R(\\theta_q)^T R(\\theta_k) k \\\\\n&= q^T R(\\theta_k - \\theta_q) k\n\\end{aligned}\\]"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#dot-product-of-rotated-vectors-1",
-    "href": "arch/03_modern_arch/slides-2.html#dot-product-of-rotated-vectors-1",
-    "title": "Modern Architectures - II",
-    "section": "Dot product of rotated vectors",
-    "text": "Dot product of rotated vectors\nDot products depend only on relative rotation.\nNow attention scores depend on : q, k, and the relative angle \\((\\theta_k - \\theta_q)\\), which encodes the relative position between the two tokens."
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#rotations-in-higher-dimensions",
-    "href": "arch/03_modern_arch/slides-2.html#rotations-in-higher-dimensions",
-    "title": "Modern Architectures - II",
-    "section": "Rotations in higher dimensions",
-    "text": "Rotations in higher dimensions\n\n\n\nIn higher dimensions, we can apply rotations in multiple planes\n\nExample: In 4D space, rotate independently in \\((x_1, x_2)\\) plane and \\((x_3, x_4)\\) plane\n\nFor a \\(d\\)-dimensional vector:\n\nApply \\(\\frac{d}{2}\\) independent rotations\nEach rotation has its own angle \\(\\theta_m\\)\nEncodes position information compatible with attention mechanism"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#rotations-in-higher-dimensions-1",
-    "href": "arch/03_modern_arch/slides-2.html#rotations-in-higher-dimensions-1",
-    "title": "Modern Architectures - II",
-    "section": "Rotations in higher dimensions",
-    "text": "Rotations in higher dimensions\n\n\n\nExample: Model with hidden dimension \\(d = 512\\)\n\nApply 256 independent rotations\nEach pair of dimensions gets rotated by different frequency\nCreates a rich positional representation"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#rotation-in-m-dimensions",
-    "href": "arch/03_modern_arch/slides-2.html#rotation-in-m-dimensions",
-    "title": "Modern Architectures - II",
-    "section": "Rotation in m dimensions",
-    "text": "Rotation in m dimensions"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#rotation-in-m-dimensions-1",
-    "href": "arch/03_modern_arch/slides-2.html#rotation-in-m-dimensions-1",
-    "title": "Modern Architectures - II",
-    "section": "Rotation in m dimensions",
-    "text": "Rotation in m dimensions\n\n\n\n\n\\(\\theta_i = B^{-2i/d} \\quad \\text{where } B \\text{ is the base (typically 10000)}\\)\nThe wavelength of dimension \\(i\\) is:\n\\[\\lambda_i = \\frac{2\\pi}{\\theta_i} = 2\\pi \\cdot B^{2i/d}\\]\nThis creates a geometric progression of wavelengths:\n\nShortest wavelength (highest freq, \\(i=0\\)): \\(\\lambda_{\\min} = 2\\pi \\approx 6.28\\) tokens\nLongest wavelength (lowest freq, \\(i=d/2-1\\)): \\(\\lambda_{\\max} = 2\\pi \\cdot B \\approx 62,832\\) tokens (when \\(B=10000\\))"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#rope-summary",
-    "href": "arch/03_modern_arch/slides-2.html#rope-summary",
-    "title": "Modern Architectures - II",
-    "section": "RoPE Summary",
-    "text": "RoPE Summary\nCore Formula:\nFor a vector \\(x\\) at position \\(m\\), RoPE applies rotation:\n\\[f(x, m) = R_{\\Theta,m} \\cdot x\\]\nwhere \\(R_{\\Theta,m}\\) is a block-diagonal rotation matrix with \\(d/2\\) independent 2D rotations.\nRotation for dimension pair \\((2i, 2i+1)\\):\n\\[\\begin{bmatrix} x'_{2i} \\\\ x'_{2i+1} \\end{bmatrix} = \\begin{bmatrix} \\cos(m\\theta_i) & -\\sin(m\\theta_i) \\\\ \\sin(m\\theta_i) & \\cos(m\\theta_i) \\end{bmatrix} \\begin{bmatrix} x_{2i} \\\\ x_{2i+1} \\end{bmatrix}\\]\nFrequency schedule: \\(\\theta_i = B^{-2i/d}\\) where \\(B = 10000\\) (base)"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#rope-summary-1",
-    "href": "arch/03_modern_arch/slides-2.html#rope-summary-1",
-    "title": "Modern Architectures - II",
-    "section": "RoPE Summary",
-    "text": "RoPE Summary\nKey property - relative position encoding:\n\\[\\langle R_{\\Theta,m} \\cdot q, R_{\\Theta,n} \\cdot k \\rangle = q^T R_{\\Theta,(n-m)} k\\]\nAttention scores depend only on relative position \\((n - m)\\), not absolute positions."
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#computing-attention-with-rope",
-    "href": "arch/03_modern_arch/slides-2.html#computing-attention-with-rope",
-    "title": "Modern Architectures - II",
-    "section": "Computing Attention with RoPE",
-    "text": "Computing Attention with RoPE\nRef : LLaMa 2 Attention\nclass RoPEAttention(nn.Module):\n\n\n    def forward(self, x: torch.Tensor):\n        # Apply RoPE to queries and keys\n        q = apply_rotary_emb(q, self.freqs_cis[:seq_len])\n        k = apply_rotary_emb(k, self.freqs_cis[:seq_len])\n\n        # Scaled dot-product attention\n        scores = (q @ k.transpose(-2, -1)) / (self.head_dim ** 0.5)\nKey implementation details:\n\nPrecompute frequencies: Calculate \\(\\theta_i = 10000^{-2i/d}\\) for all dimension pairs once\nApply once per forward pass: Rotate Q and K by position-dependent angles\nNo extra parameters: RoPE is fully deterministic, no learned weights"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#other-hyperparameters",
-    "href": "arch/03_modern_arch/slides-2.html#other-hyperparameters",
-    "title": "Modern Architectures - II",
-    "section": "Other Hyperparameters",
-    "text": "Other Hyperparameters\n\nHow many attention heads?\nHow many layers?\nHidden dimension size?\nFFN dimension size?\nVocab size?"
-  },
-  {
-    "objectID": "arch/03_modern_arch/slides-2.html#other-hyperparameters-1",
-    "href": "arch/03_modern_arch/slides-2.html#other-hyperparameters-1",
-    "title": "Modern Architectures - II",
-    "section": "Other Hyperparameters",
-    "text": "Other Hyperparameters\nFFN Dimensions\n\nTypical FFN dimension is 4x the hidden dimension (\\(d_{ff} = 4 \\cdot d_{model}\\))\nin GLU variants (SwiGLU, GeGLU), use 2/3 scaling to keep parameter count same\n\nNumber of attention heads\n\nCommon choices are 16, 32, or 64 heads for large models.\nThe number of heads is often chosen to be a divisor of the hidden dimension for simplicity (e.g., 512 hidden dimension with 16 heads means each head has 32 dimensions).\n\nVocabulary size\n\nMonolingual models: 30-50K tokens (Original Transformer: 37K, GPT-2/3: 50K, LLaMA 1/2: 32K, LLaMA 3: 128K)\nMultilingual/Production: 100-250K tokens (GPT-4: 100K, PaLM: 256K, Qwen: 152K, Command A: 255K)"
   },
   {
     "objectID": "index.html",

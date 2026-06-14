@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-73db7b5a953198da8f17fc5313e632aa.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.9.34">
+
+  <meta name="author" content="CCE, IISc">
+  <title>Large Language Models : A Hands-On Approach - May, 2026 – Mixture of Experts</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+  <link rel="stylesheet" href="../../styles.css">
+  <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-state="title-slide" class="quarto-title-block center">
+  <h1 class="title">Mixture of Experts</h1>
+  <p class="subtitle">Large Language Models : A Hands-on Approach</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+CCE, IISc 
+</div>
+</div>
+</div>
+
+</section>
+<section id="overview" class="slide level2">
+<h2>Overview</h2>
+<ul>
+<li>Scaling Laws</li>
+<li>MoE Architecture</li>
+<li>What do MoEs look like in LLMs?</li>
+<li>Dense vs Sparse MoE</li>
+<li>Routing Mechanisms</li>
+<li>Expert Configuration</li>
+<li>DeepSeek V3 MoE Architecture</li>
+<li>Model Examples</li>
+</ul>
+</section>
+<section id="scaling-to-larger-models" class="slide level2">
+<h2>Scaling to Larger Models</h2>
+
+<img data-src="images/gpt-evo.png" class="r-stretch"><ul>
+<li>Train larger models over more data =&gt; better results</li>
+</ul>
+</section>
+<section id="power-law" class="slide level2">
+<h2>Power Law</h2>
+<p><span class="math inline">\(y = a \cdot x^p + c\)</span></p>
+
+<img data-src="images/power-law.png" class="r-stretch"></section>
+<section id="scaling-laws-for-neural-language-models" class="slide level2">
+<h2>Scaling Laws for Neural Language Models</h2>
+<ul>
+<li>The loss scales as a power-law with model size, dataset size, and the amount of compute used for training</li>
+<li>Scaling laws make training larger models more predictable and efficient</li>
+</ul>
+
+<img data-src="images/oai-scaling-1.png" class="r-stretch"></section>
+<section id="scaling-laws-for-neural-language-models-1" class="slide level2">
+<h2>Scaling Laws for Neural Language Models</h2>
+
+<img data-src="images/oai-scaling-2.png" class="r-stretch"></section>
+<section id="training-compute-optimal-models" class="slide level2">
+<h2>Training Compute-Optimal Models</h2>
+<ul>
+<li>How much data to train on for a given model size?</li>
+<li>Large models need to be trained over more data to reach their best performance</li>
+</ul>
+
+<img data-src="images/oai-scaling-3.png" class="r-stretch"><p><strong>For compute-optimal training: <span class="math inline">\(D \approx 20 \times N\)</span></strong></p>
+</section>
+<section id="emergent-abilities" class="slide level2">
+<h2>Emergent Abilities</h2>
+
+<img data-src="images/emergent.png" class="r-stretch"><table class="caption-top">
+<thead>
+<tr class="header">
+<th>Ability</th>
+<th>Emerges Around</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>In-context learning</td>
+<td>10B+ params</td>
+</tr>
+<tr class="even">
+<td>Chain-of-thought reasoning</td>
+<td>100B+ params</td>
+</tr>
+<tr class="odd">
+<td>Arithmetic</td>
+<td>10B+ params</td>
+</tr>
+<tr class="even">
+<td>Code generation</td>
+<td>10B+ params</td>
+</tr>
+<tr class="odd">
+<td>Truthful QA improvement</td>
+<td>100B+ params</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="decoder-only-llms-parmeter-distribution" class="slide level2">
+<h2>Decoder-only LLMs: Parmeter Distribution</h2>
+<div class="columns">
+<div class="column">
+<ul>
+<li>Decoder-only is the predominant architecture for LLMs</li>
+<li>Core components
+<ul>
+<li>Self-attention</li>
+<li>Feedforward Network (FFN) / MLP</li>
+<li>LayerNorm and residual connections</li>
+</ul></li>
+<li>Most parameters are in the FFN layers</li>
+<li>Attention: 4<em>d^2 weights, FFN has about 8</em>d^2</li>
+</ul>
+</div><div class="column">
+<p><img data-src="images/llm-decoder.png"></p>
+</div></div>
+</section>
+<section id="decoder-only-llms-flops-distribution" class="slide level2">
+<h2>Decoder-only LLMs : Flops Distribution</h2>
+<div class="columns">
+<div class="column">
+<ul>
+<li>Most parameters are in the FFN layers</li>
+<li>The FFN layers are the main bottleneck for scaling up model capacity</li>
+<li>FFN parameters scale as ~8*d_model^2, leading to quadratic growth in parameters and compute</li>
+</ul>
+</div><div class="column">
+<p><img data-src="images/flops-params.png"></p>
+</div></div>
+</section>
+<section id="moe-architecture" class="slide level2">
+<h2>MoE Architecture</h2>
+<ul>
+<li>Replace big FFN with multiple smaller FFNs (experts)</li>
+<li>Only a subset of experts are active for each input token</li>
+<li>Routing mechanism decides which experts to activate</li>
+<li>Increase parameters without increasing compute</li>
+</ul>
+
+<img data-src="images/llm-moe.png" class="r-stretch"></section>
+<section id="current-trends-in-sota-architectures" class="slide level2">
+<h2>Current Trends in SoTA Architectures</h2>
+
+<img data-src="images/timeline.png" class="r-stretch"><ul>
+<li>Since 2024 nearly every frontier model (GPT-4, Grok, Mixtral, DeepSeek, Qwen, Llama 4) is an MoE</li>
+</ul>
+<!-- NOTES-BLOCK
+
+
+[READING] FLOPs-share figure: Adam Casson, "Transformer FLOPs" blog post (adamcasson.com); parameter accounting: Kaplan et al. 2020, "Scaling Laws for Neural Language Models" (arXiv:2001.08361), Section 2.1.
+-->
+</section>
+<section id="moe-architecture-1" class="slide level2">
+<h2>MoE Architecture</h2>
+<ul>
+<li>All layers can be MoE</li>
+<li>Some layers (e.g., every 2nd layer) can be MoE in an interleaved fashion.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a><span class="kw">def</span> moe_layer(token, experts, router, k): </span>
+<span id="cb1-2"><a></a>    <span class="co"># Ask the router "which experts should handle this token?" </span></span>
+<span id="cb1-3"><a></a>    logits <span class="op">=</span> router(token) </span>
+<span id="cb1-4"><a></a>    </span>
+<span id="cb1-5"><a></a>    <span class="co"># With N total experts, pick only top_k (top_k &lt;&lt; N) </span></span>
+<span id="cb1-6"><a></a>    top_k_logits, top_k_experts <span class="op">=</span> top_k(logits, k) </span>
+<span id="cb1-7"><a></a></span>
+<span id="cb1-8"><a></a>    <span class="co"># Compute experts' mixing weights</span></span>
+<span id="cb1-9"><a></a>    weights <span class="op">=</span> softmax(top_k_logits)</span>
+<span id="cb1-10"><a></a></span>
+<span id="cb1-11"><a></a>    <span class="co"># Mix only top_k experts together to provide the final output    </span></span>
+<span id="cb1-12"><a></a>    output <span class="op">=</span> <span class="dv">0</span> </span>
+<span id="cb1-13"><a></a>    <span class="cf">for</span> i, expert_idx <span class="kw">in</span> <span class="bu">enumerate</span>(top_k_experts): </span>
+<span id="cb1-14"><a></a>        output <span class="op">+=</span> weights[i] <span class="op">*</span> experts[expert_idx](token) </span>
+<span id="cb1-15"><a></a>    <span class="cf">return</span> output </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="why-are-moes-getting-popular" class="slide level2">
+<h2>Why are MoEs getting popular?</h2>
+<ul>
+<li><strong>Efficient Scaling:</strong> Add model capacity (total parameters) without increasing active parameters (compute) significantly</li>
+<li><strong>Efficient Pretraining and Inference</strong> - Faster training and inference compared to dense models of similar capacity</li>
+<li></li>
+</ul>
+
+<!-- NOTES-BLOCK
+[READING] Fedus et al. 2022, "Switch Transformers" (arXiv:2101.03961), Figure 4 and Section 3; Muennighoff et al. 2024, "OLMoE" (arXiv:2409.02060), Figure 1.
+-->
+<img data-src="images/moe-flops.png" class="r-stretch"></section>
+<section id="why-are-moes-getting-popular-1" class="slide level2">
+<h2>Why are MoEs getting popular?</h2>
+<ul>
+<li><strong>Improved Performance:</strong> Better performance on many tasks by leveraging specialization and ensemble effects</li>
+<li>DeepSeek V2 236B MoE with 21B active parameters outperforms dense models with 100B+ parameters</li>
+</ul>
+
+<!-- NOTES-BLOCK
+
+[READING] Figure: DeepSeek-V2 (arXiv:2405.04434), Figure 1(a).
+-->
+<img data-src="images/moe-vs-dense.png" class="r-stretch"></section>
+<section id="moe-architectures" class="slide level2">
+<h2>MoE Architectures</h2>
+<p>Three things vary across MoE architectures:</p>
+<ol type="1">
+<li><strong>Routing function</strong> - how tokens get assigned to experts</li>
+<li><strong>Expert sizes</strong> - how many experts, how large each one is, shared vs routed</li>
+<li><strong>Training objectives</strong> - how to train the router and keep experts balanced</li>
+</ol>
+</section>
+<section id="routing-mechanisms" class="slide level2">
+<h2>Routing Mechanisms</h2>
+<p>Learned:</p>
+<ul>
+<li>Token choice top K : each token picks its top-K experts</li>
+<li>Expert choice top K : each expert picks its top-K tokens</li>
+<li>Global assignment (e.g., BASE layers) : a global assignment of tokens to experts, fixed across batches</li>
+</ul>
+<p>Non-learned: - Hash-based routing : expert fixed by hashing the token id</p>
+
+<!-- NOTES-BLOCK
+[READING] Fedus, Dean, Zoph 2022 (arXiv:2209.01667), Figure 6 and the routing taxonomy section; Roller et al. 2021, "Hash Layers For Large Sparse Models" (arXiv:2106.04426); Zhou et al. 2022, "Mixture-of-Experts with Expert Choice Routing" (arXiv:2202.09368).
+-->
+<img data-src="images/routings.png" class="r-stretch"></section>
+<section id="top-k-routing-in-detail" class="slide level2">
+<h2>Top-K routing in detail</h2>
+<div class="columns">
+<div class="column">
+<p><strong>1. Compute Gating Scores</strong> (e.g., dot product)</p>
+<p><span class="math display">\[s_{i,t} = \text{Softmax}_i\left(\mathbf{u}_t^{lT} \mathbf{e}_i^l\right)\]</span></p>
+<ul>
+<li><span class="math inline">\(\mathbf{u}_t^l\)</span> : input token representation at layer <span class="math inline">\(l\)</span></li>
+<li><span class="math inline">\(\mathbf{e}_i^l\)</span> : expert embedding for expert <span class="math inline">\(i\)</span> at layer <span class="math inline">\(l\)</span></li>
+</ul>
+<p><strong>2. Select Top-K Experts</strong></p>
+<p><span class="math display">\[g_{i,t} = \begin{cases} s_{i,t}, &amp; s_{i,t} \in \text{Topk}(\{s_{j,t} \mid 1 \leq j \leq N\},\, K) \\ 0, &amp; \text{otherwise} \end{cases}\]</span></p>
+<p><strong>3. Compute Mixed Output</strong></p>
+<p><span class="math display">\[ \mathbf{h}_t = \sum_{i=1}^{N} g_{i,t} \cdot \text{FFN}_i(\mathbf{u}_t) + \mathbf{u}_t \]</span></p>
+<p>where <span class="math inline">\(\text{FFN}_i\)</span> is the feedforward network for expert <span class="math inline">\(i\)</span></p>
+</div><div class="column">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a></a><span class="kw">def</span> moe_layer(token, experts, router, k): </span>
+<span id="cb2-2"><a></a></span>
+<span id="cb2-3"><a></a>    <span class="co"># ── Step 1: Compute gating scores ──────────────────────</span></span>
+<span id="cb2-4"><a></a>    <span class="co"># s_{i,t} = Softmax_i( u_t^T e_i )</span></span>
+<span id="cb2-5"><a></a>    <span class="co"># router is nn.Linear(d_model, N)  →  token @ W_router</span></span>
+<span id="cb2-6"><a></a>    <span class="co"># "e_i": a learned embedding vector, one per expert, stored in the router's weight matrix W_router</span></span>
+<span id="cb2-7"><a></a>    logits <span class="op">=</span> router(token)          <span class="co"># shape: [N]</span></span>
+<span id="cb2-8"><a></a>    scores <span class="op">=</span> softmax(logits)        <span class="co"># s_{i,t} for all i</span></span>
+<span id="cb2-9"><a></a></span>
+<span id="cb2-10"><a></a></span>
+<span id="cb2-11"><a></a>    <span class="co"># ── Step 2: Select top-K experts ───────────────────────</span></span>
+<span id="cb2-12"><a></a>    <span class="co"># g_{i,t} = s_{i,t}  if i in TopK, else 0</span></span>
+<span id="cb2-13"><a></a>    top_k_scores, top_k_idx <span class="op">=</span> top_k(scores, k)</span>
+<span id="cb2-14"><a></a>    <span class="co"># all other g_{i,t} are implicitly 0</span></span>
+<span id="cb2-15"><a></a></span>
+<span id="cb2-16"><a></a></span>
+<span id="cb2-17"><a></a>    <span class="co"># ── Step 3: Compute mixed output ───────────────────────</span></span>
+<span id="cb2-18"><a></a>    <span class="co"># h_t = Σ g_{i,t} · FFN_i(u_t)  +  u_t  (residual)</span></span>
+<span id="cb2-19"><a></a>    output <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-20"><a></a>    <span class="cf">for</span> rank, expert_idx <span class="kw">in</span> <span class="bu">enumerate</span>(top_k_idx):</span>
+<span id="cb2-21"><a></a>        output <span class="op">+=</span> top_k_scores[rank] <span class="op">*</span> experts[expert_idx](token)</span>
+<span id="cb2-22"><a></a>    <span class="cf">return</span> output          <span class="co"># + residual added outside</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div></div>
+</section>
+<section id="top-k-routing-in-more-detail" class="slide level2">
+<h2>Top-K routing in more detail</h2>
+<h4 id="why-not-just-softmax-without-top-k">Why not just softmax without top-K?</h4>
+<div class="fragment">
+<ul>
+<li>You immediately lose the systems efficiency</li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li>Without top-K, you pay the training cost of all N experts per token</li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li><strong>The whole point of MoE is sparse activation</strong> during both training and inference</li>
+</ul>
+</div>
+
+<img data-src="images/dense-moe.png" class="r-stretch"></section>
+<section id="router-collapse" class="slide level2">
+<h2>Router Collapse</h2>
+<h4 id="the-problem">The Problem</h4>
+<ul>
+<li>Gating network routes tokens to only a small subset of experts</li>
+<li>Leaves most experts <strong>underutilized or completely inactive</strong></li>
+<li><strong>The “Rich-get-richer” effect</strong>: Specialized experts attract more tokens =&gt; get more gradients =&gt; become better =&gt; attract even more tokens</li>
+<li><strong>Degenerate policy</strong>: Router learns <span class="math inline">\(s_{i,t} \approx 0\)</span> for most experts</li>
+</ul>
+<p><span class="math display">\[\text{Effective capacity} \ll N \times \text{expert size}\]</span></p>
+<h4 id="consequences">Consequences</h4>
+<ul>
+<li><strong>Wasted memory</strong>: Unused experts consume GPU memory but add no value</li>
+<li><strong>Reduced model quality</strong>: Equivalent to training a much smaller dense model</li>
+<li><strong>Poor generalization</strong>: Active experts become overloaded and overfit</li>
+</ul>
+<!-- NOTES-BLOCK
+[READING] Shazeer et al. 2017 (arXiv:1701.06538), Section 4, first names the problem; OLMoE (arXiv:2409.02060) shows the load-balancing ablation empirically.
+-->
+</section>
+<section id="mitigating-router-collapse" class="slide level2">
+<h2>Mitigating Router Collapse</h2>
+<h4 id="strategies">Strategies</h4>
+<ul>
+<li><strong>Auxiliary Balancing Loss</strong>: Penalize uneven distribution (e.g., <span class="math inline">\(F \cdot P\)</span> loss)</li>
+<li><strong>Expert Capacity</strong>: Limit the number of tokens an expert can process per batch</li>
+<li><strong>Random Noise</strong>: Add noise to router logits to encourage exploration</li>
+<li><strong>Expert Choice</strong>: Experts pick tokens (rather than tokens picking experts)</li>
+</ul>
+<p>Current consensus: <strong>Auxiliary balancing loss</strong> and <strong>expert capacity</strong> are the most effective and widely used solutions in practice.</p>
+</section>
+<section id="expert-configuration" class="slide level2">
+<h2>Expert Configuration</h2>
+<p><strong>Fine-Grained Experts</strong></p>
+<ul>
+<li>Make experts smaller and use more of them.</li>
+<li>Instead of <span class="math inline">\(N\)</span> full-sized FFN copies, make each expert <strong>much smaller</strong> (1/4 to 1/14 of standard FFN size)</li>
+</ul>
+<p><em>The fine-grained ratio = (expert intermediate dim) / (standard FFN intermediate dim)</em></p>
+
+<!-- NOTES-BLOCK
+[READING] DeepSeekMoE (Dai et al. 2024, arXiv:2401.06066), Section 2.2, "fine-grained expert segmentation".
+-->
+<img data-src="images/moe-experts.png" class="r-stretch"></section>
+<section id="expert-configuration-1" class="slide level2">
+<h2>Expert Configuration</h2>
+<p><strong>Shared Experts</strong></p>
+<ul>
+<li>One or more experts that process <strong>all tokens</strong> regardless of routing</li>
+<li><em>Shared experts</em> provide a common processing pathway for all tokens, ensuring that every token benefits from some shared knowledge.</li>
+<li><em>Routed experts</em> can specialize on different subsets of tokens. This hybrid approach can improve performance and stability.</li>
+</ul>
+
+<img data-src="images/moe-shared.png" class="r-stretch"></section>
+<section id="expert-configuration-2" class="slide level2">
+<h2>Expert Configuration</h2>
+
+<!-- NOTES-BLOCK
+
+[READING] DeepSeekMoE (arXiv:2401.06066), Figure 3 and the ablation study section. Counterpoint to cite aloud: OLMoE's ablations confirm fine-grained gains but find no shared-expert benefit.
+-->
+<img data-src="images/moe-ablations.png" class="r-stretch"></section>
+<section id="expert-routing-configurations-for-major-moes" class="slide level2">
+<h2>Expert Routing Configurations for Major MoEs</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Experts</th>
+<th>Active</th>
+<th>Shared</th>
+<th>Fine-grained ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GShard</td>
+<td>2048</td>
+<td>2</td>
+<td>0</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td>Switch Transformer</td>
+<td>64</td>
+<td>1</td>
+<td>0</td>
+<td>–</td>
+</tr>
+<tr class="odd">
+<td>Mixtral</td>
+<td>8</td>
+<td>2</td>
+<td>0</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td>DBRX</td>
+<td>16</td>
+<td>4</td>
+<td>0</td>
+<td>–</td>
+</tr>
+<tr class="odd">
+<td>Grok</td>
+<td>8</td>
+<td>2</td>
+<td>0</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td>DeepSeek V1</td>
+<td>64</td>
+<td>6</td>
+<td>2</td>
+<td>1/4</td>
+</tr>
+<tr class="odd">
+<td>Qwen 1.5</td>
+<td>60</td>
+<td>4</td>
+<td>4</td>
+<td>1/8</td>
+</tr>
+<tr class="even">
+<td>DeepSeek V3</td>
+<td>256</td>
+<td>8</td>
+<td>1</td>
+<td>1/14</td>
+</tr>
+<tr class="odd">
+<td>OLMoE</td>
+<td>64</td>
+<td>8</td>
+<td>0</td>
+<td>1/8</td>
+</tr>
+<tr class="even">
+<td>MiniMax</td>
+<td>32</td>
+<td>2</td>
+<td>0</td>
+<td>~1/4</td>
+</tr>
+<tr class="odd">
+<td>Llama 4 (Maverick)</td>
+<td>128</td>
+<td>1</td>
+<td>1</td>
+<td>1/2</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="training-moes" class="slide level2">
+<h2>Training MoEs</h2>
+<p><strong>The Core Challenge</strong></p>
+<ul>
+<li><strong>Sparsity vs.&nbsp;Differentiability</strong>: We need sparsity for training-time efficiency.</li>
+<li><strong>Problem</strong>: Sparse gating decision (top-K selection) is <strong>not differentiable</strong>.</li>
+<li>Gradient descent cannot directly optimize the discrete “choice” of an expert.</li>
+</ul>
+<p><strong>The Efficiency Trade-off</strong></p>
+<ul>
+<li>Activating all experts simplifies gradients but destroys compute efficiency.</li>
+<li><strong>FLOPs Cost</strong>: “Having a model that’s 256 times more expensive to train is a total no-go.”</li>
+<li><strong>Goal</strong>: Maintain sparse execution while ensuring the routing mechanism can still be trained effectively.</li>
+</ul>
+</section>
+<section id="heuristic-balancing-losses" class="slide level2">
+<h2>Heuristic Balancing Losses</h2>
+<p><strong>Switch Transformer F*P Loss (Standard)</strong></p>
+
+<img data-src="images/fp-loss.png" class="r-stretch"><p>where:</p>
+<ul>
+<li><span class="math inline">\(f_i = \frac{1}{T} \sum_{x \in \mathcal{B}} \mathbb{1}\{\text{argmax } p(x) = i\}\)</span> is the fraction of tokens dispatched to expert <span class="math inline">\(i\)</span></li>
+<li><span class="math inline">\(P_i = \frac{1}{T} \sum_{x \in \mathcal{B}} p_i(x)\)</span> is the mean router probability for expert <span class="math inline">\(i\)</span></li>
+<li><span class="math inline">\(\alpha\)</span> is the balancing coefficient</li>
+<li><span class="math inline">\(N\)</span> is the number of experts</li>
+<li><span class="math inline">\(T\)</span> is the number of tokens in batch <span class="math inline">\(\mathcal{B}\)</span></li>
+</ul>
+<p><strong>Total Loss = <span class="math inline">\(\mathcal{L}_{\text{LM}} + \alpha \cdot F \cdot P\)</span></strong></p>
+</section>
+<section id="expert-capacity" class="slide level2">
+<h2>Expert Capacity</h2>
+<h4 id="hardware-efficiency-vs.-dynamic-routing">Hardware Efficiency vs.&nbsp;Dynamic Routing</h4>
+<p><strong>Expert Capacity</strong>: The maximum number of tokens assigned to each expert per batch.</p>
+<p><span class="math display">\[ \text{Expert Capacity} = \frac{\text{Tokens per Batch}}{\text{Number of Experts}} \times \text{Capacity Factor} \]</span></p>
+<div class="columns">
+<div class="column">
+<h4 id="handling-overflow-dropped-tokens">Handling Overflow (Dropped Tokens)</h4>
+<ul>
+<li><strong>Token Dropping</strong>: Occurs when the number of tokens routed to an expert exceeds its capacity.</li>
+<li><strong>Residual Bypass</strong>: Dropped tokens skip expert computation and flow directly through the residual connection to the next layer.</li>
+</ul>
+</div><div class="column">
+<p><img data-src="images/expert-capacity.png"></p>
+</div></div>
+</section>
+<section id="computing-output-of-moe-layer" class="slide level2">
+<h2>Computing output of MoE layer</h2>
+<ul>
+<li>For each selected expert, compute the output for the assigned tokens</li>
+<li>Combine the outputs from the selected experts (e.g., weighted sum) and add the residual connection</li>
+</ul>
+
+<img data-src="images/moe-output.png" class="r-stretch"><p><a href="https://github.com/cat-state/modded-nanogpt-moe/blob/main/train_gpt_moe.py#L215">Example MoE Training code</a></p>
+</section>
+<section id="total-vs-active-parameters" class="slide level2">
+<h2>Total vs Active Parameters</h2>
+<ul>
+<li><strong>Total / Sparse Parameters</strong>: The entire set of model parameters, including all available experts (both active and inactive).</li>
+<li><strong>Active Parameters</strong>: The parameters actually triggered to process a single input token. This determines the compute cost (FLOPs) per token.</li>
+<li><strong>Key Advantage</strong>: MoEs scale model capacity (Total) while maintaining the inference latency and training cost of a much smaller dense model (Active).</li>
+</ul>
+
+<img data-src="images/active-1.png" class="r-stretch"></section>
+<section id="total-vs-active-parameters-1" class="slide level2">
+<h2>Total vs Active Parameters</h2>
+<p><strong>Mixtral 8x7B MoE</strong></p>
+<div class="columns">
+<div class="column">
+<ul>
+<li><strong>Total Parameters</strong>: ~46.7B</li>
+<li><strong>Active Parameters</strong>: ~12.9B</li>
+<li><strong>Configuration</strong>:
+<ul>
+<li>8 experts per layer</li>
+<li>Top-2 gating (<span class="math inline">\(K=2\)</span> experts active per token)</li>
+</ul></li>
+<li><strong>Parameter Sharing</strong>:
+<ul>
+<li>Only the Feed-Forward Network (FFN) blocks are replicated.</li>
+<li><strong>Shared components</strong>: Attention layers, LayerNorms, and Embeddings.</li>
+</ul></li>
+</ul>
+<p><span class="math display">\[ \text{Active Params} = \text{Shared} + (K \times \text{Expert FFN}) \]</span> <span class="math display">\[ \text{Total Params} = \text{Shared} + (N \times \text{Expert FFN}) \]</span></p>
+</div><div class="column">
+<p><img data-src="images/active-2.png"></p>
+<p><img data-src="images/active-3.png"></p>
+</div></div>
+</section>
+<section id="deepseek-moe" class="slide level2">
+<h2>DeepSeek MoE</h2>
+<p><strong>DeepSeek V2</strong></p>
+<ul>
+<li>a 236 billion parameter MoE with 21 billion active parameters</li>
+</ul>
+
+<img data-src="images/deepseek-v2.png" class="r-stretch"><p><strong>DeepSeek V3</strong></p>
+<ul>
+<li>a 671B parameter MoE with 37B active parameters</li>
+</ul>
+</section>
+<section id="deepseek-v3-architecture" class="slide level2">
+<h2>DeepSeek V3 Architecture</h2>
+<div class="columns">
+<div class="column">
+<ul>
+<li><strong>Sparse Activation</strong>: 671B total parameters, only 37B active per token</li>
+<li><strong>Shared + Routed Experts</strong>: 256 fine-grained routed experts, 8 activated per token, plus 1 shared expert that sees every token (9 experts run per token)</li>
+<li><strong>Multi-Head Latent Attention (MLA)</strong>: Compresses KV cache into latent space, synergizes with sparse MoE for efficient inference</li>
+<li><strong>Multi-Token Prediction</strong>: Jointly optimizes predicting multiple tokens in parallel for improved training signal and throughput</li>
+</ul>
+</div><div class="column">
+<p><img data-src="images/deepseek-v3.png"></p>
+</div></div>
+</section>
+<section id="qwen-3-moe" class="slide level2">
+<h2>Qwen 3 MoE</h2>
+
+<img data-src="images/qwen3-moe.png" class="r-stretch"></section>
+<section id="kimi-k2-thinking" class="slide level2">
+<h2>Kimi K2 / Thinking</h2>
+
+<img data-src="images/k2-think.png" class="r-stretch"></section>
+<section id="sarvam-30b-and-105" class="slide level2">
+<h2>Sarvam 30B and 105</h2>
+<div class="columns">
+<div class="column">
+<p><img data-src="images/sarvam-moe.png"></p>
+</div><div class="column">
+<p><img data-src="images/savm-evl.png"></p>
+</div></div>
+</section>
+<section id="questions" class="slide level2" data-state="title-slide">
+<h2>Questions?</h2>
+
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p><a href="https://llm-engg.github.io/llms-may-26/slides">Large Language Models : A Hands-on Approach</a></p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="../../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': false,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
