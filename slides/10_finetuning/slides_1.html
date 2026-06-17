@@ -1,0 +1,2193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script src="slides_files/libs/clipboard/clipboard.min.js"></script>
+  <script src="slides_files/libs/quarto-html/tabby.min.js"></script>
+  <script src="slides_files/libs/quarto-html/popper.min.js"></script>
+  <script src="slides_files/libs/quarto-html/tippy.umd.min.js"></script>
+  <link href="slides_files/libs/quarto-html/tippy.css" rel="stylesheet">
+  <link href="slides_files/libs/quarto-html/light-border.css" rel="stylesheet">
+  <link href="slides_files/libs/quarto-html/quarto-syntax-highlighting-73db7b5a953198da8f17fc5313e632aa.css"
+    rel="stylesheet" id="quarto-text-highlighting-styles">
+  <meta charset="utf-8">
+  <meta name="generator" content="quarto-1.9.34">
+
+  <meta name="author" content="CCE, IISc">
+  <title>Post Training - I</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="slides_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="slides_files/libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code {
+      white-space: pre-wrap;
+    }
+
+    span.smallcaps {
+      font-variant: small-caps;
+    }
+
+    div.columns {
+      display: flex;
+      gap: min(4vw, 1.5em);
+    }
+
+    div.column {
+      flex: auto;
+      overflow-x: auto;
+    }
+
+    div.hanging-indent {
+      margin-left: 1.5em;
+      text-indent: -1.5em;
+    }
+
+    ul.task-list {
+      list-style: none;
+    }
+
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em;
+      /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */
+      vertical-align: middle;
+    }
+
+    /* CSS for syntax highlighting */
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    pre>code.sourceCode {
+      white-space: pre;
+      position: relative;
+    }
+
+    pre>code.sourceCode>span {
+      display: inline-block;
+      line-height: 1.25;
+    }
+
+    pre>code.sourceCode>span:empty {
+      height: 1.2em;
+    }
+
+    .sourceCode {
+      overflow: visible;
+    }
+
+    code.sourceCode>span {
+      color: inherit;
+      text-decoration: inherit;
+    }
+
+    div.sourceCode {
+      margin: 1em 0;
+    }
+
+    pre.sourceCode {
+      margin: 0;
+    }
+
+    @media screen {
+      div.sourceCode {
+        overflow: auto;
+      }
+    }
+
+    @media print {
+      pre>code.sourceCode {
+        white-space: pre-wrap;
+      }
+
+      pre>code.sourceCode>span {
+        text-indent: -5em;
+        padding-left: 5em;
+      }
+    }
+
+    pre.numberSource code {
+      counter-reset: source-line 0;
+    }
+
+    pre.numberSource code>span {
+      position: relative;
+      left: -4em;
+      counter-increment: source-line;
+    }
+
+    pre.numberSource code>span>a:first-child::before {
+      content: counter(source-line);
+      position: relative;
+      left: -1em;
+      text-align: right;
+      vertical-align: baseline;
+      border: none;
+      display: inline-block;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      padding: 0 4px;
+      width: 4em;
+      color: #aaaaaa;
+    }
+
+    pre.numberSource {
+      margin-left: 3em;
+      border-left: 1px solid #aaaaaa;
+      padding-left: 4px;
+    }
+
+    div.sourceCode {
+      color: #003b4f;
+      background-color: #f1f3f5;
+    }
+
+    @media screen {
+      pre>code.sourceCode>span>a:first-child::before {
+        text-decoration: underline;
+      }
+    }
+
+    code span {
+      color: #003b4f;
+    }
+
+    /* Normal */
+    code span.al {
+      color: #ad0000;
+    }
+
+    /* Alert */
+    code span.an {
+      color: #5e5e5e;
+    }
+
+    /* Annotation */
+    code span.at {
+      color: #657422;
+    }
+
+    /* Attribute */
+    code span.bn {
+      color: #ad0000;
+    }
+
+    /* BaseN */
+    code span.bu {}
+
+    /* BuiltIn */
+    code span.cf {
+      color: #003b4f;
+      font-weight: bold;
+    }
+
+    /* ControlFlow */
+    code span.ch {
+      color: #20794d;
+    }
+
+    /* Char */
+    code span.cn {
+      color: #8f5902;
+    }
+
+    /* Constant */
+    code span.co {
+      color: #5e5e5e;
+    }
+
+    /* Comment */
+    code span.cv {
+      color: #5e5e5e;
+      font-style: italic;
+    }
+
+    /* CommentVar */
+    code span.do {
+      color: #5e5e5e;
+      font-style: italic;
+    }
+
+    /* Documentation */
+    code span.dt {
+      color: #ad0000;
+    }
+
+    /* DataType */
+    code span.dv {
+      color: #ad0000;
+    }
+
+    /* DecVal */
+    code span.er {
+      color: #ad0000;
+    }
+
+    /* Error */
+    code span.ex {}
+
+    /* Extension */
+    code span.fl {
+      color: #ad0000;
+    }
+
+    /* Float */
+    code span.fu {
+      color: #4758ab;
+    }
+
+    /* Function */
+    code span.im {
+      color: #00769e;
+    }
+
+    /* Import */
+    code span.in {
+      color: #5e5e5e;
+    }
+
+    /* Information */
+    code span.kw {
+      color: #003b4f;
+      font-weight: bold;
+    }
+
+    /* Keyword */
+    code span.op {
+      color: #5e5e5e;
+    }
+
+    /* Operator */
+    code span.ot {
+      color: #003b4f;
+    }
+
+    /* Other */
+    code span.pp {
+      color: #ad0000;
+    }
+
+    /* Preprocessor */
+    code span.sc {
+      color: #5e5e5e;
+    }
+
+    /* SpecialChar */
+    code span.ss {
+      color: #20794d;
+    }
+
+    /* SpecialString */
+    code span.st {
+      color: #20794d;
+    }
+
+    /* String */
+    code span.va {
+      color: #111111;
+    }
+
+    /* Variable */
+    code span.vs {
+      color: #20794d;
+    }
+
+    /* VerbatimString */
+    code span.wa {
+      color: #5e5e5e;
+      font-style: italic;
+    }
+
+    /* Warning */
+  </style>
+  <link rel="stylesheet" href="slides_files/libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+  <link rel="stylesheet" href="styles.css">
+  <link href="slides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="slides_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="slides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="slides_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="slides_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="slides_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none;
+      margin-left: 0;
+    }
+
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". ";
+    }
+
+    .reveal .footnotes ol li>p:first-child {
+      display: inline-block;
+    }
+
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+
+    .reveal .slide ul li>*:first-child,
+    .reveal .slide ol li>*:first-child {
+      margin-block-start: 0;
+    }
+
+    .reveal .slide ul li>*:last-child,
+    .reveal .slide ol li>*:last-child {
+      margin-block-end: 0;
+    }
+
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+
+    .reveal blockquote {
+      box-shadow: none;
+    }
+
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+
+    .reveal .slide>img.stretch.quarto-figure-center,
+    .reveal .slide>img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .reveal .slide>img.stretch.quarto-figure-left,
+    .reveal .slide>img.r-stretch.quarto-figure-left {
+      display: block;
+      margin-left: 0;
+      margin-right: auto;
+    }
+
+    .reveal .slide>img.stretch.quarto-figure-right,
+    .reveal .slide>img.r-stretch.quarto-figure-right {
+      display: block;
+      margin-left: auto;
+      margin-right: 0;
+    }
+  </style>
+</head>
+
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+      <section id="title-slide" data-state="title-slide" class="quarto-title-block center">
+        <h1 class="title">Post Training - I</h1>
+        <p class="subtitle">Large Language Models : A Hands-on Approach</p>
+
+        <div class="quarto-title-authors">
+          <div class="quarto-title-author">
+            <div class="quarto-title-author-name">
+              CCE, IISc
+            </div>
+          </div>
+        </div>
+
+      </section>
+      <section id="overview" class="slide level2">
+        <h2>Overview</h2>
+        <ul>
+          <li>Post-training map</li>
+          <li>Behaviour vs Knowledge</li>
+          <li>CPT</li>
+          <li>SFT</li>
+        </ul>
+      </section>
+      <section id="llm-architectures" class="slide level2">
+        <h2>LLM Architectures</h2>
+        <ul>
+          <li>Decoder only LLMs : Dense, MoEs, Hybrid Models</li>
+        </ul>
+
+        <img data-src="images/trf-block-2.png" class="r-stretch">
+      </section>
+      <section id="llm-training-pipeline" class="slide level2">
+        <h2>LLM Training Pipeline</h2>
+
+        <img data-src="images/llm-tr-pipeline.png" class="r-stretch">
+        <ul>
+          <li>Pretraining on large internet scale, raw text data</li>
+          <li>Supervised Fine-Tuning (SFT) on high-quality demonstrations</li>
+          <li>Alignment via Reinforcement Learning</li>
+        </ul>
+      </section>
+      <section id="training-llms-pretraining" class="slide level2">
+        <h2>Training LLMs : Pretraining</h2>
+        <ul>
+          <li>Model learns to predict the next token on a large corpus of text</li>
+          <li>The model learns grammar, facts, reasoning abilities, code, mathematics etc. and world knowledge from this
+            data</li>
+        </ul>
+
+        <img data-src="images/lm.png" class="r-stretch">
+        <div class="fragment">
+          <ul>
+            <li>model gets extremely good at predicting the next token, but it doesn’t know how to follow instructions
+              or align with human preferences</li>
+          </ul>
+        </div>
+      </section>
+      <section id="sampling-from-a-pre-trained-llm" class="slide level2">
+        <h2>Sampling from a Pre-trained LLM</h2>
+
+        <img data-src="images/base-vs-it.png" class="r-stretch">
+        <div class="fragment">
+          <ul>
+            <li>How to get from a base model to a assistant that answers questions, writes code, or summarizes
+              documents?</li>
+          </ul>
+        </div>
+      </section>
+      <section id="post-training" class="slide level2">
+        <h2>Post-training</h2>
+        <ul>
+          <li>Pre-training - done by maybe a dozen labs</li>
+          <li><em>Post-training</em> is what the rest of us do</li>
+          <li>A base model has knowledge and but not behaviour</li>
+        </ul>
+
+        <img data-src="images/pre-to-post-llm.png" class="r-stretch">
+      </section>
+      <section id="pre-training-vs-post-training" class="slide level2">
+        <h2>Pre-training vs Post-training</h2>
+
+        <img data-src="images/pre-vs-post.png" class="r-stretch">
+      </section>
+      <section id="the-signal-ladder" class="slide level2">
+        <h2>The Signal Ladder</h2>
+        <table class="caption-top">
+          <colgroup>
+            <col style="width: 20%">
+            <col style="width: 26%">
+            <col style="width: 26%">
+            <col style="width: 26%">
+          </colgroup>
+          <thead>
+            <tr class="header">
+              <th>Stage</th>
+              <th>Method</th>
+              <th>Signal it consumes</th>
+              <th>What it changes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="odd">
+              <td>0</td>
+              <td>Prompting / few-shot / RAG / tools</td>
+              <td>a few examples <em>in context</em></td>
+              <td>nothing in the weights</td>
+            </tr>
+            <tr class="even">
+              <td>1</td>
+              <td><strong>Continued pre-training (CPT)</strong></td>
+              <td>raw domain <em>corpus</em> (unlabeled)</td>
+              <td><strong>knowledge</strong></td>
+            </tr>
+            <tr class="odd">
+              <td>2</td>
+              <td><strong>SFT / instruction tuning</strong></td>
+              <td><em>demonstrations</em> (input→output)</td>
+              <td><strong>behavior, format</strong></td>
+            </tr>
+            <tr class="even">
+              <td>3</td>
+              <td><strong>Preference alignment</strong> (DPO/RLHF)</td>
+              <td><em>preferences</em> (A better than B)</td>
+              <td><strong>taste, style, safety</strong></td>
+            </tr>
+            <tr class="odd">
+              <td>4</td>
+              <td><strong>RL with verifiable rewards</strong></td>
+              <td>a <em>checker</em> (right/wrong)</td>
+              <td><strong>capability via search</strong></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="fragment">
+          <div style="font-size: 0.7em;">
+            <ul>
+              <li>Each post-training method consumes a different kind of supervision signal</li>
+              <li>The more expensive the signal, the better the behaviour (generally)</li>
+              <li>Higher stages - more expensive to collect data and train, but more powerful results</li>
+              <li>Start at the Prompting and work your way up until you find a method that meets your needs and budget
+              </li>
+            </ul>
+          </div>
+          <!-- NOTES-BLOCK
+[READING] Ouyang et al., InstructGPT (arXiv:2203.02155) — the canonical pretrain→SFT→RLHF pipeline; "Post-Training 101" (tokens-for-thoughts.notion.site/post-training-101) as the orienting read.
+-->
+        </div>
+      </section>
+      <section id="behaviour-vs-knowledge" class="slide level2">
+        <h2>Behaviour vs Knowledge</h2>
+        <div class="fragment">
+          <blockquote>
+            <p><strong>Fine-tuning changes <em>behavior</em>, not <em>knowledge</em></strong></p>
+          </blockquote>
+        </div>
+        <div class="fragment">
+          <p>Example Scenario : <em>You have a base model that is good at math, but you want it to be better at
+              following instructions.</em></p>
+          <p><img data-src="images/knowledge-vs-beh.png"></p>
+        </div>
+      </section>
+      <section id="behaviour-vs-knowledge-1" class="slide level2">
+        <h2>Behaviour vs Knowledge</h2>
+        <p>Example: <em>Customer Support Bot</em></p>
+        <ul>
+          <li>SFT of a model on 2,000 customer-support conversations =&gt; teaches <em>format</em> and <em>tone</em>,
+            NOT facts about the product</li>
+          <li>You’re <em>eliciting</em> knowledge it already had from pre-training.</li>
+          <li>If no knowledge in the weights, SFT will teach the model to confidently <em>make it up</em> in the right
+            format.</li>
+        </ul>
+        <p>From LIMA paper (Zhou et al., 2023) :</p>
+        <blockquote>
+          <p>“A model’s knowledge and capabilities are learned almost entirely during pre-training, while alignment
+            teaches it which <strong>subdistribution of formats</strong> to use when interacting with users.”</p>
+        </blockquote>
+      </section>
+      <section id="behaviour-vs-knowledge-2" class="slide level2">
+        <h2>Behaviour vs Knowledge</h2>
+        <ul>
+          <li>Need new <strong>facts/jargon/language</strong>? -&gt; Stage 1 (CPT) <em>or</em> don’t train at all (RAG).
+          </li>
+          <li>Need new <strong>format/behavior/task</strong>? -&gt; Stage 2 (SFT).</li>
+          <li>Trying to SFT in knowledge =&gt; may lead to hallucinating model</li>
+        </ul>
+      </section>
+      <section id="should-we-finetune" class="slide level2">
+        <h2>Should we Finetune?</h2>
+
+        <img data-src="images/ft-tree.png" class="r-stretch">
+      </section>
+      <section id="should-we-finetune-1" class="slide level2">
+        <h2>Should we Finetune?</h2>
+
+        <img data-src="images/ft-1.png" class="r-stretch">
+      </section>
+      <section id="should-we-finetune-2" class="slide level2">
+        <h2>Should we Finetune?</h2>
+        <div class="columns">
+          <div class="column">
+            <p><strong>Signal Availablity</strong></p>
+            <p><img data-src="images/ft-2.png"></p>
+          </div>
+          <div class="column">
+            <p><strong>Compute Availablity</strong></p>
+            <p><img data-src="images/ft-3.png"></p>
+          </div>
+        </div>
+      </section>
+      <section id="when-to-finetune" class="slide level2">
+        <h2>When to Finetune?</h2>
+        <div style="font-size: 0.7em;">
+          <table class="caption-top">
+            <colgroup>
+              <col style="width: 42%">
+              <col style="width: 42%">
+              <col style="width: 14%">
+            </colgroup>
+            <thead>
+              <tr class="header">
+                <th>Use case</th>
+                <th>Analysis</th>
+                <th>Rung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="odd">
+                <td><strong>Reliable structured output</strong> (valid JSON/DSL at scale)</td>
+                <td>prompting / ICL get till 95%; fine-tuning gets 99.9% and shorter prompts</td>
+                <td>SFT</td>
+              </tr>
+              <tr class="even">
+                <td><strong>Style / domain tone</strong></td>
+                <td>hard to specify in a prompt; easy to <em>show</em></td>
+                <td>SFT</td>
+              </tr>
+              <tr class="odd">
+                <td><strong>New domain knowledge</strong> (proprietary code, low-resource language)</td>
+                <td>absent from pre-training</td>
+                <td>CPT</td>
+              </tr>
+              <tr class="even">
+                <td><strong>Cost/latency: small model, big-model behavior</strong></td>
+                <td>distill a frontier model’s outputs into a 3B</td>
+                <td>SFT (+ distillation)</td>
+              </tr>
+              <tr class="odd">
+                <td><strong>Privacy / on-prem</strong></td>
+                <td>can’t use an API; need a capable local model</td>
+                <td>CPT + SFT</td>
+              </tr>
+              <tr class="even">
+                <td><strong>Reasoning format</strong></td>
+                <td>the behavior isn’t in the instruct model</td>
+                <td>SFT + RL</td>
+              </tr>
+              <tr class="odd">
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section id="when-not-to-finetune" class="slide level2">
+        <h2>When <em>not</em> to Finetune?</h2>
+        <ul>
+          <li>The knowledge <strong>changes</strong> (prices, inventory, news)[RAG]</li>
+          <li>Data : <strong>a few hundred</strong> clean examples [need to collect data first.]</li>
+          <li>Eval has not <strong>measured</strong> the current model yet [need a baseline]</li>
+        </ul>
+      </section>
+      <section id="examples" class="slide level2">
+        <h2>Examples</h2>
+        <div style="font-size: 0.8em;">
+          <table class="caption-top">
+            <colgroup>
+              <col style="width: 26%">
+              <col style="width: 19%">
+              <col style="width: 26%">
+              <col style="width: 26%">
+            </colgroup>
+            <thead>
+              <tr class="header">
+                <th>Failure</th>
+                <th>Data Signal</th>
+                <th>Cheapest intervention</th>
+                <th>Eval / regression gate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="odd">
+                <td>Legal assistant gives answers in the wrong style</td>
+                <td>300 approved answer examples</td>
+                <td>LoRA SFT on style exemplars; facts remain in RAG</td>
+                <td>Style rubric improves; citation accuracy and refusal behavior do not regress</td>
+              </tr>
+              <tr class="even">
+                <td>Code assistant does not know internal code</td>
+                <td>raw docs + changing codebase</td>
+                <td>RAG first; CPT only if corpus is large and stable</td>
+                <td>answer accuracy, general coding regression</td>
+              </tr>
+              <tr class="odd">
+                <td>Small model cannot emit valid support-ticket JSON</td>
+                <td>5k input/output examples</td>
+                <td>SFT/LoRA</td>
+                <td>JSON validity, latency, general chat regression</td>
+              </tr>
+              <tr class="even">
+                <td>Math tutor fails multi-step algebra</td>
+                <td>verifier for final answers</td>
+                <td>SFT if format is missing; RLVR later if verifier is reliable</td>
+                <td>pass@1/pass@k, reasoning-format compliance, non-math regression</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section>
+        <section id="domain-adaptation" class="title-slide slide level1 center">
+          <h1>Domain Adaptation</h1>
+
+        </section>
+        <section id="the-signal-ladder-1" class="slide level2">
+          <h2>The Signal Ladder</h2>
+          <table class="caption-top">
+            <colgroup>
+              <col style="width: 6%">
+              <col style="width: 31%">
+              <col style="width: 31%">
+              <col style="width: 31%">
+            </colgroup>
+            <thead>
+              <tr class="header">
+                <th>Stage</th>
+                <th>Method</th>
+                <th>Signal</th>
+                <th>Changes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="odd">
+                <td>0</td>
+                <td>prompt / few-shot / RAG / tools</td>
+                <td>examples in context</td>
+                <td>nothing in weights</td>
+              </tr>
+              <tr class="even">
+                <td><strong>1</strong></td>
+                <td><strong>Continued pre-training (CPT)</strong></td>
+                <td><strong>raw domain corpus</strong></td>
+                <td><strong>knowledge</strong></td>
+              </tr>
+              <tr class="odd">
+                <td>2</td>
+                <td>SFT / instruction tuning</td>
+                <td>demonstrations</td>
+                <td>behavior, format</td>
+              </tr>
+              <tr class="even">
+                <td>3</td>
+                <td>preference (DPO/RLHF)</td>
+                <td>preferences</td>
+                <td>taste, style, safety</td>
+              </tr>
+              <tr class="odd">
+                <td>4</td>
+                <td>RLVR</td>
+                <td>a checker</td>
+                <td>capability via search</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section id="domain-adaptation-1" class="slide level2">
+          <h2>Domain Adaptation</h2>
+          <p>Fine-tuning changes behavior, not knowledge (<em>with one exception (CPT/DAPT)</em>)</p>
+          <ul>
+            <li>CPT is the only post-training method that genuinely writes new facts into the weights</li>
+          </ul>
+          <p><strong>CPT Scope</strong></p>
+          <ul>
+            <li>Get knowledge into the model (raw corpus -&gt; CPT -&gt; knowledge in weights)</li>
+            <li>Stretch the base model when the corpus demands it (new tokens (vocab), longer context)</li>
+            <li>Get a clean training set : dedup -&gt; decontaminate -&gt; filter -&gt; mixture</li>
+          </ul>
+        </section>
+        <section id="what-is-cpt" class="slide level2">
+          <h2>What is CPT?</h2>
+          <ul>
+            <li>You take a <strong>base</strong> checkpoint and keep doing <strong>next-token prediction</strong></li>
+            <li>Obective : Same as pre-training, but on a different corpus</li>
+            <li>No labels, no chat format, no instructions. Just more pre-training</li>
+          </ul>
+
+          <img data-src="images/cpt-dt.png" class="r-stretch">
+          <ul>
+            <li><strong>DAPT</strong> (Domain-Adaptive Pre-Training, Gururangan 2020): CPT on a <em>domain</em> corpus
+              (biomed, legal, code).</li>
+            <li><strong>TAPT</strong> (Task-Adaptive): CPT on the <em>unlabeled text of specific task</em></li>
+          </ul>
+        </section>
+        <section id="effectiness-of-cpt" class="slide level2">
+          <h2>Effectiness of CPT</h2>
+          <p>Ibrahim et al.&nbsp;2024, <em>Simple and Scalable Strategies to Continually Pre-train LLMs</em></p>
+
+          <img data-src="images/cpt-effectivesness.png" class="r-stretch">
+        </section>
+        <section id="how-to-make-cpt-not-forget" class="slide level2">
+          <h2>How to make CPT not-forget</h2>
+          <p>The modern recipe (Ibrahim et al.&nbsp;2024, <em>Simple and Scalable Strategies to Continually Pre-train
+              LLMs</em>):</p>
+          <div style="font-size: 0.8em;">
+            <table class="caption-top">
+              <colgroup>
+                <col style="width: 27%">
+                <col style="width: 36%">
+                <col style="width: 36%">
+              </colgroup>
+              <thead>
+                <tr class="header">
+                  <th>Technique</th>
+                  <th>What</th>
+                  <th>Why</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="odd">
+                  <td><em>Re-warm + re-decay LR</em></td>
+                  <td>warm up to a <em>modest</em> peak (well below original pre-train LR), then cosine-decay</td>
+                  <td>tiny LR =&gt; adaptation is slow</td>
+                </tr>
+                <tr class="even">
+                  <td><em>Replay</em></td>
+                  <td>mix <strong>1–5% of general/original-distribution data</strong> back in</td>
+                  <td>avoids catastrophic forgetting</td>
+                </tr>
+                <tr class="odd">
+                  <td><em>Lower LR, fewer epochs</em></td>
+                  <td>smaller steps, often &lt;1 epoch on huge corpora</td>
+                  <td>over-training = over-forgetting</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section id="measuring-knowledge-shift" class="slide level2">
+          <h2>Measuring Knowledge Shift</h2>
+          <ul>
+            <li>Measure perplexity on an in-domain and general corpus</li>
+            <li>do CPT</li>
+            <li>Measure perplexity again on both corpora</li>
+          </ul>
+          <div class="code-copy-outer-scaffold">
+            <div class="sourceCode" id="cb1">
+              <pre
+                class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a></span>
+<span id="cb1-2"><a href=""></a>domain_text  <span class="op">=</span> <span class="bu">open</span>(<span class="st">"domain_corpus_sample.txt"</span>).read()   <span class="co"># in-domain</span></span>
+<span id="cb1-3"><a href=""></a>general_text <span class="op">=</span> <span class="bu">open</span>(<span class="st">"general_sample.txt"</span>).read()         <span class="co"># a held-out general slice</span></span>
+<span id="cb1-4"><a href=""></a><span class="bu">print</span>(<span class="st">"BEFORE  in-domain ppl:"</span>, perplexity(domain_text))</span>
+<span id="cb1-5"><a href=""></a><span class="bu">print</span>(<span class="st">"BEFORE  general   ppl:"</span>, perplexity(general_text))</span>
+<span id="cb1-6"><a href=""></a><span class="co"># ... run a short CPT phase (TRL SFTTrainer with no chat template = raw LM, or a manual loop) ...</span></span>
+<span id="cb1-7"><a href=""></a><span class="bu">print</span>(<span class="st">"AFTER   in-domain ppl:"</span>, ...)   <span class="co"># should DROP</span></span>
+<span id="cb1-8"><a href=""></a><span class="bu">print</span>(<span class="st">"AFTER   general   ppl:"</span>, ...)   <span class="co"># watch it RISE = the tax</span></span></code></pre>
+            </div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+          </div>
+        </section>
+        <section id="cpt-lab" class="slide level2">
+          <h2>CPT Lab</h2>
+        </section>
+        <section id="successful-cpt" class="slide level2">
+          <h2>Successful CPT</h2>
+          <ol type="1">
+            <li><strong>In-domain perplexity down</strong> on held-out domain text.</li>
+            <li><strong>General perplexity stable enough</strong> on a replay/general slice.</li>
+            <li><strong>Task metric up</strong> on the actual downstream eval: QA, extraction, code completion,
+              classification, or support resolution.</li>
+            <li><strong>RAG comparison included</strong> if facts are exact or changing.</li>
+          </ol>
+        </section>
+        <section id="cpt-checklist" class="slide level2">
+          <h2>CPT checklist</h2>
+          <table class="caption-top">
+            <colgroup>
+              <col style="width: 40%">
+              <col style="width: 30%">
+              <col style="width: 28%">
+            </colgroup>
+            <thead>
+              <tr class="header">
+                <th>Question</th>
+                <th>If yes</th>
+                <th>If no</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="odd">
+                <td>Is the domain corpus large enough and repeatedly expresses the facts/jargon?</td>
+                <td>CPT may create useful domain priors.</td>
+                <td>Use RAG, SFT, or more data collection.</td>
+              </tr>
+              <tr class="even">
+                <td>Are the facts stable over the model’s intended lifetime?</td>
+                <td>Weights can carry the knowledge.</td>
+                <td>Keep facts outside the model.</td>
+              </tr>
+              <tr class="odd">
+                <td>Does the base model lack domain fluency?</td>
+                <td>CPT addresses it.</td>
+                <td>RAG or tool use is cheaper.</td>
+              </tr>
+              <tr class="even">
+                <td>Can afford full-training memory, replay data, and general-regression evals?</td>
+                <td>do CPT</td>
+                <td>no CPT.</td>
+              </tr>
+              <tr class="odd">
+                <td>Do downstream task metrics improve, not only perplexity?</td>
+                <td>The knowledge became usable.</td>
+                <td>The model compressed text without solving the product problem.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section id="extending-the-base-model-new-tokens-longer-context" class="slide level2">
+          <h2>Extending the Base Model : New tokens, Longer Context</h2>
+          <p>When adapting to a new language or domain :</p>
+          <ul>
+            <li>The text tokenizes badly (citations, SKUs, code, non-Latin languages etc)</li>
+            <li>documents are longer than the base model’s context window</li>
+          </ul>
+          <p><strong>When domain text tokenizes badly</strong> : Vocab Extension</p>
+          <p>Measure Tokenizer Fertility (English web text ≈ 1.3 tokens/word on a modern tokenizer;
+            legal/biomed/code/non-Latin often 1.6 - 2.5+)</p>
+        </section>
+        <section id="extending-the-base-model-new-tokens-longer-context-1" class="slide level2">
+          <h2>Extending the Base Model : New tokens, Longer Context</h2>
+          <p>example : Chinese-LLaMA</p>
+          <ol type="1">
+            <li><strong>Mine new tokens</strong> - train a BPE tokenizer on the domain corpus, take the top-K
+              merges/tokens that the base tokenizer lacks</li>
+            <li><strong>Resize</strong></li>
+          </ol>
+          <p><code>tokenizer.add_tokens(...)</code> + <code>model.resize_token_embeddings(len(tok))</code>.</p>
+          <ol start="3" type="1">
+            <li><strong>Initialize</strong> - set each new token’s embedding to the <strong>mean of its old subtoken
+                embeddings</strong>.</li>
+            <li><strong>Re-warm during CPT</strong> - train embeddings (and the tied <code>lm_head</code>) at full LR
+              from step 0</li>
+          </ol>
+        </section>
+        <section id="extending-the-base-model-new-tokens-longer-context-2" class="slide level2">
+          <h2>Extending the Base Model : New tokens, Longer Context</h2>
+          <div class="code-copy-outer-scaffold">
+            <div class="sourceCode" id="cb2">
+              <pre
+                class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a>new_tokens <span class="op">=</span> mine_domain_tokens(domain_corpus, top_k<span class="op">=</span><span class="dv">2000</span>)   <span class="co"># BPE on corpus, diff vs base vocab</span></span>
+<span id="cb2-2"><a href=""></a>old_tok <span class="op">=</span> AutoTokenizer.from_pretrained(name)                <span class="co"># keep a copy for subtoken lookup</span></span>
+<span id="cb2-3"><a href=""></a>n_added <span class="op">=</span> tok.add_tokens(new_tokens)</span>
+<span id="cb2-4"><a href=""></a>model.resize_token_embeddings(<span class="bu">len</span>(tok))</span>
+<span id="cb2-5"><a href=""></a></span>
+<span id="cb2-6"><a href=""></a>emb <span class="op">=</span> model.get_input_embeddings().weight.data</span>
+<span id="cb2-7"><a href=""></a><span class="cf">for</span> t <span class="kw">in</span> new_tokens:                                         <span class="co"># init = mean of old subtoken embeddings</span></span>
+<span id="cb2-8"><a href=""></a>    sub_ids <span class="op">=</span> old_tok(t, add_special_tokens<span class="op">=</span><span class="va">False</span>).input_ids</span>
+<span id="cb2-9"><a href=""></a>    emb[tok.convert_tokens_to_ids(t)] <span class="op">=</span> emb[sub_ids].mean(<span class="dv">0</span>)</span></code></pre>
+            </div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+          </div>
+        </section>
+        <section id="long-context-extension" class="slide level2">
+          <h2>Long Context Extension</h2>
+          <ul>
+            <li>
+              <p>If documents are longer than the base model’s context window, you can extend the position embeddings
+                during CPT.</p>
+            </li>
+            <li>
+              <p>RoPE extension : rescale rotary frequencies so new positions land in-distribution</p>
+              <ul>
+                <li><strong>Position Interpolation</strong> (compress all positions; Chen 2023)</li>
+                <li><strong>NTK-aware scaling</strong> (rescale frequencies non-uniformly, sparing high-frequency/local
+                  information)</li>
+                <li><strong>YaRN</strong> (the refined combination; Peng 2023)</li>
+              </ul>
+            </li>
+            <li>
+              <p>Run a short CPT phase on long sequences</p>
+            </li>
+            <li>
+              <p>Train with long documents to teach model long range dependencies</p>
+            </li>
+          </ul>
+        </section>
+      </section>
+      <section>
+        <section id="data-curation" class="title-slide slide level1 center">
+          <h1>Data Curation</h1>
+
+        </section>
+        <section id="role-of-data" class="slide level2">
+          <h2>Role of Data</h2>
+          <ul>
+            <li>The model is a function of its data. The choice of data is the most important decision</li>
+          </ul>
+          <blockquote>
+            <p>Data quality, not the algorithm decides the outcome Garbage in -&gt; <em>confident</em> garbage out</p>
+          </blockquote>
+          <p><strong>Considerations</strong></p>
+          <ul>
+            <li>Source, Scale, Freshness, Rights, Secrets/PII, Noise, data distribution, contamination with eval set,
+              Mixture with general data</li>
+            <li>Deduplication - Exact and Near-dup</li>
+            <li>Decontamination - n-gram/substring overlap with eval set</li>
+            <li>PII Scrubbing</li>
+            <li>Filtering by source, quality, length, etc</li>
+          </ul>
+        </section>
+        <section id="data-mixture-and-curriculum-learning" class="slide level2">
+          <h2>Data Mixture and Curriculum Learning</h2>
+          <p>Ref : Tülu 3 / OLMo</p>
+          <ul>
+            <li>Train on a mixture of domain and general data, not just the domain corpus</li>
+          </ul>
+
+          <img data-src="images/olmix.png" class="r-stretch">
+          <ul>
+            <li><strong>Curriculum</strong> : easy/general first, hard/specific later; the model builds priors before
+              specializing.</li>
+            <li><strong>Annealing / midtraining</strong> (Llama-3, OLMo-2, MiniCPM): In the <em>final</em> phase, decay
+              the LR while <strong>upweighting your highest-quality data</strong>.</li>
+          </ul>
+        </section>
+        <section id="catastrophic-forgetting" class="slide level2">
+          <h2>Catastrophic Forgetting</h2>
+
+          <img data-src="images/cf-1.png" class="r-stretch">
+        </section>
+        <section id="catastrophic-forgetting-1" class="slide level2">
+          <h2>Catastrophic Forgetting</h2>
+          <div class="columns">
+            <div class="column" style="width:70%;">
+              <ul>
+                <li>Gradient descent on narrow data will improve your task but degrade general ability (forgetting).
+                </li>
+                <li>The more you train, the better your task performance but the worse your general ability.</li>
+              </ul>
+            </div>
+            <div class="column" style="width:30%;">
+              <p><img data-src="images/cf-2.png"></p>
+            </div>
+          </div>
+          <p><strong>Mitigations</strong></p>
+          <ul>
+            <li><strong>PEFT/LoRA</strong> - less number of weights updated -&gt; less forgetting</li>
+            <li><strong>Lower learning rate, fewer epochs</strong> - avoid overtraining on the narrow data</li>
+            <li><strong>Replay / data mixing</strong> - keep some general data in the mix</li>
+            <li><strong>Eval on <em>prior</em> capabilities, not just the new task</strong></li>
+          </ul>
+        </section>
+        <section id="eval-before-train" class="slide level2">
+          <h2>Eval Before Train</h2>
+          <blockquote>
+            <p><strong>Measure the base model on eval set <em>before</em> fine-tuning. Always. No exceptions.</strong>
+            </p>
+          </blockquote>
+          <ol type="1">
+            <li>
+              <p><strong>There might not be a problem.</strong> many a times the base/instruct model already good enough
+                on the task</p>
+            </li>
+            <li>
+              <p><strong>Need a <em>regression</em> baseline.</strong> How much we are willing to lose on general
+                ability or existing workflows to gain on the new task?</p>
+            </li>
+            <li>
+              <p><strong>A number you can’t beat is the only honest definition of success.</strong> “It seems better” is
+                not a result.</p>
+            </li>
+          </ol>
+        </section>
+        <section id="eval-set-construction" class="slide level2">
+          <h2>Eval set construction</h2>
+          <ol type="1">
+            <li><strong>Task lift:</strong> the tuned model beats the base/instruct/RAG baseline on the target task.
+            </li>
+            <li><strong>Regression check:</strong> the tuned model does not lose unacceptable ground on general ability
+            </li>
+            <li><strong>Cost check:</strong> the model meets the target serving budget: latency, memory, throughput</li>
+          </ol>
+        </section>
+        <section id="case-study-and-analysis" class="slide level2">
+          <h2>Case Study and Analysis</h2>
+          <div style="font-size: 0.8em;">
+            <ol type="1">
+              <li>
+                <p><strong>Customer support:</strong> A support chatbot answers correctly but sounds off-brand and
+                  forgets to ask for order ID. Do you fine-tune, prompt, or change retrieval? What data would prove your
+                  choice?</p>
+              </li>
+              <li>
+                <p><strong>Healthcare summarization:</strong> A model writes good discharge summaries but occasionally
+                  invents medication details. Which part is behavior and which part is knowledge? What should never be
+                  put only in weights?</p>
+              </li>
+              <li>
+                <p><strong>Finance analyst assistant:</strong> The model must answer using this morning’s market data.
+                  Why is fine-tuning a bad primary solution, and where might fine-tuning still help?</p>
+              </li>
+              <li>
+                <p><strong>Internal code assistant:</strong> The model misunderstands company-specific APIs. What would
+                  make you choose RAG, CPT, SFT, or a combination?</p>
+              </li>
+              <li>
+                <p><strong>Low-resource language:</strong> The model speaks a language poorly. What evidence would tell
+                  you whether you need CPT, SFT, synthetic data, or a new tokenizer/model?</p>
+              </li>
+              <li>
+                <p><strong>On-prem deployment:</strong> A company wants a local 3B model to replace a cloud frontier
+                  model for privacy and cost. Is the fine-tune optimizing quality, latency, privacy, or all three?</p>
+              </li>
+              <li>
+                <p><strong>Tool calling:</strong> An agent chooses the right tool but emits malformed arguments. Is this
+                  a chat-template problem, an SFT problem, an eval problem, or an RL environment problem?</p>
+              </li>
+            </ol>
+          </div>
+        </section>
+        <section id="training-memory-math" class="slide level2">
+          <h2>Training-Memory Math</h2>
+          <p><strong>Full fine-tuning</strong> : Four components of training memory</p>
+          <p>For each parameter, full fine-tuning with Adam stores:</p>
+          <ol type="1">
+            <li>the weight itself</li>
+            <li>its gradient</li>
+            <li>Adam’s 1st moment (m) ─┐ optimizer</li>
+            <li>Adam’s 2nd moment (v) ─┘ state</li>
+          </ol>
+          <ul>
+            <li>activations (depend on batch × sequence length, not param count)```</li>
+          </ul>
+        </section>
+        <section id="training-memory-math-1" class="slide level2">
+          <h2>Training-Memory Math</h2>
+          <p><strong>Mixed-precision (BF16) full fine-tuning</strong></p>
+          <table class="caption-top">
+            <thead>
+              <tr class="header">
+                <th>Item</th>
+                <th>Bytes / param</th>
+                <th>Why</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="odd">
+                <td>BF16 weights</td>
+                <td>2</td>
+                <td>the model you compute with</td>
+              </tr>
+              <tr class="even">
+                <td>BF16 gradients</td>
+                <td>2</td>
+                <td>one per weight</td>
+              </tr>
+              <tr class="odd">
+                <td>FP32 master weights</td>
+                <td>4</td>
+                <td>optimizer keeps a high-precision copy</td>
+              </tr>
+              <tr class="even">
+                <td>Adam <em>m</em> (FP32)</td>
+                <td>4</td>
+                <td>first moment</td>
+              </tr>
+              <tr class="odd">
+                <td>Adam <em>v</em> (FP32)</td>
+                <td>4</td>
+                <td>second moment</td>
+              </tr>
+              <tr class="even">
+                <td><strong>Total</strong></td>
+                <td><strong>~16 bytes/param</strong></td>
+                <td><strong>before activations</strong></td>
+              </tr>
+            </tbody>
+          </table>
+          <p><strong>Example : 7B model</strong></p>
+          <ul>
+            <li>7e9 params × 16 bytes ≈ <strong>112 GB</strong> just for weights + grads + optimizer state.</li>
+            <li>Plus activations (with a real batch/seqlen, easily tens of GB more).</li>
+            <li>Full FT of a 7B model <strong>does not fit on a single 80GB GPU</strong> without sharding/offload.</li>
+          </ul>
+        </section>
+        <section id="some-tricks-to-reduce-training-memory" class="slide level2">
+          <h2>Some tricks to reduce training memory</h2>
+          <ul>
+            <li><strong>PEFT/LoRA</strong> - only update a small fraction of parameters (e.g.&nbsp;0.1%); the rest are
+              frozen with no grads or optimizer state.</li>
+            <li><strong>Gradient checkpointing</strong> - recompute activations in the backward pass instead of storing
+              them. Trades compute for memory; ~30% slower, big activation savings.</li>
+            <li><strong>Gradient accumulation</strong> - simulate a large batch with a small one by summing grads over
+              micro-batches.</li>
+            <li><strong>FP8, FP4 training</strong> - use lower-precision formats for weights and/or optimizer state</li>
+            <li><strong>Offload (ZeRO/FSDP CPU offload)</strong> — push optimizer state to CPU/NVMe. slow.</li>
+          </ul>
+        </section>
+        <section id="cost-in-compute" class="slide level2">
+          <h2>Cost in Compute</h2>
+          <p><strong>The estimate:</strong></p>
+          <pre><code>FLOPs      ≈ 6 × params × tokens          (2ND forward + 4ND backward)
+GPU-hours  = FLOPs / (peak FLOPs/s × MFU) / 3600     (MFU: 30–45% realistic)
+dollars    = GPU-hours × $/GPU-hour</code></pre>
+          <blockquote>
+            <p>“MFU : model FLOPs utilization - 40% is a good dense-model number, less with short sequences or small
+              batches</p>
+          </blockquote>
+          <p><strong>Examples</strong>:</p>
+          <div class="code-copy-outer-scaffold">
+            <div class="sourceCode" id="cb4">
+              <pre
+                class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="kw">def</span> training_cost(n_params, n_tokens, peak_flops<span class="op">=</span><span class="fl">989e12</span>, mfu<span class="op">=</span><span class="fl">0.40</span>, usd_per_gpu_hour<span class="op">=</span><span class="fl">3.0</span>):</span>
+<span id="cb4-2"><a href=""></a>    flops <span class="op">=</span> <span class="dv">6</span> <span class="op">*</span> n_params <span class="op">*</span> n_tokens                 <span class="co"># 2ND fwd + 4ND bwd</span></span>
+<span id="cb4-3"><a href=""></a>    gpu_hours <span class="op">=</span> flops <span class="op">/</span> (peak_flops <span class="op">*</span> mfu) <span class="op">/</span> <span class="dv">3600</span>   <span class="co"># H100 bf16 peak ≈ 989 TFLOP/s</span></span>
+<span id="cb4-4"><a href=""></a>    <span class="cf">return</span> <span class="bu">round</span>(gpu_hours, <span class="dv">1</span>), <span class="bu">round</span>(gpu_hours <span class="op">*</span> usd_per_gpu_hour)</span>
+<span id="cb4-5"><a href=""></a></span>
+<span id="cb4-6"><a href=""></a><span class="bu">print</span>(training_cost(<span class="fl">3e9</span>, <span class="fl">1e9</span>))      <span class="co"># CPT 3B on 1B tokens    → (~13 GPU·h,  ~$38)</span></span>
+<span id="cb4-7"><a href=""></a><span class="bu">print</span>(training_cost(<span class="fl">8e9</span>, <span class="fl">100e9</span>))    <span class="co"># CPT 8B on 100B tokens  → (~3,400 GPU·h, ~$10k)</span></span>
+<span id="cb4-8"><a href=""></a><span class="bu">print</span>(training_cost(<span class="fl">3e9</span>, <span class="fl">5e6</span>))      <span class="co"># SFT 3B on 10k examples → (~0.06 GPU·h,  ~$0.20)</span></span></code></pre>
+            </div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+          </div>
+        </section>
+      </section>
+      <section>
+        <section id="supervised-fine-tuning-sft" class="title-slide slide level1 center">
+          <h1>Supervised Fine-tuning (SFT)</h1>
+
+        </section>
+        <section id="supervised-fine-tuning-sft-1" class="slide level2">
+          <h2>Supervised Fine-tuning (SFT)</h2>
+          <ul>
+            <li>SFT adds behavior to the text completion base model.</li>
+            <li>It can teach new formats, tasks, and styles, but it can’t reliably add new facts.</li>
+            <li><strong>Algorithm is trivial : data is the moat</strong></li>
+          </ul>
+          <table class="caption-top">
+            <colgroup>
+              <col style="width: 6%">
+              <col style="width: 31%">
+              <col style="width: 31%">
+              <col style="width: 31%">
+            </colgroup>
+            <thead>
+              <tr class="header">
+                <th>Rung</th>
+                <th>Method</th>
+                <th>Signal</th>
+                <th>Changes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="odd">
+                <td>0</td>
+                <td>prompt / RAG / tools</td>
+                <td>context</td>
+                <td>nothing in weights</td>
+              </tr>
+              <tr class="even">
+                <td>1</td>
+                <td>CPT</td>
+                <td>raw corpus</td>
+                <td>knowledge</td>
+              </tr>
+              <tr class="odd">
+                <td><strong>2</strong></td>
+                <td><strong>SFT / instruction tuning</strong></td>
+                <td><strong>demonstrations</strong> (input→output)</td>
+                <td><strong>behavior, format</strong></td>
+              </tr>
+              <tr class="even">
+                <td>3</td>
+                <td>preference (DPO/RLHF)</td>
+                <td>preferences</td>
+                <td>taste, style, safety</td>
+              </tr>
+              <tr class="odd">
+                <td>4</td>
+                <td>RLVR</td>
+                <td>a checker</td>
+                <td>capability via search</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section id="what-sft-actually-does" class="slide level2">
+          <h2>What SFT actually does</h2>
+
+          <img data-src="images/base-vs-it.png" class="r-stretch">
+          <ul>
+            <li><strong>Answer instead of completion</strong> : respond to the turn, don’t extend it.</li>
+            <li><strong>A grammar</strong> : the chat template (roles, turn boundaries)</li>
+            <li><strong>Stop</strong> : emit the end-of-turn token</li>
+          </ul>
+        </section>
+        <section id="sft-scoping" class="slide level2">
+          <h2>SFT Scoping</h2>
+          <div class="code-copy-outer-scaffold">
+            <div class="sourceCode" id="cb5">
+              <pre
+                class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb5-1"><a href=""></a>Target behavior | Demonstration source </span></code></pre>
+            </div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+          </div>
+          <div class="fragment">
+            <table class="caption-top">
+              <colgroup>
+                <col style="width: 50%">
+                <col style="width: 50%">
+              </colgroup>
+              <thead>
+                <tr class="header">
+                  <th>Target behavior</th>
+                  <th>Demonstration source</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="odd">
+                  <td>Always emit valid support-ticket JSON</td>
+                  <td>5k corrected tickets</td>
+                </tr>
+                <tr class="even">
+                  <td>Write legal answers in house style</td>
+                  <td>500 approved examples + RAG facts</td>
+                </tr>
+                <tr class="odd">
+                  <td>Follow tool-call argument schema</td>
+                  <td>tool-call transcripts</td>
+                </tr>
+                <tr class="even">
+                  <td>Produce concise executive summaries</td>
+                  <td>human-edited summaries</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section id="chat-templates" class="slide level2">
+          <h2>Chat Templates</h2>
+          <ul>
+            <li>A base model sees one thing: a flat stream of tokens. It has no concept of ‘user’ vs ‘assistant’, or
+              turns, or instructions vs responses.</li>
+            <li>The chat template defines the roles, turn structure, and loss mask for SFT.</li>
+            <li>Chat template is a grammar with special tokens</li>
+            <li>Examples</li>
+          </ul>
+          <div class="code-copy-outer-scaffold">
+            <div class="sourceCode" id="cb6">
+              <pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb6-1"><a href=""></a>&lt;|im_start|&gt;system</span>
+<span id="cb6-2"><a href=""></a>You are a helpful assistant focused on technical topics.&lt;|im_end|&gt;</span>
+<span id="cb6-3"><a href=""></a>&lt;|im_start|&gt;user</span>
+<span id="cb6-4"><a href=""></a>Hi there!&lt;|im_end|&gt;</span>
+<span id="cb6-5"><a href=""></a>&lt;|im_start|&gt;assistant</span>
+<span id="cb6-6"><a href=""></a>Nice to meet you!&lt;|im_end|&gt;</span>
+<span id="cb6-7"><a href=""></a>&lt;|im_start|&gt;user</span>
+<span id="cb6-8"><a href=""></a>Can I ask a question?&lt;|im_end|&gt;</span>
+<span id="cb6-9"><a href=""></a>&lt;|im_start|&gt;assistant</span></code></pre>
+            </div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+          </div>
+        </section>
+        <section id="chatml" class="slide level2">
+          <h2>ChatML</h2>
+          <div class="code-copy-outer-scaffold">
+            <div class="sourceCode" id="cb7">
+              <pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb7-1"><a href=""></a>&lt;|im_start|&gt;system</span>
+<span id="cb7-2"><a href=""></a>You are a helpful assistant focused on technical topics.&lt;|im_end|&gt;</span>
+<span id="cb7-3"><a href=""></a>&lt;|im_start|&gt;user</span>
+<span id="cb7-4"><a href=""></a>Hi there!&lt;|im_end|&gt;</span>
+<span id="cb7-5"><a href=""></a>&lt;|im_start|&gt;assistant</span>
+<span id="cb7-6"><a href=""></a>Nice to meet you!&lt;|im_end|&gt;</span>
+<span id="cb7-7"><a href=""></a>&lt;|im_start|&gt;user</span>
+<span id="cb7-8"><a href=""></a>Can I ask a question?&lt;|im_end|&gt;</span>
+<span id="cb7-9"><a href=""></a>&lt;|im_start|&gt;assistant</span></code></pre>
+            </div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+          </div>
+          <ul>
+            <li><code>&lt;|im_start|&gt;</code> / <code>&lt;|im_end|&gt;</code> are <strong>single special
+                tokens</strong> added to the vocabulary, not the literal characters</li>
+            <li>Qwen, SmolLM use ChatML; Llama-2 used <code>[INST]…[/INST]</code>; Alpaca used
+              <code>### Instruction:</code> / <code>### Response:</code>. <em>Different models, different grammar.</em>
+            </li>
+            <li>Examples <a
+                href="https://huggingface.co/spaces/huggingfacejs/chat-template-playground?modelId=deepseek-ai/DeepSeek-R1&amp;example=tool-usage">HF
+                chat template playground</a></li>
+            <li>The grammar lives in the <strong>tokenizer</strong>, as a Jinja template in
+              <code>tokenizer_config.json</code></li>
+          </ul>
+        </section>
+        <section id="example" class="slide level2">
+          <h2>Example</h2>
+          <div class="code-copy-outer-scaffold">
+            <div class="sourceCode" id="cb8">
+              <pre
+                class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href=""></a><span class="im">from</span> transformers <span class="im">import</span> AutoTokenizer</span>
+<span id="cb8-2"><a href=""></a>tok <span class="op">=</span> AutoTokenizer.from_pretrained(<span class="st">"Qwen/Qwen2.5-3B-Instruct"</span>)</span>
+<span id="cb8-3"><a href=""></a>messages <span class="op">=</span> [</span>
+<span id="cb8-4"><a href=""></a>    {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"You are a helpful assistant."</span>},</span>
+<span id="cb8-5"><a href=""></a>    {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"What is 2+2?"</span>},</span>
+<span id="cb8-6"><a href=""></a>]</span>
+<span id="cb8-7"><a href=""></a><span class="bu">print</span>(tok.apply_chat_template(messages, tokenize<span class="op">=</span><span class="va">False</span>, add_generation_prompt<span class="op">=</span><span class="va">True</span>))</span></code></pre>
+            </div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+          </div>
+          <ul>
+            <li>
+              <p><code>add_generation_prompt=True</code> : appends the <strong>assistant header</strong>
+                (<code>&lt;\|im_start\|&gt;assistant\n</code>) and stops, so the model generates <em>as the
+                  assistant</em></p>
+            </li>
+            <li>
+              <p><code>continue_final_message=True</code> : does <strong>not</strong> open a new turn — continues the
+                last (assistant) message</p>
+            </li>
+          </ul>
+        </section>
+        <section id="template-mismatch-bugs" class="slide level2">
+          <h2>Template Mismatch Bugs</h2>
+          <ul>
+            <li><strong>Train and serve with the identical template.</strong> vLLM/HF/SGLang apply the tokenizer’s
+              template by default</li>
+            <li><strong>Train on the end-of-turn token</strong> (<code>&lt;|im_end|&gt;</code> / EOS) or the model never
+              learns to stop generating</li>
+            <li><strong>Don’t mix SFT data with a <em>different</em> template</strong> (e.g.&nbsp;ShareGPT exports with
+              <code>### Human:</code>)</li>
+          </ul>
+        </section>
+        <section id="loss-masking" class="slide level2">
+          <h2>Loss Masking</h2>
+          <ul>
+            <li>
+              <p>The loss mask defines which tokens the model is trying to predict during training.</p>
+            </li>
+            <li>
+              <p>For SFT, the loss should be on the <strong>assistant’s response only</strong>, not the prompt or system
+                instructions.</p>
+            </li>
+            <li>
+              <p><strong>Completion only loss</strong> - standard for instruction tuning</p>
+            </li>
+          </ul>
+          <div class="code-copy-outer-scaffold">
+            <div class="sourceCode" id="cb9">
+              <pre
+                class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href=""></a><span class="op">&lt;|</span>im_start<span class="op">|&gt;</span>user\nWhat <span class="kw">is</span> <span class="dv">2</span><span class="op">+</span><span class="dv">2</span>?<span class="op">&lt;|</span>im_end<span class="op">|&gt;</span>\n<span class="op">&lt;|</span>im_start<span class="op">|&gt;</span>assistant\n   <span class="dv">4</span> <span class="op">&lt;|</span>im_end<span class="op">|&gt;</span></span>
+<span id="cb9-2"><a href=""></a>└──────────────────── MASKED (label <span class="op">=</span> <span class="op">-</span><span class="dv">100</span>) ───────────────────┘ └── LOSS ──┘</span>
+<span id="cb9-3"><a href=""></a>                      (prompt: the model reads it)              (completion <span class="op">+</span> STOP token)</span>
+<span id="cb9-4"><a href=""></a></span>
+<span id="cb9-5"><a href=""></a><span class="co"># -100 = PyTorch `CrossEntropyLoss(ignore_index=-100)</span></span></code></pre>
+            </div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+          </div>
+        </section>
+        <section id="sft-objective" class="slide level2">
+          <h2>SFT Objective</h2>
+          <p>For an example with prompt <code>x</code> and response <span class="math inline">\(y =
+              (y_1,\dots,y_{|y|})\)</span>, SFT minimizes the token-level cross-entropy over the <strong>completion
+              only</strong>:</p>
+          <p><span class="math display">\[
+              \mathcal{L}_{\text{SFT}}(\theta) = -\sum_{(x,y)\in\mathcal{D}} \sum_{t=1}^{|y|} \log p_\theta\big(y_t \mid
+              x, y_{&lt;t}\big)
+              \]</span></p>
+          <!-- NOTES-BLOCK
+[CORRECTNESS] (must-fix) The equation is mangled escaped LaTeX (literal `\$\$`, `*` where `_` should be, `\^`, `\|`) — it renders as garbled text, not math. Replace the whole block with (KaTeX per repo conventions):
+$$\mathcal{L}_{\text{SFT}}(\theta) = -\sum_{(x,y)\in\mathcal{D}} \sum_{t=1}^{|y|} \log p_\theta\big(y_t \mid x, y_{<t}\big)$$
+[FLOW] (nice) Consider moving this slide BEFORE "SFT Recipe Demo" (sft notes order: mask diagram → objective → code) so the demo instantiates an equation students have already seen.
+[INSTRUCTOR] The talking point that ties the section together: "the inner sum runs over response tokens only — *that's the mask*. The prompt x is conditioning, never a target. Same equation as pre-training; the only difference is the sum's range. That's why I keep saying the algorithm is trivial."
+-->
+        </section>
+        <section id="sft-recipe" class="slide level2">
+          <h2>SFT Recipe</h2>
+          <div class="code-copy-outer-scaffold">
+            <div class="sourceCode" id="cb10">
+              <pre
+                class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href=""></a><span class="im">from</span> transformers <span class="im">import</span> AutoTokenizer</span>
+<span id="cb10-2"><a href=""></a>tok <span class="op">=</span> AutoTokenizer.from_pretrained(<span class="st">"...."</span>)</span>
+<span id="cb10-3"><a href=""></a></span>
+<span id="cb10-4"><a href=""></a>messages <span class="op">=</span> [</span>
+<span id="cb10-5"><a href=""></a>    {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"What is 2+2?"</span>},</span>
+<span id="cb10-6"><a href=""></a>    {<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="st">"4"</span>},</span>
+<span id="cb10-7"><a href=""></a>]</span>
+<span id="cb10-8"><a href=""></a></span>
+<span id="cb10-9"><a href=""></a><span class="co"># prompt = everything up to and including the assistant header</span></span>
+<span id="cb10-10"><a href=""></a>prompt_ids <span class="op">=</span> tok.apply_chat_template(messages[:<span class="op">-</span><span class="dv">1</span>], add_generation_prompt<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb10-11"><a href=""></a><span class="co"># full = prompt + the assistant's answer + the end-of-turn token</span></span>
+<span id="cb10-12"><a href=""></a>full_ids   <span class="op">=</span> tok.apply_chat_template(messages)</span>
+<span id="cb10-13"><a href=""></a></span>
+<span id="cb10-14"><a href=""></a>labels <span class="op">=</span> [<span class="op">-</span><span class="dv">100</span>] <span class="op">*</span> <span class="bu">len</span>(prompt_ids) <span class="op">+</span> full_ids[<span class="bu">len</span>(prompt_ids):]   <span class="co"># mask the prompt prefix</span></span>
+<span id="cb10-15"><a href=""></a></span>
+<span id="cb10-16"><a href=""></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span><span class="st">'TOKEN'</span><span class="sc">:&lt;18}{</span><span class="st">'ID'</span><span class="sc">:&gt;8}</span><span class="ss">   LOSS?"</span>)</span>
+<span id="cb10-17"><a href=""></a><span class="cf">for</span> tid, lab <span class="kw">in</span> <span class="bu">zip</span>(full_ids, labels):</span>
+<span id="cb10-18"><a href=""></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>tok<span class="sc">.</span>decode([tid])<span class="sc">!r:&lt;18}{</span>tid<span class="sc">:&gt;8}</span><span class="ss">   </span><span class="sc">{</span><span class="st">'LOSS'</span> <span class="cf">if</span> lab <span class="op">!=</span> <span class="op">-</span><span class="dv">100</span> <span class="cf">else</span> <span class="st">'----'</span><span class="sc">}</span><span class="ss">"</span>)</span></code></pre>
+            </div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+          </div>
+        </section>
+        <section id="sft-checklist-and-tests" class="slide level2">
+          <h2>SFT Checklist and Tests</h2>
+          <ul>
+            <li>Train for a few steps (&lt;50) on a small batch; check loss goes down and model generates the right
+              format</li>
+            <li>Does it answer as the assistant rather than continue the user?</li>
+            <li>Does it stop at the right boundary?</li>
+            <li>Does it preserve the requested output format?</li>
+            <li>Does the loss move and avoid NaNs?</li>
+            <li>Does the number of loss tokens per batch stay nonzero after packing?</li>
+          </ul>
+        </section>
+        <section id="hyperparameters" class="slide level2">
+          <h2>Hyperparameters</h2>
+          <table class="caption-top">
+            <colgroup>
+              <col style="width: 21%">
+              <col style="width: 16%">
+              <col style="width: 19%">
+              <col style="width: 42%">
+            </colgroup>
+            <thead>
+              <tr class="header">
+                <th>Knob</th>
+                <th>Full-FT</th>
+                <th>LoRA</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="odd">
+                <td>Learning rate</td>
+                <td><code>1e-5</code> - <code>2e-5</code></td>
+                <td><code>1e-4</code> - <code>2e-4</code></td>
+                <td>LoRA wants ~10× higher</td>
+              </tr>
+              <tr class="even">
+                <td>Epochs</td>
+                <td>1 - 3</td>
+                <td>1 - 3</td>
+                <td>small/clean data tolerates more (LIMA used ~15 on 1k)</td>
+              </tr>
+              <tr class="odd">
+                <td>Warmup</td>
+                <td>3 - 10%</td>
+                <td>3 - 10%</td>
+                <td>linear warmup -&gt; cosine/linear decay</td>
+              </tr>
+              <tr class="even">
+                <td>Effective batch</td>
+                <td>32 - 128 seqs</td>
+                <td>same</td>
+                <td>reach it with gradient accumulation</td>
+              </tr>
+              <tr class="odd">
+                <td>Max length</td>
+                <td>2k - 8k</td>
+                <td>same</td>
+                <td>fits your data’s length distribution</td>
+              </tr>
+            </tbody>
+          </table>
+          <blockquote>
+            <p>Start at <strong>1 epoch</strong>, look at the eval, <em>then</em> decide</p>
+          </blockquote>
+        </section>
+        <section id="reading-loss-curves" class="slide level2">
+          <h2>Reading Loss Curves</h2>
+          <div class="columns">
+            <div class="column">
+              <p>Stable</p>
+              <p><img data-src="images/los-good.png"></p>
+            </div>
+            <div class="column">
+              <p>Overfit <img data-src="images/loss-overfit.png"></p>
+            </div>
+          </div>
+          <ul>
+            <li><strong>(a)</strong> smooth decline -&gt; plateau: good.</li>
+            <li><strong>(b)</strong> spikes / NaN: LR too high (or bad data, or fp16 overflow etc).</li>
+            <li><strong>(c)</strong> flat: LR too low, or your mask zeroed everything</li>
+            <li><strong>(d)</strong> train keeps dropping while <strong>held-out</strong> rises, sharp drops at each
+              epoch boundary: overfitting. Fewer epochs / lower LR / more data.</li>
+          </ul>
+          <blockquote>
+            <p>Log the metrics in Trackio or WandB</p>
+          </blockquote>
+        </section>
+        <section id="synthetic-data-for-sft" class="slide level2">
+          <h2>Synthetic Data for SFT</h2>
+          <ul>
+            <li>SFT, Preference, and RLHF all require a dataset of input-output pairs or preferences.</li>
+            <li>If no data, create it synthetically with a stronger model.</li>
+            <li>Take a <strong>strong teacher model</strong> and have it <em>write the training set</em> . This is how
+              Alpaca, WizardLM, and other open-source instruction-tuning datasets were constructed.</li>
+          </ul>
+          <div class="code-copy-outer-scaffold">
+            <div class="sourceCode" id="cb11">
+              <pre
+                class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb11-1"><a href=""></a>seed examples -&gt; [TEACHER generates] -&gt; raw synthetic data -&gt; [JUDGE filters] -&gt; kept set -&gt; (data pipeline: dedup → decontaminate → mix)</span></code></pre>
+            </div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+          </div>
+        </section>
+        <section id="three-generation-strategies" class="slide level2">
+          <h2>Three generation strategies</h2>
+          <table class="caption-top">
+            <colgroup>
+              <col style="width: 33%">
+              <col style="width: 33%">
+              <col style="width: 33%">
+            </colgroup>
+            <thead>
+              <tr class="header">
+                <th>Method</th>
+                <th>Idea</th>
+                <th>Knob that matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="odd">
+                <td><strong>Self-Instruct</strong> (Wang 2022)</td>
+                <td>seed with ~175 human tasks; teacher <em>bootstraps</em> new instructions + instances from them;
+                  filter for diversity</td>
+                <td>the seed set’s breadth; dedup against existing instructions</td>
+              </tr>
+              <tr class="even">
+                <td><strong>Evol-Instruct</strong> / WizardLM (Xu 2023)</td>
+                <td>take an instruction and <strong>evolve</strong> it: <em>deepen, add constraints, concretize,
+                    increase reasoning steps</em> (in-depth) or spawn a new topic (in-breadth)</td>
+                <td>controlled complexity - the lift over flat Self-Instruct</td>
+              </tr>
+              <tr class="odd">
+                <td><strong>Persona-based</strong> (Persona Hub, Ge 2024)</td>
+                <td>condition generation on a persona (“a tax auditor”, “a pediatric nurse”) to force
+                  <strong>diversity</strong></td>
+                <td>the persona set is the diversity dial</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- NOTES-BLOCK
+[FIX] (nice) The blockquote opens a quotation mark that never closes — close it: "...drop the rest."
+[INTUITION] The named failure mode (synthetic_data_from_c2.md): "the failure mode of synthetic data is **collapse to sameness** — a thousand near-identical 'Explain X simply' prompts. Evol-Instruct fights it with complexity; personas fight it with viewpoint. Diversity is a *quality axis*, not a nice-to-have."
+[FLOW] (should-fix) Two important pieces from the synthetic-data reference are missing entirely from the deck:
+  (1) Teacher-data ≠ distillation boundary: today the teacher hands you *text* (hard tokens) and you train normally; distillation-the-method has the student match the teacher's *distribution* (soft logits, KL). Same word gets used for both — don't let students conflate them.
+  (2) The legal trap: many strong teachers' ToS forbid using outputs to train competing models — your *weights* may be encumbered. Know your teacher's license; write it in the data card.
+[READING] Gunasekar et al., Textbooks Are All You Need / phi (arXiv:2306.11644) — the "quality is the scaling axis" result that motivates judge-filtering.
+-->
+        </section>
+        <section id="demo-generate-then-judge-end-to-end" class="slide level2">
+          <h2>DEMO : Generate-then-judge, end to end</h2>
+          <div class="code-copy-outer-scaffold">
+            <div class="sourceCode" id="cb12">
+              <pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href=""></a><span class="co"># (conceptual loop : swap `teacher()` / `judge()` for your local instruct model or an API)</span></span>
+<span id="cb12-2"><a href=""></a></span>
+<span id="cb12-3"><a href=""></a>EVOL <span class="op">=</span> <span class="st">"Rewrite the instruction to require one more reasoning step, keeping it answerable:</span><span class="ch">\n</span><span class="sc">{inst}</span><span class="st">"</span></span>
+<span id="cb12-4"><a href=""></a></span>
+<span id="cb12-5"><a href=""></a><span class="kw">def</span> expand(seed_instructions, teacher):</span>
+<span id="cb12-6"><a href=""></a>    pool <span class="op">=</span> <span class="bu">list</span>(seed_instructions)</span>
+<span id="cb12-7"><a href=""></a>    <span class="cf">for</span> inst <span class="kw">in</span> seed_instructions:</span>
+<span id="cb12-8"><a href=""></a>        pool.append(teacher(EVOL.<span class="bu">format</span>(inst<span class="op">=</span>inst)))        <span class="co"># Evol-Instruct: in-depth</span></span>
+<span id="cb12-9"><a href=""></a>    <span class="cf">return</span> pool</span>
+<span id="cb12-10"><a href=""></a></span>
+<span id="cb12-11"><a href=""></a>RUBRIC <span class="op">=</span> <span class="st">"""Rate this (instruction, answer) pair 1-5 on correctness, helpfulness, clarity.</span></span>
+<span id="cb12-12"><a href=""></a><span class="st">Reply with ONLY an integer.</span></span>
+<span id="cb12-13"><a href=""></a><span class="st">INSTRUCTION: </span><span class="sc">{inst}</span></span>
+<span id="cb12-14"><a href=""></a><span class="st">ANSWER: </span><span class="sc">{ans}</span><span class="st">"""</span></span>
+<span id="cb12-15"><a href=""></a></span>
+<span id="cb12-16"><a href=""></a><span class="kw">def</span> build_dataset(seeds, teacher, judge, keep_threshold<span class="op">=</span><span class="dv">4</span>):</span>
+<span id="cb12-17"><a href=""></a>    rows <span class="op">=</span> []</span>
+<span id="cb12-18"><a href=""></a>    <span class="cf">for</span> inst <span class="kw">in</span> expand(seeds, teacher):</span>
+<span id="cb12-19"><a href=""></a>        ans   <span class="op">=</span> teacher(inst)                                <span class="co"># generate the answer</span></span>
+<span id="cb12-20"><a href=""></a>        score <span class="op">=</span> <span class="bu">int</span>(judge(RUBRIC.<span class="bu">format</span>(inst<span class="op">=</span>inst, ans<span class="op">=</span>ans)))<span class="co"># judge-as-filter</span></span>
+<span id="cb12-21"><a href=""></a>        <span class="cf">if</span> score <span class="op">&gt;=</span> keep_threshold:</span>
+<span id="cb12-22"><a href=""></a>            rows.append({<span class="st">"instruction"</span>: inst, <span class="st">"answer"</span>: ans, <span class="st">"score"</span>: score})</span>
+<span id="cb12-23"><a href=""></a>    <span class="cf">return</span> rows</span></code></pre>
+            </div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+          </div>
+        </section>
+        <section id="data-quality" class="slide level2">
+          <h2>Data Quality</h2>
+          <ul>
+            <li>Carefully curated 1K examples can beat a noisy 10K or 100K examples (LIMA 2023)</li>
+          </ul>
+          <p><strong>Good SFT example:</strong></p>
+          <ul>
+            <li><strong>Correct</strong> (a wrong demonstration teaches a wrong behavior).</li>
+            <li><strong>Consistent format</strong> (the answer shape we actually want).</li>
+            <li><strong>Diverse</strong> (tasks, lengths, phrasings).</li>
+            <li><strong>Clean of leakage</strong> (no foreign template, no system-prompt leakage).</li>
+          </ul>
+        </section>
+        <section id="multi-dataset-sft" class="slide level2">
+          <h2>Multi-dataset SFT</h2>
+          <p><strong>many formats =&gt; one schema:</strong></p>
+          <pre><code>Alpaca {instruction, input, output}   ─┐
+ShareGPT {conversations:[{from,value}]}├─►  {"messages":[{"role","content"}, …]}  ──► apply_chat_template
+OASST  (message tree)                  ─┘        (the single canonical form)</code></pre>
+          <div class="code-copy-outer-scaffold">
+            <div class="sourceCode" id="cb14">
+              <pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href=""></a><span class="kw">def</span> to_messages(ex):                       <span class="co"># Alpaca → canonical</span></span>
+<span id="cb14-2"><a href=""></a>    user <span class="op">=</span> ex[<span class="st">"instruction"</span>] <span class="op">+</span> (<span class="ss">f"</span><span class="ch">\n\n</span><span class="sc">{</span>ex[<span class="st">'input'</span>]<span class="sc">}</span><span class="ss">"</span> <span class="cf">if</span> ex[<span class="st">"input"</span>] <span class="cf">else</span> <span class="st">""</span>)</span>
+<span id="cb14-3"><a href=""></a>    <span class="cf">return</span> {<span class="st">"messages"</span>: [</span>
+<span id="cb14-4"><a href=""></a>        {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: user},</span>
+<span id="cb14-5"><a href=""></a>        {<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: ex[<span class="st">"output"</span>]},</span>
+<span id="cb14-6"><a href=""></a>    ]}</span></code></pre>
+            </div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+          </div>
+          <ul>
+            <li><strong>Role mapping</strong> - ShareGPT’s <code>human</code>/<code>gpt</code> →
+              <code>user</code>/<code>assistant</code>; drop or map <code>system</code>.</li>
+            <li><strong>Template leakage</strong> - strip any <code>### Response:</code> / <code>&lt;|im_end|&gt;</code>
+              already baked into a field</li>
+            <li><strong>Dedup + decontaminate the <em>mixture</em></strong></li>
+          </ul>
+        </section>
+        <section id="sft-run-desirability" class="slide level2">
+          <h2>SFT run desirability</h2>
+          <ol type="1">
+            <li><strong>Target lift:</strong> improves the held-out task or product eval</li>
+            <li><strong>Format reliability:</strong> passes schema/template/stop-token checks</li>
+            <li><strong>Regression check:</strong> does not lose unacceptable ground on general chat, safety, tool
+              syntax, or domain factuality.</li>
+            <li><strong>Data/mask reproducibility:</strong> dataset version, tokenizer revision, chat template, rendered
+              sample, and mask audit are saved.</li>
+            <li><strong>Serving equivalence:</strong> local generation and serving-stack generation use the same prompt
+              tokenization and stop tokens.</li>
+          </ol>
+        </section>
+        <section id="wrap-up" class="slide level2">
+          <h2>Wrap-up</h2>
+          <ul>
+            <li>
+              <p>Chat template : train and serve with the <strong>identical</strong> grammar</p>
+            </li>
+            <li>
+              <p>Loss mask : loss on the <strong>completion + end-of-turn</strong> only</p>
+            </li>
+            <li>
+              <p>Data : <strong>quality &gt; quantity</strong>; standardize, dedup, decontaminate</p>
+            </li>
+            <li>
+              <p>Hyperparams : start at <strong>1 epoch</strong>, low LR, read the held-out curve</p>
+            </li>
+          </ul>
+          <div class="fragment">
+            <blockquote>
+              <p>SFT is the easiest algorithm in finetuning and but can break sublty on the data or the mask or the
+                template”</p>
+            </blockquote>
+            <!-- NOTES-BLOCK
+[FIX] (should-fix) Three issues in this slide: (1) the four rules are a collapsed run-on paragraph — render as the four-row table from sft notes §6.2 (Lever | The rule); (2) typos: "and but" → "but", "sublty" → "subtly"; (3) stray trailing quotation mark after "template".
+[INSTRUCTOR] Wrap-up move from the notes: re-show the annotated mask slide and have the class state each rule in chat — template, mask, stop token, epochs — before you reveal the table rows. This wrap-up covers only the SFT third; if this stays one mega-deck, add the ladder re-show with the "what it changes" column filled in live (landscape §6.2) as the module-level close.
+-->
+          </div>
+        </section>
+        <section id="further-reading" class="slide level2">
+          <h2>Further Reading</h2>
+          <!-- NOTES-BLOCK
+[CORRECTNESS] (must-fix) Slide is empty. Curated shortlist from the three notes' Master Reference Lists (one line each):
+  Orienting — "Post-Training 101" (tokens-for-thoughts.notion.site/post-training-101); HF smol-course post-training units; mlabonne LLM Course (SFT section).
+  Canonical — InstructGPT (arXiv:2203.02155); LIMA (arXiv:2305.11206); Don't Stop Pretraining (arXiv:2004.10964).
+  Memory/efficiency — LoRA (arXiv:2106.09685); QLoRA (arXiv:2305.14314); ZeRO (arXiv:1910.02054); Transformer Math 101 (blog.eleuther.ai/transformer-math/).
+  Data — Deduplicating Training Data Makes LMs Better (arXiv:2107.06499); FineWeb-Edu (arXiv:2406.17557); Ibrahim et al. continual pretraining (arXiv:2403.08763).
+  Templates/masking — HF Chat Templates docs; TRL SFTTrainer docs; Krell et al. packing (arXiv:2107.02027).
+  Modern recipes — Tülu 3 (arXiv:2411.15124); Zephyr (arXiv:2310.16944); DeepSeek-R1 (arXiv:2501.12948).
+-->
+
+        </section>
+      </section>
+    </div>
+    <div class="quarto-auto-generated-content" style="display: none;">
+      <div class="footer footer-default">
+        <p><a href="https://llm-engg.github.io/">Large Language Models : A Hands-on Approach</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="slides_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="slides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+
+
+  <script src="slides_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+    // Full list of configuration options available at:
+    // https://revealjs.com/config/
+    Reveal.initialize({
+      'controlsAuto': false,
+      'previewLinksAuto': false,
+      'pdfSeparateFragments': false,
+      'autoAnimateEasing': "ease",
+      'autoAnimateDuration': 1,
+      'autoAnimateUnmatched': true,
+      'jumpToSlide': true,
+      'menu': { "side": "left", "useTextContentForMissingTitles": true, "markers": false, "loadIcons": false, "custom": [{ "title": "Tools", "icon": "<i class=\"fas fa-gear\"></i>", "content": "<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>" }], "openButton": true },
+      'chalkboard': { "buttons": true },
+      'smaller': false,
+
+      // Display controls in the bottom right corner
+      controls: true,
+
+      // Help the user learn the controls by providing hints, for example by
+      // bouncing the down arrow when they first encounter a vertical slide
+      controlsTutorial: false,
+
+      // Determines where controls appear, "edges" or "bottom-right"
+      controlsLayout: 'edges',
+
+      // Visibility rule for backwards navigation arrows; "faded", "hidden"
+      // or "visible"
+      controlsBackArrows: 'faded',
+
+      // Display a presentation progress bar
+      progress: true,
+
+      // Display the page number of the current slide
+      slideNumber: 'c/t',
+
+      // 'all', 'print', or 'speaker'
+      showSlideNumber: 'all',
+
+      // Add the current slide number to the URL hash so that reloading the
+      // page/copying the URL will return you to the same slide
+      hash: true,
+
+      // Start with 1 for the hash rather than 0
+      hashOneBasedIndex: false,
+
+      // Flags if we should monitor the hash and change slides accordingly
+      respondToHashChanges: true,
+
+      // Push each slide change to the browser history
+      history: true,
+
+      // Enable keyboard shortcuts for navigation
+      keyboard: true,
+
+      // Enable the slide overview mode
+      overview: true,
+
+      // Disables the default reveal.js slide layout (scaling and centering)
+      // so that you can use custom CSS layout
+      disableLayout: false,
+
+      // Vertical centering of slides
+      center: false,
+
+      // Enables touch navigation on devices with touch input
+      touch: true,
+
+      // Loop the presentation
+      loop: false,
+
+      // Change the presentation direction to be RTL
+      rtl: false,
+
+      // see https://revealjs.com/vertical-slides/#navigation-mode
+      navigationMode: 'linear',
+
+      // Randomizes the order of slides each time the presentation loads
+      shuffle: false,
+
+      // Turns fragments on and off globally
+      fragments: true,
+
+      // Flags whether to include the current fragment in the URL,
+      // so that reloading brings you to the same fragment position
+      fragmentInURL: false,
+
+      // Flags if the presentation is running in an embedded mode,
+      // i.e. contained within a limited portion of the screen
+      embedded: false,
+
+      // Flags if we should show a help overlay when the questionmark
+      // key is pressed
+      help: true,
+
+      // Flags if it should be possible to pause the presentation (blackout)
+      pause: true,
+
+      // Flags if speaker notes should be visible to all viewers
+      showNotes: false,
+
+      // Global override for autoplaying embedded media (null/true/false)
+      autoPlayMedia: null,
+
+      // Global override for preloading lazy-loaded iframes (null/true/false)
+      preloadIframes: null,
+
+      // Number of milliseconds between automatically proceeding to the
+      // next slide, disabled when set to 0, this value can be overwritten
+      // by using a data-autoslide attribute on your slides
+      autoSlide: 0,
+
+      // Stop auto-sliding after user input
+      autoSlideStoppable: true,
+
+      // Use this method for navigation when auto-sliding
+      autoSlideMethod: null,
+
+      // Specify the average time in seconds that you think you will spend
+      // presenting each slide. This is used to show a pacing timer in the
+      // speaker view
+      defaultTiming: null,
+
+      // Enable slide navigation via mouse wheel
+      mouseWheel: false,
+
+      // The display mode that will be used to show slides
+      display: 'block',
+
+      // Hide cursor if inactive
+      hideInactiveCursor: true,
+
+      // Time before the cursor is hidden (in ms)
+      hideCursorTime: 5000,
+
+      // Opens links in an iframe preview overlay
+      previewLinks: false,
+
+      // Transition style (none/fade/slide/convex/concave/zoom)
+      transition: 'none',
+
+      // Transition speed (default/fast/slow)
+      transitionSpeed: 'default',
+
+      // Transition style for full page slide backgrounds
+      // (none/fade/slide/convex/concave/zoom)
+      backgroundTransition: 'none',
+
+      // Number of slides away from the current that are visible
+      viewDistance: 3,
+
+      // Number of slides away from the current that are visible on mobile
+      // devices. It is advisable to set this to a lower number than
+      // viewDistance in order to save resources.
+      mobileViewDistance: 2,
+
+      // The "normal" size of the presentation, aspect ratio will be preserved
+      // when the presentation is scaled to fit different resolutions. Can be
+      // specified using percentage units.
+      width: 1050,
+
+      height: 700,
+
+      // Factor of the display size that should remain empty around the content
+      margin: 0,
+
+      math: {
+        mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+        config: 'TeX-AMS_HTML-full',
+        tex2jax: {
+          inlineMath: [['\\(', '\\)']],
+          displayMath: [['\\[', '\\]']],
+          balanceBraces: true,
+          processEscapes: false,
+          processRefs: true,
+          processEnvironments: true,
+          preview: 'TeX',
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+          ignoreClass: 'tex2jax_ignore',
+          processClass: 'tex2jax_process'
+        },
+      },
+
+      // reveal.js plugins
+      plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+        RevealMath,
+        RevealNotes,
+        RevealSearch,
+        RevealZoom
+      ]
+    });
+  </script>
+  <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const tabsets = window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function (tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const isCodeAnnotation = (el) => {
+        for (const clz of el.classList) {
+          if (clz.startsWith('code-annotation-')) {
+            return true;
+          }
+        }
+        return false;
+      }
+      const onCopySuccess = function (e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button,
+            {
+              trigger: "manual",
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]
+            });
+          tooltip.show();
+        }
+        setTimeout(function () {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      }
+      const getTextToCopy = function (trigger) {
+        const outerScaffold = trigger.parentElement.cloneNode(true);
+        const codeEl = outerScaffold.querySelector('code');
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
+      });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i = 0; i < links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+        const config = {
+          allowHTML: true,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function (el) {
+            return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start',
+        };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
+        config['offset'] = [0, 0];
+        config['maxWidth'] = 700;
+        window.tippy(el, config);
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i = 0; i < noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function () {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch { }
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note) {
+            return note.innerHTML;
+          } else {
+            return "";
+          }
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i = 0; i < bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function () {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function (cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+  </script>
+
+
+</body>
+
+</html>
