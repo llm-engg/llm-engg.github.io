@@ -1,0 +1,3855 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A comprehensive hands-on course on Large Language Models for industry professionals">
+      
+      
+      
+        <link rel="canonical" href="https://llm-engg.github.io/slides/07_agents/06_multiagents/06_multiagents/notes_codex/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Lecture Prep Notes: Memory Systems and Multi-Agent Systems - Large Language Models - A Hands-on Approach</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-LLD65KQHZH"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-LLD65KQHZH",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-LLD65KQHZH",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lecture-prep-notes-memory-systems-and-multi-agent-systems" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../.." title="Large Language Models - A Hands-on Approach" class="md-header__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Large Language Models - A Hands-on Approach
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Lecture Prep Notes: Memory Systems and Multi-Agent Systems
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../schedule/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Schedule
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../assignments/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Assignments and Labs
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="Large Language Models - A Hands-on Approach" class="md-nav__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Large Language Models - A Hands-on Approach
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../schedule/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schedule
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../assignments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assignments and Labs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#3-multi-agent-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Multi-Agent Systems
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Multi-Agent Systems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-why-multi-agent-systems-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Why Multi-Agent Systems Exist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-when-single-agent-is-better" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 When Single-Agent Is Better
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-multi-agent-architecture-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Multi-Agent Architecture Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3 Multi-Agent Architecture Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pattern-1-supervisor-and-workers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 1: Supervisor and Workers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-2-sequential-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 2: Sequential Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-3-graph-with-conditional-edges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 3: Graph with Conditional Edges
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-4-debate-or-adversarial-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 4: Debate or Adversarial System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-5-parallel-fleet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 5: Parallel Fleet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-6-classifier-based-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 6: Classifier-Based Routing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-communication-between-agents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Communication Between Agents
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-role-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Role Design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-context-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Context Isolation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-multi-agent-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Multi-Agent Failure Modes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.7 Multi-Agent Failure Modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coordination-overhead" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coordination Overhead
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context-fragmentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context Fragmentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#role-confusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Role Confusion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#premature-delegation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Premature Delegation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merge-conflicts-and-state-conflicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merge Conflicts and State Conflicts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#judge-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Judge Failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-multi-agent-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 Multi-Agent Evaluation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-connecting-memory-and-multi-agent-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Connecting Memory and Multi-Agent Systems
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-case-studies-to-discuss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Case Studies to Discuss
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Case Studies to Discuss">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hermes-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hermes Agent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openclaw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenClaw
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#claude-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pi
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-suggested-demos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Suggested Demos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Suggested Demos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#demo-1-memory-retrieval-can-help-or-hurt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo 1: Memory Retrieval Can Help or Hurt
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-2-session-end-consolidation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo 2: Session-End Consolidation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-3-single-agent-vs-explorer-subagent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo 3: Single Agent vs Explorer Subagent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-4-solver-adversary-judge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo 4: Solver-Adversary-Judge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-5-coding-agent-orchestrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo 5: Coding-Agent Orchestrator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-image-placeholder-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Image Placeholder List
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-discussion-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Discussion Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-lab-framing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Lab Framing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Lab Framing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#memory-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Lab
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-agent-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Agent Lab
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-closing-synthesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Closing Synthesis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-may-2026-literature-and-web-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. May 2026 Literature and Web Update
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. May 2026 Literature and Web Update">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#111-literature-map-for-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.1 Literature Map for Memory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11.1 Literature Map for Memory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#memgpt-letta-memory-as-virtual-context-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MemGPT / Letta: Memory as Virtual Context Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generative-agents-memory-stream-importance-reflection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generative Agents: Memory Stream, Importance, Reflection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zep-temporal-knowledge-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zep: Temporal Knowledge Graphs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mem0-managed-memory-layer-and-graph-based-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mem0: Managed Memory Layer and Graph-Based Memory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#langgraph-memory-and-persistence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LangGraph Memory and Persistence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#112-literature-map-for-multi-agent-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.2 Literature Map for Multi-Agent Systems
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11.2 Literature Map for Multi-Agent Systems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#autogen-conversable-multi-agent-frameworks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AutoGen: Conversable Multi-Agent Frameworks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metagpt-sops-and-artifact-pipelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MetaGPT: SOPs and Artifact Pipelines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiagent-debate-and-chateval" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiagent Debate and ChatEval
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anthropic-multi-agent-research-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anthropic Multi-Agent Research System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cognitions-dont-build-multi-agents-counterpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cognition's "Don't Build Multi-Agents" Counterpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#langchain-synthesis-when-multi-agent-actually-helps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LangChain Synthesis: When Multi-Agent Actually Helps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#113-protocols-and-standards-as-of-may-2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.3 Protocols and Standards as of May 2026
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11.3 Protocols and Standards as of May 2026">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mcp-agent-to-tools-and-agent-to-context-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCP: Agent-to-Tools and Agent-to-Context Boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a2a-agent-to-agent-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A2A: Agent-to-Agent Boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#114-real-world-implementation-patterns-in-2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.4 Real-World Implementation Patterns in 2026
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11.4 Real-World Implementation Patterns in 2026">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pattern-1-skills-connectors-subagents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 1: Skills + Connectors + Subagents
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-2-managed-agent-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 2: Managed Agent Platform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-3-graph-based-workflow-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 3: Graph-Based Workflow Agent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-4-read-only-subagents-for-enterprise-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 4: Read-Only Subagents for Enterprise Search
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-5-reviewer-critic-agents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern 5: Reviewer / Critic Agents
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#115-enterprise-blueprint-adding-memory-to-custom-agents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.5 Enterprise Blueprint: Adding Memory to Custom Agents
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11.5 Enterprise Blueprint: Adding Memory to Custom Agents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-define-memory-scopes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Define Memory Scopes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-define-memory-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Define Memory Classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-decide-what-is-always-visible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Decide What Is Always Visible
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-add-retrieval" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Add Retrieval
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-add-memory-write-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Add Memory Write Controls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-add-consolidation-jobs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Add Consolidation Jobs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-add-forgetting-and-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Add Forgetting and Governance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#116-enterprise-blueprint-adding-multi-agent-to-custom-agents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.6 Enterprise Blueprint: Adding Multi-Agent to Custom Agents
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11.6 Enterprise Blueprint: Adding Multi-Agent to Custom Agents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-start-with-one-agent-and-instrument-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Start with One Agent and Instrument It
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-choose-the-multi-agent-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Choose the Multi-Agent Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-define-agent-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Define Agent Contracts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-use-least-privilege-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Use Least-Privilege Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-add-handoff-filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Add Handoff Filters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-add-guardrails-at-the-right-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Add Guardrails at the Right Boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-make-everything-observable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Make Everything Observable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-evaluate-before-and-after-multi-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8: Evaluate Before and After Multi-Agent
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#117-enterprise-security-and-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.7 Enterprise Security and Governance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11.7 Enterprise Security and Governance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prompt-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prompt Injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excessive-agency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Excessive Agency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vector-and-embedding-weaknesses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vector and Embedding Weaknesses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nist-ai-rmf-genai-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NIST AI RMF / GenAI Profile
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#118-enterprise-reference-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.8 Enterprise Reference Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#119-how-to-teach-this-in-may-2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.9 How to Teach This in May 2026
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1110-current-source-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.10 Current Source List
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="lecture-prep-notes-memory-systems-and-multi-agent-systems">Lecture Prep Notes: Memory Systems and Multi-Agent Systems</h1>
+<!-- Audience: students who have already seen evaluation, ReAct agents, tools/skills, MCP/context engineering, and planning/reflection.
+
+Duration target: 3 hours.
+
+Core teaching goal: help students understand when to add state, memory, and multiple agents to an LLM system, and when those additions create more failure modes than value.
+
+Course through-line: how much structure should we impose on an agent, versus letting the LLM figure it out? -->
+
+<!-- ---
+
+## 0. Lecture Shape
+
+This lecture combines Class 6 and Class 7 from the syllabus:
+
+- Memory Systems: working memory, session memory, episodic memory, semantic memory, procedural memory, consolidation, forgetting, memory evaluation.
+- Multi-Agent Systems: specialization, parallelism, debate, orchestration, communication, context isolation, error compounding, evaluation.
+
+Suggested timing:
+
+- 0:00-0:10 - Recap and framing
+- 0:10-0:55 - Memory taxonomy and implementation patterns
+- 0:55-1:25 - Memory consolidation, forgetting, and eval
+- 1:25-1:35 - Break
+- 1:35-2:20 - Multi-agent motivation and architectures
+- 2:20-2:50 - Multi-agent failure modes, context isolation, and eval
+- 2:50-3:00 - Synthesis: memory plus multi-agent coding system
+
+Main conclusion students should leave with:
+
+Memory and multi-agent design are both ways of managing context. Memory moves information across time. Multi-agent design moves information across roles and context windows. Both are useful only when the retrieval, handoff, or routing policy is better than just keeping the system simple.
+
+[IMAGE PLACEHOLDER: one diagram showing "Context Management Across Time" for memory and "Context Management Across Roles" for multi-agent systems.]
+
+---
+
+## 1. Opening Frame
+
+Start from what students already know:
+
+- Class 3: an agent is an LLM plus tools plus a loop.
+- Class 4: tools and skills expand what the loop can do.
+- Class 5: planning and reflection add structure to the loop.
+- Today: memory and multi-agent systems expand the loop over longer time horizons and across multiple workers.
+
+The key problem:
+
+The LLM only sees the current context window. It does not automatically remember past sessions, know which old information matters, or coordinate cleanly with other LLM calls. Every "memory" or "multi-agent" feature is an engineered workaround for that limitation.
+
+Useful sentence for class:
+
+"The context window is not memory. It is only the model's current working set."
+
+Explain the difference:
+
+- A context window is immediate visibility.
+- Memory is a policy for deciding what to store, retrieve, update, forget, and trust.
+- Multi-agent orchestration is a policy for deciding which model context should handle which part of the task.
+
+Common student misconception:
+
+"Long context models solve memory."
+
+Correction:
+
+Long context reduces pressure, but it does not solve relevance, distractors, retrieval, stale facts, privacy, cost, or continuity across sessions. A 200k-token window can still fail if the important fact is buried in the middle, contradicted by later context, or mixed with irrelevant traces.
+
+[DEMO PLACEHOLDER: show a long-context prompt with many irrelevant facts and one critical instruction in the middle; ask the model a question that requires the buried fact. Then compare with a short prompt containing only the relevant fact.]
+
+--- -->
+
+<!-- ## 2. Memory Systems
+
+### 2.1 Why Agents Need Memory
+
+Agents need memory when the current task depends on information that is not naturally present in the immediate prompt.
+
+Examples:
+
+- A personal assistant remembers the user's timezone, writing style, and recurring commitments.
+- A coding agent remembers that the project uses `pytest`, that auth lives in `src/auth`, and that migrations must be generated manually.
+- A research agent remembers sources it already checked and which ones were unreliable.
+- A support agent remembers prior attempts to solve a customer issue.
+
+But memory is not free. Bad memory makes the agent worse.
+
+Costs of memory:
+
+- Retrieval can bring irrelevant information into context.
+- Stale memories can override current instructions.
+- Duplicated memories can create contradictions.
+- Sensitive data can be stored accidentally.
+- Memory writes can reinforce mistakes.
+- Token cost rises if memory is injected eagerly.
+
+Teaching point:
+
+The question is not "Should the agent have memory?" The question is "What should be remembered, in what form, who can edit it, when is it retrieved, and how is it evaluated?"
+
+--- -->
+
+<!-- ### 2.2 Memory Taxonomy
+
+Use four memory types:
+
+1. Working memory
+2. Episodic memory
+3. Semantic memory
+4. Procedural memory
+
+Also introduce session memory as a practical engineering category between working and long-term memory.
+
+[IMAGE PLACEHOLDER: memory hierarchy pyramid: working context at top, session state, long-term semantic/episodic/procedural stores below.]
+
+#### Working Memory
+
+Definition:
+
+Working memory is the current context window: system prompt, user message, recent turns, tool results, loaded files, retrieved snippets, and any active plan.
+
+What belongs in working memory:
+
+- Current task
+- Current constraints
+- Active plan
+- Recent relevant tool results
+- Files or facts needed for the next step
+- Short summaries of older work
+
+What does not belong:
+
+- Entire conversation history
+- All tool schemas
+- All skills
+- Every previous file read
+- Every memory ever written
+- Raw logs from previous sessions
+
+Explain with analogy:
+
+Working memory is the desk, not the filing cabinet. If the desk is covered with everything, the worker slows down and starts grabbing the wrong paper.
+
+Engineering techniques:
+
+- Keep system prompts modular.
+- Load tools and skills just in time.
+- Summarize old turns.
+- Use task anchors.
+- Re-read source-of-truth files instead of keeping old copies in context.
+- Put critical facts near the beginning or end of context, not only in the middle. -->
+
+<!-- #### Session Memory
+
+Definition:
+
+Session memory persists during one conversation or task run, but may be discarded or summarized at the end.
+
+Typical contents:
+
+- Goal
+- Current plan
+- Files modified
+- Tests run
+- Errors encountered
+- Decisions made
+- Open questions
+- Current assumptions
+
+Simple shape:
+
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SessionState</span><span class="p">:</span>
+    <span class="n">goal</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">plan</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">decisions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">files_read</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">files_modified</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">failed_attempts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">next_step</span><span class="p">:</span> <span class="nb">str</span>
+</code></pre></div>
+
+Why this matters:
+
+Without explicit session state, the model may forget what it already tried, repeat failed searches, or contradict earlier decisions after compaction.
+
+[DEMO PLACEHOLDER: show an agent transcript where it repeats the same failed command. Then add a session-state summary and show how the next step changes.] -->
+
+<!-- #### Semantic Memory
+
+Definition:
+
+Semantic memory stores facts, concepts, preferences, and stable knowledge.
+
+Examples:
+
+- "The project uses FastAPI, not Flask."
+- "Tests live under `tests/unit` and `tests/integration`."
+- "The user prefers concise answers."
+- "Production deploys happen through GitHub Actions."
+- "The API rate limit is 100 requests/minute."
+
+Storage options:
+
+- Markdown files
+- SQLite tables
+- Vector database
+- Hybrid file plus vector index
+
+Best use:
+
+Semantic memory is best for stable, reusable facts. It should be concise, inspectable, and periodically deduplicated.
+
+Failure modes:
+
+- Stale facts: "The project uses Flask" after migration to FastAPI.
+- Overgeneralization: one local preference becomes a global rule.
+- Bad extraction: the agent stores an inferred fact as if it were confirmed.
+- Conflict: two memories disagree and no resolution policy exists.
+
+Good memory writing policy:
+
+- Store facts, not full conversations.
+- Mark source and date.
+- Separate confirmed facts from guesses.
+- Prefer small standalone observations.
+- Include scope: user-level, project-level, repo-level, task-level.
+
+Example:
+
+<div class="highlight"><pre><span></span><code>---
+type: project_convention
+scope: repo
+source: tests/conftest.py
+date: 2026-05-13
+<span class="gu">confidence: high</span>
+<span class="gu">---</span>
+
+The project uses pytest fixtures from <span class="sb">`tests/conftest.py`</span>; new integration tests should reuse <span class="sb">`client`</span> instead of constructing an app manually.
+``` --&gt;
+
+&lt;!-- #### Episodic Memory
+
+Definition:
+
+Episodic memory stores experiences: what happened, what was tried, what worked, what failed, and what lesson should transfer.
+
+Examples:
+
+<span class="k">-</span><span class="w"> </span>&quot;When fixing auth tests last session, the failing behavior came from cached JWKS keys, not token parsing.&quot;
+<span class="k">-</span><span class="w"> </span>&quot;Tried adding a database migration manually; CI failed because migrations must be generated by Alembic.&quot;
+<span class="k">-</span><span class="w"> </span>&quot;Search for config in <span class="sb">`src/settings.py`</span> was misleading; the runtime config is loaded from <span class="sb">`app/config/runtime.py`</span>.&quot;
+
+Episodic memory differs from semantic memory:
+
+<span class="k">-</span><span class="w"> </span>Semantic: &quot;Auth uses JWKS.&quot;
+<span class="k">-</span><span class="w"> </span>Episodic: &quot;Last time auth tests failed, the issue was stale JWKS cache; clear cache before assuming token validation is broken.&quot;
+
+Useful episode schema:
+
+```python
+class Episode:
+    task: str
+    context: str
+    approach: str
+    outcome: str  # success, failure, partial
+    key_actions: list[str]
+    lesson: str
+    artifacts: list[str]
+    timestamp: str
+</code></pre></div>
+
+When episodic memory helps:
+
+- Repeated workflows
+- Debugging recurring failures
+- Long-running projects
+- Personal assistants with repeated user patterns
+- Coding agents that work across multiple sessions
+
+When episodic memory hurts:
+
+- The previous situation looked similar but had a different cause.
+- The old solution was a hack.
+- The environment changed.
+- The memory was written after a failed run but retrieved as guidance.
+
+Teaching phrase:
+
+"Episodic memory is not a diary. It is a library of transferable lessons."
+
+[IMAGE PLACEHOLDER: side-by-side semantic vs episodic memory examples.] -->
+
+<!-- #### Procedural Memory
+
+Definition:
+
+Procedural memory stores reusable procedures: skills, playbooks, scripts, workflows, and agent-authored instructions.
+
+Examples:
+
+- `SKILL.md` for writing a database migration.
+- A debugging playbook for failing snapshot tests.
+- A release checklist.
+- A script that automates repetitive environment setup.
+
+Tie to Class 4:
+
+Skills are procedural memory packaged for reuse. The important question is whether skills are human-authored, agent-authored, or hybrid.
+
+Agent-authored procedural memory:
+
+After completing a task successfully, the agent writes a short skill:
+
+- When to use it
+- Preconditions
+- Steps
+- Common failure cases
+- Verification command
+
+Risk:
+
+An agent can write bad procedures. Procedural memory needs review or at least success-based gating.
+
+Good rule:
+
+Only promote a procedure into long-term procedural memory if it was used successfully and verified.
+
+---
+
+### 2.3 Implementation Patterns
+
+#### Pattern A: Eager Context Injection
+
+All memory is added to every prompt.
+
+Pros:
+
+- Simple
+- No retrieval miss
+- Good for tiny memory files
+
+Cons:
+
+- Expensive
+- Distracting
+- Does not scale
+- Stale information is always present
+
+Use when:
+
+- The memory is small and always relevant, such as a short project instruction file.
+
+#### Pattern B: Retrieval-Augmented Memory
+
+The agent searches memory using the current task and injects top-k results.
+
+Pros:
+
+- Scales better
+- Reduces token cost
+- Can handle large stores
+
+Cons:
+
+- Retrieval can miss key facts
+- Retrieved chunks can lack context
+- Similar but wrong memories are dangerous
+
+Design details:
+
+- Embed memory entries.
+- Add metadata filters by scope and type.
+- Use hybrid search: keyword plus embedding.
+- Re-rank retrieved memories.
+- Include why each memory was retrieved.
+- Cap the memory budget.
+
+Example context wrapper:
+
+<div class="highlight"><pre><span></span><code><span class="gu">## Retrieved Memory</span>
+Type: episodic
+Relevance: Previous task involved failing auth tests in this repo.
+Date: 2026-05-11
+Confidence: medium
+
+Lesson: Before editing token parsing, check whether JWKS cache is stale.
+</code></pre></div>
+
+#### Pattern C: On-Demand Memory Tool
+
+The agent has a `search_memory(query)` tool and decides when to call it.
+
+Pros:
+
+- Memory is not injected unless needed.
+- The agent can ask targeted queries.
+- Good for large stores.
+
+Cons:
+
+- The agent may forget to search memory.
+- The first step may be worse without recalled context.
+- Requires good tool description and retrieval design.
+
+Use in class discussion:
+
+This is the Hermes-style middle ground: memory exists, but it is not blindly injected.
+
+#### Pattern D: Hybrid Human-Readable Files Plus Index
+
+Store memories as Markdown or structured files, then index them for retrieval.
+
+Pros:
+
+- Human inspectable
+- Version-controllable
+- Easy to debug
+- Retrieval still scales
+
+Cons:
+
+- More engineering
+- Must keep index synced
+- Needs conflict and deletion policy
+
+Recommended for student coding-agent spine:
+
+- `PROJECT_NOTES.md` for semantic project knowledge
+- `DECISIONS.md` or append-only log for episodic decision history
+- `skills/` folder for procedural memory
+- Optional vector/SQLite index for retrieval 
+
+[DEMO PLACEHOLDER: build a tiny memory folder, then query it with keyword search and embedding search. Show one retrieval hit and one bad retrieval.]
+
+-->
+<!-- ---
+
+### 2.4 Consolidation and Forgetting
+
+Naive memory accumulation fails.
+
+Why:
+
+- The store grows linearly.
+- Duplicate facts pile up.
+- Old facts become false.
+- Low-value details crowd out high-value lessons.
+- Retrieval gets noisier.
+
+Memory needs a lifecycle:
+
+1. Observe
+2. Extract
+3. Store
+4. Retrieve
+5. Apply
+6. Update
+7. Consolidate
+8. Forget or archive
+
+#### Consolidation
+
+Consolidation turns raw traces into durable knowledge.
+
+Example:
+
+Raw trace:
+
+- Ran `pytest tests/test_auth.py`
+- Failed with `InvalidSignature`
+- Read `src/auth/jwks.py`
+- Cleared local cache
+- Tests passed
+
+Consolidated semantic memory:
+
+- "Auth tests can fail when JWKS cache is stale; clear test cache before changing token validation logic."
+
+Consolidated episodic memory:
+
+- "In May 2026, auth failure looked like token parsing but root cause was JWKS cache. The successful fix was clearing cache in test setup."
+
+Reflection prompt for session end:
+
+<div class="highlight"><pre><span></span><code>Review the completed session.
+
+Extract:
+1. Stable project facts worth remembering.
+2. Decisions made and why.
+3. Failed approaches that should not be repeated.
+4. Reusable procedures that could become skills.
+5. Facts that are uncertain and should not be stored yet.
+
+Write concise memories with scope, source, confidence, and date.
+</code></pre></div>
+
+#### Forgetting
+
+Forgetting is not deletion only. It can mean:
+
+- Delete
+- Archive
+- Lower retrieval priority
+- Mark stale
+- Merge duplicates
+- Replace with a higher-level summary
+
+Forgetting policies:
+
+- Time decay: old memories score lower.
+- Usefulness score: memories used successfully get promoted.
+- Contradiction detection: new confirmed facts supersede old ones.
+- Scope restriction: repo-specific facts do not leak into global user memory.
+- Human review: sensitive or high-impact memories require approval.
+
+Important point:
+
+Forgetting is a safety feature. An agent that never forgets can become increasingly wrong.
+
+[IMAGE PLACEHOLDER: memory lifecycle loop with consolidation and forgetting.]
+
+---
+
+### 2.5 Memory Evaluation
+
+Memory evaluation is harder than simple answer evaluation because success depends on whether the system remembered the right thing at the right time and ignored the wrong thing.
+
+Evaluate memory along these axes:
+
+- Recall: did it retrieve the needed memory?
+- Precision: did it avoid irrelevant memories?
+- Application: did the agent use the memory correctly?
+- Freshness: did it prefer current information over stale memory?
+- Safety: did it avoid storing sensitive or incorrect information?
+- Efficiency: did memory reduce steps, tokens, or failures?
+
+Benchmark design:
+
+Two-session task:
+
+- Session 1 gives information or creates experience.
+- Session 2 requires that information to solve the task efficiently.
+- Compare memory-enabled agent to no-memory baseline.
+
+Coding-agent example:
+
+Session 1:
+
+- Ask agent to add a small endpoint.
+- It discovers route conventions, test fixtures, and lint command.
+- At session end it writes project notes.
+
+Session 2:
+
+- Ask agent to add a similar endpoint.
+- Measure whether it reuses conventions without rediscovering everything.
+
+Metrics:
+
+- Success rate
+- Steps to completion
+- Tool calls
+- Tokens
+- Wall-clock time
+- Number of repeated failed actions
+- Correct memory writes
+- Incorrect memory writes
+
+Negative tests:
+
+- Change a convention after memory is written.
+- Add a misleading old memory.
+- Ask a task where old memory is irrelevant.
+- Verify that the agent does not force-fit memory.
+
+Good discussion question:
+
+If the memory-enabled agent succeeds faster but occasionally follows stale memories, is it better than the no-memory baseline?
+
+--- -->
+
+<h2 id="3-multi-agent-systems">3. Multi-Agent Systems</h2>
+<h3 id="31-why-multi-agent-systems-exist">3.1 Why Multi-Agent Systems Exist</h3>
+<p>A multi-agent system uses multiple model contexts or agents that coordinate to solve a task.</p>
+<p>Three real reasons multi-agent can help:</p>
+<ol>
+<li>Specialization</li>
+<li>Parallelism</li>
+<li>Adversarial or review dynamics</li>
+</ol>
+<p>Add a fourth practical reason:</p>
+<ol>
+<li>Context isolation</li>
+</ol>
+<p>Specialization:</p>
+<p>Different agents get different prompts, tools, permissions, or models.</p>
+<p>Examples:</p>
+<ul>
+<li>Researcher searches sources.</li>
+<li>Coder edits files.</li>
+<li>Reviewer critiques diff.</li>
+<li>Test-runner executes tests.</li>
+<li>Security reviewer checks risky changes.</li>
+</ul>
+<p>Parallelism:</p>
+<p>Independent subtasks run at the same time.</p>
+<p>Examples:</p>
+<ul>
+<li>Search frontend and backend in parallel.</li>
+<li>Generate multiple candidate solutions.</li>
+<li>Run independent benchmark shards.</li>
+<li>Have multiple workers attempt separate bugs.</li>
+</ul>
+<p>Adversarial dynamics:</p>
+<p>Agents improve output by challenging each other.</p>
+<p>Examples:</p>
+<ul>
+<li>Solver and critic.</li>
+<li>Solver, adversary, judge.</li>
+<li>Debate between candidate answers.</li>
+<li>Red-team agent attacks a plan.</li>
+</ul>
+<p>Context isolation:</p>
+<p>Each worker gets a fresh, focused context. Search noise, failed attempts, and long tool outputs do not pollute the orchestrator's context.</p>
+<p>Teaching phrase:</p>
+<p>"Often the win is not that the agents are smarter as a team. It is that each one is less distracted."</p>
+<p>[IMAGE PLACEHOLDER: single-agent context filled with search traces versus orchestrator receiving concise summaries from isolated workers.]</p>
+<hr />
+<h3 id="32-when-single-agent-is-better">3.2 When Single-Agent Is Better</h3>
+<p>Start with single-agent unless there is a clear reason not to.</p>
+<p>Single-agent is usually better when:</p>
+<ul>
+<li>The task is linear.</li>
+<li>One toolset is enough.</li>
+<li>Debuggability matters.</li>
+<li>Cost matters.</li>
+<li>Low latency matters.</li>
+<li>The task needs one coherent global judgment.</li>
+</ul>
+<p>Multi-agent adds:</p>
+<ul>
+<li>More prompts</li>
+<li>More LLM calls</li>
+<li>More handoff failures</li>
+<li>More state-management problems</li>
+<li>More places to hide bugs</li>
+<li>More latency</li>
+<li>More evaluation complexity</li>
+</ul>
+<p>Important reliability calculation:</p>
+<p>If each stage is 90% reliable and five stages must all succeed, total reliability is:</p>
+<div class="highlight"><pre><span></span><code>0.9^5 = 0.59049
+</code></pre></div>
+<p>So a chain of individually good agents can still be unreliable.</p>
+<p>Use this to make students skeptical of agent teams.</p>
+<hr />
+<h3 id="33-multi-agent-architecture-patterns">3.3 Multi-Agent Architecture Patterns</h3>
+<h4 id="pattern-1-supervisor-and-workers">Pattern 1: Supervisor and Workers</h4>
+<p>Shape:</p>
+<div class="highlight"><pre><span></span><code>User -&gt; Supervisor -&gt; Worker A
+                  -&gt; Worker B
+                  -&gt; Worker C
+       Supervisor aggregates final answer
+</code></pre></div>
+<p>Use when:</p>
+<ul>
+<li>Task requires dynamic routing.</li>
+<li>Supervisor needs global state.</li>
+<li>Workers have distinct skills/tools.</li>
+</ul>
+<p>Pros:</p>
+<ul>
+<li>Flexible</li>
+<li>Easy mental model</li>
+<li>Good for coding-agent orchestration</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>Supervisor becomes bottleneck.</li>
+<li>Supervisor context can rot.</li>
+<li>Bad delegation ruins worker performance.</li>
+</ul>
+<p>Coding-agent example:</p>
+<ul>
+<li>Orchestrator decomposes task.</li>
+<li>Explorer investigates codebase.</li>
+<li>Implementer edits.</li>
+<li>Reviewer inspects diff.</li>
+<li>Test-runner runs commands and summarizes failures.</li>
+</ul>
+<h4 id="pattern-2-sequential-pipeline">Pattern 2: Sequential Pipeline</h4>
+<p>Shape:</p>
+<div class="highlight"><pre><span></span><code>Planner -&gt; Architect -&gt; Implementer -&gt; Reviewer -&gt; Tester
+</code></pre></div>
+<p>Use when:</p>
+<ul>
+<li>Workflow is well-known.</li>
+<li>Each phase has clear input/output.</li>
+<li>You want predictability.</li>
+</ul>
+<p>Pros:</p>
+<ul>
+<li>Simple</li>
+<li>Easy to evaluate each stage</li>
+<li>Good for production workflows</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>Rigid</li>
+<li>Early errors propagate</li>
+<li>Feedback loops must be added explicitly</li>
+</ul>
+<p>Example:</p>
+<p>MetaGPT-style software company simulation: product manager writes requirements, architect designs, engineer implements, QA reviews.</p>
+<h4 id="pattern-3-graph-with-conditional-edges">Pattern 3: Graph with Conditional Edges</h4>
+<p>Shape:</p>
+<div class="highlight"><pre><span></span><code>Planner -&gt; Coder -&gt; Reviewer
+              ^        |
+              |        v
+          needs changes?
+</code></pre></div>
+<p>Use when:</p>
+<ul>
+<li>Work needs cycles.</li>
+<li>Reviewer can send task back.</li>
+<li>State transitions must be explicit.</li>
+</ul>
+<p>Pros:</p>
+<ul>
+<li>More controllable</li>
+<li>Debuggable</li>
+<li>Good fit for LangGraph-style systems</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>Requires upfront graph design.</li>
+<li>Too much structure can be brittle.</li>
+</ul>
+<h4 id="pattern-4-debate-or-adversarial-system">Pattern 4: Debate or Adversarial System</h4>
+<p>Shape:</p>
+<div class="highlight"><pre><span></span><code>Solver A -&gt; argues answer
+Solver B -&gt; critiques or proposes alternative
+Judge -&gt; selects or synthesizes
+</code></pre></div>
+<p>Use when:</p>
+<ul>
+<li>Reasoning quality matters.</li>
+<li>There are multiple plausible answers.</li>
+<li>Critique is cheap relative to failure.</li>
+</ul>
+<p>Pros:</p>
+<ul>
+<li>Can catch reasoning errors.</li>
+<li>Useful for factuality and math reasoning.</li>
+<li>Natural fit with LLM-as-judge eval.</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>Can amplify confident nonsense.</li>
+<li>Judge can be biased.</li>
+<li>Expensive if many debate rounds.</li>
+</ul>
+<p>Class lab:</p>
+<p>Implement solver-adversary-judge on math reasoning and compare against a single-agent baseline with equal total compute.</p>
+<h4 id="pattern-5-parallel-fleet">Pattern 5: Parallel Fleet</h4>
+<p>Shape:</p>
+<div class="highlight"><pre><span></span><code>Planner -&gt; Worker 1
+        -&gt; Worker 2
+        -&gt; Worker 3
+Aggregator -&gt; merge results
+</code></pre></div>
+<p>Use when:</p>
+<ul>
+<li>Subtasks are independent.</li>
+<li>Latency matters.</li>
+<li>You can isolate workspaces.</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li>Run three codebase explorers on different modules.</li>
+<li>Generate multiple candidate fixes in separate git worktrees.</li>
+<li>Search several data sources at once.</li>
+</ul>
+<p>Pros:</p>
+<ul>
+<li>Faster wall-clock time.</li>
+<li>Diverse solutions.</li>
+<li>Good use of independent context windows.</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>Merge conflicts.</li>
+<li>Duplicate work.</li>
+<li>Aggregator must judge quality.</li>
+<li>More infrastructure.</li>
+</ul>
+<h4 id="pattern-6-classifier-based-routing">Pattern 6: Classifier-Based Routing</h4>
+<p>Shape:</p>
+<div class="highlight"><pre><span></span><code>Input -&gt; classifier/router -&gt; selected specialist
+</code></pre></div>
+<p>Use when:</p>
+<ul>
+<li>Routing categories are stable.</li>
+<li>You want lower latency and cost than LLM supervisor routing.</li>
+<li>You have good descriptions or training examples.</li>
+</ul>
+<p>Pros:</p>
+<ul>
+<li>Fast</li>
+<li>More deterministic</li>
+<li>Less supervisor context rot</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>Less flexible</li>
+<li>Needs maintenance as specialists change</li>
+</ul>
+<hr />
+<h3 id="34-communication-between-agents">3.4 Communication Between Agents</h3>
+<p>Agents can communicate through:</p>
+<ul>
+<li>Natural language messages</li>
+<li>Structured JSON</li>
+<li>Shared state objects</li>
+<li>Typed artifacts</li>
+<li>Shared blackboard or memory stream</li>
+<li>Files</li>
+<li>Tool calls</li>
+<li>Protocols such as MCP or A2A-style handoffs</li>
+</ul>
+<p>Important distinction:</p>
+<p>Communication format determines failure modes.</p>
+<p>Natural language:</p>
+<ul>
+<li>Flexible</li>
+<li>Easy for LLMs</li>
+<li>Ambiguous</li>
+<li>Hard to validate</li>
+</ul>
+<p>Structured messages:</p>
+<ul>
+<li>Easier to validate</li>
+<li>Better for production</li>
+<li>More schema design work</li>
+<li>Can be too rigid</li>
+</ul>
+<p>Shared state:</p>
+<ul>
+<li>Good for graph workflows</li>
+<li>Easy to checkpoint</li>
+<li>Risk of agents overwriting each other</li>
+</ul>
+<p>Artifact passing:</p>
+<ul>
+<li>Good for pipelines</li>
+<li>Each stage produces a typed output</li>
+<li>Clear interface between roles</li>
+</ul>
+<p>For coding agents, prefer concise handoff artifacts:</p>
+<p>Explorer output should include:</p>
+<ul>
+<li>Files inspected</li>
+<li>Relevant findings</li>
+<li>Exact locations</li>
+<li>Uncertainties</li>
+<li>Suggested next files</li>
+</ul>
+<p>Implementer output should include:</p>
+<ul>
+<li>Files changed</li>
+<li>Summary of behavior change</li>
+<li>Tests run</li>
+<li>Remaining risk</li>
+</ul>
+<p>Reviewer output should include:</p>
+<ul>
+<li>Blocking issues</li>
+<li>Non-blocking suggestions</li>
+<li>Test gaps</li>
+<li>Approval or requested changes</li>
+</ul>
+<p>Bad handoff:</p>
+<div class="highlight"><pre><span></span><code>I looked around and auth is complicated. You should probably check the token code.
+</code></pre></div>
+<p>Good handoff:</p>
+<div class="highlight"><pre><span></span><code>Relevant files:
+- `src/auth/jwks.py`: fetches and caches signing keys.
+- `src/auth/middleware.py`: validates bearer tokens.
+- `tests/test_auth.py`: failing test uses expired fixture token.
+
+Finding:
+The route failure is likely not middleware registration. The request reaches `validate_token`, then fails on JWKS cache lookup.
+
+Uncertainty:
+I did not inspect production config loading.
+</code></pre></div>
+<p>[DEMO PLACEHOLDER: show bad handoff versus structured handoff and ask students which one the implementer can actually use.]</p>
+<hr />
+<h3 id="35-role-design">3.5 Role Design</h3>
+<p>A role prompt is a specification, not a costume.</p>
+<p>Weak role:</p>
+<p>"You are a brilliant senior engineer."</p>
+<p>Better role:</p>
+<p>"You are the codebase explorer. Your job is to answer where relevant code lives and how it works. You may read files and search text. Do not edit files. Return concise findings with file paths and line references. Do not include full file contents."</p>
+<p>Role design should define:</p>
+<ul>
+<li>Goal</li>
+<li>Allowed tools</li>
+<li>Forbidden actions</li>
+<li>Input contract</li>
+<li>Output contract</li>
+<li>Stop condition</li>
+<li>Quality bar</li>
+<li>Escalation conditions</li>
+</ul>
+<p>Good specialist roles have narrow toolsets.</p>
+<p>Example:</p>
+<ul>
+<li>Explorer: <code>rg</code>, <code>read_file</code>, <code>list_dir</code></li>
+<li>Implementer: <code>read_file</code>, <code>edit_file</code>, maybe no test execution</li>
+<li>Test-runner: <code>run_tests</code>, <code>read_logs</code>, no editing</li>
+<li>Reviewer: <code>git_diff</code>, <code>read_file</code>, no editing</li>
+</ul>
+<p>Why narrow tools help:</p>
+<ul>
+<li>Smaller prompt</li>
+<li>Less tool-selection confusion</li>
+<li>Reduced blast radius</li>
+<li>Easier eval</li>
+<li>Better security boundary</li>
+</ul>
+<hr />
+<h3 id="36-context-isolation">3.6 Context Isolation</h3>
+<p>This is the most important practical multi-agent idea.</p>
+<p>Single-agent problem:</p>
+<p>The main agent explores many files, runs commands, sees errors, reads irrelevant docs, changes plan, and carries all of that noise forward. As the context grows, irrelevant but semantically related facts become distractors.</p>
+<p>Multi-agent solution:</p>
+<p>Delegate noisy phases to fresh contexts. The worker does messy exploration and returns only a compact summary.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">explore_codebase</span><span class="p">(</span><span class="n">question</span><span class="p">):</span>
+    <span class="n">worker</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+        <span class="n">role</span><span class="o">=</span><span class="s2">&quot;code explorer&quot;</span><span class="p">,</span>
+        <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">rg</span><span class="p">,</span> <span class="n">read_file</span><span class="p">],</span>
+        <span class="n">instruction</span><span class="o">=</span><span class="s2">&quot;Return only relevant files, findings, and uncertainties.&quot;</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">worker</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
+</code></pre></div>
+<p>The orchestrator should not receive:</p>
+<ul>
+<li>Every file read</li>
+<li>Every failed search query</li>
+<li>Full stack traces unless needed</li>
+<li>The worker's hidden reasoning</li>
+</ul>
+<p>The orchestrator should receive:</p>
+<ul>
+<li>Answer</li>
+<li>Evidence</li>
+<li>Confidence</li>
+<li>Next recommended action</li>
+<li>Uncertainties</li>
+</ul>
+<p>Important nuance:</p>
+<p>Context isolation fails if the worker returns a verbose transcript. Then you paid for another agent without reducing context pollution.</p>
+<p>[IMAGE PLACEHOLDER: context-isolation flow: orchestrator task -&gt; explorer sandbox -&gt; concise evidence summary -&gt; orchestrator.]</p>
+<hr />
+<h3 id="37-multi-agent-failure-modes">3.7 Multi-Agent Failure Modes</h3>
+<h4 id="coordination-overhead">Coordination Overhead</h4>
+<p>Agents spend more effort explaining work to each other than doing the work.</p>
+<p>Symptoms:</p>
+<ul>
+<li>Long handoffs</li>
+<li>Repeated clarifying messages</li>
+<li>Supervisor keeps re-planning</li>
+<li>Workers duplicate each other</li>
+</ul>
+<p>Mitigation:</p>
+<ul>
+<li>Clear input/output contracts</li>
+<li>Fewer agents</li>
+<li>Shared task state</li>
+<li>Typed artifacts</li>
+</ul>
+<h4 id="error-propagation">Error Propagation</h4>
+<p>One worker produces a wrong summary; downstream agents trust it.</p>
+<p>Mitigation:</p>
+<ul>
+<li>Include evidence in handoffs.</li>
+<li>Reviewer checks critical claims.</li>
+<li>Require file paths, commands, or citations.</li>
+<li>Let downstream agents challenge upstream assumptions.</li>
+</ul>
+<h4 id="context-fragmentation">Context Fragmentation</h4>
+<p>No agent has enough global context to make the right decision.</p>
+<p>Mitigation:</p>
+<ul>
+<li>Supervisor keeps a compact global state.</li>
+<li>Workers receive sufficient task background.</li>
+<li>Critical constraints are repeated in every worker prompt.</li>
+</ul>
+<h4 id="role-confusion">Role Confusion</h4>
+<p>Workers perform actions outside their responsibility.</p>
+<p>Mitigation:</p>
+<ul>
+<li>Narrow tools.</li>
+<li>Explicit forbidden actions.</li>
+<li>Validate output.</li>
+<li>Use separate permissions.</li>
+</ul>
+<h4 id="premature-delegation">Premature Delegation</h4>
+<p>The orchestrator delegates before understanding the task.</p>
+<p>Mitigation:</p>
+<ul>
+<li>Require the orchestrator to identify dependencies first.</li>
+<li>Delegate only independent or bounded work.</li>
+<li>Keep blocking work local when needed.</li>
+</ul>
+<h4 id="merge-conflicts-and-state-conflicts">Merge Conflicts and State Conflicts</h4>
+<p>Parallel implementers edit overlapping files.</p>
+<p>Mitigation:</p>
+<ul>
+<li>Assign disjoint ownership.</li>
+<li>Use separate worktrees.</li>
+<li>Integrate intentionally.</li>
+<li>Have one final reviewer.</li>
+</ul>
+<h4 id="judge-failure">Judge Failure</h4>
+<p>In debate systems, the judge picks the most persuasive answer rather than the correct one.</p>
+<p>Mitigation:</p>
+<ul>
+<li>Use deterministic verification where possible.</li>
+<li>Calibrate judge.</li>
+<li>Require structured rubrics.</li>
+<li>Use hidden reference tests or execution for code/math.</li>
+</ul>
+<hr />
+<h3 id="38-multi-agent-evaluation">3.8 Multi-Agent Evaluation</h3>
+<p>Never compare multi-agent to single-agent with unlimited extra compute. That only proves spending more tokens can help.</p>
+<p>Fair comparison:</p>
+<ul>
+<li>Same task set</li>
+<li>Same total token or dollar budget</li>
+<li>Same model family or documented model differences</li>
+<li>Same time budget if latency matters</li>
+<li>Same tool access unless testing tool specialization</li>
+</ul>
+<p>Metrics:</p>
+<ul>
+<li>Task success rate</li>
+<li>Cost per success</li>
+<li>Tokens per success</li>
+<li>Wall-clock time</li>
+<li>Number of tool calls</li>
+<li>Number of handoffs</li>
+<li>Handoff error rate</li>
+<li>Duplicate work</li>
+<li>Reviewer catch rate</li>
+<li>Regression rate</li>
+</ul>
+<p>Questions for analysis:</p>
+<ul>
+<li>Did multi-agent help through specialization?</li>
+<li>Did it help through parallelism?</li>
+<li>Did it help through adversarial critique?</li>
+<li>Did it help through context isolation?</li>
+<li>Or did it only use more tokens?</li>
+</ul>
+<p>Coding-agent eval:</p>
+<p>Compare Class 6 single-agent-with-memory against Class 7 orchestrator plus specialists on the same feature task.</p>
+<p>Hypothesis to test:</p>
+<p>The main benefit will be context isolation, not role names.</p>
+<p>[DEMO PLACEHOLDER: run one small task with a single agent and one with explorer/implementer/reviewer. Count tokens, steps, and whether the final diff is correct.]</p>
+<hr />
+<h2 id="4-connecting-memory-and-multi-agent-systems">4. Connecting Memory and Multi-Agent Systems</h2>
+<p>Memory and multi-agent orchestration interact.</p>
+<p>Questions:</p>
+<ul>
+<li>Does every agent share the same memory?</li>
+<li>Does each worker have private memory?</li>
+<li>Can workers write long-term memory?</li>
+<li>Does the supervisor approve memory writes?</li>
+<li>Are memories scoped by role?</li>
+</ul>
+<p>Recommended architecture for students:</p>
+<ul>
+<li>Supervisor owns global task state.</li>
+<li>Workers get read-only relevant memory.</li>
+<li>Workers can propose memory writes.</li>
+<li>Supervisor or reflection step commits memory.</li>
+<li>Procedural memories require successful verification before promotion.</li>
+</ul>
+<p>Why:</p>
+<p>If every worker can write persistent memory freely, the system accumulates unreviewed, inconsistent beliefs.</p>
+<p>Memory scopes:</p>
+<ul>
+<li>User memory: stable preferences and user facts.</li>
+<li>Project memory: architecture, conventions, commands.</li>
+<li>Task memory: current plan and transient findings.</li>
+<li>Worker memory: local scratchpad, discarded after task.</li>
+<li>Procedural memory: skills/playbooks, reviewed or success-gated.</li>
+</ul>
+<p>[IMAGE PLACEHOLDER: orchestrator in center with shared project memory, workers with private scratchpads, and a reflection step that writes approved memories.]</p>
+<hr />
+<h2 id="5-case-studies-to-discuss">5. Case Studies to Discuss</h2>
+<h3 id="hermes-agent">Hermes Agent</h3>
+<p>Use for memory discussion.</p>
+<p>Interesting design:</p>
+<ul>
+<li>Stores cross-session history.</li>
+<li>Uses SQLite/FTS-style retrieval and summarization.</li>
+<li>Exposes memory as on-demand recall rather than injecting everything.</li>
+<li>Learns reusable skills from successful tasks.</li>
+</ul>
+<p>Teaching angle:</p>
+<p>Hermes treats memory as something the agent can query and build on. It is closer to an engineered long-term workspace than to a chatbot transcript.</p>
+<p>Critical question:</p>
+<p>Should an agent be allowed to write its own skills? If yes, what verification threshold is required?</p>
+<h3 id="openclaw">OpenClaw</h3>
+<p>Use for memory plus multi-channel/multi-agent discussion.</p>
+<p>Interesting design:</p>
+<ul>
+<li>Filesystem-native memory.</li>
+<li>Prompt files such as agent instructions and skill files.</li>
+<li>Scheduled/proactive behavior.</li>
+<li>Delegates coding work to external coding agents.</li>
+</ul>
+<p>Teaching angle:</p>
+<p>OpenClaw shows that "multi-agent" may look like an orchestrator calling another agent process, not a fancy in-process debate framework.</p>
+<p>Critical question:</p>
+<p>Is shelling out to Codex or Claude Code a multi-agent architecture? The practical answer may matter more than the label: there is delegation, context isolation, separate tool policy, and separate execution state.</p>
+<h3 id="claude-code">Claude Code</h3>
+<p>Use as production reference.</p>
+<p>Interesting design:</p>
+<ul>
+<li>Strong tool loop.</li>
+<li>Project instruction files.</li>
+<li>Subagent/task delegation patterns.</li>
+<li>Human-in-the-loop safety.</li>
+</ul>
+<p>Teaching angle:</p>
+<p>Students should compare their coding-agent spine against a production-grade coding agent: what did they implement, what did they skip, and which skipped pieces are essential?</p>
+<h3 id="pi">Pi</h3>
+<p>Use as counterpoint.</p>
+<p>Interesting design:</p>
+<ul>
+<li>Minimal structure.</li>
+<li>Code-first self-extension philosophy.</li>
+<li>Skepticism toward plugin-heavy infrastructure.</li>
+</ul>
+<p>Teaching angle:</p>
+<p>Pi is useful because it challenges the assumption that more architecture is better.</p>
+<p>Critical question:</p>
+<p>When is it cleaner to ask the agent to write code than to build a plugin/skill/multi-agent layer?</p>
+<hr />
+<h2 id="6-suggested-demos">6. Suggested Demos</h2>
+<h3 id="demo-1-memory-retrieval-can-help-or-hurt">Demo 1: Memory Retrieval Can Help or Hurt</h3>
+<p>Goal:</p>
+<p>Show that memory is useful only when retrieval is precise.</p>
+<p>Setup:</p>
+<ul>
+<li>Create five memory entries.</li>
+<li>Three are relevant to a task.</li>
+<li>One is stale.</li>
+<li>One is semantically similar but wrong.</li>
+</ul>
+<p>Run:</p>
+<ul>
+<li>Ask the agent to solve the task with all five injected.</li>
+<li>Ask again with only top relevant memories.</li>
+<li>Ask again with no memory.</li>
+</ul>
+<p>Discussion:</p>
+<ul>
+<li>Did memory reduce work?</li>
+<li>Did bad memory mislead?</li>
+<li>How should the memory system rank or filter?</li>
+</ul>
+<h3 id="demo-2-session-end-consolidation">Demo 2: Session-End Consolidation</h3>
+<p>Goal:</p>
+<p>Show the difference between raw transcript and useful memory.</p>
+<p>Setup:</p>
+<ul>
+<li>Give students a short agent trace.</li>
+<li>Ask them what should be stored.</li>
+</ul>
+<p>Output:</p>
+<ul>
+<li>Semantic memory</li>
+<li>Episodic memory</li>
+<li>Procedural memory candidate</li>
+<li>Nothing-to-store items</li>
+</ul>
+<p>Discussion:</p>
+<p>Most of the transcript should not become memory.</p>
+<h3 id="demo-3-single-agent-vs-explorer-subagent">Demo 3: Single Agent vs Explorer Subagent</h3>
+<p>Goal:</p>
+<p>Show context isolation.</p>
+<p>Setup:</p>
+<ul>
+<li>Use a small repo.</li>
+<li>Task: "Find where authentication errors are handled and propose the likely file to edit."</li>
+</ul>
+<p>Run:</p>
+<ul>
+<li>Single agent reads/searches directly.</li>
+<li>Orchestrator delegates search to explorer.</li>
+</ul>
+<p>Compare:</p>
+<ul>
+<li>Main context size</li>
+<li>Quality of final summary</li>
+<li>Number of irrelevant files in main context</li>
+</ul>
+<h3 id="demo-4-solver-adversary-judge">Demo 4: Solver-Adversary-Judge</h3>
+<p>Goal:</p>
+<p>Show multi-agent debate tradeoffs.</p>
+<p>Setup:</p>
+<ul>
+<li>Use a few reasoning/math questions.</li>
+<li>Single solver baseline.</li>
+<li>Solver plus adversary plus judge.</li>
+</ul>
+<p>Compare:</p>
+<ul>
+<li>Accuracy</li>
+<li>Token cost</li>
+<li>Failure examples</li>
+</ul>
+<p>Discussion:</p>
+<p>Did adversarial pressure improve correctness, or just create more persuasive wrong answers?</p>
+<h3 id="demo-5-coding-agent-orchestrator">Demo 5: Coding-Agent Orchestrator</h3>
+<p>Goal:</p>
+<p>Show Class 7 spine architecture.</p>
+<p>Roles:</p>
+<ul>
+<li>Orchestrator</li>
+<li>Explorer</li>
+<li>Implementer</li>
+<li>Reviewer</li>
+<li>Test-runner</li>
+</ul>
+<p>Task:</p>
+<p>Small feature requiring code exploration, implementation, and tests.</p>
+<p>Measure:</p>
+<ul>
+<li>Success</li>
+<li>Token budget</li>
+<li>Handoffs</li>
+<li>Reviewer catches</li>
+<li>Test failures fixed</li>
+</ul>
+<hr />
+<h2 id="7-image-placeholder-list">7. Image Placeholder List</h2>
+<p>Use these when creating slides:</p>
+<ol>
+<li>[IMAGE PLACEHOLDER] Memory and multi-agent as two forms of context management.</li>
+<li>[IMAGE PLACEHOLDER] Memory hierarchy: working, session, semantic, episodic, procedural.</li>
+<li>[IMAGE PLACEHOLDER] Semantic vs episodic memory examples.</li>
+<li>[IMAGE PLACEHOLDER] Memory lifecycle: observe, extract, store, retrieve, apply, consolidate, forget.</li>
+<li>[IMAGE PLACEHOLDER] File-based memory plus vector index hybrid architecture.</li>
+<li>[IMAGE PLACEHOLDER] Single-agent context pollution versus subagent context isolation.</li>
+<li>[IMAGE PLACEHOLDER] Supervisor-worker architecture.</li>
+<li>[IMAGE PLACEHOLDER] Sequential pipeline architecture.</li>
+<li>[IMAGE PLACEHOLDER] Debate architecture: solver, adversary, judge.</li>
+<li>[IMAGE PLACEHOLDER] Orchestrator with shared memory and worker scratchpads.</li>
+<li>[IMAGE PLACEHOLDER] Reliability compounding: 0.9 reliability across five stages becomes about 59%.</li>
+<li>[IMAGE PLACEHOLDER] Coding-agent spine evolution from read-only explorer to multi-agent evaluated system.</li>
+</ol>
+<hr />
+<h2 id="8-discussion-questions">8. Discussion Questions</h2>
+<p>Memory:</p>
+<ul>
+<li>What is the smallest memory system that would improve your coding agent?</li>
+<li>Which facts should be global user memory versus project memory?</li>
+<li>Should memory writes require user approval?</li>
+<li>What should happen when memory conflicts with current repo evidence?</li>
+<li>Is vector search enough, or do we need structured metadata?</li>
+</ul>
+<p>Multi-agent:</p>
+<ul>
+<li>When is a second agent better than a second tool call?</li>
+<li>Is role specialization real, or mostly prompt theater?</li>
+<li>What should a worker return to an orchestrator?</li>
+<li>How would you detect duplicate work across workers?</li>
+<li>Should a reviewer agent have edit permission?</li>
+</ul>
+<p>Through-line:</p>
+<ul>
+<li>Did adding memory impose useful structure or create stale constraints?</li>
+<li>Did adding multiple agents impose useful structure or create coordination overhead?</li>
+<li>What empirical result would convince you to remove the extra structure?</li>
+</ul>
+<hr />
+<h2 id="9-lab-framing">9. Lab Framing</h2>
+<h3 id="memory-lab">Memory Lab</h3>
+<p>Build an agent with persistent memory across sessions.</p>
+<p>Required components:</p>
+<ul>
+<li>SQLite or file store for structured memories.</li>
+<li>Optional vector store for semantic retrieval.</li>
+<li>Reflection step at session end.</li>
+<li>Retrieval step at session start.</li>
+<li>Memory budget in the prompt.</li>
+</ul>
+<p>Task:</p>
+<ul>
+<li>Session 1: agent learns project conventions while solving a task.</li>
+<li>Session 2: new task depends on those conventions.</li>
+</ul>
+<p>Compare:</p>
+<ul>
+<li>No-memory baseline</li>
+<li>Memory-enabled agent</li>
+</ul>
+<p>Report:</p>
+<ul>
+<li>Success rate</li>
+<li>Steps</li>
+<li>Tokens</li>
+<li>Retrieved memories</li>
+<li>Incorrect memories</li>
+<li>Whether memory actually changed behavior</li>
+</ul>
+<h3 id="multi-agent-lab">Multi-Agent Lab</h3>
+<p>Build a solver-adversary-judge system or coding-agent orchestrator.</p>
+<p>Option A: reasoning benchmark</p>
+<ul>
+<li>Single solver baseline.</li>
+<li>Solver-adversary-judge.</li>
+<li>Same total compute budget.</li>
+</ul>
+<p>Option B: coding-agent spine</p>
+<ul>
+<li>Orchestrator</li>
+<li>Explorer</li>
+<li>Implementer</li>
+<li>Reviewer</li>
+<li>Test-runner</li>
+</ul>
+<p>Compare:</p>
+<ul>
+<li>Single-agent Class 6 system</li>
+<li>Multi-agent Class 7 system</li>
+</ul>
+<p>Report:</p>
+<ul>
+<li>Did multi-agent help?</li>
+<li>Why did it help?</li>
+<li>What failed?</li>
+<li>What would you remove?</li>
+</ul>
+<hr />
+<h2 id="10-closing-synthesis">10. Closing Synthesis</h2>
+<p>End with these claims:</p>
+<ol>
+<li>Memory is not storage. Memory is storage plus retrieval plus update plus forgetting.</li>
+<li>Multi-agent is not magic teamwork. It is context partitioning plus communication overhead.</li>
+<li>The best agent systems often look boring: small prompts, narrow tools, explicit state, clear handoffs, measured evals.</li>
+<li>Add structure only when it solves a measured problem: repeated rediscovery, stale context, tool overload, lack of verification, or parallelizable work.</li>
+<li>The right question is always empirical: did this structure improve success per dollar, success per minute, or reliability?</li>
+</ol>
+<p>Final prompt for students:</p>
+<p>"For your own coding agent, identify one place where memory should help and one place where a subagent should help. Then design the eval that could prove you wrong."</p>
+<hr />
+<h2 id="11-may-2026-literature-and-web-update">11. May 2026 Literature and Web Update</h2>
+<p>Use this section to update the lecture for the current state of the field as of May 2026.</p>
+<p>The short version:</p>
+<ul>
+<li>Memory has moved from "vector DB attached to a chatbot" toward managed memory layers, temporal knowledge graphs, explicit memory blocks, and agent-controlled memory tools.</li>
+<li>Multi-agent systems have moved from demo-heavy group chats toward narrow, production patterns: orchestrator-worker systems, read-only subagents, handoffs, concurrent workers, and explicit workflow graphs.</li>
+<li>Enterprise deployments now emphasize identity, access control, audit logs, tracing, tool guardrails, data residency, and protocol boundaries as much as prompts.</li>
+<li>The most useful teaching stance is no longer "single-agent or multi-agent?" It is "which context should hold which information, which actor is allowed to act, and what evidence proves the architecture improves reliability per cost?"</li>
+</ul>
+<h3 id="111-literature-map-for-memory">11.1 Literature Map for Memory</h3>
+<h4 id="memgpt-letta-memory-as-virtual-context-management">MemGPT / Letta: Memory as Virtual Context Management</h4>
+<p>Core idea:</p>
+<p>MemGPT framed LLM memory as an operating-system-like problem: the model has limited fast memory, so the agent needs mechanisms for moving information between context and external storage.</p>
+<p>Teaching use:</p>
+<ul>
+<li>Use MemGPT to introduce memory hierarchy.</li>
+<li>Then show Letta as the production evolution: core memory blocks plus archival memory.</li>
+</ul>
+<p>Implementation details to teach:</p>
+<ul>
+<li>Core memory blocks are always visible in the agent context.</li>
+<li>Archival memory is searched on demand.</li>
+<li>Memory tools let the agent insert, replace, or rethink memory.</li>
+<li>Developers can programmatically manage memory through SDKs.</li>
+</ul>
+<p>Important production distinction:</p>
+<ul>
+<li>Always-visible memory should be small, stable, and high-value.</li>
+<li>Archival memory should hold larger, less frequently needed facts, documents, and historical details.</li>
+</ul>
+<p>Enterprise analogy:</p>
+<ul>
+<li>Core memory is like the employee's current role brief and active project brief.</li>
+<li>Archival memory is like a searchable enterprise knowledge base.</li>
+</ul>
+<p>Source notes:</p>
+<ul>
+<li>MemGPT paper: "MemGPT: Towards LLMs as Operating Systems" (2023).</li>
+<li>Letta docs describe memory blocks as persistent context sections and archival memory as semantically searchable long-term storage queried by tools.</li>
+</ul>
+<h4 id="generative-agents-memory-stream-importance-reflection">Generative Agents: Memory Stream, Importance, Reflection</h4>
+<p>Core idea:</p>
+<p>Generative Agents used a memory stream where experiences are stored, scored, retrieved, and periodically reflected on to produce higher-level beliefs.</p>
+<p>Teaching use:</p>
+<ul>
+<li>Use this paper to explain why raw events are not enough.</li>
+<li>The key lesson is consolidation: many small observations become fewer higher-level memories.</li>
+</ul>
+<p>Implementation details to teach:</p>
+<ul>
+<li>Store observations with timestamps.</li>
+<li>Score relevance, recency, and importance.</li>
+<li>Retrieve memories by a combined score, not semantic similarity alone.</li>
+<li>Use reflection to synthesize recurring patterns.</li>
+</ul>
+<p>Enterprise adaptation:</p>
+<ul>
+<li>For support agents, raw tickets become account-level patterns.</li>
+<li>For sales agents, raw conversations become customer preferences and buying signals.</li>
+<li>For coding agents, raw traces become project conventions and known failure modes.</li>
+</ul>
+<p>Risk:</p>
+<p>Reflection can invent patterns that are not true. In enterprise systems, reflection output should carry provenance and confidence.</p>
+<h4 id="zep-temporal-knowledge-graphs">Zep: Temporal Knowledge Graphs</h4>
+<p>Core idea:</p>
+<p>Zep models memory as a temporal knowledge graph. It stores entities, facts, relationships, and validity intervals, including when facts become invalid.</p>
+<p>Teaching use:</p>
+<ul>
+<li>Use Zep to explain why enterprise memory is often not just "retrieve similar chunks."</li>
+<li>Enterprise facts change: a customer changes plan, an owner changes, a policy expires, a project migrates.</li>
+</ul>
+<p>Implementation details to teach:</p>
+<ul>
+<li>Nodes represent entities.</li>
+<li>Edges represent facts and relationships.</li>
+<li>Facts can become invalid without being erased.</li>
+<li>Retrieval returns a memory context string optimized for the current task.</li>
+<li>User graphs and group graphs allow user-specific and shared memory.</li>
+</ul>
+<p>Enterprise adaptation:</p>
+<ul>
+<li>Customer support: "Customer is on Enterprise plan" should have a validity period.</li>
+<li>HR: "Employee reports to X" changes over time.</li>
+<li>Finance: "Account owner" and "risk status" must be current and auditable.</li>
+<li>Coding: "This repo uses Flask" may become invalid after a migration to FastAPI.</li>
+</ul>
+<p>Key lesson:</p>
+<p>Temporal memory is a better fit than plain vector search when correctness depends on what was true at a specific time.</p>
+<h4 id="mem0-managed-memory-layer-and-graph-based-memory">Mem0: Managed Memory Layer and Graph-Based Memory</h4>
+<p>Core idea:</p>
+<p>Mem0 positions memory as reusable infrastructure for agents and apps: add interactions, extract memories, retrieve relevant memory later, and manage governance centrally.</p>
+<p>Teaching use:</p>
+<ul>
+<li>Use Mem0 to show the "memory-as-a-service" product direction.</li>
+<li>Useful for explaining build-vs-buy tradeoffs.</li>
+</ul>
+<p>Implementation details to teach:</p>
+<ul>
+<li>SDK call to add user/assistant messages.</li>
+<li>Search with filters such as <code>user_id</code>.</li>
+<li>Managed vector store, graph services, rerankers, governance, and audit logs.</li>
+<li>Open-source/self-hosted options for data-control requirements.</li>
+</ul>
+<p>Enterprise adaptation:</p>
+<ul>
+<li>Good fit when many agents need shared user or account continuity.</li>
+<li>Good fit when teams do not want to build memory extraction, deduplication, and retrieval from scratch.</li>
+<li>Be careful with regulated data: memory ingestion policy matters more than SDK convenience.</li>
+</ul>
+<h4 id="langgraph-memory-and-persistence">LangGraph Memory and Persistence</h4>
+<p>Core idea:</p>
+<p>LangGraph separates short-term thread state from long-term memory stores and supports checkpointing at each graph step.</p>
+<p>Teaching use:</p>
+<ul>
+<li>Use LangGraph for the enterprise engineering story: persistence, resumability, human-in-the-loop, and time-travel debugging.</li>
+</ul>
+<p>Implementation details to teach:</p>
+<ul>
+<li>Short-term memory lives in graph state or thread checkpoints.</li>
+<li>Long-term memory stores user-specific or application-level data across sessions.</li>
+<li>Checkpointers save state snapshots at each step.</li>
+<li>Semantic search can be added to long-term stores.</li>
+</ul>
+<p>Enterprise adaptation:</p>
+<ul>
+<li>Long-running agents need resumability after failures.</li>
+<li>Human approval workflows need checkpointed state.</li>
+<li>Production incidents require traceable step-level state, not only final outputs.</li>
+</ul>
+<h3 id="112-literature-map-for-multi-agent-systems">11.2 Literature Map for Multi-Agent Systems</h3>
+<h4 id="autogen-conversable-multi-agent-frameworks">AutoGen: Conversable Multi-Agent Frameworks</h4>
+<p>Core idea:</p>
+<p>AutoGen made "agents talking to agents" a mainstream abstraction: agents can be customizable, conversable, tool-using, and human-in-the-loop.</p>
+<p>Teaching use:</p>
+<ul>
+<li>Use AutoGen as the canonical group-chat framing.</li>
+<li>Then critique where unconstrained group chat fails.</li>
+</ul>
+<p>Implementation lesson:</p>
+<p>Conversable agents are flexible, but flexibility creates coordination and termination problems. Enterprise systems usually need stricter orchestration than open-ended group chat.</p>
+<h4 id="metagpt-sops-and-artifact-pipelines">MetaGPT: SOPs and Artifact Pipelines</h4>
+<p>Core idea:</p>
+<p>MetaGPT applies standard operating procedures to multi-agent software development. Agents play roles such as product manager, architect, engineer, and QA, passing structured artifacts.</p>
+<p>Teaching use:</p>
+<ul>
+<li>Use MetaGPT to show the "impose more structure" end of the spectrum.</li>
+<li>It is a good example of reducing hallucination by forcing intermediate artifacts.</li>
+</ul>
+<p>Implementation lesson:</p>
+<p>For enterprise workflows with known process stages, pipeline plus typed artifacts often beats free-form collaboration.</p>
+<p>Examples:</p>
+<ul>
+<li>Compliance review pipeline</li>
+<li>Loan underwriting pipeline</li>
+<li>Incident response pipeline</li>
+<li>Software change pipeline</li>
+</ul>
+<h4 id="multiagent-debate-and-chateval">Multiagent Debate and ChatEval</h4>
+<p>Core idea:</p>
+<p>Multiple model instances can propose, critique, and judge answers. Debate can improve reasoning and factuality in some settings, and multi-agent evaluators can align better with human evaluation in some tasks.</p>
+<p>Teaching use:</p>
+<ul>
+<li>Use debate to teach adversarial dynamics.</li>
+<li>Then emphasize that debate is not verification.</li>
+</ul>
+<p>Implementation lesson:</p>
+<p>Debate is useful when:</p>
+<ul>
+<li>The task has multiple plausible interpretations.</li>
+<li>Critique is cheap.</li>
+<li>A judge can be calibrated.</li>
+<li>Deterministic verification is unavailable.</li>
+</ul>
+<p>Debate is less useful when:</p>
+<ul>
+<li>Code or math can be executed.</li>
+<li>The judge is weak.</li>
+<li>The agents share the same blind spot.</li>
+<li>Latency/cost matters.</li>
+</ul>
+<h4 id="anthropic-multi-agent-research-system">Anthropic Multi-Agent Research System</h4>
+<p>Core idea:</p>
+<p>Anthropic's production research system uses an orchestrator-worker pattern where a lead agent plans, creates specialized subagents, gathers results, and synthesizes a cited final answer.</p>
+<p>Important empirical claim:</p>
+<p>Anthropic reported that their multi-agent research system outperformed a single-agent baseline by 90.2% on an internal research eval for breadth-first research tasks.</p>
+<p>Teaching use:</p>
+<ul>
+<li>This is the strongest production case study for multi-agent systems.</li>
+<li>It also shows the conditions where multi-agent helps: broad research, independent search directions, parallel tool use, and concise result synthesis.</li>
+</ul>
+<p>Implementation details to teach:</p>
+<ul>
+<li>Lead agent plans and stores plan in memory/checkpoint.</li>
+<li>Lead agent spawns 3-5 subagents for complex breadth-first work.</li>
+<li>Subagents use tools independently and return filtered findings.</li>
+<li>A citation agent handles attribution separately.</li>
+<li>Production reliability requires checkpoints, retry logic, observability, and careful prompt iteration.</li>
+</ul>
+<p>Failure modes Anthropic reported:</p>
+<ul>
+<li>Too many subagents for simple queries.</li>
+<li>Endless searching for nonexistent sources.</li>
+<li>Overly verbose or wrong search queries.</li>
+<li>Duplicate work across subagents.</li>
+<li>Agents distracting each other with excessive updates.</li>
+</ul>
+<p>Teaching point:</p>
+<p>The win was not "agents chatting." The win was decomposition, parallel search, context isolation, and synthesis under strong orchestration.</p>
+<h4 id="cognitions-dont-build-multi-agents-counterpoint">Cognition's "Don't Build Multi-Agents" Counterpoint</h4>
+<p>Core idea:</p>
+<p>Cognition argued that multi-agent systems are often fragile for coding because context does not transfer cleanly. Parallel agents make independent decisions about style, edge cases, and implementation details, causing integration problems.</p>
+<p>Teaching use:</p>
+<ul>
+<li>This is the essential counterweight to Anthropic.</li>
+<li>It helps students avoid "multi-agent because it sounds advanced."</li>
+</ul>
+<p>Implementation lesson:</p>
+<p>For coding tasks, especially editing tasks, read-only subagents are safer than parallel writer agents. A main agent can preserve coherent decision-making while delegating noisy exploration.</p>
+<p>Good compromise:</p>
+<ul>
+<li>Use subagents for read-only exploration, research, review, or test summarization.</li>
+<li>Be cautious with multiple implementers editing overlapping files.</li>
+<li>If parallel implementation is needed, isolate worktrees and assign disjoint ownership.</li>
+</ul>
+<h4 id="langchain-synthesis-when-multi-agent-actually-helps">LangChain Synthesis: When Multi-Agent Actually Helps</h4>
+<p>Core idea:</p>
+<p>LangChain's post reconciled Anthropic and Cognition: both are mostly about context engineering. Multi-agent systems that primarily read are easier than systems that write.</p>
+<p>Teaching use:</p>
+<ul>
+<li>Use this to conclude the debate.</li>
+</ul>
+<p>Decision rule:</p>
+<ul>
+<li>Broad independent reading: multi-agent likely helps.</li>
+<li>Coordinated writing: single agent or tightly controlled graph is usually better.</li>
+<li>Parallel writing: only if work is cleanly separable and integration is explicit.</li>
+</ul>
+<h3 id="113-protocols-and-standards-as-of-may-2026">11.3 Protocols and Standards as of May 2026</h3>
+<h4 id="mcp-agent-to-tools-and-agent-to-context-boundary">MCP: Agent-to-Tools and Agent-to-Context Boundary</h4>
+<p>MCP standardizes how LLM applications connect to external tools, prompts, and resources.</p>
+<p>Teach MCP as:</p>
+<ul>
+<li>A protocol boundary between agent hosts and external context/tool servers.</li>
+<li>Not a memory system by itself.</li>
+<li>Not a multi-agent protocol by itself.</li>
+<li>A way to expose enterprise systems safely and consistently.</li>
+</ul>
+<p>MCP concepts to teach:</p>
+<ul>
+<li>Resources: data/context for the model or user.</li>
+<li>Prompts: reusable templated workflows.</li>
+<li>Tools: executable functions.</li>
+<li>Lifecycle and capability negotiation.</li>
+<li>Authorization for HTTP transports in later spec revisions.</li>
+<li>Utilities such as logging, progress, cancellation, and error reporting.</li>
+</ul>
+<p>Enterprise implementation guidance:</p>
+<ul>
+<li>Use MCP servers as controlled adapters to enterprise systems.</li>
+<li>Do not expose broad database or shell access as one generic tool.</li>
+<li>Put authorization and audit at the MCP server layer.</li>
+<li>Treat tool descriptions as untrusted unless from trusted servers.</li>
+<li>Require user approval for high-impact operations.</li>
+<li>Use separate MCP servers per domain or permission boundary.</li>
+</ul>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code>Agent Host
+  -&gt; HR MCP server: read employee policy, submit PTO request
+  -&gt; CRM MCP server: read account, draft note, update opportunity
+  -&gt; Code MCP server: read repo, run tests, create PR
+</code></pre></div>
+<p>Bad enterprise MCP design:</p>
+<div class="highlight"><pre><span></span><code>tool: execute_sql(query: string)
+permissions: all tables, write access
+approval: none
+</code></pre></div>
+<p>Better design:</p>
+<div class="highlight"><pre><span></span><code>tool: get_customer_summary(customer_id)
+tool: list_open_support_cases(customer_id)
+tool: draft_account_note(customer_id, note)
+tool: request_account_update(customer_id, patch)  # approval required
+</code></pre></div>
+<h4 id="a2a-agent-to-agent-boundary">A2A: Agent-to-Agent Boundary</h4>
+<p>A2A is an open protocol initiated by Google Cloud to let agents communicate across vendors, clouds, and frameworks.</p>
+<p>Teach A2A as:</p>
+<ul>
+<li>A peer-agent interoperability protocol.</li>
+<li>Useful when one enterprise agent needs to call another agent without knowing its internal implementation.</li>
+<li>Complementary to MCP.</li>
+</ul>
+<p>Simple distinction:</p>
+<ul>
+<li>MCP connects agents to tools and data.</li>
+<li>A2A connects agents to other agents.</li>
+</ul>
+<p>Enterprise example:</p>
+<div class="highlight"><pre><span></span><code>Procurement Agent
+  -&gt; uses MCP to read internal purchase policies
+  -&gt; uses A2A to ask Vendor Agent for quote status
+  -&gt; uses MCP to submit purchase request
+</code></pre></div>
+<p>Enterprise risks:</p>
+<ul>
+<li>Cross-boundary data sharing.</li>
+<li>Unknown retention policies of external agents.</li>
+<li>Authentication and authorization gaps.</li>
+<li>Ambiguous accountability when an external agent acts incorrectly.</li>
+</ul>
+<p>Teaching point:</p>
+<p>Protocols reduce integration chaos, but they do not solve trust. Enterprise deployments still need identity, consent, audit, data classification, and policy enforcement.</p>
+<h3 id="114-real-world-implementation-patterns-in-2026">11.4 Real-World Implementation Patterns in 2026</h3>
+<h4 id="pattern-1-skills-connectors-subagents">Pattern 1: Skills + Connectors + Subagents</h4>
+<p>Anthropic's May 2026 financial-services agent templates are a useful current reference architecture:</p>
+<ul>
+<li>Skills: domain instructions, workflows, and reusable procedures.</li>
+<li>Connectors: governed access to market data, research platforms, internal repositories, CRMs, and productivity tools.</li>
+<li>Subagents: specialized models for tasks such as research, valuation review, methodology checks, or document drafting.</li>
+</ul>
+<p>Teaching use:</p>
+<p>This is exactly the convergence of Classes 4, 6, and 7:</p>
+<ul>
+<li>Skills are procedural memory.</li>
+<li>Connectors are tool/context access.</li>
+<li>Subagents provide context isolation and specialization.</li>
+<li>Enterprise controls govern data access and review.</li>
+</ul>
+<p>Example enterprise translation:</p>
+<p>For an insurance claims agent:</p>
+<ul>
+<li>Skills: claims triage playbook, fraud review checklist, regulatory response templates.</li>
+<li>Connectors: policy admin system, claims database, document store, email, CRM.</li>
+<li>Subagents: medical document summarizer, coverage analyst, fraud red-team reviewer, customer-response drafter.</li>
+</ul>
+<h4 id="pattern-2-managed-agent-platform">Pattern 2: Managed Agent Platform</h4>
+<p>Microsoft Foundry Agent Service is representative of the managed enterprise direction:</p>
+<ul>
+<li>Hosting and scaling.</li>
+<li>Identity through Entra.</li>
+<li>RBAC.</li>
+<li>Private networking.</li>
+<li>Content safety and prompt-injection mitigations.</li>
+<li>Bring-your-own storage/search/state resources.</li>
+<li>Tracing and evaluation.</li>
+<li>Publishing through Teams, Microsoft 365 Copilot, and agent registries.</li>
+</ul>
+<p>Teaching use:</p>
+<p>This is what "production agent" means in an enterprise: runtime, identity, observability, governance, and distribution are first-class.</p>
+<p>Build-vs-buy discussion:</p>
+<p>Build from scratch when:</p>
+<ul>
+<li>You are teaching fundamentals.</li>
+<li>You need deep custom control.</li>
+<li>You are still discovering the right architecture.</li>
+</ul>
+<p>Use managed platforms when:</p>
+<ul>
+<li>You need enterprise identity and access controls.</li>
+<li>You need compliance and data residency.</li>
+<li>You need non-engineers to use the agent.</li>
+<li>You need lifecycle management and monitoring.</li>
+</ul>
+<h4 id="pattern-3-graph-based-workflow-agent">Pattern 3: Graph-Based Workflow Agent</h4>
+<p>Use when:</p>
+<ul>
+<li>The workflow has clear states.</li>
+<li>Human approvals are required.</li>
+<li>You need retries and resumability.</li>
+<li>Auditability matters.</li>
+</ul>
+<p>Example graph:</p>
+<div class="highlight"><pre><span></span><code>intake
+  -&gt; classify_request
+  -&gt; retrieve_context
+  -&gt; plan
+  -&gt; execute_read_only_tools
+  -&gt; if high_risk: human_approval
+  -&gt; execute_write_tool
+  -&gt; verify
+  -&gt; final_response
+  -&gt; memory_consolidation
+</code></pre></div>
+<p>Implementation details:</p>
+<ul>
+<li>Persist graph state after every node.</li>
+<li>Store tool inputs/outputs as trace spans.</li>
+<li>Separate read tools from write tools.</li>
+<li>Require approval for writes above risk threshold.</li>
+<li>Use deterministic checks before final response.</li>
+</ul>
+<h4 id="pattern-4-read-only-subagents-for-enterprise-search">Pattern 4: Read-Only Subagents for Enterprise Search</h4>
+<p>Use when:</p>
+<ul>
+<li>The main agent needs broad exploration.</li>
+<li>Search traces would pollute context.</li>
+<li>Workers can operate independently.</li>
+<li>Final answer requires synthesis.</li>
+</ul>
+<p>Good use cases:</p>
+<ul>
+<li>Legal research across many documents.</li>
+<li>Security incident investigation across logs.</li>
+<li>Codebase exploration.</li>
+<li>Competitive intelligence.</li>
+<li>Vendor due diligence.</li>
+</ul>
+<p>Worker output contract:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;task&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Find refund-policy constraints for EU customers&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;findings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;claim&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;EU customers may cancel within 14 days for digital services unless consent waiver was accepted.&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;evidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;policy/refunds/eu.md#section-2&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;confidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;high&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;uncertainties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;Did not inspect country-specific exceptions for Germany.&quot;</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;recommended_next_step&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ask policy specialist to verify Germany exception.&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="pattern-5-reviewer-critic-agents">Pattern 5: Reviewer / Critic Agents</h4>
+<p>Use when:</p>
+<ul>
+<li>A generated artifact needs quality control.</li>
+<li>The reviewer can inspect evidence.</li>
+<li>The reviewer has a different rubric or toolset.</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li>Code reviewer checks diff and tests.</li>
+<li>Compliance reviewer checks policy.</li>
+<li>Security reviewer checks tool calls and data exposure.</li>
+<li>Financial reviewer checks formulas and assumptions.</li>
+</ul>
+<p>Important:</p>
+<p>Reviewer agents should not be vague critics. Give them a rubric and require evidence.</p>
+<p>Reviewer output contract:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;decision&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;approve | request_changes | block&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;blocking_issues&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;evidence_checked&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;test_or_policy_gaps&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;risk_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;low | medium | high&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="115-enterprise-blueprint-adding-memory-to-custom-agents">11.5 Enterprise Blueprint: Adding Memory to Custom Agents</h3>
+<p>Use this as a practical design recipe.</p>
+<h4 id="step-1-define-memory-scopes">Step 1: Define Memory Scopes</h4>
+<p>At minimum:</p>
+<ul>
+<li>User memory: preferences, communication style, stable user facts.</li>
+<li>Account/customer memory: customer history, active contracts, support state.</li>
+<li>Project memory: architecture, conventions, decisions.</li>
+<li>Task memory: transient current run state.</li>
+<li>Procedural memory: skills, playbooks, checklists.</li>
+<li>Compliance memory: policies and rules, usually read-only.</li>
+</ul>
+<p>Rule:</p>
+<p>Never mix scopes casually. A user's preference should not become a company-wide rule. A project convention should not leak into another repo.</p>
+<h4 id="step-2-define-memory-classes">Step 2: Define Memory Classes</h4>
+<p>Use classes like:</p>
+<div class="highlight"><pre><span></span><code>profile_fact
+project_convention
+decision_record
+episodic_lesson
+workflow_state
+skill_candidate
+policy_reference
+customer_fact
+</code></pre></div>
+<p>Each memory should carry:</p>
+<ul>
+<li><code>id</code></li>
+<li><code>type</code></li>
+<li><code>scope</code></li>
+<li><code>subject</code></li>
+<li><code>content</code></li>
+<li><code>source</code></li>
+<li><code>created_at</code></li>
+<li><code>updated_at</code></li>
+<li><code>valid_from</code></li>
+<li><code>valid_until</code> or <code>invalidated_at</code></li>
+<li><code>confidence</code></li>
+<li><code>sensitivity</code></li>
+<li><code>owner</code></li>
+<li><code>retention_policy</code></li>
+</ul>
+<h4 id="step-3-decide-what-is-always-visible">Step 3: Decide What Is Always Visible</h4>
+<p>Always-visible memory is expensive and powerful.</p>
+<p>Good candidates:</p>
+<ul>
+<li>User communication preference</li>
+<li>Current task goal</li>
+<li>Current project brief</li>
+<li>Safety policy summary</li>
+<li>Tool-use boundaries</li>
+</ul>
+<p>Bad candidates:</p>
+<ul>
+<li>Raw chat history</li>
+<li>All previous tickets</li>
+<li>Large documents</li>
+<li>Old tool outputs</li>
+<li>Low-confidence inferred facts</li>
+</ul>
+<h4 id="step-4-add-retrieval">Step 4: Add Retrieval</h4>
+<p>Use hybrid retrieval:</p>
+<ul>
+<li>Metadata filters first.</li>
+<li>Keyword search for exact terms.</li>
+<li>Embedding search for semantic similarity.</li>
+<li>Reranking for final top-k.</li>
+<li>Recency and validity filters.</li>
+<li>Sensitivity filters based on user permissions.</li>
+</ul>
+<p>Retrieval budget:</p>
+<p>Set an explicit token budget for memory, for example 5-10% of context.</p>
+<p>Inject memory with wrappers:</p>
+<div class="highlight"><pre><span></span><code><span class="gu">## Retrieved Memory</span>
+Type: project_convention
+Scope: repo:payments-service
+Source: PROJECT_NOTES.md, updated 2026-05-10
+Confidence: high
+Why included: Current task edits a payment route.
+
+Content:
+Payment routes must emit audit events through <span class="sb">`audit.log_payment_event`</span>.
+</code></pre></div>
+<h4 id="step-5-add-memory-write-controls">Step 5: Add Memory Write Controls</h4>
+<p>Memory writes are riskier than reads.</p>
+<p>Suggested policy:</p>
+<ul>
+<li>Low-risk observations can be proposed automatically.</li>
+<li>Medium-risk memory writes require review or delayed consolidation.</li>
+<li>High-risk memory writes require human approval.</li>
+<li>Sensitive memories require retention and deletion policy.</li>
+<li>Memories derived from external untrusted content should be marked untrusted.</li>
+</ul>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code>Allowed automatic write:
+&quot;User prefers concise status updates.&quot;
+
+Needs review:
+&quot;Customer is likely to churn.&quot;
+
+Disallowed without source:
+&quot;Customer violated contract terms.&quot;
+</code></pre></div>
+<h4 id="step-6-add-consolidation-jobs">Step 6: Add Consolidation Jobs</h4>
+<p>Run consolidation:</p>
+<ul>
+<li>End of session</li>
+<li>End of day</li>
+<li>After resolved ticket</li>
+<li>After merged PR</li>
+<li>After high-value workflow completion</li>
+</ul>
+<p>Consolidation should:</p>
+<ul>
+<li>Merge duplicates.</li>
+<li>Mark contradictions.</li>
+<li>Extract stable facts.</li>
+<li>Separate facts from inferences.</li>
+<li>Produce skill candidates only from verified success.</li>
+<li>Archive raw traces.</li>
+</ul>
+<h4 id="step-7-add-forgetting-and-governance">Step 7: Add Forgetting and Governance</h4>
+<p>Enterprise memory must support:</p>
+<ul>
+<li>Deletion</li>
+<li>Retention windows</li>
+<li>Legal hold</li>
+<li>User data export</li>
+<li>PII classification</li>
+<li>Region/data residency constraints</li>
+<li>Tenant isolation</li>
+<li>Audit logs for reads and writes</li>
+<li>"Why was this memory used?" explanations</li>
+</ul>
+<p>Teaching phrase:</p>
+<p>"In enterprise systems, memory is a regulated data product, not a scratchpad."</p>
+<h3 id="116-enterprise-blueprint-adding-multi-agent-to-custom-agents">11.6 Enterprise Blueprint: Adding Multi-Agent to Custom Agents</h3>
+<h4 id="step-1-start-with-one-agent-and-instrument-it">Step 1: Start with One Agent and Instrument It</h4>
+<p>Before adding agents, measure:</p>
+<ul>
+<li>Where does it fail?</li>
+<li>Does it run out of context?</li>
+<li>Does it search too broadly?</li>
+<li>Does it need review?</li>
+<li>Does it wait on independent tasks?</li>
+<li>Does it need different permissions at different phases?</li>
+</ul>
+<p>Only add agents to solve a measured bottleneck.</p>
+<h4 id="step-2-choose-the-multi-agent-pattern">Step 2: Choose the Multi-Agent Pattern</h4>
+<p>Use this decision table:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Pattern</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Broad independent research</td>
+<td>Orchestrator + read-only research subagents</td>
+</tr>
+<tr>
+<td>Known business process</td>
+<td>Sequential or graph workflow</td>
+</tr>
+<tr>
+<td>Need quality control</td>
+<td>Worker + reviewer</td>
+</tr>
+<tr>
+<td>Need specialist ownership</td>
+<td>Supervisor + specialists</td>
+</tr>
+<tr>
+<td>Need cross-vendor collaboration</td>
+<td>A2A handoff</td>
+</tr>
+<tr>
+<td>Need external tools/data</td>
+<td>MCP tools/resources</td>
+</tr>
+<tr>
+<td>Need speed across independent subtasks</td>
+<td>Parallel fleet</td>
+</tr>
+<tr>
+<td>Need code edits in same files</td>
+<td>Usually stay single-agent</td>
+</tr>
+</tbody>
+</table>
+<h4 id="step-3-define-agent-contracts">Step 3: Define Agent Contracts</h4>
+<p>Each agent needs:</p>
+<ul>
+<li>Purpose</li>
+<li>Inputs</li>
+<li>Outputs</li>
+<li>Tools</li>
+<li>Permissions</li>
+<li>Memory access</li>
+<li>Stop condition</li>
+<li>Error behavior</li>
+<li>Escalation conditions</li>
+</ul>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">compliance-reviewer</span>
+<span class="nt">purpose</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Check whether a drafted customer response complies with policy.</span>
+<span class="nt">tools</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read_policy</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">search_policy</span>
+<span class="nt">memory_access</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy_reference</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">customer_fact</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">write</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
+<span class="nt">forbidden</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">send_email</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">update_customer_record</span>
+<span class="nt">output</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">decision</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">approve | request_changes | block</span>
+<span class="w">  </span><span class="nt">policy_citations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">  </span><span class="nt">required_edits</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+</code></pre></div>
+<h4 id="step-4-use-least-privilege-tools">Step 4: Use Least-Privilege Tools</h4>
+<p>Separate read, draft, request, and commit tools.</p>
+<p>Bad:</p>
+<div class="highlight"><pre><span></span><code>update_crm(any_object, any_patch)
+</code></pre></div>
+<p>Better:</p>
+<div class="highlight"><pre><span></span><code>get_account(account_id)
+draft_account_note(account_id, note)
+request_account_update(account_id, patch)
+commit_account_update(approved_request_id)
+</code></pre></div>
+<p>Tool permissions by role:</p>
+<ul>
+<li>Researcher: read-only tools.</li>
+<li>Drafter: read context and create draft artifacts.</li>
+<li>Reviewer: read artifacts and policies.</li>
+<li>Executor: write tools, but only after approval.</li>
+<li>Auditor: trace and log access, no business action.</li>
+</ul>
+<h4 id="step-5-add-handoff-filters">Step 5: Add Handoff Filters</h4>
+<p>Do not pass entire conversation history to every agent.</p>
+<p>Pass:</p>
+<ul>
+<li>User objective</li>
+<li>Relevant constraints</li>
+<li>Required output schema</li>
+<li>Relevant memory</li>
+<li>Evidence or artifacts needed</li>
+</ul>
+<p>Remove:</p>
+<ul>
+<li>Irrelevant tool traces</li>
+<li>Other agents' failed attempts</li>
+<li>Sensitive data not needed for the task</li>
+<li>Hidden chain-of-thought</li>
+</ul>
+<p>OpenAI Agents SDK handoffs explicitly support input filters. Teach this as an important implementation detail: handoff is not just routing; it is context selection.</p>
+<h4 id="step-6-add-guardrails-at-the-right-boundary">Step 6: Add Guardrails at the Right Boundary</h4>
+<p>Guardrail placement:</p>
+<ul>
+<li>Input guardrails: before first agent handles user request.</li>
+<li>Tool guardrails: before and after tool calls.</li>
+<li>Handoff validation: before sending context to another agent.</li>
+<li>Output guardrails: before final response leaves system.</li>
+<li>Memory-write guardrails: before storing durable memory.</li>
+</ul>
+<p>Enterprise examples:</p>
+<ul>
+<li>PII detector before sending context to external agent.</li>
+<li>Policy check before invoking write tool.</li>
+<li>Cost limit before spawning subagents.</li>
+<li>Prompt-injection detector for retrieved web or email content.</li>
+<li>Data-loss-prevention check before final answer.</li>
+</ul>
+<h4 id="step-7-make-everything-observable">Step 7: Make Everything Observable</h4>
+<p>Log and trace:</p>
+<ul>
+<li>Agent selected</li>
+<li>Prompt version</li>
+<li>Model version</li>
+<li>Tool calls</li>
+<li>Tool arguments</li>
+<li>Tool outputs or output hashes</li>
+<li>Handoffs</li>
+<li>Memory reads</li>
+<li>Memory writes</li>
+<li>Guardrail decisions</li>
+<li>Human approvals</li>
+<li>Final outcome</li>
+<li>Cost and latency</li>
+</ul>
+<p>OpenAI Agents SDK and LangSmith both emphasize traces that include model calls, tools, handoffs, guardrails, and decision points. Teach students that production debugging is impossible without this.</p>
+<h4 id="step-8-evaluate-before-and-after-multi-agent">Step 8: Evaluate Before and After Multi-Agent</h4>
+<p>Do not ship multi-agent because the demo looks good.</p>
+<p>Eval design:</p>
+<ul>
+<li>Single-agent baseline.</li>
+<li>Multi-agent candidate.</li>
+<li>Same task set.</li>
+<li>Same total token/dollar budget where possible.</li>
+<li>Same tool permissions unless permission separation is the variable.</li>
+<li>Measure both task success and failure modes.</li>
+</ul>
+<p>Enterprise metrics:</p>
+<ul>
+<li>Resolution rate</li>
+<li>Cost per resolved task</li>
+<li>Human touches per task</li>
+<li>Time to completion</li>
+<li>Escalation rate</li>
+<li>Incorrect action rate</li>
+<li>Policy violation rate</li>
+<li>Memory retrieval precision</li>
+<li>Audit completeness</li>
+<li>User satisfaction</li>
+</ul>
+<h3 id="117-enterprise-security-and-governance">11.7 Enterprise Security and Governance</h3>
+<p>Use OWASP and NIST to make security concrete.</p>
+<p>Relevant OWASP LLM Top 10 risks:</p>
+<ul>
+<li>Prompt injection</li>
+<li>Sensitive information disclosure</li>
+<li>Supply chain vulnerabilities</li>
+<li>Data/model poisoning</li>
+<li>Improper output handling</li>
+<li>Excessive agency</li>
+<li>System prompt leakage</li>
+<li>Vector and embedding weaknesses</li>
+<li>Misinformation</li>
+<li>Unbounded consumption</li>
+</ul>
+<p>For this lecture, emphasize:</p>
+<h4 id="prompt-injection">Prompt Injection</h4>
+<p>Memory and multi-agent systems make prompt injection worse because malicious instructions can enter through:</p>
+<ul>
+<li>User input</li>
+<li>Retrieved documents</li>
+<li>Emails</li>
+<li>Web pages</li>
+<li>Tool outputs</li>
+<li>Other agents</li>
+<li>Memory stores</li>
+</ul>
+<p>Mitigations:</p>
+<ul>
+<li>Treat retrieved content as data, not instructions.</li>
+<li>Separate trusted instructions from untrusted content.</li>
+<li>Use tool allowlists.</li>
+<li>Require approval for high-impact actions.</li>
+<li>Sanitize and label external content.</li>
+<li>Do not let untrusted content write durable memory without review.</li>
+</ul>
+<h4 id="excessive-agency">Excessive Agency</h4>
+<p>Excessive agency means the system can do too much with too little oversight.</p>
+<p>Root causes:</p>
+<ul>
+<li>Excessive functionality</li>
+<li>Excessive permissions</li>
+<li>Excessive autonomy</li>
+</ul>
+<p>Mitigations:</p>
+<ul>
+<li>Least privilege tools.</li>
+<li>Human approval for irreversible actions.</li>
+<li>Narrow agent roles.</li>
+<li>Transaction limits.</li>
+<li>Dry-run modes.</li>
+<li>Rate limits and cost budgets.</li>
+<li>Reversible actions where possible.</li>
+</ul>
+<h4 id="vector-and-embedding-weaknesses">Vector and Embedding Weaknesses</h4>
+<p>Memory systems and RAG introduce retrieval-specific risks:</p>
+<ul>
+<li>Poisoned documents.</li>
+<li>Similar but wrong memories.</li>
+<li>Cross-tenant leakage.</li>
+<li>Stale facts.</li>
+<li>Embedding inversion or data leakage.</li>
+</ul>
+<p>Mitigations:</p>
+<ul>
+<li>Tenant isolation.</li>
+<li>Metadata filters.</li>
+<li>Source trust scores.</li>
+<li>Validity intervals.</li>
+<li>Retrieval audit logs.</li>
+<li>Memory conflict detection.</li>
+</ul>
+<h4 id="nist-ai-rmf-genai-profile">NIST AI RMF / GenAI Profile</h4>
+<p>Use NIST to frame enterprise governance:</p>
+<ul>
+<li>Govern: roles, policies, accountability.</li>
+<li>Map: use cases, context, data flows, affected users.</li>
+<li>Measure: evals, monitoring, risk metrics.</li>
+<li>Manage: mitigations, incident response, lifecycle controls.</li>
+</ul>
+<p>Class exercise:</p>
+<p>Ask students to map their memory-enabled multi-agent coding system to these four functions.</p>
+<h3 id="118-enterprise-reference-architecture">11.8 Enterprise Reference Architecture</h3>
+<p>Use this as the final practical architecture for custom enterprise agents.</p>
+<div class="highlight"><pre><span></span><code>User / Business App
+    |
+    v
+Agent Gateway
+    - authentication
+    - tenant routing
+    - input guardrails
+    - request classification
+    |
+    v
+Orchestrator
+    - task plan
+    - budget
+    - agent selection
+    - state machine / graph
+    - checkpointing
+    |
+    +--&gt; Memory Service
+    |      - profile memory
+    |      - project/account memory
+    |      - temporal knowledge graph
+    |      - vector/keyword retrieval
+    |      - memory write review
+    |
+    +--&gt; Tool Layer via MCP / internal APIs
+    |      - read tools
+    |      - draft tools
+    |      - approval-required write tools
+    |      - audit logging
+    |
+    +--&gt; Specialist Agents
+    |      - researcher
+    |      - drafter
+    |      - reviewer
+    |      - test-runner
+    |      - compliance checker
+    |
+    +--&gt; External Agents via A2A
+    |      - partner/vendor agents
+    |      - cross-cloud agents
+    |
+    v
+Verification and Guardrails
+    - deterministic checks
+    - policy checks
+    - DLP
+    - human approval
+    |
+    v
+Final Response / Action
+    |
+    v
+Observability and Evaluation
+    - traces
+    - cost/latency
+    - eval results
+    - failure taxonomy
+    - memory read/write audit
+</code></pre></div>
+<h3 id="119-how-to-teach-this-in-may-2026">11.9 How to Teach This in May 2026</h3>
+<p>Update the lecture emphasis:</p>
+<ul>
+<li>Do not present vector DB memory as the whole story. Present memory as lifecycle, governance, and retrieval policy.</li>
+<li>Do not present multi-agent as "agents chatting." Present it as context partitioning, permission partitioning, and workflow control.</li>
+<li>Present MCP and A2A as protocol boundaries, not magic architecture.</li>
+<li>Present managed platforms as evidence that enterprise agent work is mostly runtime, identity, monitoring, and governance.</li>
+<li>Present Anthropic and Cognition as compatible, not contradictory: multi-agent helps for broad read-heavy work; single-agent or tightly controlled workflows often win for coherent write-heavy work.</li>
+</ul>
+<p>Slide-worthy synthesis:</p>
+<div class="highlight"><pre><span></span><code>Memory answers: What should persist across time?
+Tools answer: What can the agent do?
+Skills answer: How should repeated work be done?
+Subagents answer: Which context should handle this part?
+Protocols answer: Where are the trust boundaries?
+Evals answer: Did any of this actually help?
+</code></pre></div>
+<h3 id="1110-current-source-list">11.10 Current Source List</h3>
+<p>Use these as instructor references when making slides:</p>
+<ul>
+<li>Anthropic, "Building effective agents" (2024): https://www.anthropic.com/engineering/building-effective-agents</li>
+<li>Anthropic, "How we built our multi-agent research system" (2025): https://www.anthropic.com/engineering/multi-agent-research-system</li>
+<li>Anthropic, Claude Code subagents docs: https://docs.anthropic.com/en/docs/claude-code/sub-agents</li>
+<li>Anthropic, "Agents for financial services" (May 2026): https://www.anthropic.com/news/finance-agents</li>
+<li>Cognition / Walden Yan, "Don't Build Multi-Agents" (June 2025), mirrored summary: https://diff.blog/post/dont-build-multi-agents-305601</li>
+<li>LangChain, "How and when to build multi-agent systems" (2025): https://www.langchain.com/blog/how-and-when-to-build-multi-agent-systems</li>
+<li>AutoGen paper/docs: https://www.microsoft.com/en-us/research/publication/autogen-enabling-next-gen-llm-applications-via-multi-agent-conversation-framework/</li>
+<li>MetaGPT paper: https://huggingface.co/papers/2308.00352</li>
+<li>Multiagent Debate, ICML 2024: https://proceedings.mlr.press/v235/du24e.html</li>
+<li>ChatEval paper: https://huggingface.co/papers/2308.07201</li>
+<li>MemGPT paper: https://huggingface.co/papers/2310.08560</li>
+<li>Letta memory overview: https://docs.letta.com/guides/agents/memory</li>
+<li>Letta memory blocks: https://docs.letta.com/guides/agents/memory-blocks/</li>
+<li>Letta archival memory: https://docs.letta.com/guides/agents/archival-memory</li>
+<li>Generative Agents paper: https://huggingface.co/papers/2304.03442</li>
+<li>Zep concepts/docs: https://help.getzep.com/v2/concepts</li>
+<li>Zep temporal knowledge graph paper: https://huggingface.co/papers/2501.13956</li>
+<li>Mem0 docs: https://docs.mem0.ai/</li>
+<li>Mem0 paper: https://huggingface.co/papers/2504.19413</li>
+<li>LangGraph persistence docs: https://docs.langchain.com/oss/python/langgraph/persistence</li>
+<li>LangGraph memory docs: https://docs.langchain.com/oss/javascript/langgraph/add-memory</li>
+<li>MCP specification: https://modelcontextprotocol.io/specification/2025-06-18/basic/index</li>
+<li>A2A overview on Google Cloud Run: https://cloud.google.com/run/docs/ai/a2a-agents</li>
+<li>Google Cloud A2A update: https://cloud.google.com/blog/products/ai-machine-learning/agent2agent-protocol-is-getting-an-upgrade</li>
+<li>OpenAI Agents SDK handoffs: https://openai.github.io/openai-agents-js/guides/handoffs/</li>
+<li>OpenAI Agents SDK guardrails: https://openai.github.io/openai-agents-python/guardrails/</li>
+<li>OpenAI Agents SDK tracing: https://openai.github.io/openai-agents-python/tracing/</li>
+<li>Microsoft Agent Framework overview: https://learn.microsoft.com/en-us/agent-framework/overview/</li>
+<li>Microsoft Foundry Agent Service overview: https://learn.microsoft.com/azure/ai-foundry/agents/overview</li>
+<li>OWASP Top 10 for LLM Applications: https://owasp.org/www-project-top-10-for-large-language-model-applications</li>
+<li>OWASP LLM06 Excessive Agency: https://genai.owasp.org/llmrisk/llm062025-excessive-agency/</li>
+<li>NIST AI RMF GenAI Profile: https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence</li>
+<li>NIST AI RMF overview: https://www.nist.gov/itl/ai-risk-management-framework</li>
+</ul>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "content.code.copy"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

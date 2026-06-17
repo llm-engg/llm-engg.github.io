@@ -1,0 +1,2093 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A comprehensive hands-on course on Large Language Models for industry professionals">
+      
+      
+      
+        <link rel="canonical" href="https://llm-engg.github.io/slides/07_agents/06_multiagents/06_multiagents/notes_claude/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Memory and Multi-Agent Systems - Large Language Models - A Hands-on Approach</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-LLD65KQHZH"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-LLD65KQHZH",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-LLD65KQHZH",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#memory-and-multi-agent-systems" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../.." title="Large Language Models - A Hands-on Approach" class="md-header__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Large Language Models - A Hands-on Approach
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Memory and Multi-Agent Systems
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="purple"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../schedule/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Schedule
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../assignments/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Assignments and Labs
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="Large Language Models - A Hands-on Approach" class="md-nav__button md-logo" aria-label="Large Language Models - A Hands-on Approach" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Large Language Models - A Hands-on Approach
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../schedule/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schedule
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../assignments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assignments and Labs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="memory-and-multi-agent-systems">Memory and Multi-Agent Systems</h1>
+<!-- **Lecture format:** 3-hour combined class (covers syllabus Class 6 + Class 7)
+**Delivery date:** May 2026 (use *current* state of the field, not 2024 vocabulary)
+**Audience:** ML engineers, data scientists, developers with prior exposure to ReAct loops, tools, skills, planning (Classes 3–5)
+**Prerequisites assumed:** ReAct loop from Class 3, tool calling + skills from Class 4, planning + reflection from Class 5, context engineering from previous week
+
+--- -->
+
+<!-- ## What changed since the syllabus was written (the May 2026 update)
+
+The syllabus references MemGPT, Generative Agents, AutoGen, MetaGPT — all still load-bearing as *concepts*, but the **production stack has moved**. Things to weave in throughout:
+
+1. **Memory is now a product category.** Mem0 (47K+ GitHub stars), Letta (the renamed MemGPT — production-grade, OS-inspired), Zep (temporal knowledge graph), Cognee (graph + 70+ enterprise deployments, $7.5M seed, used by Bayer / University of Wyoming), Supermemory, ByteRover — these are *managed memory services* an enterprise can adopt today, not research artifacts.
+2. **Benchmarks exist now.** LoCoMo (Snap Research, 7,512 QAs across 272 sessions, 10 long conversations) and **LongMemEval / LongMemEval-S** (Wu et al., ICLR 2025) — the latter shows GPT-4o drops from **87% accuracy on relevant-sessions-only to 60.6% on full context** (i.e., memory pruning matters enormously). Mem0 reports **91.6% on LoCoMo at 1.44s p95**, vs. full-context at 72.9% and 17.12s.
+3. **Multi-agent has a winner stack for the moment.** **LangGraph** (used in production at Uber, Klarna, LinkedIn, Replit, AppFolio; **34% of agent-framework citations in 1,000+-employee companies per Gartner Q1 2026**). **AutoGen** is in maintenance mode — Microsoft consolidated to the **Microsoft Agent Framework** (AutoGen + Semantic Kernel) in early 2026. **OpenAI Agents SDK** (April 2026 added a Codex-style "harness" with sandboxing, long-horizon resume, code mode). **Claude Agent SDK** (subagents are now a first-class primitive with `AgentDefinition`).
+4. **Two new protocols matter.** **MCP** (Model Context Protocol) is the de-facto tools standard — **97M SDK downloads/month, up 970× in 18 months**. **A2A** (Agent-to-Agent, Google → Linux Foundation, April 2025) is the agent-interoperability standard with **150+ organizations** including Microsoft, AWS, Salesforce, SAP, ServiceNow, Workday, IBM, Cisco, PayPal, LangChain, MongoDB.
+5. **Anthropic's multi-agent research system is the canonical case study now.** Lead Researcher + parallel Sonnet subagents + Citation Agent → **+90.2% over single-agent Opus 4** on internal evals, at **~15× the token cost of chat** (~4× for a single agent). Rainbow deployments, artifact pattern, 8 prompt-engineering rules — all useful in class.
+6. **Enterprise governance is now table-stakes.** Forrester's **AEGIS framework** (Agentic AI Enterprise Guardrails For Information Security), ServiceNow's agent-governance announcements, the Kiteworks survey ("**100% of orgs have agentic AI on the roadmap; only 24.4% have full visibility into agent-to-agent communication**"). The course's through-line question now has a *compliance* axis, not just an engineering one.
+
+These updates are folded into the relevant blocks below. Section 11 (new) is a dedicated **enterprise patterns** block for the bridge between "your lab agent" and "an agent your CIO will sign off on." -->
+
+<hr />
+<!-- ## Lecture Goals
+
+By the end of class, students should be able to:
+
+1. **Diagnose** which memory regime (working / episodic / semantic / procedural) a problem actually needs — and which it doesn't.
+2. **Implement** the four memory tiers from scratch, including a Hermes-style episodic store and a Generative-Agents-style reflection step.
+3. **Reason about** when multi-agent systems pay for themselves vs. when they just burn tokens, using the *context-isolation-vs-role-specialization* lens.
+4. **Choose** an orchestration topology (supervisor, pipeline, debate, fleet) appropriate for a task, and predict its failure modes.
+5. **Engage the through-line question** with empirical evidence: *Do memory + multi-agent architectures add value, or is the LLM capable enough that this structure is overhead?*
+
+---
+
+## Time Budget (180 minutes)
+
+| Block | Minutes | Topic |
+|-------|---------|-------|
+| 0     | 0–10    | Recap + framing + "what changed in 2026" |
+| 1     | 10–22   | Memory taxonomy + cognitive analogy |
+| 2     | 22–40   | Working memory & compaction (deep dive) |
+| 3     | 40–58   | Long-term memory: file / vector / hybrid + **2026 frameworks (Mem0, Letta, Zep, Cognee)** |
+| 4     | 58–72   | Episodic + procedural memory (Hermes loop, A-MEM) |
+| 5     | 72–85   | Evaluating memory: **LoCoMo, LongMemEval** + lab walkthrough |
+| —     | 85–95   | **Break (10 min)** |
+| 6     | 95–105  | Why multi-agent? Anthropic's 90.2% case |
+| 7     | 105–123 | Orchestration patterns + **2026 framework landscape** |
+| 8     | 123–135 | State passing + **MCP + A2A protocols** |
+| 9     | 135–148 | Context isolation: the real reason multi-agent works |
+| 10    | 148–160 | **Enterprise patterns: governance, security, deployment** |
+| 11    | 160–180 | Case studies + closing discussion |
+
+> **Instructor note:** Block 9 is the intellectual crux. Don't let Block 7 (patterns) bloat — the patterns are taxonomy, the *why* in Block 9 is the lesson. Block 10 is the bridge to "what does this look like at my company on Monday?"
+
+---
+
+# BLOCK 0 — Recap & Framing (10 min)
+
+## 0.1 Where we are
+
+> [PLACEHOLDER: Slide — "Map of the Agents module so far"]
+> Diagram showing Class 3 (ReAct) → Class 4 (Tools/Skills) → Class 5 (Planning/Reflection) → **Today (Memory + Multi-Agent)** → Class 8 (Eval/Production).
+
+Today's lecture sits on the right side of the agent stack — *after* we know how to make an agent reason, act, and plan, we ask: **how does it remember**, and **how do multiple agents collaborate**?
+
+## 0.2 Two questions, one theme
+
+Both halves of today's lecture answer one question: **what state should live where?**
+
+- **Memory** asks: of everything an agent has ever experienced, what should be in the context window right now, what should be in a database, and what should be discarded?
+- **Multi-agent** asks: of everything an agent could do, what should one LLM hold in its head, and what should be delegated to another agent with its own context?
+
+> [PLACEHOLDER: Slide — "Where does state live?" — a stacked diagram with five layers: (1) Context window / working memory, (2) Session state, (3) Long-term store, (4) Other agents' contexts, (5) Forgotten / discarded.]
+
+## 0.3 The through-line question — sharper today
+
+The course's recurring question is: *How much structure should we impose on an agent, vs. letting the LLM figure it out?*
+
+Today is where this question gets concrete:
+
+- Do we *engineer* memory (Hermes-style reflection, importance scoring, decay) or just throw more tokens at the context window?
+- Do we *engineer* multi-agent topologies, or trust one large model to handle the whole task?
+
+**Mantra for today:** *Every line of memory plumbing and every extra agent must justify itself against the null hypothesis of "just use a longer context window with one good prompt."*
+
+--- -->
+
+<h1 id="part-i-memory-systems-blocks-15-85-min">PART I — MEMORY SYSTEMS (Blocks 1–5, ~85 min)</h1>
+<!-- # BLOCK 1 — Memory Taxonomy (15 min)
+
+## 1.1 The cognitive analogy (briefly)
+
+Humans have **multiple memory systems**, not one (Tulving 1972, Squire 1992). LLM agents borrow the taxonomy because the engineering pressures map cleanly:
+
+| Human term | Agent analogue | Lifespan | Where it lives |
+|------------|---------------|----------|-----------------|
+| Working memory (Baddeley) | Context window | This turn | LLM input tokens |
+| Short-term memory | Session state | This conversation | In-process object / DB |
+| Episodic memory (events) | Past trajectories | Forever | Vector DB / SQLite |
+| Semantic memory (facts) | Project knowledge | Forever | Files / vector DB |
+| Procedural memory (skills) | Reusable workflows | Forever | `SKILL.md` files |
+
+> [PLACEHOLDER: Image — `images/memory_hierarchy.png` — pyramid or hierarchy diagram. Could adapt from the COMPREHENSIVE_AGENT_ENGINEERING_GUIDE_2026 ASCII art at section 18, or sketch fresh. Should show speed/size tradeoffs.]
+
+**Don't push the analogy too hard.** Humans have one substrate (neurons); agents have many substrates (tokens, files, vectors, SQL). The taxonomy is useful as *engineering vocabulary*, not as cognitive science.
+
+## 1.2 Why four kinds matter
+
+Why not just one big vector database for everything? Because the retrieval question differs:
+
+- **Working memory** retrieval: "what's in front of me right now?" — no retrieval, just reading
+- **Episodic** retrieval: "have I solved something like this before?" — similarity search over past traces
+- **Semantic** retrieval: "what do I know about this project?" — factual lookup, often keyword + path
+- **Procedural** retrieval: "is there a recipe for this kind of task?" — match task → skill description
+
+Different access patterns → different data structures. A single store would have to compromise on all four.
+
+## 1.3 The 40–60% rule (foreshadow)
+
+A practical heuristic from the field (Anthropic, others): **keep the context window at 40–60% utilization for steady-state operation**. Below 40%, you're wasting capacity. Above 60%, attention degrades (context rot, lost-in-the-middle).
+
+This rule *forces* the memory hierarchy. If you can only ever use 60% of your context, the other 40% of "what the agent should know" must live somewhere else. **Memory is the mechanism that respects the budget.**
+
+> [PLACEHOLDER: Image — `images/40_60_rule.png` — show context window utilization curves: below 40% (wasted), 40–60% (sweet spot), above 60% (degradation). Reference: Anthropic context engineering blog.]
+
+## 1.4 What memory is *not*
+
+Common confusions worth flagging:
+
+- **Memory is not RAG.** RAG retrieves *external knowledge* (docs, papers). Memory retrieves the *agent's own past*. They use similar machinery but answer different questions.
+- **Memory is not the conversation history.** The messages array is *working memory* (and stale parts get compacted away). Memory is what survives compaction.
+- **Memory is not state.** State (e.g., LangGraph checkpoints) is mid-task persistence for resumption. Memory is *learned* persistence for future tasks.
+
+> **Discussion (2 min):** In Class 5's plan-and-reflect lab, where did the "reflection" live? Was that memory or state? Why? -->
+
+<hr />
+<!-- # BLOCK 2 — Working Memory & Compaction (20 min)
+
+## 2.1 The context window IS working memory
+
+Restate: the LLM's "RAM" is its prompt. Everything not in the prompt is *not* in its head right now.
+
+Three operational consequences:
+
+1. **Size is bounded** (200K Claude, ~1M Gemini — large but not free).
+2. **Position matters** — lost-in-the-middle effect (Liu et al. 2023) means the model attends best to the start and end.
+3. **Quality degrades with size** — *context rot* (we covered this last week): more tokens means each gets less attention, distractors interfere, instructions fade out.
+
+> [PLACEHOLDER: Image — `images/lost_in_middle.png` — adapt from Liu et al. 2023 paper or recreate. Shows model accuracy vs. position of relevant info in context.]
+
+## 2.2 What belongs in working memory
+
+Curated list — the constant **fight against bloat**:
+
+- Active goal / current task description
+- Last 5–10 conversation turns (raw)
+- Active tool results (current ones, not stale)
+- Files currently being edited
+- Compaction summary of older history
+- Critical instructions (re-injected if needed)
+
+**What doesn't belong:** full conversation history (compact it), all available tools (JIT-load them), all skill bodies (load on demand), project history (long-term memory).
+
+## 2.3 Compaction — the operational heart of memory
+
+When the context fills up, you have to throw something away. *How* you throw it away is the engineering decision.
+
+Six strategies, increasing in sophistication:
+
+### Strategy 1: Naive truncation
+Drop oldest messages. Cheap. Disastrous — you lose the original goal, key decisions.
+
+### Strategy 2: Sliding window
+Keep the last N turns. Same problems plus you lose tool definitions that were defined early.
+
+### Strategy 3: Summary replacement (industry standard)
+When context hits a threshold (say 70%), summarize the oldest 50% with an LLM call, replace with the summary. Used by Claude Code, ChatGPT.
+
+### Strategy 4: Structured sectioned summary (best practice)
+Don't summarize freeform — summarize into *fixed sections*:
+- Active goal
+- Key decisions made
+- Files modified
+- Errors encountered & resolutions
+- Next steps
+- Critical context to preserve
+
+Structured summaries survive compaction much better because they're parseable and predictable.
+
+### Strategy 5: Agent-triggered (self-compaction)
+The agent has a `compact_context()` tool. It decides when to compact. Allows task-aware compaction.
+
+### Strategy 6: Observational compaction (Mastra-style)
+Don't summarize the conversation — *extract discrete observations* from it. Convert chatter to facts.
+
+> [PLACEHOLDER: Code example — show before/after of structured compaction. Use the template from comprehensive guide section 15.]
+
+<div class="highlight"><pre><span></span><code><span class="c1"># Conceptual structured-compaction prompt</span>
+<span class="n">COMPACT_PROMPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">You are summarizing a long agent conversation to free up context.</span>
+<span class="s2">Produce ONLY these sections, in this exact order:</span>
+
+<span class="s2">## Active Goal</span>
+<span class="s2">{One sentence — what the agent is currently trying to do.}</span>
+
+<span class="s2">## Key Decisions</span>
+<span class="s2">{Bullet list of decisions made — keep the *why*, not the chatter.}</span>
+
+<span class="s2">## Artifacts Modified</span>
+<span class="s2">{File paths and one-line descriptions of changes.}</span>
+
+<span class="s2">## Current State</span>
+<span class="s2">{Where in the task are we? What&#39;s done, what&#39;s in progress.}</span>
+
+<span class="s2">## Errors &amp; Resolutions</span>
+<span class="s2">{Failures encountered and how they were addressed.}</span>
+
+<span class="s2">## Next Steps</span>
+<span class="s2">{What the agent intends to do next.}</span>
+
+<span class="s2">## Critical Context (DO NOT DROP)</span>
+<span class="s2">{Anything that future steps will need but is buried in chat.}</span>
+
+<span class="s2">Rules:</span>
+<span class="s2">- No conversational tone, no &quot;the user said...&quot;</span>
+<span class="s2">- Facts only, dense formatting</span>
+<span class="s2">- Preserve identifiers (function names, paths, commit hashes) verbatim</span>
+<span class="s2">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+## 2.4 What survives compaction matters more than how
+
+Three categories:
+
+- **Must survive (always re-injected):** system prompt, active goal, critical user constraints, tool definitions for active tools, current file contents being edited.
+- **Should survive (in summary):** key decisions, completed steps, error history, important tool results.
+- **Can be lost:** small-talk, verbose tool exploration, paths not taken, intermediate reasoning chains.
+
+The `CLAUDE.md` pattern (introduced in Class 4 for skills) re-emerges here: things written to a special file are *guaranteed* to be re-injected post-compaction.
+
+## 2.5 When to compact
+
+Three triggers:
+
+1. **Threshold-based:** at X% utilization. Simple, predictable.
+2. **Turn-based:** every N turns. Less common.
+3. **Task-boundary:** at the end of each subtask / phase. Best alignment with cognitive boundaries.
+
+**Best practice:** hybrid — threshold as a safety net, task-boundary for clean breaks.
+
+> **Demo placeholder:** [DEMO — Compaction in action]
+> Open a 40K-token agent trace from a debugging session. Run a naive truncation, a sliding window, and a structured summary. Show context-window utilization, then drop in a "what was the original bug?" probe. Naive fails; structured remembers. ~5 min live.
+
+> [PLACEHOLDER: Image — `images/compaction_strategies.png` — comparison table or visual of the six strategies with pros/cons.]
+
+--- -->
+
+<!-- # BLOCK 3 — Long-Term Memory (20 min)
+
+## 3.0 The 2026 memory-framework landscape (5 min, lead with this)
+
+> **Critical update vs. the syllabus's pre-readings (MemGPT 2023):** memory is no longer a research direction — it is a **product category** with managed services, real benchmarks, and active enterprise deployments. Cover this *before* the from-scratch implementations so students know what they're (re)building and why.
+
+The five frameworks an enterprise team will evaluate in mid-2026:
+
+| Framework | Architecture | What it's best at | Notable wins |
+|-----------|--------------|-------------------|--------------|
+| **Mem0** | Vector + graph + key-value, async extraction pipeline, 4-scope model (user_id / agent_id / run_id / app_id) | General-purpose, biggest community (47K+ stars) | **91.6% on LoCoMo @ 1.44s p95** vs full-context 72.9% @ 17.12s. +29.6 pts on temporal queries. 13 framework integrations (LangChain, LangGraph, CrewAI, AutoGen, OpenAI Agents SDK, Google ADK) |
+| **Letta** (renamed MemGPT) | OS-inspired hierarchy: main context + archival storage + explicit paging tools the agent calls | When you want the model to *consciously* manage its memory like syscalls | Most "researchy" — closest to the MemGPT paper. Stateful agent server, durable execution |
+| **Zep** | Temporal knowledge graph — tracks how facts change over time, async summarization + entity extraction | High-scale production; conversations + structured business data unified | Sub-100ms recall at 10M+ memories. Used where audit-trails of memory mutations matter |
+| **Cognee** | Triple-store: vector + graph + relational, ontology-driven | Unstructured-document ingestion at enterprise scale | **Live in 70+ companies** including **Bayer** (scientific research) and **University of Wyoming** (policy evidence graphs). $7.5M seed (Apr 2026). Plugs into Claude Agent SDK, OpenAI Agents SDK, LangGraph, Google ADK, n8n |
+| **Supermemory / ByteRover** | Hybrid retrieval, optimized for LongMemEval | Latency-critical and accuracy-critical workloads | **ByteRover 92.8% on LongMemEval-S @ 1.6s** (top benchmark score as of early 2026) |
+
+**Two architectural patterns are visible in this landscape:**
+
+1. **The OS pattern (Letta)** — the agent manages memory explicitly via tool calls (`mem_load`, `mem_save`). Closest to the MemGPT theory. Best when memory boundaries are semantically meaningful and the agent's own judgment is the right gatekeeper.
+2. **The pipeline pattern (Mem0, Zep, Cognee)** — memory is extracted, indexed, and retrieved *automatically* by a background service. The agent doesn't think about memory; it just talks. Best when you want a managed service and don't want to bake memory management into your agent's prompt budget.
+
+> **Teaching point:** the "OS analogy" from the MemGPT pre-reading is alive in Letta but **dead in the rest of the market**. Most production memory in 2026 is pipeline-style with the agent unaware. The OS framing is a *teaching tool*, not the prevailing pattern.
+
+> [PLACEHOLDER: Image — `images/memory_landscape_2026.png` — 2x3 grid showing the five frameworks with one-line architecture description and a benchmark number under each. Logos if available.]
+
+> [PLACEHOLDER: Image — `images/locomo_longmemeval_results.png` — bar chart of LoCoMo/LongMemEval scores: Mem0, Zep, Letta, ByteRover, Full-context baseline, RAG baseline. Show the latency tradeoff (accuracy vs. p95 latency) on a second pane.]
+
+**Enterprise selection heuristic** (use as a quick decision tree in class):
+
+<div class="highlight"><pre><span></span><code>Do you need audit trails of how facts changed over time? → Zep
+Do you ingest mostly unstructured documents (PDFs, wikis, papers)? → Cognee
+Do you want the agent to manage memory explicitly via tools? → Letta
+Do you want a managed service that &quot;just works&quot; with LangChain/CrewAI/OpenAI Agents? → Mem0
+Are you on a Claude Agent SDK / OpenAI Agents SDK stack and want first-party? → memory: &#39;user&#39;|&#39;project&#39;|&#39;local&#39; (built-in) + Cognee for graph layer
+None of the above and you have a small scope? → Files + a small vector index (the from-scratch path)
+``` --&gt;
+
+&lt;!-- ## 3.1 The three implementations — and why they coexist
+
+Long-term memory means: *survives across conversation sessions.* The three production patterns (these are *what the frameworks above implement under the hood*):
+
+### A. File-based memory (OpenClaw, Claude Code)
+</code></pre></div>
+memory/
+├── user.md          # Who the user is, preferences
+├── project.md       # Project context, architecture
+├── feedback.md      # Corrections and confirmed approaches
+├── reference.md     # External resource pointers
+└── MEMORY.md        # Index file (always loaded)
+<div class="highlight"><pre><span></span><code>**Why it works:**
+- Human-readable &amp; editable (you can `cat` it, edit it, version it).
+- Git-friendly.
+- No infrastructure dependency.
+- Inspectable for debugging.
+
+**Why it breaks:**
+- Doesn&#39;t scale past a few hundred entries.
+- No semantic search.
+- Requires the agent to *know* which file to read.
+
+&gt; [PLACEHOLDER: Image — `images/openclaw_memory.png` — screenshot or sketch of OpenClaw&#39;s `~/.openclaw/` directory layout with dated entries, identity file, persistent to-do list. Reference: case study from syllabus Class 6.]
+
+### B. Vector store memory
+
+```python
+from chromadb import Client
+db = Client()
+col = db.create_collection(&quot;agent_memory&quot;)
+
+col.add(
+    documents=[&quot;User prefers functional Python with type hints&quot;],
+    metadatas=[{&quot;type&quot;: &quot;user_preference&quot;, &quot;date&quot;: &quot;2026-03-15&quot;}],
+    ids=[&quot;mem_001&quot;]
+)
+
+results = col.query(
+    query_texts=[&quot;What coding style does the user prefer?&quot;],
+    n_results=5
+)
+</code></pre></div>
+
+**Why it works:**
+- Semantic search (finds conceptually similar memories).
+- Scales to large memory stores.
+- Automatic ranking by relevance.
+
+**Why it breaks:**
+- Embeddings ≠ understanding (false positives, especially with negations).
+- Less human-readable.
+- Returns top-k regardless of quality (you need a relevance threshold).
+- Embedding model drift if you change models.
+
+### C. Hybrid (best practice — Hermes Agent, and what Mem0/Cognee package)
+
+Files for *human-curated, structural* knowledge (preferences, project notes). Vector DB for *retrieved, contextual* knowledge (past traces, observations). SQLite FTS5 for keyword-precise recall. A graph layer (Neo4j, Amazon Neptune, NetworkX) for entity relationships.
+
+**Conceptual from-scratch version:**
+
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MemorySystem</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="n">FileMemory</span><span class="p">(</span><span class="s2">&quot;./memory/&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span> <span class="o">=</span> <span class="n">VectorMemory</span><span class="p">(</span><span class="s2">&quot;./vectors/&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fts</span> <span class="o">=</span> <span class="n">SQLiteFTS5</span><span class="p">(</span><span class="s2">&quot;./memory.db&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">store</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">:</span> <span class="n">Memory</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="o">.</span><span class="n">embed_and_store</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fts</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">recall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dedupe_and_rank</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">keyword_search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="o">.</span><span class="n">semantic_search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">top_k</span><span class="p">)</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">fts</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">top_k</span><span class="p">)</span>
+        <span class="p">)</span>
+</code></pre></div>
+
+**Library-based version (Mem0 — what most teams will actually ship in 2026):**
+
+<div class="highlight"><pre><span></span><code><span class="c1"># pip install mem0ai</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mem0</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryClient</span>
+
+<span class="n">memory</span> <span class="o">=</span> <span class="n">MemoryClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>  <span class="c1"># or self-hosted</span>
+
+<span class="c1"># Mem0 extracts facts from a conversation asynchronously.</span>
+<span class="c1"># You write conversations; Mem0 turns them into searchable memories.</span>
+<span class="n">memory</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;I&#39;m allergic to penicillin and I work at Acme Corp.&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;assistant&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Got it — noted both.&quot;</span><span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">user_id</span><span class="o">=</span><span class="s2">&quot;asha_42&quot;</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;app_id&quot;</span><span class="p">:</span> <span class="s2">&quot;support_bot&quot;</span><span class="p">,</span> <span class="s2">&quot;session_id&quot;</span><span class="p">:</span> <span class="s2">&quot;s-1&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1"># Later — different session, different agent — recall semantically:</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">memory</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+    <span class="n">query</span><span class="o">=</span><span class="s2">&quot;What medications should I avoid?&quot;</span><span class="p">,</span>
+    <span class="n">user_id</span><span class="o">=</span><span class="s2">&quot;asha_42&quot;</span><span class="p">,</span>
+    <span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;app_id&quot;</span><span class="p">:</span> <span class="s2">&quot;support_bot&quot;</span><span class="p">}</span>  <span class="c1"># scope by app</span>
+<span class="p">)</span>
+<span class="c1"># Returns: [{&quot;memory&quot;: &quot;User is allergic to penicillin&quot;, &quot;score&quot;: 0.91, ...}]</span>
+</code></pre></div>
+
+**Why this matters for your custom enterprise agent:** the four-scope model (`user_id` / `agent_id` / `run_id` / `app_id`) is the *minimum viable* memory isolation for any multi-tenant agent. If you build memory from scratch, you will reinvent this in your second sprint when you discover that the support agent's memories leaked into the sales agent's context. **Start with the scope model; the storage layer is the easy part.** -->
+
+<!-- ## 3.2 The retrieval question — when do you fetch memory?
+
+Two strategies:
+
+1. **Eager injection** — load relevant memory at the start of each session (Claude Code's `CLAUDE.md`, OpenClaw's `SOUL.md`). Pros: simple, agent always has it. Cons: pollutes context with possibly-irrelevant memory.
+2. **On-demand tool** — expose memory as a tool the agent calls (`recall_memory(query)`). Pros: clean context, agent fetches only what it needs. Cons: agent might fail to fetch when needed.
+
+**Hermes uses the on-demand tool pattern.** OpenClaw uses eager injection of *core* memory (`SOUL.md`) + on-demand fetch of *episodic* memory. Both are defensible. The choice depends on how much of your memory is universally relevant.
+
+> [PLACEHOLDER: Image — `images/memory_retrieval_eager_vs_ondemand.png` — sequence diagram comparing the two patterns.]
+
+## 3.3 MemGPT → Letta — the OS analogy (and where it shipped)
+
+> **Pre-reading anchor: Packer et al., *MemGPT: Towards LLMs as Operating Systems* (2023). The project rebranded to *Letta* in 2024 and now ships as a production-grade stateful agent server.**
+
+MemGPT/Letta borrows the operating-system memory hierarchy:
+
+- **Main context** = RAM (the LLM's prompt).
+- **Archival storage** = disk (vector DB).
+- **Paging** = `mem_load(addr)`, `mem_save(addr)` tools the agent calls itself.
+
+The agent literally manages its own memory by calling functions. This is a cleaner framing of the on-demand pattern: instead of "memory as RAG", it's "memory as syscalls."
+
+<div class="highlight"><pre><span></span><code><span class="c1"># Letta (Python) — a stateful agent that manages its own memory hierarchy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">letta</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_client</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">create_client</span><span class="p">()</span>
+
+<span class="n">agent</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_agent</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;support_assistant&quot;</span><span class="p">,</span>
+    <span class="n">persona</span><span class="o">=</span><span class="s2">&quot;You are a helpful support agent. Use core_memory_append and archival_memory_insert when learning new facts.&quot;</span><span class="p">,</span>
+    <span class="n">human</span><span class="o">=</span><span class="s2">&quot;The user is a senior Python engineer named Asha working on a Django+React e-commerce platform.&quot;</span><span class="p">,</span>
+    <span class="c1"># Memory hierarchy is exposed to the agent as tools:</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;core_memory_append&quot;</span><span class="p">,</span> <span class="s2">&quot;core_memory_replace&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;archival_memory_insert&quot;</span><span class="p">,</span> <span class="s2">&quot;archival_memory_search&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">agent_id</span><span class="o">=</span><span class="n">agent</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;I prefer pytest, not unittest.&quot;</span><span class="p">)</span>
+<span class="c1"># Behind the scenes: the agent decides &quot;this is important&quot; and calls core_memory_append.</span>
+<span class="c1"># Future conversations pick up that fact automatically.</span>
+</code></pre></div>
+
+> [PLACEHOLDER: Image — `images/memgpt_arch.png` — adapt from MemGPT paper Figure 1. Shows main context / archival storage / function-call interface. Update caption: "MemGPT 2023 → Letta 2026."]
+
+**Critical view (still true in 2026):** Letta is the cleanest *theory*, but in practice **most production memory systems don't make the agent manage paging explicitly**. Mem0 / Zep / Cognee all do the extraction-and-retrieval in the background; the agent doesn't think about it. The OS analogy oversells the hierarchy — LLMs don't have a 1000× latency gap between RAM and disk to justify aggressive paging. **Letta wins when memory boundaries are *semantically* meaningful and you want the agent to reason about them.** It loses when memory is just "everything that ever happened" and the agent shouldn't be burning tokens deciding what to remember.
+
+## 3.4 Naive accumulation degrades — the consolidation problem
+
+> **Pre-reading anchor: Park et al., *Generative Agents: Interactive Simulacra of Human Behavior*.**
+
+If you just append memories forever, three things break:
+
+1. **Retrieval gets noisy** — too many low-importance memories drown out relevant ones.
+2. **Storage cost grows linearly** — embeddings of 100K observations are not free.
+3. **The agent can't generalize** — it has 50 instances of "the user prefers terse responses" but never the abstraction.
+
+**Generative Agents' fix:** importance scoring + reflection.
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">importance</span><span class="p">(</span><span class="n">memory</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">llm_score</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;On a scale of 1-10, how important is this memory for &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;future reasoning? Mundane events: 1. Life-changing: 10.</span><span class="se">\n\n</span><span class="si">{</span><span class="n">memory</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">reflect</span><span class="p">(</span><span class="n">recent_memories</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Memory</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Memory</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Periodically: generate higher-level insights from recent memories.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">importance</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">recent_memories</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">THRESHOLD</span><span class="p">:</span>
+        <span class="n">insights</span> <span class="o">=</span> <span class="n">llm_generate</span><span class="p">(</span>
+            <span class="s2">&quot;What high-level patterns do you notice in these memories?&quot;</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">recent_memories</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Memory</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;reflection&quot;</span><span class="p">,</span> <span class="n">importance</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">insights</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[]</span>
+</code></pre></div>
+
+This is the canonical *consolidation* pattern: raw episodes get compressed into reflections, reflections feed retrieval more than raw episodes.
+
+> **Critical view (back to OpenClaw):** OpenClaw's memory layout *doesn't* do this. Memories accumulate linearly in dated folders. Students should identify this as a real design gap and propose a fix in lab. (This is the empirical hook from the syllabus's Class 6 case study spotlight.)
+
+--- -->
+
+<!-- # BLOCK 4 — Episodic and Procedural Memory (15 min)
+
+## 4.1 Episodic memory: learning from past trajectories
+
+The 2026 innovation, pioneered by **Hermes Agent** and formalized in **A-MEM (NeurIPS 2025, Xu et al.)** — a Zettelkasten-inspired memory system where memories auto-link, auto-tag, and *evolve* (existing memories get updated when new related ones arrive).
+
+An **episode** is a structured record:
+
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Episode</span><span class="p">:</span>
+    <span class="n">task_type</span><span class="p">:</span> <span class="nb">str</span>          <span class="c1"># &quot;deploy-to-ecs&quot;, &quot;bug-fix-flask&quot;</span>
+    <span class="n">approach</span><span class="p">:</span> <span class="nb">str</span>           <span class="c1"># What strategy was used</span>
+    <span class="n">outcome</span><span class="p">:</span> <span class="nb">str</span>            <span class="c1"># &quot;success&quot; | &quot;partial&quot; | &quot;failure&quot;</span>
+    <span class="n">key_actions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>  <span class="c1"># Specific steps taken</span>
+    <span class="n">lessons</span><span class="p">:</span> <span class="nb">str</span>            <span class="c1"># What to do differently next time</span>
+    <span class="n">timestamp</span><span class="p">:</span> <span class="n">datetime</span>
+    <span class="n">embedding</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>  <span class="c1"># For semantic similarity</span>
+</code></pre></div>
+
+After completing a task, the agent writes an episode. Before starting a *similar* future task, the agent retrieves the top-k similar episodes and *injects them into context*.
+
+> [PLACEHOLDER: Image — `images/hermes_episodic_loop.png` — flowchart: Task → Execute → Record Episode → (future) Similar Task → Recall → Inject → Adjust → Execute Better. Loop arrow back.]
+
+**Why this is powerful:**
+- Learning from mistakes *without retraining* the model.
+- Transfer learning across similar tasks.
+- Continuous improvement on recurring workflows.
+- Transparent — you can read why the agent chose an approach.
+
+**The self-improvement loop:**
+
+<div class="highlight"><pre><span></span><code>Task → Execute → Write Episode →
+   (future similar task) →
+Recall Episodes → Inject into context →
+Adjust approach → Execute → Write episode → ...
+</code></pre></div>
+
+**Caveat — the silent failure mode:** episodes can encode *spurious* lessons. If the agent succeeded *despite* a bad approach (lucky run), it might enshrine the bad approach. You need outcome verification and ideally meta-evaluation of episodes themselves.
+
+**A-MEM's contribution (NeurIPS 2025) — why mention it:** A-MEM extends naive episodic storage with three Zettelkasten primitives:
+
+1. **Structured notes** — each memory gets contextual description, keywords, tags (not just embedding).
+2. **Automatic linking** — when a new memory arrives, the system finds historically similar ones and creates explicit links.
+3. **Memory evolution** — new memories can *update* the attributes of existing ones (importance, tags, summaries).
+
+The empirical claim (paper, six foundation models, six tasks): A-MEM beats both naive vector-store memory *and* MemGPT-style paging. The deeper lesson: **memory should be a living graph, not an append-only log.** Cognee's design follows this; Mem0's graph mode follows this; the field is converging.
+
+> [PLACEHOLDER: Image — `images/amem_zettelkasten.png` — sketch showing memories as notes with links forming a graph; show how a new memory triggers re-tagging of an old one. Reference: A-MEM paper Figure 2.] -->
+
+<!-- ## 4.2 Observational memory (Mastra-style) — the orthogonal axis
+
+> Episodic = "what trajectories I had". Observational = "what facts I extracted".
+
+<div class="highlight"><pre><span></span><code>Traditional conversation memory:
+  &quot;User: Can you help me set up the project? I use TypeScript
+   and deploy to Vercel. The database is Supabase.&quot;
+  → 47 tokens stored
+
+Observational memory:
+  - &quot;User&#39;s language: TypeScript&quot;          → 5 tokens
+  - &quot;Deploy target: Vercel&quot;                → 4 tokens
+  - &quot;Database: Supabase&quot;                   → 3 tokens
+  → 12 tokens (4x compression)
+</code></pre></div>
+
+**Mastra's extraction prompt** (paraphrased):
+> "Extract key facts as discrete, standalone observations. Each should be independently useful, factual (not opinion), actionable. Format: one fact per line, start with the category. e.g.,
+> `[PREFERENCE] User prefers TypeScript over JavaScript`
+> `[ARCHITECTURE] Auth service uses JWT with RS256`
+> `[CONVENTION] Team uses conventional commits`
+> `[CONSTRAINT] API rate limit is 100 req/min`"
+
+**Use observational memory when:** conversations are long but information-sparse; you need fast recall; the same facts apply across many conversations. -->
+
+<!-- ## 4.3 Procedural memory: agents that write their own skills
+
+Tied to Class 4's `SKILL.md` pattern but with a key twist: **the agent itself authors new skills.**
+
+Hermes' pattern: after a *complex* task succeeds, the agent is prompted: *"Write a `SKILL.md` that future-you could use to do this faster."* The skill is saved to disk and surfaces in the catalog for future runs.
+
+> [PLACEHOLDER: Image — `images/procedural_memory_loop.png` — diagram: Successful complex task → "Could this become a skill?" judge → If yes, write `SKILL.md` → Skill catalog grows over time.]
+
+**Failure mode:** skill bloat. The agent writes too many skills, each marginal. Mitigation: a *consolidator* pass that merges or deletes skills that overlap or were never reused.
+
+**Comparison with OpenClaw:** OpenClaw's skills are human-authored. Hermes' are agent-authored. Same file format, different theory of where skills come from. Both work; the test is whether the agent's skills *generalize* (a self-authored skill is only useful if it gets re-invoked, which requires a description that matches future queries). -->
+
+<!-- ## 4.4 User modeling — a special case of memory
+
+The agent builds a **deepening model of the user** across sessions:
+
+- Session 1: name, timezone, languages.
+- Session 5: typical tasks, communication style, expertise.
+- Session 20: decision patterns, common mistakes, preferred solutions.
+
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UserModel</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">expertise_areas</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">communication_style</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># &quot;terse&quot; | &quot;detailed&quot; | &quot;casual&quot;</span>
+    <span class="n">decision_patterns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">preferred_solutions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>  <span class="c1"># problem_type → approach</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_observation</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># LLM-powered integration: merge or replace?</span>
+        <span class="o">...</span>
+</code></pre></div>
+
+This is what your `MEMORY.md` system in Claude Code does — it accumulates a user profile that future sessions read. **The auto-memory section of your Claude Code system prompt is exactly this pattern** — students can inspect their own `~/.claude/projects/.../memory/` directories as a live example. -->
+
+<hr />
+<!-- # BLOCK 5 — Evaluating Memory & Lab Walkthrough (15 min)
+
+## 5.1 Why evaluating memory is hard
+
+Memory systems are evaluated on *future tasks*, not on the moment of storage. That makes:
+
+- **Ground truth** ill-defined — "did the agent remember the right thing?" depends on what the future task needed.
+- **Tasks slow** — a memory benchmark needs at least two sessions, with the second probing knowledge from the first.
+- **Confounds everywhere** — did the agent succeed because of memory, or because the second task was just easier?
+
+## 5.2 The standard memory benchmarks (use these — don't invent your own)
+
+> **Big update vs. the syllabus.** When the syllabus was written, memory eval was hand-rolled. As of mid-2026 there are two community benchmarks teams report against. Use them.
+
+### LoCoMo (Snap Research, "Evaluating Very Long-Term Conversational Memory of LLM Agents")
+
+- **Composition:** 10 multi-session conversations, 272 sessions total, **7,512 question-answer pairs**.
+- **Question categories:** single-hop recall, multi-hop reasoning, temporal reasoning, open-domain knowledge, adversarial questions.
+- **Why it matters:** the only benchmark that stresses *cross-session, multi-modal, temporally-evolving* memory.
+
+### LongMemEval / LongMemEval-S (Wu et al., ICLR 2025)
+
+- **Composition:** 500 questions across 6 memory abilities — knowledge updates, temporal reasoning, multi-session synthesis, information extraction, abstention, and single-session preference.
+- **The headline result that every memory framework cites:** GPT-4o scores **87.0% when given only relevant sessions**, but drops to **60.6% when given the full ~115K-token conversation history**. The benchmark *forces* memory pruning — naive long-context loses.
+
+### Public scores to anchor a discussion (as of May 2026)
+
+| System          | LoCoMo (LLM-judge) | LongMemEval-S | p95 latency |
+|-----------------|---------------------|---------------|-------------|
+| **Mem0**        | 91.6%               | —             | 1.44 s      |
+| Mem0g (graph)   | 68.4%               | —             | 2.59 s      |
+| **ByteRover**   | 92.2%               | **92.8%**     | 1.6 s       |
+| Full-context (Opus 4 / Gemini 2.5) baseline | 72.9% | 60.6% (GPT-4o) | ~17 s |
+| OpenAI Memory (built-in)   | 52.9%   | —             | —           |
+| Vanilla RAG     | 61.0%               | —             | 0.70 s      |
+
+**Discussion prompt:** Mem0 is 6 points *below* full-context on LoCoMo but **12× faster**. Which would your CTO prefer for a customer-facing assistant? For a one-shot research assistant? (Different answers — surface the tradeoff explicitly.)
+
+> [PLACEHOLDER: Image — `images/memory_benchmarks_2026.png` — bar chart comparing systems on LoCoMo, with a second axis showing p95 latency. Make the accuracy-latency tradeoff visible.]
+
+## 5.3 Evaluation patterns that work (when you can't run a public benchmark)
+
+### Pattern 1: Two-session benchmark
+- Session 1: agent solves task A.
+- Session 2: agent gets task B, where solving B *requires* a fact learned in A.
+- Measure: success rate on B with vs. without persistent memory.
+
+### Pattern 2: Fact recall sets
+- Inject 100 facts during a "conversation" with the agent.
+- Ask 30 probe questions later.
+- Measure: precision/recall on the probes. (Borrowed from RAG eval.)
+
+### Pattern 3: Trajectory similarity
+- Same task type, multiple runs.
+- Measure: does the agent's *trajectory* become shorter / cheaper over time?
+- (This is the Hermes self-improvement thesis — verifiable directly.)
+
+### Pattern 4: Adversarial memory
+- Inject noise / false facts.
+- Measure: does the agent get confused, or does it correctly weight by importance / source?
+
+## 5.4 Connect to the Class 1/2 eval harness
+
+Memory eval should *reuse* the harness students built in Classes 1–2:
+
+- Golden dataset → multi-session tasks.
+- LLM-as-judge → measures whether memory was *correctly applied*, not just recalled.
+- Cost / latency / tokens-to-solution as co-equal metrics.
+
+> **Demo placeholder:** [DEMO — Two-session memory benchmark]
+> Run the Class 6 lab agent on a two-session task. Session 1 teaches the agent that the project uses Black formatter with line-length 100. Session 2 asks it to add a function — measure whether the new code respects line-length 100 without being told. Compare to no-memory baseline. ~5 min live.
+
+## 5.5 Lab preview (Class 6 syllabus lab)
+
+Build an agent with persistent memory across sessions:
+- SQLite + vector store for episodic + semantic memory.
+- Reflection step at session end that consolidates raw trajectories into higher-level summaries.
+- Retrieval layer that injects relevant memories at the start of each session.
+
+Evaluate on a two-session task. Report success rate and tokens-to-solution vs. no-memory baseline.
+
+**Coding-agent spine — Episode 4: Persistent project memory.** Three memory types:
+- **Semantic** → `PROJECT_NOTES.md` (architecture, conventions).
+- **Episodic** → append-only decision log.
+- **Procedural** → self-written `SKILL.md` files.
+
+Reflection pass at session end updates `PROJECT_NOTES.md`. Next session loads it.
+
+## 5.6 Memory implementations compared (table for slides — updated for 2026)
+
+| System                | File-based | Vector | Graph | Episodic | Observational | User model | Managed service |
+|-----------------------|------------|--------|-------|----------|---------------|------------|------------------|
+| OpenClaw              | ✅ primary | ✅ search | ❌ | ❌      | ❌            | ❌         | ❌ (self-host) |
+| Claude Code / Claude Agent SDK | ✅ CLAUDE.md + memory: 'user'/'project'/'local' | ❌ | ❌ | ❌ | ❌ | ✅ memory files | partial (built-in) |
+| Hermes Agent          | ✅         | ✅ FTS5 | ❌  | ✅ primary | ❌         | ✅ deep    | ❌ (self-host) |
+| Mastra                | ❌         | ✅     | ❌    | ❌       | ✅ primary    | ❌         | ✅ |
+| **Mem0**              | ❌         | ✅     | ✅ (mode) | partial | ✅ extract  | ✅         | ✅ + self-host |
+| **Letta** (MemGPT)    | partial    | ✅     | ❌    | ✅       | ❌            | ✅         | ✅ + self-host |
+| **Zep**               | ❌         | ✅     | ✅ (temporal) | ✅ | ✅          | ✅         | ✅ + self-host |
+| **Cognee**            | partial    | ✅     | ✅    | ❌       | ❌            | ❌         | ✅ + self-host |
+| LangGraph             | ❌         | via store | ❌ | ❌    | ❌            | ❌         | (you bring it) |
+
+**Key insight to land:** the richest memory systems used to live in *personal* agents (Hermes, OpenClaw) where long-term relationship matters. In 2026 they live in **memory-as-a-service vendors** (Mem0, Letta, Zep, Cognee). Framework-level tools (LangGraph, CrewAI) still leave memory to the developer or plug in one of those vendors. **Memory is now a product decision AND a vendor decision.**
+
+> [PLACEHOLDER: Image — `images/memory_vendors_2026.png` — adapted version of the table above as a quick-reference card. Highlight which 4 of the 9 a CTO is most likely to evaluate (Mem0, Letta, Zep, Cognee).] -->
+
+<!-- ## 5.7 Mid-class through-line check (~3 min discussion)
+
+Ask students:
+- *"Of the four memory types — working / episodic / semantic / procedural — which would you skip if you had to build a coding agent in one weekend?"*
+- (Goal: get them to argue for the minimal viable memory system. Answer most converge on: working + a single file-based `PROJECT_NOTES.md`. Episodic is the high-effort/high-reward bet.)
+
+---
+
+# 🔔 BREAK (10 min) — 95 → 105
+
+> [PLACEHOLDER: Slide — "Stretch. Coffee. Back in 10."]
+
+---
+
+# PART II — MULTI-AGENT SYSTEMS (Blocks 6–10, ~75 min)
+
+# BLOCK 6 — Why Multi-Agent? (10 min)
+
+## 6.1 The naive pitch and the counter-pitch
+
+**Naive pitch:** *"Specialized agents win, like specialized humans. A coder, a reviewer, a tester — clean division of labor."*
+
+**Counter-pitch (Cognition, "Don't Build Multi-Agents", Walden Yan):** *"You don't have specialists — you have one model called with different prompts. Splitting context across multiple calls usually *loses* information and *adds* coordination cost. Just give one capable agent the right context."*
+
+> [PLACEHOLDER: Slide — split panel: "Multi-agent advocates (MetaGPT, AutoGen, CrewAI)" vs. "Multi-agent skeptics (Cognition, Walden Yan)" with one-line summary of each position.]
+
+**Today's job is to take this debate seriously.** Both sides have evidence. The lab in Class 7 forces students to feel the tradeoff directly.
+
+## 6.2 When multi-agent actually wins
+
+Three regimes where it pays:
+
+1. **Specialization** — different prompts AND different tools/models. (A cheap model for exploration, an expensive one for synthesis.)
+2. **Parallelism** — independent subtasks that can run concurrently. (Fix 5 unrelated bugs in 5 PRs.)
+3. **Adversarial dynamics** — debate, red-teaming, solver–critic. The *disagreement* is the signal.
+
+## 6.3 When multi-agent loses
+
+1. **Coordination cost** — each handoff is a token tax + a latency tax.
+2. **Error compounding** — a 90%-reliable agent chained 5 times is 0.9^5 ≈ 59% reliable.
+3. **Context fragmentation** — agent B doesn't have what agent A knew.
+4. **Debug nightmare** — failures cross agent boundaries; root cause analysis is hard.
+
+> [PLACEHOLDER: Image — `images/error_compounding.png` — chart showing reliability decay: 0.9^n on the y-axis, chain length n on the x-axis. Annotate "the multi-agent tax".]
+
+## 6.4 The right question to ask first
+
+Not *"should I use multi-agent?"* but *"do I have a real reason to fragment context?"*
+
+The **"Do I need multi-agent?" checklist** (Anthropic):
+- [ ] Single agent can't hold all the context? → Multi-agent.
+- [ ] Task has clearly separable subtasks? → Pipeline.
+- [ ] Need different tool sets for different phases? → Multi-agent.
+- [ ] Quality requires worker + reviewer? → Pair.
+- [ ] Multiple independent tasks can run in parallel? → Fleet.
+- [ ] None of the above? → **Stay single-agent.**
+
+## 6.5 Anthropic sizing recommendations
+
+- **3–5 agents per team** max. More → coordination overhead.
+- **1–5 tools per agent**. More → tool-selection failures.
+- **Max 10 tools across team**. Total surface should be manageable.
+- **Start with 1 agent.** Add more only with empirical evidence.
+
+## 6.6 The canonical 2026 case: Anthropic's multi-agent research system
+
+> **Live this with the class. Have the Anthropic engineering blog open on a second screen.**
+
+**Architecture:** Lead Researcher (Claude Opus 4) + parallel Sonnet 4 subagents + a Citation Agent that runs after the research loop closes.
+
+**Performance:** **+90.2%** over single-agent Opus 4 on Anthropic's internal research eval.
+
+**Cost:** approximately **15× the tokens of a chat interaction** (vs. ~**4×** for a single agent). Token usage alone explains **80% of variance** in the BrowseComp eval. → *Multi-agent is economically viable only for high-value tasks.*
+
+**Eight prompt-engineering rules Anthropic published** (worth quoting verbatim in slides):
+
+1. Think like your agents — simulate failures by running them through edge cases manually.
+2. Teach orchestrators to delegate with explicit objectives + output format + tool guidance + task boundaries.
+3. Scale effort to query complexity (1 agent / 3-10 calls for facts; 2-4 subagents / 10-15 calls for comparisons; 10+ subagents for complex research).
+4. Design tools with critical, clear descriptions.
+5. Let agents improve themselves — have Claude diagnose flawed MCP tools; testing reduced subsequent task completion time by **40%**.
+6. Start wide with broad queries, then narrow.
+7. Guide reasoning via extended thinking mode as a "controllable scratchpad."
+8. Enable parallel tool calling — cut research time **by up to 90%** vs. sequential.
+
+**Production engineering details worth emphasizing:**
+- **Rainbow deployments** — gradually shift traffic from old to new agent versions while *both run simultaneously*; otherwise mid-flight agents break.
+- **Artifact pattern** — subagents write outputs to a filesystem/object store and pass back lightweight *references* (paths, IDs), not the full payload. This prevents the lead agent's context from inflating proportionally to subagent work.
+- **Observability** — log decision patterns and interaction structure *without* logging conversation content (privacy-preserving telemetry).
+- **Synchronous bottleneck** — the lead agent currently waits for all subagents. Asynchronous would unlock more parallelism but adds coordination complexity. *Open problem*.
+
+**The early failure modes Anthropic observed (excellent slide material):**
+- Spawning 50 subagents for simple queries.
+- Subagents endlessly scouring the web for nonexistent sources.
+- Agents distracting each other with excessive coordination updates.
+- Preferring SEO-optimized content farms over authoritative sources.
+
+> [PLACEHOLDER: Image — `images/anthropic_research_system.png` — adapt from Anthropic's engineering blog. Lead Researcher at top, 3-5 subagents in parallel below, Citation Agent at the end. Annotate "+90.2% / 15× tokens".]
+
+> **Mantra:** *Multi-agent is structure imposed on top of a capable LLM. The structure must justify itself in the eval numbers, not in the architecture diagram.*
+
+--- -->
+
+<!-- # BLOCK 7 — Orchestration Patterns (20 min)
+
+## 7.0 The 2026 multi-agent framework landscape (5 min, lead with this)
+
+> **Critical update vs. the syllabus's pre-readings (MetaGPT, AutoGen — 2023).** The landscape has consolidated. Here's what your students will encounter in production code reviews.
+
+| Framework | Status (May 2026) | Strengths | Best for |
+|-----------|--------------------|-----------|----------|
+| **LangGraph** (LangChain) | Production leader — **34% of agent-framework citations in 1,000+-employee orgs (Gartner Q1 2026)**; used at Uber, Klarna, LinkedIn, Replit, AppFolio | Graph-based, typed state, checkpointing, durable execution, LangSmith observability built-in | Stateful, long-running workflows; teams that need explicit flow control |
+| **Microsoft Agent Framework** | **New unified SDK (GA early 2026)** — replaces AutoGen + Semantic Kernel; production support, group chat, Magentic-One, checkpointing, HITL | Azure-native, enterprise IAM, stable orchestration patterns | Microsoft / Azure shops |
+| **AutoGen** | **Maintenance mode** — security patches only; Magentic-One still notable for browser+code agents | Still good for prototyping multi-agent conversations | Research / migration target → Microsoft Agent Framework |
+| **CrewAI** | Active; commercial license + on-prem option | Role-based abstraction, fastest demo path (2–3 engineer-days) | Quick prototypes, hierarchical role models, no graph thinking |
+| **OpenAI Agents SDK** | Production-grade (replaced experimental Swarm Mar 2025); **April 2026 added "harness" system** (sandboxing, long-horizon resume, code mode, subagents) | Handoffs, guardrails, tracing built-in; 100+ LLMs via providers | OpenAI-native stacks or anyone wanting handoff-style coordination |
+| **Claude Agent SDK** | Production; subagents as first-class primitive; Skills + MCP + Memory unified | `AgentDefinition` programmatic subagents, tool restrictions, model overrides per subagent | Claude-native; coding agents; teams wanting a Claude-Code-style harness |
+| **smolagents** | Active, minimal | CodeAct-first, ~1000-line implementation | Teaching, research, agents that *think in code* |
+| **AG2 / Google ADK** | Active | A2A native, cross-framework | Multi-vendor agent meshes |
+
+**Important contextual note:** the syllabus refers students to MetaGPT and AutoGen as the canonical multi-agent reading. **MetaGPT is still pedagogically excellent** for understanding role-based pipelines, but its *direct* production use in 2026 is rare — its design ideas (typed artifacts between roles) have been absorbed into CrewAI and LangGraph. Read MetaGPT for the *idea*; deploy LangGraph or CrewAI for the *implementation*.
+
+### Concrete code: a LangGraph supervisor (the most-cited 2026 pattern)
+
+<div class="highlight"><pre><span></span><code><span class="c1"># pip install langgraph langgraph-supervisor langchain-anthropic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langgraph_supervisor</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_supervisor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langgraph.prebuilt</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_react_agent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_anthropic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatAnthropic</span>
+
+<span class="c1"># Tiered model strategy (cuts cost 60–70% vs. all-Opus):</span>
+<span class="n">supervisor_llm</span> <span class="o">=</span> <span class="n">ChatAnthropic</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;claude-opus-4-7&quot;</span><span class="p">)</span>   <span class="c1"># reasoning for routing</span>
+<span class="n">worker_llm</span>     <span class="o">=</span> <span class="n">ChatAnthropic</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;claude-haiku-4-5-20251001&quot;</span><span class="p">)</span>  <span class="c1"># execution</span>
+
+<span class="n">researcher</span> <span class="o">=</span> <span class="n">create_react_agent</span><span class="p">(</span>
+    <span class="n">worker_llm</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">web_search</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;researcher&quot;</span><span class="p">,</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;You research topics. Return facts only.&quot;</span>
+<span class="p">)</span>
+<span class="n">coder</span> <span class="o">=</span> <span class="n">create_react_agent</span><span class="p">(</span>
+    <span class="n">worker_llm</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">run_python</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;coder&quot;</span><span class="p">,</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;You write Python. Return code only.&quot;</span>
+<span class="p">)</span>
+<span class="n">reviewer</span> <span class="o">=</span> <span class="n">create_react_agent</span><span class="p">(</span>
+    <span class="n">worker_llm</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="p">[],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;reviewer&quot;</span><span class="p">,</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;You review code for bugs. Return issues found or &#39;OK&#39;.&quot;</span>
+<span class="p">)</span>
+
+<span class="n">supervisor</span> <span class="o">=</span> <span class="n">create_supervisor</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">researcher</span><span class="p">,</span> <span class="n">coder</span><span class="p">,</span> <span class="n">reviewer</span><span class="p">],</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">supervisor_llm</span><span class="p">,</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Route work between researcher, coder, reviewer. Reply &#39;DONE&#39; when complete.&quot;</span>
+<span class="p">)</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">checkpointer</span><span class="o">=</span><span class="n">MemorySaver</span><span class="p">())</span>  <span class="c1"># durable execution</span>
+</code></pre></div>
+
+### Concrete code: Claude Agent SDK subagents (the new canonical "spawn a specialist" pattern)
+
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">claude_agent_sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">query</span><span class="p">,</span> <span class="n">ClaudeAgentOptions</span><span class="p">,</span> <span class="n">AgentDefinition</span>
+
+<span class="k">async</span> <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">query</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Review the authentication module for security issues&quot;</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="n">ClaudeAgentOptions</span><span class="p">(</span>
+        <span class="n">allowed_tools</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Read&quot;</span><span class="p">,</span> <span class="s2">&quot;Grep&quot;</span><span class="p">,</span> <span class="s2">&quot;Glob&quot;</span><span class="p">,</span> <span class="s2">&quot;Agent&quot;</span><span class="p">],</span>  <span class="c1"># &#39;Agent&#39; is required to spawn subagents</span>
+        <span class="n">agents</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;code-reviewer&quot;</span><span class="p">:</span> <span class="n">AgentDefinition</span><span class="p">(</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Expert reviewer. Use for security/quality reviews.&quot;</span><span class="p">,</span>
+                <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Review code for security issues. Be concise.&quot;</span><span class="p">,</span>
+                <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Read&quot;</span><span class="p">,</span> <span class="s2">&quot;Grep&quot;</span><span class="p">,</span> <span class="s2">&quot;Glob&quot;</span><span class="p">],</span>   <span class="c1"># read-only — can&#39;t break things</span>
+                <span class="n">model</span><span class="o">=</span><span class="s2">&quot;opus&quot;</span><span class="p">,</span>                      <span class="c1"># high-stakes → bigger model</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;test-runner&quot;</span><span class="p">:</span> <span class="n">AgentDefinition</span><span class="p">(</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Runs and analyzes test suites.&quot;</span><span class="p">,</span>
+                <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Run tests, summarize failures.&quot;</span><span class="p">,</span>
+                <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Bash&quot;</span><span class="p">,</span> <span class="s2">&quot;Read&quot;</span><span class="p">,</span> <span class="s2">&quot;Grep&quot;</span><span class="p">],</span>
+                <span class="n">model</span><span class="o">=</span><span class="s2">&quot;sonnet&quot;</span><span class="p">,</span>                    <span class="c1"># cheap model, can execute</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">),</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+</code></pre></div>
+
+**The key behavioral detail to land:** subagents **start with a fresh context window** (`AgentDefinition.prompt` + the parent's invocation prompt; nothing else). All intermediate file reads, grep results, bash output stay inside the subagent — only the final message comes back. **This is context isolation as a primitive, not a pattern you have to engineer.**
+
+> [PLACEHOLDER: Image — `images/framework_landscape_2026.png` — 2x4 grid of the frameworks with one-line "what it's for" and a "production-ready / maintenance / research" status badge.] -->
+
+<!-- ## 7.1 The five-and-one patterns
+
+Five proven patterns + one anti-pattern.
+
+### Pattern 1 — Supervisor / Manager (hub-and-spoke)
+
+<div class="highlight"><pre><span></span><code>        Supervisor
+       /    |    \
+   Worker  Worker  Worker
+   (search)(code) (test)
+</code></pre></div>
+
+Supervisor decides who works next, aggregates results, maintains overview.
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">supervisor</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;LLM decides which worker to call next.&quot;&quot;&quot;</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">supervisor_llm</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
+        <span class="n">system</span><span class="o">=</span><span class="s2">&quot;You manage a team: researcher, coder, tester. &quot;</span>
+               <span class="s2">&quot;Decide who should work next. Reply with the name &quot;</span>
+               <span class="s2">&quot;or &#39;DONE&#39; if complete.&quot;</span><span class="p">,</span>
+        <span class="n">user</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Current state: </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;next_agent&quot;</span><span class="p">:</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">}</span>
+
+<span class="n">graph</span><span class="o">.</span><span class="n">add_conditional_edges</span><span class="p">(</span><span class="s2">&quot;supervisor&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;next_agent&quot;</span><span class="p">])</span>
+</code></pre></div>
+
+**Used by:** CrewAI (hierarchical), LangGraph, AutoGen GroupChat.
+**Pros:** flexible routing, can handle complex flows.
+**Cons:** supervisor is a bottleneck + adds an LLM call every step.
+
+### Pattern 2 — Sequential Pipeline
+
+<div class="highlight"><pre><span></span><code>Agent A → Agent B → Agent C → Agent D
+(plan)    (code)    (review)  (test)
+</code></pre></div>
+
+**Used by:** MetaGPT (PM → Architect → PM → Engineer → QA), Aider (architect → editor).
+
+**Pros:** simple, predictable, specialist per role.
+**Cons:** rigid — no feedback loops unless you wire them.
+
+### Pattern 3 — Graph with Conditional Edges (LangGraph)
+
+Explicit DAG (or graph with cycles) where nodes are agents and edges encode transitions.
+
+<div class="highlight"><pre><span></span><code><span class="n">graph</span> <span class="o">=</span> <span class="n">StateGraph</span><span class="p">(</span><span class="n">State</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;planner&quot;</span><span class="p">,</span> <span class="n">planner_agent</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;coder&quot;</span><span class="p">,</span> <span class="n">coder_agent</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;reviewer&quot;</span><span class="p">,</span> <span class="n">reviewer_agent</span><span class="p">)</span>
+
+<span class="n">graph</span><span class="o">.</span><span class="n">set_entry_point</span><span class="p">(</span><span class="s2">&quot;planner&quot;</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;planner&quot;</span><span class="p">,</span> <span class="s2">&quot;coder&quot;</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;coder&quot;</span><span class="p">,</span> <span class="s2">&quot;reviewer&quot;</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">.</span><span class="n">add_conditional_edges</span><span class="p">(</span><span class="s2">&quot;reviewer&quot;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s2">&quot;approved&quot;</span><span class="p">:</span> <span class="n">END</span><span class="p">,</span>
+    <span class="s2">&quot;needs_changes&quot;</span><span class="p">:</span> <span class="s2">&quot;coder&quot;</span>
+<span class="p">})</span>
+</code></pre></div>
+
+**Pros:** explicit flow, cycles supported, checkpointed.
+**Cons:** more setup, graph shape decided up front (less LLM-driven flexibility).
+
+### Pattern 4 — Debate / Adversarial (solver–critic, solver–adversary–judge)
+
+> **Pre-reading anchor: Du et al., *Improving Factuality and Reasoning through Multiagent Debate*; Chan et al., *ChatEval*.**
+
+<div class="highlight"><pre><span></span><code>Solver  ──proposes──► [Solution]
+Adversary ──critiques──► [Critique]
+Judge ──decides──► Final answer
+</code></pre></div>
+
+**Why it works:** Disagreement surfaces blind spots a single chain-of-thought misses.
+**When it doesn't:** when the LLM agrees with itself. ("Echo chamber problem" — two instances of the same model produce correlated errors.) Diversity helps — use different system prompts, different temperatures, or even different models.
+
+### Pattern 5 — Parallel Fleet (Composio-style)
+
+<div class="highlight"><pre><span></span><code>Planner ──decomposes──► [Task1, Task2, Task3, ...]
+                    ↓
+[Agent1 in worktree1] [Agent2 in worktree2] [Agent3 in worktree3]
+       ↓                    ↓                    ↓
+      PR1                  PR2                  PR3
+</code></pre></div>
+
+Independent agents in isolated workspaces (git worktrees!) work in parallel on parallelizable subtasks. Each creates its own PR; humans (or another agent) merge.
+
+**Pros:** massive parallelism, isolated workspaces (no merge conflicts mid-execution).
+**Cons:** orchestration is complex, merge conflicts at PR time, no shared learning between agents.
+
+### Pattern 6 (anti-pattern, mention briefly) — Free-for-all / blackboard
+
+Multiple agents read and write to a shared blackboard freely. Sounds elegant, fails in practice — agents step on each other, write conflicting state, infinite loops. Classical AI tried this in the 80s; not a winning pattern for LLMs either.
+
+## 7.2 Hierarchical, peer, debate — choosing the topology
+
+<div class="highlight"><pre><span></span><code>        | Hierarchical | Peer / Debate | Pipeline
+--------|--------------|---------------|----------
+Speed   | Medium       | Slow          | Medium
+Cost    | Medium       | High          | Medium
+Quality | High         | Highest       | Medium
+Debug   | Hard         | Medium        | Easy
+Use for | Complex task | Risky output  | Linear workflow
+</code></pre></div>
+
+> [PLACEHOLDER: Image — `images/orchestration_patterns.png` — single figure showing all five patterns as small diagrams. Reference: comprehensive guide section 33.]
+
+## 7.3 The roles checklist for any multi-agent system
+
+If you're going multi-agent, define these explicitly per agent:
+
+1. **Identity prompt** — who this agent *is*.
+2. **Scope** — what it does AND what it doesn't.
+3. **Tools** — its specific (narrow!) tool set.
+4. **Inputs** — what shape of state it consumes.
+5. **Outputs** — what shape of artifact it produces.
+6. **Handoff rules** — when does it pass to another agent?
+7. **Failure mode** — what happens if it fails? Retry? Escalate?
+
+If you can't fill in this checklist for an agent, **you don't have an agent — you have a prompt with delusions of grandeur.**
+
+--- -->
+
+<!-- # BLOCK 8 — State Passing & Communication (15 min)
+
+## 8.1 Three ways agents pass state
+
+### Method 1 — Shared state object (LangGraph, CrewAI)
+
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SharedState</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+    <span class="n">messages</span><span class="p">:</span> <span class="nb">list</span>
+    <span class="n">plan</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">code</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">test_results</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">planner</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="n">plan</span> <span class="o">=</span> <span class="n">llm</span><span class="p">(</span><span class="s2">&quot;Plan for: &quot;</span> <span class="o">+</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;plan&quot;</span><span class="p">:</span> <span class="n">plan</span><span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">coder</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="n">llm</span><span class="p">(</span><span class="s2">&quot;Implement: &quot;</span> <span class="o">+</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;plan&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="n">code</span><span class="p">}</span>
+</code></pre></div>
+
+All agents read/write a single state object. Simple, debuggable. Risk: agents step on each other if scope isn't enforced.
+
+### Method 2 — Artifact passing (MetaGPT)
+
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PRD</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">goals</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">user_stories</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">requirements</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SystemDesign</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">architecture</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">api_specs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">APISpec</span><span class="p">]</span>
+
+<span class="n">prd</span><span class="p">:</span> <span class="n">PRD</span> <span class="o">=</span> <span class="n">product_manager</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">requirement</span><span class="p">)</span>
+<span class="n">design</span><span class="p">:</span> <span class="n">SystemDesign</span> <span class="o">=</span> <span class="n">architect</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">prd</span><span class="p">)</span>
+<span class="n">code</span><span class="p">:</span> <span class="n">CodeOutput</span> <span class="o">=</span> <span class="n">engineer</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">design</span><span class="p">)</span>
+</code></pre></div>
+
+Each agent produces a **typed artifact**. Next agent consumes it. Pros: type-safe contracts between agents. Cons: rigid (changing the artifact format ripples).
+
+### Method 3 — Message passing (AG2-style)
+
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Agent</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Message</span><span class="p">:</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Message</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">recipient</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">resp</span><span class="p">)</span>
+
+<span class="n">stream</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s2">&quot;coder&quot;</span><span class="p">,</span> <span class="n">coder_agent</span><span class="o">.</span><span class="n">handle_message</span><span class="p">)</span>
+<span class="n">stream</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s2">&quot;reviewer&quot;</span><span class="p">,</span> <span class="n">reviewer_agent</span><span class="o">.</span><span class="n">handle_message</span><span class="p">)</span>
+<span class="n">stream</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Fix the auth bug&quot;</span><span class="p">))</span>
+</code></pre></div>
+
+Agents communicate via discrete messages on a stream. Most flexible, hardest to debug.
+
+## 8.2 Communication protocols — natural language vs. structured
+
+Two extremes:
+
+- **Natural language** ("Hey reviewer, the code is in `src/auth.py`, can you check the error handling?") — flexible but lossy, parsing failures.
+- **Structured messages** (`{"to": "reviewer", "task": "review_diff", "path": "src/auth.py", "focus": "error_handling"}`) — robust but rigid.
+
+**Best practice:** structured envelopes carrying natural-language payloads. The envelope routes; the payload thinks.
+
+## 8.3 A2A (Agent-to-Agent Protocol) — the 2026 interoperability standard
+
+> **Big update.** A2A was announced by **Google in April 2025**, contributed to the **Linux Foundation** soon after, and as of May 2026 is supported by **150+ organizations** including Microsoft, AWS, Salesforce, SAP, ServiceNow, Workday, IBM, Cisco, PayPal, LangChain, MongoDB, Cohere. It's becoming the agent-mesh standard.
+
+**Architecture:**
+- **Transport:** HTTP + Server-Sent Events + JSON-RPC 2.0.
+- **Agent Cards:** standardized capability advertisement (`/.well-known/agent.json` style) — each agent publishes what it can do, what it requires, auth scheme.
+- **Tasks:** the primary unit — long-running, with state transitions (`submitted` → `working` → `completed` / `failed` / `canceled`).
+- **Modalities:** text, audio, video streaming — designed for the multi-modal future.
+- **Security:** parity with OpenAPI auth schemes; enterprise SSO + RBAC at launch.
+- **Opacity:** agents communicate *without* exposing their internal memory, tools, or proprietary logic — this is the *enterprise* selling point. Vendor A can use Vendor B's agent without leaking IP.
+
+**Minimal A2A message:**
+
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;jsonrpc&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;req-42&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tasks/send&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-abc&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;sessionId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;session-xyz&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;parts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;text&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Research the latest quantum chip benchmarks.&quot;</span><span class="p">}]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;acceptedOutputModes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;application/json&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+Why it matters for your students: in 2026, a research team's stack might be CrewAI for research and LangGraph for coding. A2A is the cable between them — and increasingly, between *your* agent and a vendor SaaS agent.
+
+## 8.4 MCP as inter-agent protocol (and how MCP + A2A complement)
+
+> **Big update.** MCP went from ~100K downloads/month to **~97M/month — a 970× increase in 18 months**. Native MCP support in Claude, GPT, Gemini, Microsoft Copilot. The MCP Memory server is one of the official reference implementations and is itself a knowledge-graph-based persistent memory. *Memory and protocols are converging at the infrastructure layer.*
+
+**The clean two-layer model the field has settled on:**
+
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────┐
+│            A2A: Agent ←→ Agent communication             │
+│  (task handoffs, multi-agent meshes, vendor boundaries) │
+└──────────────────────────┬──────────────────────────────┘
+                           │ (agents may use both)
+┌──────────────────────────▼──────────────────────────────┐
+│            MCP: Agent → Tool/Resource access             │
+│  (databases, filesystems, APIs, memory servers, etc.)   │
+└─────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+**A2A is "agents as remote teammates." MCP is "tools as remote services."** Quote-worthy distinction: *"MCP gives agents tools; A2A gives them coworkers."*
+
+Dify's pattern (still useful): expose an agent workflow *as an MCP server* — useful when the other agent should treat it as a tool, not a peer. Pick A2A when the relationship is collaborative; pick MCP-wrapping when the relationship is master-tool.
+
+> [PLACEHOLDER: Image — `images/mcp_a2a_layered.png` — the two-layer diagram above. Annotate which Anthropic / OpenAI / Google products support which protocols.]
+
+> [PLACEHOLDER: Image — `images/agent_protocols.png` — three sub-diagrams showing shared state, artifact passing, and message passing flows.]
+
+--- -->
+
+<!-- # BLOCK 9 — Context Isolation: The Real Win (15 min)
+
+## 9.1 The thesis
+
+> **Multi-agent systems usually win — when they win — through context isolation, not through role specialization.**
+
+This is the central claim of today's second half. It's worth slowing down for.
+
+When the syllabus says students should "verify or falsify this empirically" — this is the hypothesis under test.
+
+## 9.2 What "context isolation" actually buys you
+
+Compare two systems on the same task ("add endpoint X to a Flask app"):
+
+**System A — Single agent with all the context.**
+- Reads the repo. Reads existing routes. Reads the test framework. Plans the change. Edits. Runs tests. Debugs.
+- Context window at step 30: 80K tokens of repo content + plans + tool results + debugging chatter.
+- *Lost-in-the-middle, attention dilution, instruction fade-out all kick in.*
+
+**System B — Orchestrator + specialists.**
+- Orchestrator: 5K tokens of plan, status, decisions.
+- Explorer (called as sub-agent): reads repo, answers "where is auth?", returns a 200-token answer. Its 30K tokens of file content **never enter the orchestrator's context.**
+- Implementer (called as sub-agent): gets the plan + the answer, edits files. Its tool call clutter stays in its own context.
+- Test-runner: runs tests, returns pass/fail + relevant failure lines.
+
+The orchestrator never sees the noise. **Each sub-agent operates in a clean 10–20K context window — the 40–60% sweet spot.**
+
+> [PLACEHOLDER: Image — `images/context_isolation.png` — side-by-side: single agent with bloated context vs. orchestrator with clean context + sub-agents with their own clean contexts. Make the size difference visceral.]
+
+## 9.3 This reframes everything
+
+Role specialization (prompts like "you are a senior reviewer") barely matters compared to **the fact that the sub-agent's context doesn't pollute the orchestrator's.** The "specialist" framing is a comforting story we tell ourselves about why multi-agent is useful; the real mechanism is plumbing.
+
+**Implications:**
+- Sub-agents can use the *same model* with the *same prompt* and still help — because each has its own context.
+- The win is biggest where the sub-task generates *lots of intermediate tokens* (file reading, web search, debugging).
+- The win is smallest where the sub-task is short — the coordination overhead dominates.
+
+## 9.4 OpenClaw's coding-agent pattern — the case study
+
+> **Pre-reading anchor: OpenClaw's `skills/coding-agent/SKILL.md`.**
+
+OpenClaw doesn't build a coding agent — it **delegates** to Codex or Claude Code as a subprocess. Why?
+
+- OpenClaw's main context is full of *its own* memory (SOUL.md, AGENTS.md, multi-channel state, scheduling, ~25 messaging surfaces).
+- A coding task generates *tons* of intermediate output: file reads, edits, test runs, error traces.
+- Mixing those into OpenClaw's main context would destroy it.
+
+So OpenClaw shells out. The sub-agent runs in an **isolated workdir**, uses a **PTY for interactive control**, returns a **summary**. OpenClaw's main context sees the summary, not the chatter.
+
+This is the cleanest real-world example of the context-isolation argument. It also raises the question students should debate:
+
+> *"Is this multi-agent, or is it just shelling out?"*
+
+Answer (provocative): the distinction barely matters. Multi-agent is a *consequence* of needing context isolation, not a *category* of architecture. If two LLM contexts are coordinating, you have multi-agent — whether they share a Python process or not.
+
+## 9.5 Hermes' agent isolation
+
+Hermes uses **per-session isolation** — agents in different sessions can't read each other's state. Motivation: multi-user gateway deployments. Discuss: is this multi-agent or just multi-tenant single-agent?
+
+(My read: this is a security pattern, not an architectural one. Worth knowing exists; not the same as Composio's parallel fleet.) -->
+
+<!-- ## 9.6 The empirical test
+
+The Class 7 syllabus lab is designed to test this:
+
+> Implement a **solver–adversary–judge** system on a math reasoning benchmark. Compare against a single-agent baseline *with the same total compute budget*. Did multi-agent help through specialization, context isolation, or adversarial pressure? Or did it just burn tokens?
+
+**The hypothesis to falsify:** *role specialization is the win.* The likely result: it's mostly context isolation + adversarial pressure (for the debate case).
+
+> **Discussion (3 min):** If context isolation is the real win, do we even need multiple *agents*, or do we just need multiple *contexts*? What would a "single-agent, multi-context" system look like?
+
+> [PLACEHOLDER: Image — `images/multiagent_win_breakdown.png` — pie chart attributing multi-agent wins to: context isolation (50%), parallelism (25%), adversarial dynamics (15%), role specialization (10%). Numbers are illustrative; sourced from class hypothesis to test.]
+
+--- -->
+
+<h1 id="block-10-enterprise-patterns-from-lab-agent-to-production-12-min">BLOCK 10 — Enterprise Patterns: From Lab Agent to Production (12 min)</h1>
+<!-- > **Why this block exists.** Everything in the previous nine blocks is *true* but it's *student-grade*. This block bridges to "what does this look like at your company on Monday?" Use real numbers, not hand-waving — enterprise audiences (and the audience this course is taught to) tune out when you skip the operational reality.
+
+## 10.1 The state of enterprise agent deployment in 2026 (numbers from the field)
+
+- **100%** of orgs surveyed (Kiteworks 2026, n=225 security/IT/risk leaders) say agentic AI is on their roadmap.
+- **24.4%** of those orgs have *full visibility* into which AI agents are communicating with each other. **More than half of agents run with no security oversight or logging.**
+- **+327%** growth in multi-agent architectures in production in <4 months (early 2026 data).
+- **MCP downloads** grew **970×** in 18 months → 97M/month. → MCP is now a *de facto* infrastructure standard, not a research curiosity.
+- **AutoGen → Microsoft Agent Framework** consolidation = a signal that the framework churn is settling. CIOs are starting to pick stacks rather than experiment. -->
+
+<!-- ## 10.2 The AEGIS framework (Forrester, 2026) — and what it means for your custom agent
+
+**AEGIS = Agentic AI Enterprise Guardrails for Information Security.** It's the first widely-adopted enterprise framework for governing agent deployments. Worth knowing the pillars even if you're not using AEGIS by name — they're the standard checklist:
+
+1. **Governance** — agent inventory, ownership, lifecycle, decommissioning.
+2. **Identity** — every agent has its own identity (not a shared service account); least-privilege scoped credentials; rotation policy.
+3. **Data security** — what data the agent can see, classify, write; DLP at agent egress.
+4. **Application security** — sandboxing, code-execution boundaries, MCP server allowlists.
+5. **Threat operations** — agent-aware SIEM, anomaly detection on tool-call patterns.
+6. **Zero Trust** — every agent action is verified; no implicit trust between agents.
+
+**The implementation pattern your students will see at any large enterprise:**
+
+<div class="highlight"><pre><span></span><code>┌───────────────────────────────────────────────────────────────┐
+│                 Enterprise MCP / A2A Gateway                  │
+│ ┌─────────────┐ ┌──────────────┐ ┌────────────┐ ┌──────────┐ │
+│ │ SSO / OAuth │ │ RBAC + Scopes│ │ Audit Logs │ │ Rate Lmt │ │
+│ └─────────────┘ └──────────────┘ └────────────┘ └──────────┘ │
+└───────────────────────────────┬───────────────────────────────┘
+                                │
+        ┌──────────────────────┼────────────────────────┐
+        ▼                      ▼                        ▼
+   ┌─────────┐           ┌──────────┐             ┌──────────┐
+   │ Agent A │ ◄──A2A──► │ Agent B  │ ──MCP──►    │   Tool   │
+   │(internal)│          │(internal)│             │(database)│
+   └─────────┘           └──────────┘             └──────────┘
+</code></pre></div>
+
+**Concrete tooling students should know:** Webrix (enterprise MCP gateway), MintMCP, ServiceNow's agent-governance product line (launched 2026), Cloudflare AI Gateway, AWS Bedrock AgentCore. **All do the same thing:** SSO, RBAC, audit, token vaulting, rate limits — between the agent and the world.
+
+> [PLACEHOLDER: Image — `images/enterprise_gateway_arch.png` — the diagram above, with logos of common gateway vendors annotated.] -->
+
+<!-- ## 10.3 Memory in the enterprise — the four constraints
+
+Personal-agent memory designs (Hermes, OpenClaw) miss four enterprise constraints students will hit immediately. **Cover all four.**
+
+### Constraint 1 — Multi-tenancy isolation
+
+A SaaS support agent must NOT mix Customer A's memories with Customer B's. **Always-on scoping by `tenant_id` AND `user_id` AND `app_id`** is the minimum. Mem0's four-scope model is the reference pattern; reproduce it even if you build from scratch.
+
+### Constraint 2 — Right-to-be-forgotten (GDPR Art. 17, CPRA, India DPDP Act)
+
+The agent's memory is *personal data*. You must support:
+- Delete-by-user-id (cascade through all memories tied to a subject).
+- Delete-by-time-range.
+- Export-on-request (data portability).
+
+**Implementation tip:** never store derived embeddings without keeping the user_id alongside them. If you embed once and detach the link, you cannot delete the user's data and you've violated the regulation.
+
+### Constraint 3 — 
+
+When something goes wrong, "what did the agent remember and when did it learn that?" must be answerable. **This is where Zep's temporal knowledge graph shines** — it tracks *how facts change over time*, with timestamps and provenance. **If you build from scratch, log every memory write with: actor, timestamp, source conversation ID, source message hash, derived fact, importance score.**
+
+### Constraint 4 — Memory injection / poisoning (the new attack surface)
+
+A new class of attack: a malicious user *teaches* the agent something false, and that false fact later gets retrieved into another user's session. Defenses:
+- **Provenance-aware retrieval** — never trust a memory whose source was user-controlled, in contexts where authority matters.
+- **Importance/source weighting** — memories from system events > memories from operator > memories from end-user.
+- **Quarantine layer** — new memories spend N sessions in quarantine before promotion to "trusted."
+- **Cross-tenant write blocks** — a memory written in tenant A cannot be promoted to a global tier.
+
+> **Real incident to mention:** Cisco's security team found a third-party Claude skill performing data exfiltration (covered in the syllabus's OpenClaw case study). Memory is the next surface — attackers will pivot from skills to memory because memory is *less inspected* and *more persistent*.
+
+> [PLACEHOLDER: Image — `images/memory_security_threats.png` — taxonomy of attacks: memory poisoning, cross-tenant leak, replay, exfiltration via memory tool.]
+
+## 10.4 Building a custom enterprise agent — the recommended pattern (2026)
+
+A reference architecture students can apply at their employer Monday morning. **No magic.**
+
+<div class="highlight"><pre><span></span><code>┌──────────────────────────────────────────────────────────────────────┐
+│ Layer 0 — Identity &amp; Governance                                       │
+│  • Agent identity (separate from user); rotated creds                 │
+│  • Least-privilege scopes; AEGIS-style policy registry                │
+└──────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│ Layer 1 — Orchestration                                               │
+│  • LangGraph (or Microsoft Agent Framework / Claude Agent SDK)        │
+│  • Checkpointing + durable execution (resume after failures)          │
+│  • HITL approval gates for high-stakes actions                        │
+└──────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│ Layer 2 — Sub-agents (Context Isolation)                              │
+│  • Specialist agents spawn fresh context for noisy subtasks           │
+│  • Anthropic-style artifact pattern for large outputs                 │
+└──────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│ Layer 3 — Memory (Vendor or Self-Hosted)                              │
+│  • Mem0 / Zep / Cognee / Letta — pick one, don&#39;t roll your own        │
+│  • Four-scope model: tenant_id / user_id / agent_id / run_id          │
+│  • Audit log + retention policy                                       │
+└──────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│ Layer 4 — Tools &amp; Connections                                         │
+│  • MCP servers behind an enterprise gateway (Webrix, MintMCP, AWS,    │
+│    Cloudflare, AWS Bedrock AgentCore)                                 │
+│  • A2A for cross-vendor / cross-team agent meshes                     │
+└──────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│ Layer 5 — Observability &amp; Evaluation                                  │
+│  • Langfuse (framework-agnostic, OTel) or LangSmith (LangGraph-deep)  │
+│  • Trajectory tracing — not just outcome; track decisions, tools used │
+│  • Continuous eval: small (~20 query) golden sets in CI; drift alerts │
+└──────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+**Sequencing for a real project (in order):**
+
+1. **Week 1–2:** scope the use case + define the success metric + build the eval harness (Class 1/2 work).
+2. **Week 3–4:** ship a single-agent prototype on LangGraph or Claude Agent SDK; measure baseline cost / latency / quality.
+3. **Week 5–6:** add a memory layer (Mem0 is the safest default); re-measure. If memory doesn't move the metric, *take it out.*
+4. **Week 7–8:** add sub-agents *only if* there are clearly separable subtasks that bloat context. Re-measure under equal token budget.
+5. **Week 9–10:** observability + governance + sandbox hardening. **Production gate.**
+6. **Week 11+:** A2A / MCP gateway integration as additional agents / tools are onboarded.
+
+**Anti-pattern alert:** "we're building a multi-agent system" is *not a use case*, it's a solution looking for a problem. Force the first agent to fail the use case before adding the second. -->
+
+<!-- ## 10.5 Observability — the part everyone skips and regrets
+
+> **Reading anchor: Anthropic's research-system blog on observability.** Quoted: "monitor agent decision patterns and interaction structures without tracking conversation content."
+
+Tools (2026):
+- **LangSmith** — best when you're on LangGraph; integrates with LangGraph checkpoints, deep trajectory visualization.
+- **Langfuse** — framework-agnostic via OpenTelemetry; broader but shallower. Acquired by ClickHouse in Jan 2026; capabilities unchanged for now.
+- **Arize Phoenix** — strongest for eval rigor + drift detection in production.
+- **Datadog LLM Observability / Honeycomb LLM Observability** — if you already use them for non-LLM telemetry.
+
+**What to log (the trajectory, not just the outcome):**
+- Every tool call (name, args hash, latency, cost, error).
+- Every agent → agent handoff (parent agent, child agent, prompt, returned summary length).
+- Every memory read/write (key, scope, score, latency).
+- Token count per turn; compaction events.
+- Permission denials (security signal).
+- User-visible final answer (privacy-controlled).
+
+**OpenTelemetry is the convergence point** — pick a backend, but emit OTel semantic conventions so you can switch later without re-instrumenting.
+
+> [PLACEHOLDER: Image — `images/agent_observability_stack.png` — show the trajectory view: lead agent timeline with subagent calls expanded, tool calls inside each, memory ops alongside. Reference: LangSmith trace UI.] -->
+
+<hr />
+<!-- # BLOCK 11 — Case Studies + Closing (15 min)
+
+## 11.1 Four real systems, four design stances
+
+(From the syllabus's case-study track — students should know these by name.)
+
+### Pi (Mario Zechner) — minimal structure
+- No MCP. No plugins.
+- If you want a new capability, *ask the agent to write code to extend itself.*
+- Position: *software that writes software > software with plugins.*
+- Relevance today: **memory and multi-agent are extra structure Pi deliberately avoids.** Students should engage Pi's stance even when not adopting it.
+
+### Claude Code (Anthropic) — production reference
+- CLAUDE.md = file-based memory.
+- Auto-memory system (user / feedback / project / reference types — your `~/.claude/projects/.../memory/` is this).
+- Sub-agent capability (`Task` tool) = context isolation by design.
+- Read the engineering posts; infer architecture.
+
+### Hermes Agent (Nous Research) — self-improving
+- Provider abstraction (local + cloud, same interface).
+- Multiple execution backends (Docker, SSH, Daytona, Modal, Singularity).
+- **Episodic memory** as primary feature (SQLite + FTS5 + LLM summarization).
+- Memory is **on-demand tool**, not eager injection.
+- Skill acquisition: agent writes its own skills after successful complex tasks.
+- This is the **richest memory implementation in the wild.**
+
+### OpenClaw (Peter Steinberger) — heavy infrastructure
+- ~25 messaging channels, one agent.
+- Heartbeat: agent wakes periodically.
+- Self-scheduled tasks.
+- Memory: filesystem-native (dated folders, identity file, persistent to-do).
+- Coding work: **delegates to Codex / Claude Code as subprocess** (context isolation, clean and explicit).
+- Naive linear memory accumulation (**design gap students should identify**).
+
+> [PLACEHOLDER: Image — `images/case_study_spectrum.png` — horizontal spectrum showing the four systems from "minimal structure" (Pi) on the left to "heavy infrastructure" (OpenClaw) on the right. Annotate each with their memory + orchestration choice.] -->
+
+<!-- ## 11.2 Comparative table (for slides)
+
+| System       | Memory             | Multi-agent        | Stance       |
+|--------------|--------------------|--------------------|--------------|
+| Pi           | Minimal (in-prompt) | None              | Minimal      |
+| Claude Code  | File-based + user model | Sub-agents (Task) | Polished baseline |
+| Hermes       | Episodic + observational + user model | Provider/backend isolation | Self-improving |
+| OpenClaw     | File-based + dated folders | Delegates to sub-agents | Heavy infra |
+
+ ## 11.3 Real enterprise deployments (2026 data) — quick anchor for student questions
+
+When students ask "but where is this actually used at scale?", have specifics ready:
+
+- **LangGraph in production:** Uber (agent-based data quality), Klarna (customer support), LinkedIn (sales prospecting), Replit (code agents), AppFolio (real estate ops). **34% of agent-framework citations in 1,000+-employee companies (Gartner Q1 2026).**
+- **Cognee:** **70+ companies** including **Bayer** (scientific research workflows), **University of Wyoming** (policy evidence graphs with page-level provenance).
+- **MCP:** native support in Claude (all models), GPT-5/4o, Gemini 2.5, Microsoft Copilot. Adopted by Workday, ServiceNow, Salesforce as a server protocol for connecting internal SaaS data to agents.
+- **A2A:** 150+ org consortium under Linux Foundation; reference deployments at Google (Vertex AI Agent Engine), Microsoft (Foundry), SAP (Joule), Salesforce (Agentforce), ServiceNow (Now Assist).
+- **Anthropic's research system:** Claude.ai's "Research" feature is the *productized* version of the multi-agent system in the engineering blog.
+- **Magentic-One (Microsoft):** generalist multi-agent system shipping in Microsoft Agent Framework; orchestrator + WebSurfer + FileSurfer + Coder + ComputerTerminal.
+
+> [PLACEHOLDER: Image — `images/enterprise_deployments_2026.png` — logo grid of named deployments organized by framework/protocol.]
+
+## 11.4 The through-line question — final framing for the closing discussion
+
+Three discussion prompts (pick 1–2 based on time):
+
+1. **Where on the "how much structure?" spectrum does each system sit?** Pi (minimal) → Claude Code → Hermes → OpenClaw (heavy). If you were starting a coding agent project this week, where would you start, and why?
+
+2. **Memory.** OpenClaw uses files + dates. Hermes uses SQLite FTS + LLM summarization. Your Class 6 lab will use a vector store. What does each choice optimize for? When would you pick which?
+
+3. **Multi-agent.** OpenClaw "delegates coding work to Codex / Claude Code as subprocess" — is this multi-agent or just shelling out? Does the distinction matter for how you'd build it?
+
+> **Goal of discussion:** students should leave with a *position*, not a vocabulary list. The position essay in Class 8 will require this.
+
+## 11.5 Foreshadowing the spine — Episodes 4 and 5
+
+- **Episode 4 (this week's lab):** persistent project memory in their coding agent. `PROJECT_NOTES.md` + decision log + self-written skills. Two-session task to measure if memory accelerates session 2.
+- **Episode 5 (next week):** orchestrator + Explorer / Implementer / Reviewer / Test-runner. **Same total token budget** vs. the single-agent version. The empirical comparison is the point.
+
+> **Demo placeholder:** [DEMO — Live trace of the Episode 5 orchestrator]
+> Run a small feature-addition task through both: (a) Class 5 single agent, (b) Class 7 orchestrator + specialists. Display context window utilization at each step. The orchestrator's context stays small; the single agent's bloats. ~5 min if time permits, otherwise hand off as homework. -->
+
+<!-- ## 11.6 Closing line
+
+> *Memory is the engineering of what the agent gets to think about right now. Multi-agent is the engineering of which context holds which thoughts. Both are structure layered on top of a capable LLM — and both must justify themselves in your eval numbers.* -->
+
+<hr />
+<!-- # Appendix A — Demo Inventory
+
+A consolidated list of demo placeholders mentioned above, for prep:
+
+| # | Block | Demo title | Estimated time | Setup notes |
+|---|-------|------------|----------------|-------------|
+| 1 | 2.5 | Compaction in action: naive vs. structured | 5 min | Need a 40K-token saved trace + 3 compaction prompts ready |
+| 2 | 5.x | Two-session memory benchmark | 5 min | Need a small repo + 2 prepared tasks + a no-memory baseline run pre-recorded |
+| 3 | 7.0 | **NEW — Mem0 live add/search** | 3 min | `pip install mem0ai`; run `memory.add` for 3 facts, then `memory.search` showing scope filtering |
+| 4 | 7.0 | **NEW — Claude Agent SDK subagent context isolation** | 4 min | Show `agents={...}` config; print messages with `parent_tool_use_id` to demonstrate isolation in the trace |
+| 5 | 8.4 | **NEW — A2A Agent Card fetch** | 3 min | `curl https://<some-agent>/.well-known/agent.json` to show a real Agent Card from a public A2A reference server |
+| 6 | 10.5 | **NEW — Langfuse trace of a multi-agent run** | 3 min | Pre-recorded screenshot of a Langfuse trajectory showing parent + 2 subagents with tool calls expanded |
+| 7 | 11.5 | Live orchestrator trace (Episode 5 preview) | 5 min | Have the Class 7 orchestrator agent + a small feature task ready; show context utilization |
+
+**Backup demos if time runs long / short:**
+- (Short on time) Skip Demo 1 — replace with the structured-compaction prompt slide only. Skip Demo 5; replace with an annotated screenshot.
+- (Time available) Add a Mastra-style observational memory extraction live, contrasting against a Hermes-style episode write. Or run the LangGraph supervisor code snippet end-to-end. -->
+
+<hr />
+<!-- # Appendix B — Image Placeholder Index
+
+For the slide-builder pass. All paths assumed under `prep/07_agents/06_multiagents/images/`.
+
+| File | Block | Description |
+|------|-------|-------------|
+| `memory_hierarchy.png` | 1.1 | Pyramid of memory types: working / session / long-term / episodic. Adapt from comprehensive guide §18. |
+| `40_60_rule.png` | 1.3 | Context window utilization curve — 40–60% sweet spot annotated. |
+| `lost_in_middle.png` | 2.1 | Accuracy vs. position-of-relevant-info chart. From Liu et al. 2023. |
+| `compaction_strategies.png` | 2.5 | Comparison of six compaction strategies with pros/cons. |
+| `openclaw_memory.png` | 3.1 | Sketch of `~/.openclaw/` directory layout. |
+| `memory_retrieval_eager_vs_ondemand.png` | 3.2 | Sequence diagram comparing eager injection vs. tool-call memory. |
+| `memgpt_arch.png` | 3.3 | MemGPT architecture: main context / archival / function calls. Adapt from MemGPT paper Fig 1. |
+| `hermes_episodic_loop.png` | 4.1 | Self-improvement flowchart: task → execute → record → recall → adjust. |
+| `procedural_memory_loop.png` | 4.3 | Agent writes its own `SKILL.md` after successful task. |
+| `error_compounding.png` | 6.3 | Reliability decay chart: 0.9^n vs. chain length. |
+| `orchestration_patterns.png` | 7.1 | Five orchestration patterns side-by-side. |
+| `agent_protocols.png` | 8.4 | State passing methods: shared state / artifact / message. |
+| `context_isolation.png` | 9.2 | Single bloated context vs. orchestrator + clean sub-agent contexts. |
+| `multiagent_win_breakdown.png` | 9.6 | Pie chart attributing multi-agent wins to context isolation / parallelism / adversarial / specialization. |
+| `case_study_spectrum.png` | 11.1 | Horizontal spectrum: Pi → Claude Code → Hermes → OpenClaw. |
+| `memory_landscape_2026.png` | 3.0 | 2x3 grid of Mem0 / Letta / Zep / Cognee / Supermemory / ByteRover with architecture + benchmark. |
+| `locomo_longmemeval_results.png` | 3.0 | Accuracy + p95 latency dual-axis bar chart for memory frameworks. |
+| `memory_benchmarks_2026.png` | 5.2 | LoCoMo + LongMemEval results visualization. |
+| `memory_vendors_2026.png` | 5.6 | Updated vendor comparison table as quick-reference card. |
+| `amem_zettelkasten.png` | 4.1 | A-MEM graph showing notes with auto-links and memory evolution. |
+| `anthropic_research_system.png` | 6.6 | Lead Researcher + parallel subagents + Citation Agent diagram (+90.2% / 15× tokens annotation). |
+| `framework_landscape_2026.png` | 7.0 | 2x4 grid of agent frameworks with status badges. |
+| `mcp_a2a_layered.png` | 8.4 | Two-layer protocol stack: A2A on top, MCP below. |
+| `enterprise_gateway_arch.png` | 10.2 | Enterprise MCP/A2A gateway with SSO/RBAC/audit/rate-limit boxes feeding agents and tools. |
+| `memory_security_threats.png` | 10.3 | Memory attack taxonomy: poisoning, cross-tenant leak, replay, exfiltration. |
+| `agent_observability_stack.png` | 10.5 | LangSmith-style trajectory trace showing parent + subagents + tool calls + memory ops. |
+| `enterprise_deployments_2026.png` | 11.3 | Logo grid: Uber/Klarna/LinkedIn/Bayer/etc. organized by framework. | -->
+
+<hr />
+<h1 id="appendix-c-reading-reference-spine">Appendix C — Reading &amp; Reference Spine</h1>
+<p>Pre-readings (assigned before this class):
+- 🟦 Packer et al., <em>MemGPT: Towards LLMs as Operating Systems</em> — canonical paper for the memory hierarchy framing (the design now ships as <strong>Letta</strong>).
+- 🟦 Hong et al., <em>MetaGPT</em> OR Wu et al., <em>AutoGen</em> — close-read one for multi-agent SOP design. (Note: AutoGen now in maintenance mode; concepts subsumed by Microsoft Agent Framework.)
+- 🟩 Chip Huyen, <em>AI Engineering</em>, memory chapter — orienting.
+- 🟩 Cognition, "Don't Build Multi-Agents" (Walden Yan) — essential counter-pitch.
+- 🟦 <strong>NEW — Anthropic, "How we built our multi-agent research system" (engineering blog)</strong> — the canonical 2026 case study; +90.2% performance / 15× token cost / 8 prompt-engineering rules.</p>
+<p>In-class references (worth pulling up live):
+- 🟨 Park et al., <em>Generative Agents: Interactive Simulacra of Human Behavior</em> — reflection + importance scoring, the consolidation pattern.
+- 🟨 Du et al., <em>Improving Factuality and Reasoning in Language Models through Multiagent Debate</em> (ICML 2024).
+- 🟨 <strong>Xu et al., <em>A-Mem: Agentic Memory for LLM Agents<em> (NeurIPS 2025)</em><em> — Zettelkasten-style memory with auto-linking and evolution.
+- 🟨 </em><em>Wu et al., </em>LongMemEval<em> (ICLR 2025)</em><em> — the standard benchmark (500 questions, 6 abilities, the 87% → 60.6% result).
+- 🟨 </em><em>Maharana et al., </em>LoCoMo: Evaluating Very Long-Term Conversational Memory of LLM Agents</em></strong> (Snap Research) — 7,512 QAs across 272 sessions.
+- 🟨 Anthropic engineering post: <em>Effective Context Engineering for AI Agents</em> — compaction, structured note-taking, sub-agent isolation.
+- 🟨 Letta (formerly MemGPT) documentation.
+- 🟨 Liu et al. 2023, <em>Lost in the Middle</em> — for the position-attention story.</p>
+<p>2026 frameworks (have the docs tabs open during class):
+- 🟨 Mem0 — <code>mem0.ai</code>, GitHub <code>mem0ai/mem0</code>. <strong>LoCoMo 91.6%, 1.44s p95.</strong>
+- 🟨 Letta — <code>letta.com</code>, GitHub <code>letta-ai/letta</code>. Production successor to MemGPT.
+- 🟨 Zep — <code>getzep.com</code>. Temporal knowledge graph memory.
+- 🟨 Cognee — <code>cognee.ai</code>, GitHub <code>topoteretes/cognee</code>. <strong>Used by Bayer, University of Wyoming. 70+ companies.</strong>
+- 🟨 LangGraph — <code>langchain-ai/langgraph</code>, <code>langchain-ai/langgraph-supervisor-py</code>. <strong>34% of agent-framework citations (Gartner Q1 2026).</strong>
+- 🟨 Microsoft Agent Framework — <code>learn.microsoft.com/agent-framework</code> (replaces AutoGen + Semantic Kernel).
+- 🟨 OpenAI Agents SDK — <code>openai.github.io/openai-agents-python</code>. Handoffs + harness (Apr 2026 update).
+- 🟨 Claude Agent SDK — <code>code.claude.com/docs/en/agent-sdk</code>. Subagents, Skills, Memory, MCP.
+- 🟨 Magentic-One (Microsoft) — generalist multi-agent system for web + file + code tasks.</p>
+<p>Protocols:
+- 🟨 <strong>MCP</strong> — <code>modelcontextprotocol.io</code>. Spec (<code>2025-11-25</code> revision is the current production target as of class). Reference servers including the Memory server (knowledge-graph backed).
+- 🟨 <strong>A2A</strong> — <code>a2a-protocol.org</code>. Linux Foundation hosted (April 2025). 150+ org consortium.</p>
+<p>Enterprise frameworks and gateways:
+- 🟨 Forrester <strong>AEGIS</strong> framework (Agentic AI Enterprise Guardrails for Information Security).
+- 🟨 ServiceNow agent-governance product line (2026).
+- 🟨 Enterprise MCP gateways: Webrix, MintMCP, AWS Bedrock AgentCore, Cloudflare AI Gateway.
+- 🟨 Kiteworks 2026 security survey — the "100% on roadmap / 24.4% visibility" numbers.</p>
+<p>Observability:
+- 🟨 LangSmith — best for LangGraph stacks; trajectory tracing built-in.
+- 🟨 Langfuse — framework-agnostic via OpenTelemetry; ClickHouse acquired Jan 2026.
+- 🟨 Arize Phoenix — eval rigor + drift detection.</p>
+<p>Case study spotlights (where the concepts touch real systems):
+- 🟥 <strong>Anthropic's multi-agent research system</strong> — productized as Claude.ai Research.
+- 🟥 <strong>Microsoft Magentic-One</strong> — open-source generalist multi-agent example.
+- 🟥 Hermes Agent — <code>skills/</code>, <code>episodic_memory/</code>, the cross-session recall implementation.
+- 🟥 OpenClaw — <code>~/.openclaw/</code> layout, <code>SOUL.md</code>, <code>skills/coding-agent/SKILL.md</code>.
+- 🟥 Claude Code — the auto-memory pattern in <code>~/.claude/projects/.../memory/</code>; the <code>Agent</code> tool (subagents).
+- 🟥 Pi (pi-mono) — Armin Ronacher's essay on Pi as the "minimal structure" pole.
+- 🟥 <strong>Cognee at Bayer / University of Wyoming</strong> — enterprise-scale knowledge-graph memory.</p>
+<!-- Internal cross-references (for the slide builder):
+- Class 4 — Tools/Skills: introduces `SKILL.md`. Procedural memory (Block 4.3 today) is the *agent-authored* version of that pattern.
+- Class 5 — Planning/Reflection: introduces reflection. Block 3.4 today extends it to *cross-session* reflection (Generative Agents).
+- Class 8 — Eval: trajectory evaluation will *measure* memory and multi-agent claims rigorously (LoCoMo/LongMemEval methodology applies).
+
+---
+
+# Appendix D — Instructor Notes & Risk Areas
+
+**What will likely run long:**
+- Block 2 (compaction) — six strategies + structured prompt + when to compact + what survives is a lot. **Cut Strategy 5 and 6 if pressed.**
+- Block 7 (orchestration patterns) — five patterns is borderline too many to land. **Pattern 5 (Fleet) and 6 (anti-pattern) are cuttable.**
+
+**What must not be cut:**
+- Block 1.3 (the 40–60% rule) — frames the entire memory motivation.
+- Block 4.1 (Hermes episodic) — the most novel idea in the class.
+- Block 9 (context isolation as the real win) — the central thesis of the second half.
+
+**Discussion timing:** the three through-line check-ins (mid-class, end of memory, end of multi-agent) eat ~10 min total. Worth it — students need to verbalize positions, not just hear definitions.
+
+**Common student confusion to preempt:**
+- "Is RAG the same as memory?" — No. RAG = external knowledge. Memory = agent's own past. (Block 1.4.)
+- "Why not just use a 1M-token context window?" — Cost, latency, context rot. The 40–60% rule says big context isn't free. (Block 1.3, Block 2.1.)
+- "If context isolation is the win, why bother with role prompts at all?" — They help on the margin and they help debuggability. They are *not* the load-bearing piece. (Block 9.3.)
+
+**Empirical hooks to land throughout:**
+- Memory must justify itself in *eval numbers* (success rate, tokens-to-solution).
+- Multi-agent must justify itself in *eval numbers* (under equal token budget).
+- The lab is where this gets measured — the lecture is the framing, the lab is the proof.
+
+**Live "what changed this week" slot:** reserve 5 min at the start (carved out of the recap) for any breaking news in the agents field — Anthropic / OpenAI / open-source releases. This module evolves monthly; the slot keeps the course honest.
+
+---
+
+---
+
+# Appendix E — Enterprise Build Cheat Sheet (Hand-out Candidate)
+
+A page students can take home. Annotated stack pick + the first 10 things to actually build.
+
+## E.1 Default stack for a new custom enterprise agent (May 2026)
+
+| Layer | Default pick | When to deviate |
+|-------|--------------|------------------|
+| LLM provider | Claude (Sonnet 4 default, Opus 4 for orchestrator) OR GPT-5/o-series | Cost-sensitive → Haiku for workers; data-residency → on-prem via vLLM |
+| Orchestration | **LangGraph** if you want graphs; **Claude Agent SDK** if Claude-native + want subagents primitive; **Microsoft Agent Framework** if Azure shop | CrewAI for quick prototypes; OpenAI Agents SDK if OpenAI-native |
+| Memory | **Mem0** (fastest path) | Zep if you need temporal audit; Cognee if you need graph over docs; Letta if you want explicit OS-style paging |
+| Tools | **MCP** servers behind an enterprise gateway | Inline tools only for in-process logic |
+| Inter-agent | **A2A** for cross-team / cross-vendor; in-process handoffs within one team | MCP-wrapping if the other agent is logically a tool |
+| Observability | **LangSmith** (if LangGraph) OR **Langfuse** (if framework-agnostic) | Arize Phoenix if eval rigor is the priority |
+| Sandbox | Docker containers + git worktrees per parallel agent | firejail / gVisor / E2B for stricter isolation |
+| Governance | AEGIS-aligned policy registry; per-agent identity; least-privilege | If the org has a CISO, they already have requirements — use theirs |
+
+## E.2 The first 10 things to build (do them in order)
+
+1. **Eval harness** — 20 representative tasks, golden outputs, LLM-as-judge with calibrated rubric (Class 1/2 work).
+2. **Single-agent prototype** — one LLM, one prompt, two tools, no memory. Measure baseline cost/latency/quality.
+3. **Trajectory logging via OpenTelemetry** — Langfuse or LangSmith, depending on framework. Every tool call, every cost, every latency.
+4. **Memory layer** — start with Mem0 (4-scope: tenant/user/agent/run). Re-run eval. If it doesn't move the metric, *remove it*.
+5. **Compaction + structured note-taking** — `PROJECT_NOTES.md`-style external scratchpad for any task >10 turns.
+6. **Sub-agent for one noisy subtask** — pick the highest-token sub-task (file exploration, web search, debugging) and isolate it. Re-run eval under equal budget.
+7. **MCP gateway in front of tools** — even if it's just one tool. The gateway is the audit + RBAC point; never let agents talk to tools directly in prod.
+8. **HITL approval gate for one high-stakes action** — destructive writes, financial transactions, customer-visible outputs. Build the human-in-the-loop UI before you need it.
+9. **Eval in CI** — small (20 prompt) eval suite runs on every PR. Alert on regression. Drift detection in production.
+10. **Failure taxonomy + runbook** — after 50 production traces, categorize failures (wrong tool, infinite loop, context overflow, hallucinated API, permission denial, memory miss). One mitigation per category.
+
+## E.3 Red flags that suggest you've over-engineered
+
+- You have 5+ agents and only one of them is doing the "real" work.
+- Memory tokens-out exceed memory tokens-in (you're storing more than you're retrieving).
+- Your A2A mesh has more edges than agents.
+- Sub-agent return summaries are longer than the parent's own context.
+- Your trajectory traces are unreadable even to you.
+- Eval numbers are flat across architectural changes — the LLM is doing the work; your structure is decoration. -->
+
+<h2 id="e4-the-what-would-i-show-my-cto-deliverables">E.4 The "what would I show my CTO" deliverables</h2>
+<p>After 8-10 weeks of work, the demo should answer five questions:</p>
+<ol>
+<li><strong>What does the agent actually do?</strong> — one user-visible workflow, end-to-end.</li>
+<li><strong>How do we know it works?</strong> — eval numbers on a documented golden set.</li>
+<li><strong>What does it cost per user per month?</strong> — token cost + memory cost + observability cost.</li>
+<li><strong>What's the blast radius if it goes wrong?</strong> — sandbox, permissions, HITL gates.</li>
+<li><strong>What's our exit plan if a vendor changes?</strong> — abstractions over MCP/A2A so a memory provider swap is one config change.</li>
+</ol>
+<hr />
+<p><em>End of preparation notes. Slides to be built from this; demos to be implemented; images to be sourced or sketched per Appendix B.</em></p>
+<p><em>Last updated: May 2026 — reflects current state of Mem0 / Letta / Zep / Cognee, LangGraph / Microsoft Agent Framework / Claude Agent SDK / OpenAI Agents SDK, MCP and A2A protocols, AEGIS framework, and Anthropic's multi-agent research system case study.</em></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "content.code.copy"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
