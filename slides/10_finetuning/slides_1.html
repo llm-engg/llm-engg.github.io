@@ -1422,7 +1422,8 @@ dollars    = GPU-hours × $/GPU-hour</code></pre>
                 href="https://huggingface.co/spaces/huggingfacejs/chat-template-playground?modelId=deepseek-ai/DeepSeek-R1&amp;example=tool-usage">HF
                 chat template playground</a></li>
             <li>The grammar lives in the <strong>tokenizer</strong>, as a Jinja template in
-              <code>tokenizer_config.json</code></li>
+              <code>tokenizer_config.json</code>
+            </li>
           </ul>
         </section>
         <section id="example" class="slide level2">
@@ -1459,7 +1460,8 @@ dollars    = GPU-hours × $/GPU-hour</code></pre>
             <li><strong>Train on the end-of-turn token</strong> (<code>&lt;|im_end|&gt;</code> / EOS) or the model never
               learns to stop generating</li>
             <li><strong>Don’t mix SFT data with a <em>different</em> template</strong> (e.g.&nbsp;ShareGPT exports with
-              <code>### Human:</code>)</li>
+              <code>### Human:</code>)
+            </li>
           </ul>
         </section>
         <section id="loss-masking" class="slide level2">
@@ -1663,7 +1665,8 @@ $$\mathcal{L}_{\text{SFT}}(\theta) = -\sum_{(x,y)\in\mathcal{D}} \sum_{t=1}^{|y|
               <tr class="odd">
                 <td><strong>Persona-based</strong> (Persona Hub, Ge 2024)</td>
                 <td>condition generation on a persona (“a tax auditor”, “a pediatric nurse”) to force
-                  <strong>diversity</strong></td>
+                  <strong>diversity</strong>
+                </td>
                 <td>the persona set is the diversity dial</td>
               </tr>
             </tbody>
@@ -1738,7 +1741,8 @@ OASST  (message tree)                  ─┘        (the single canonical form)
           </div>
           <ul>
             <li><strong>Role mapping</strong> - ShareGPT’s <code>human</code>/<code>gpt</code> →
-              <code>user</code>/<code>assistant</code>; drop or map <code>system</code>.</li>
+              <code>user</code>/<code>assistant</code>; drop or map <code>system</code>.
+            </li>
             <li><strong>Template leakage</strong> - strip any <code>### Response:</code> / <code>&lt;|im_end|&gt;</code>
               already baked into a field</li>
             <li><strong>Dedup + decontaminate the <em>mixture</em></strong></li>
@@ -1778,24 +1782,8 @@ OASST  (message tree)                  ─┘        (the single canonical form)
               <p>SFT is the easiest algorithm in finetuning and but can break sublty on the data or the mask or the
                 template”</p>
             </blockquote>
-            <!-- NOTES-BLOCK
-[FIX] (should-fix) Three issues in this slide: (1) the four rules are a collapsed run-on paragraph — render as the four-row table from sft notes §6.2 (Lever | The rule); (2) typos: "and but" → "but", "sublty" → "subtly"; (3) stray trailing quotation mark after "template".
-[INSTRUCTOR] Wrap-up move from the notes: re-show the annotated mask slide and have the class state each rule in chat — template, mask, stop token, epochs — before you reveal the table rows. This wrap-up covers only the SFT third; if this stays one mega-deck, add the ladder re-show with the "what it changes" column filled in live (landscape §6.2) as the module-level close.
--->
-          </div>
-        </section>
-        <section id="further-reading" class="slide level2">
-          <h2>Further Reading</h2>
-          <!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) Slide is empty. Curated shortlist from the three notes' Master Reference Lists (one line each):
-  Orienting — "Post-Training 101" (tokens-for-thoughts.notion.site/post-training-101); HF smol-course post-training units; mlabonne LLM Course (SFT section).
-  Canonical — InstructGPT (arXiv:2203.02155); LIMA (arXiv:2305.11206); Don't Stop Pretraining (arXiv:2004.10964).
-  Memory/efficiency — LoRA (arXiv:2106.09685); QLoRA (arXiv:2305.14314); ZeRO (arXiv:1910.02054); Transformer Math 101 (blog.eleuther.ai/transformer-math/).
-  Data — Deduplicating Training Data Makes LMs Better (arXiv:2107.06499); FineWeb-Edu (arXiv:2406.17557); Ibrahim et al. continual pretraining (arXiv:2403.08763).
-  Templates/masking — HF Chat Templates docs; TRL SFTTrainer docs; Krell et al. packing (arXiv:2107.02027).
-  Modern recipes — Tülu 3 (arXiv:2411.15124); Zephyr (arXiv:2310.16944); DeepSeek-R1 (arXiv:2501.12948).
--->
 
+          </div>
         </section>
       </section>
     </div>
