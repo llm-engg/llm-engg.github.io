@@ -105,403 +105,543 @@
     "text": "Q&A\nAny questions?"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#overview",
-    "href": "inference/04_inference_servers/slides-3.html#overview",
-    "title": "Inference Servers - II",
+    "objectID": "inference/04_inference_servers/slides.html#overview",
+    "href": "inference/04_inference_servers/slides.html#overview",
+    "title": "Inference Servers - I",
     "section": "Overview",
-    "text": "Overview\n\nPrefix Caching and KV Reuse\nDisaggregated Serving\nInference Orchestration"
+    "text": "Overview\n\nStatic and Continuous Batching\nPaged Attention\nvLLM"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#recap-continuous-batching",
-    "href": "inference/04_inference_servers/slides-3.html#recap-continuous-batching",
-    "title": "Inference Servers - II",
-    "section": "Recap: Continuous Batching",
-    "text": "Recap: Continuous Batching\n\n\nDynamically batch requests at the token level, allowing for early return and better GPU utilization.\nAs soon as one request in the batch finishes generating its next token, it can be returned to the client, while the remaining requests continue processing."
+    "objectID": "inference/04_inference_servers/slides.html#inference-forward-pass-analysis",
+    "href": "inference/04_inference_servers/slides.html#inference-forward-pass-analysis",
+    "title": "Inference Servers - I",
+    "section": "Inference / Forward Pass Analysis",
+    "text": "Inference / Forward Pass Analysis\n\nNo weight updates, but still lots of matrix multiplies and data movement"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#recap-paged-attention",
-    "href": "inference/04_inference_servers/slides-3.html#recap-paged-attention",
-    "title": "Inference Servers - II",
-    "section": "Recap: Paged Attention",
-    "text": "Recap: Paged Attention\n\n\nLogical blocks: The model’s attention mechanism operates on the entire context as a single logical block (e.g., a 16K token context treated as one block for attention computations).\nPhysical blocks (pages): Memory is divided into smaller physical blocks/pages (e.g., 16–32 tokens each), dynamically allocated and mapped to different requests as needed."
+    "objectID": "inference/04_inference_servers/slides.html#inference-forward-pass-analysis-1",
+    "href": "inference/04_inference_servers/slides.html#inference-forward-pass-analysis-1",
+    "title": "Inference Servers - I",
+    "section": "Inference / Forward Pass Analysis",
+    "text": "Inference / Forward Pass Analysis\nRepeat until the sequence\n\nReaches its pre-defined maximum length (e.g., 2048 tokens)\nGenerates certain tokens (e.g., “&lt;|end of sequence|&gt;”)"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#paged-kv-cache",
-    "href": "inference/04_inference_servers/slides-3.html#paged-kv-cache",
-    "title": "Inference Servers - II",
+    "objectID": "inference/04_inference_servers/slides.html#llm-inference-challenges",
+    "href": "inference/04_inference_servers/slides.html#llm-inference-challenges",
+    "title": "Inference Servers - I",
+    "section": "LLM Inference Challenges",
+    "text": "LLM Inference Challenges\nWhy is LLM inference harder than standard neural network inference?\n\nVariable-length compute : inputs and outputs have no fixed tensor shapes\nBatching is difficult : sequences finish at different times\nNeed to balance TTFT, ITL, and throughput simultaneously"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#llm-inference-challenges-1",
+    "href": "inference/04_inference_servers/slides.html#llm-inference-challenges-1",
+    "title": "Inference Servers - I",
+    "section": "LLM Inference Challenges",
+    "text": "LLM Inference Challenges\nWhy is LLM inference harder than standard neural network inference?\n\nGPU memory management: KV caching, Prefix caching"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#model-artifacts",
+    "href": "inference/04_inference_servers/slides.html#model-artifacts",
+    "title": "Inference Servers - I",
+    "section": "Model Artifacts",
+    "text": "Model Artifacts"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#memory-model-parameters",
+    "href": "inference/04_inference_servers/slides.html#memory-model-parameters",
+    "title": "Inference Servers - I",
+    "section": "Memory : Model Parameters",
+    "text": "Memory : Model Parameters\nMemory = Model Memory + KV Cache Memory + Activation Memory\n\nStep 1: Count Parameters\nExample: LLaMA-2 13B\n(D=5,120, F=13,824, N=40, K=40, H=128, L=40, V=32,000)\n\n\n\n\nComponent\nFormula\nTotal\n\n\n\n\nEmbeddings\n\\(2 \\times V \\times D\\)\n328M\n\n\nMLP\n\\(3 \\times D \\times F \\times L\\)\n8,488M\n\n\nAttention\n\\((2D^2 + 2D(K \\times H)) \\times L\\)\n4,196M\n\n\nTotal\n\n≈ 13B\n\n\n\n\nStep 2: Compute Memory Size\nparams_size = num_params × bytes_per_param\n\n\n\nPrecision\nSize\nFormula\n\n\n\n\nBF16/FP16\n26 GB\n13B × 2 bytes\n\n\nINT8\n13 GB\n13B × 1 byte\n\n\nINT4\n6.5 GB\n13B × 0.5 byte\n\n\n\n\n\n\n\n\n\n\nTip\n\n\nRule of thumb: Memory (GB) \\(\\approx\\) num_params (B) \\(\\times\\) bytes_per_param\nA 7B model in FP16 needs ~14 GB. A 70B model needs ~140 GB."
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#prefill-vs-decode",
+    "href": "inference/04_inference_servers/slides.html#prefill-vs-decode",
+    "title": "Inference Servers - I",
+    "section": "Prefill vs Decode",
+    "text": "Prefill vs Decode\n\n\n\n\n\n\n\n\n\n\nProperty\nPrefill Phase\nDecode Phase\n\n\n\n\nOperation type\nGEMM (matrix × matrix)\nGEMV (matrix × vector)\n\n\nArithmetic intensity\nHigh\nVery low\n\n\nGPU utilization\nHigh (saturates compute)\nLow (limited by bandwidth)\n\n\nBottleneck\nCompute (FLOPS)\nMemory bandwidth (GB/s)\n\n\nParallelism\nAll prompt tokens in parallel\nOne token at a time, sequential\n\n\nTime scaling\n∝ prompt_length\n∝ output_length × kv_cache_size\n\n\nBatch dimension\nbatch_size × seq_len (large)\nbatch_size × 1 (small)"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#the-roofline-model",
+    "href": "inference/04_inference_servers/slides.html#the-roofline-model",
+    "title": "Inference Servers - I",
+    "section": "The Roofline Model",
+    "text": "The Roofline Model\n\n\nPerformance is bounded by:\n\nCompute : how fast GPU does math (FLOPs/s)\nBandwidth : how fast data moves (GB/s)\nCapacity : whether weights + KV cache fit at all (GB)\n\n\n\n\n\n\n\n\nNote\n\n\nKnee point = bandwidth-bound to compute-bound transisiton -&gt; minimum AI needed to fully utilize GPU’s compute.\n\n\n\n\n\n\n\nFigure: Roofline model of attention operators in LLM Serving, data from A100 PCIe 80GB.\n\n\n\\[\\text{Performance} = \\min(\\text{Peak FLOPs}, \\text{AI} \\times \\text{BW})\\]"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#inference-tradeoffs",
+    "href": "inference/04_inference_servers/slides.html#inference-tradeoffs",
+    "title": "Inference Servers - I",
+    "section": "Inference Tradeoffs",
+    "text": "Inference Tradeoffs\nCannot optimize for all three simultaneously.\nThree way tradeoff between accuracy, latency, and cost\n\n\n\n\n\n\n\n\n\nPriority\nTradeoff\nEngineering Bridges\n\n\n\n\nAccuracy + Low Latency\nHigher cost\nUse smaller models to reduce serving cost; recover accuracy with RAG, fine-tuning, and tool use. Quantization cuts GPU memory footprint further.\n\n\nAccuracy + Low Cost\nHigher latency\nBatch inference, async pipelines, and queue-tolerant architectures absorb the latency gracefully.\n\n\nLow Latency + Low Cost\nAccuracy at risk\nSmaller or distilled models with quantization; improve accuracy via RAG, fine-tuning"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#serving-systems",
+    "href": "inference/04_inference_servers/slides.html#serving-systems",
+    "title": "Inference Servers - I",
+    "section": "Serving Systems",
+    "text": "Serving Systems\nFront End - API, scheduling, memory\nBack End - Math and compute optimizations, graph compilation, kernels"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#cost-of-serving",
+    "href": "inference/04_inference_servers/slides.html#cost-of-serving",
+    "title": "Inference Servers - I",
+    "section": "Cost of Serving",
+    "text": "Cost of Serving\nOrca paper (Yu et al., OSDI 2022) provides a cost analysis of serving GPT3 175B models on Azure:\n\nIn Azure, a GPT3 175B instance requires 2 VMs, each of which has 8 NVIDIA A100 40GB GPUs\nAt Azure East US, the VM price is $27.197/hour.\n\n2 VMs = $54.394/hour -&gt; $39,707.62/month -&gt; $476,491.44/year\n\nIf we need to host 400 GPT3 175B instances, $190.6M/year"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#static-batching-request-level-batching",
+    "href": "inference/04_inference_servers/slides.html#static-batching-request-level-batching",
+    "title": "Inference Servers - I",
+    "section": "Static Batching / Request-Level Batching",
+    "text": "Static Batching / Request-Level Batching\nTraditional systems use static batching to improve GPU utilization:\n\nGroup incoming requests into fixed-size batches (e.g., 8, 16, 32)\nProcess each batch in parallel on the GPU\nHigh GPU utilization for large batches\n\n\nDrawbacks:\n\nNo early return and tail latency dictated by longest sequence in the batch\nInternal fragmentation from padding to max sequence length\nGPU utilization: 30-40% for small batches, drops to 10-20% for larger batches (padding + waiting on the longest) due to padding overhead"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#static-batching-request-level-batching---i",
+    "href": "inference/04_inference_servers/slides.html#static-batching-request-level-batching---i",
+    "title": "Inference Servers - I",
+    "section": "Static Batching / Request-Level Batching - I",
+    "text": "Static Batching / Request-Level Batching - I"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#static-batching-request-level-batching---ii",
+    "href": "inference/04_inference_servers/slides.html#static-batching-request-level-batching---ii",
+    "title": "Inference Servers - I",
+    "section": "Static Batching / Request-Level Batching - II",
+    "text": "Static Batching / Request-Level Batching - II"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#static-batching-request-level-batching---iii",
+    "href": "inference/04_inference_servers/slides.html#static-batching-request-level-batching---iii",
+    "title": "Inference Servers - I",
+    "section": "Static Batching / Request-Level Batching - III",
+    "text": "Static Batching / Request-Level Batching - III\n\nDownsides : Inference server and Execution engine interact at request level. Server batches requests together, but engine processes them as a single batch. No visibility into individual request completion. They interact only at beginning and end of the batch"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#continuous-batching",
+    "href": "inference/04_inference_servers/slides.html#continuous-batching",
+    "title": "Inference Servers - I",
+    "section": "Continuous Batching",
+    "text": "Continuous Batching\nOrca : A Distributed Serving System for Transformer-Based Generative Models, 2022\n\nDo dynamic batching of requests as they arrive\nProcess batching at token level instead of request level\nEarly return as soon as a request in the batch finishes\nSupport for token-level interleaving of requests"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#continuous-batching-1",
+    "href": "inference/04_inference_servers/slides.html#continuous-batching-1",
+    "title": "Inference Servers - I",
+    "section": "Continuous Batching",
+    "text": "Continuous Batching"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#continuous-batching-2",
+    "href": "inference/04_inference_servers/slides.html#continuous-batching-2",
+    "title": "Inference Servers - I",
+    "section": "Continuous Batching",
+    "text": "Continuous Batching\nContinuous Batching:\n\nDynamically batch requests at the token level, allowing for early return and better GPU utilization.\nAs soon as one request in the batch finishes generating its next token, it can be returned to the client, while the remaining requests continue processing.\n\n\nEarly finished and late arrived requests are handled much more efficiently. The server can immediately return results for completed requests without waiting for the entire batch to finish, significantly reducing tail latency and improving user experience."
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuous-batching",
+    "href": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuous-batching",
+    "title": "Inference Servers - I",
+    "section": "Prefill and Decode in continuous batching",
+    "text": "Prefill and Decode in continuous batching\n\nSome requests can be in prefill phase while others are in decode phase\nWe can’t batch prefill and decode together since they have different compute and memory characteristics"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuos-batching",
+    "href": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuos-batching",
+    "title": "Inference Servers - I",
+    "section": "Prefill and Decode in continuos batching",
+    "text": "Prefill and Decode in continuos batching\nRequests in different phases"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuos-batching-1",
+    "href": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuos-batching-1",
+    "title": "Inference Servers - I",
+    "section": "Prefill and Decode in continuos batching",
+    "text": "Prefill and Decode in continuos batching\nRequests have different lengths"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuos-batching-2",
+    "href": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuos-batching-2",
+    "title": "Inference Servers - I",
+    "section": "Prefill and Decode in continuos batching",
+    "text": "Prefill and Decode in continuos batching\nSolution: Split the request"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#orca-results",
+    "href": "inference/04_inference_servers/slides.html#orca-results",
+    "title": "Inference Servers - I",
+    "section": "Orca Results",
+    "text": "Orca Results\n\n\n\n\n36.9x improvement in throughput.\n\n\nCompared to baseline cost of ~190M/year for 400 GPT3 175B instances, Orca’s optimizations could reduce this to around $5.15M/year, making large-scale LLM deployment much more economically feasible."
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#continuous-batching-mechanics",
+    "href": "inference/04_inference_servers/slides.html#continuous-batching-mechanics",
+    "title": "Inference Servers - I",
+    "section": "Continuous Batching Mechanics",
+    "text": "Continuous Batching Mechanics\nThe Loop:\n\nSelection: Choose candidate requests for next iteration\nBatch Formation: Combine prefill chunks and decode tokens\nForward Pass: Run model on current batch\nCompletion Check: Identify finished sequences\nAdmission: Add new requests from queue\nIteration: Repeat\n\nBenefits:\n\nNo Waiting: Short requests exit immediately, don’t wait for long ones\nGPU Saturation: Keep compute units busy 80%+ of time\n\nExcample code : MinivLLM’s continuous batching loop"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#chunked-prefill",
+    "href": "inference/04_inference_servers/slides.html#chunked-prefill",
+    "title": "Inference Servers - I",
+    "section": "Chunked Prefill",
+    "text": "Chunked Prefill\nA large prefill can dominate an iteration and spike latency for decode requests.\nChunked prefill addresses this:\n\nSplit large prefills into chunks (e.g., 512 tokens at a time)\nInterleave prefill chunks with decode steps\nPrevents a single large prefill from blocking decode for all other requests\n\nThis is now standard in vLLM (enabled by default) and SGLang."
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#scheduling-policies",
+    "href": "inference/04_inference_servers/slides.html#scheduling-policies",
+    "title": "Inference Servers - I",
+    "section": "Scheduling Policies",
+    "text": "Scheduling Policies\n\n\nScheduling\n\nFirst-Come-First-Served (FCFS)\nPriority-Based\nLongest Prefix Match (LPM)\n\n\n\n\n\nPreemption Strategies:\n\nSwap: Move KV cache to CPU memory when preempting\nRecompute: Discard KV cache, regenerate when resuming\n\nCost: 2× compute for the prompt\nBenefit: No memory bandwidth cost for swap\n\n\nRule of Thumb: Swap for long sequences (KV cache &gt;&gt; compute cost), recompute for short sequences."
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#kv-cache",
+    "href": "inference/04_inference_servers/slides.html#kv-cache",
+    "title": "Inference Servers - I",
+    "section": "KV Cache",
+    "text": "KV Cache"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#kv-cache-1",
+    "href": "inference/04_inference_servers/slides.html#kv-cache-1",
+    "title": "Inference Servers - I",
+    "section": "KV Cache",
+    "text": "KV Cache\nGeneration Phase (Autoregressive Decoding):\n\nGenerate tokens one at a time autoregressively\nAt each step, compute attention over all previously generated tokens\nKeys and Values for past tokens remain unchanged\nOnly the new token’s Query needs to attend to all previous Keys/Values"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#kv-cache-2",
+    "href": "inference/04_inference_servers/slides.html#kv-cache-2",
+    "title": "Inference Servers - I",
+    "section": "KV Cache",
+    "text": "KV Cache"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#kv-cache-3",
+    "href": "inference/04_inference_servers/slides.html#kv-cache-3",
+    "title": "Inference Servers - I",
+    "section": "KV Cache",
+    "text": "KV Cache\n\n\nProblem: Without caching, we recompute K and V for all previous tokens at every step!\n\nStep 1: Compute K, V for token 1\nStep 2: Recompute K, V for tokens 1, 2\nStep 3: Recompute K, V for tokens 1, 2, 3\n…\nStep N: Recompute K, V for all N tokens → O(N²) redundant computation\n\n\nSolution: KV Cache — Store computed K and V vectors and reuse them"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#kv-cache-4",
+    "href": "inference/04_inference_servers/slides.html#kv-cache-4",
+    "title": "Inference Servers - I",
+    "section": "KV Cache",
+    "text": "KV Cache\n\nReduced per-token compute from O(N) to O(1) by caching K and V for all past tokens\nReduced TTFT, increased throughput"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#kv-cache-with-attention-variants",
+    "href": "inference/04_inference_servers/slides.html#kv-cache-with-attention-variants",
+    "title": "Inference Servers - I",
+    "section": "KV Cache with Attention Variants",
+    "text": "KV Cache with Attention Variants\n\n\n\n\n\n\n\n\n\n\n\n\nPer-token KV cache memory formula:\n\\[\\text{KV}_{\\text{per token}} = 2 \\times n_{\\text{layers}} \\times n_{\\text{kv heads}} \\times d_{\\text{head}} \\times \\text{dtype bytes}\\]"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#kv-cache-with-attention-variants-1",
+    "href": "inference/04_inference_servers/slides.html#kv-cache-with-attention-variants-1",
+    "title": "Inference Servers - I",
+    "section": "KV Cache with Attention Variants",
+    "text": "KV Cache with Attention Variants\n\n\nKV Cache size for DeepSeek V3:\n\n\n\nAttention Type\nMemory per Token\n\n\n\n\nMHA\n4 MB\n\n\nMQA\n32 KB\n\n\nGQA (8 groups)\n500 KB\n\n\nMLA\n70 KB"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#kv-cache-5",
+    "href": "inference/04_inference_servers/slides.html#kv-cache-5",
+    "title": "Inference Servers - I",
+    "section": "KV Cache",
+    "text": "KV Cache"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#kv-cache-6",
+    "href": "inference/04_inference_servers/slides.html#kv-cache-6",
+    "title": "Inference Servers - I",
+    "section": "KV Cache",
+    "text": "KV Cache\nEfficient KV cache management is critical for LLM inference performance:\n\nPre-allocate KV cache for maximum context length (e.g., 16K tokens)\nStore KV cache in GPU memory for fast access during decoding\nImplement efficient indexing to retrieve K and V for past tokens"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#kv-cache-management",
+    "href": "inference/04_inference_servers/slides.html#kv-cache-management",
+    "title": "Inference Servers - I",
+    "section": "KV Cache Management",
+    "text": "KV Cache Management\nRequest Scheduler\nPrompt : my cat is"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#kv-cache-management-1",
+    "href": "inference/04_inference_servers/slides.html#kv-cache-management-1",
+    "title": "Inference Servers - I",
+    "section": "KV Cache Management",
+    "text": "KV Cache Management\nRequest Scheduler\n\n\n\n\n\n\n\n\n\nimage source"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#kv-cache-management-2",
+    "href": "inference/04_inference_servers/slides.html#kv-cache-management-2",
+    "title": "Inference Servers - I",
+    "section": "KV Cache Management",
+    "text": "KV Cache Management\nSolution:\n\nPre-allocate KV cache for maximum context length (e.g., 16K tokens)\nStore KV cache in GPU memory for fast access during decoding\nImplement efficient indexing to retrieve K and V for past tokens"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#memory-waste-from-kv-cache",
+    "href": "inference/04_inference_servers/slides.html#memory-waste-from-kv-cache",
+    "title": "Inference Servers - I",
+    "section": "Memory Waste from KV Cache",
+    "text": "Memory Waste from KV Cache\n\n\nInternal fragmentation: over-allocated due to the unknown output length\nReservation: not used at the current step, but used in the future\nExternal fragmentation: due to different sequence lengths"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#paged-kv-cache",
+    "href": "inference/04_inference_servers/slides.html#paged-kv-cache",
+    "title": "Inference Servers - I",
     "section": "Paged KV Cache",
-    "text": "Paged KV Cache\n\nPaged Attention \nEach request’s KV cache is divided into multiple physical blocks (pages) that can be allocated independently.\nMultiple requests can share the same physical blocks if they have similar context lengths, improving memory efficiency and GPU utilization."
+    "text": "Paged KV Cache"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#paged-attention",
-    "href": "inference/04_inference_servers/slides-3.html#paged-attention",
-    "title": "Inference Servers - II",
+    "objectID": "inference/04_inference_servers/slides.html#paged-kv-cache-1",
+    "href": "inference/04_inference_servers/slides.html#paged-kv-cache-1",
+    "title": "Inference Servers - I",
+    "section": "Paged KV Cache",
+    "text": "Paged KV Cache\nvLLM PagedAttention : Efficient Memory Management for Large Language Model Serving with PagedAttention\nInspired by virtual memory management in operating systems:\n\nAllocate KV cache in smaller pages (e.g., 1K tokens)\nDynamically map pages to active requests\nReduced internal fragmentation"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#paged-kv-cache-2",
+    "href": "inference/04_inference_servers/slides.html#paged-kv-cache-2",
+    "title": "Inference Servers - I",
+    "section": "Paged KV Cache",
+    "text": "Paged KV Cache"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#paged-kv-cache-3",
+    "href": "inference/04_inference_servers/slides.html#paged-kv-cache-3",
+    "title": "Inference Servers - I",
+    "section": "Paged KV Cache",
+    "text": "Paged KV Cache\n\n\nLogical blocks: The model’s attention mechanism operates on the entire context as a single logical block (e.g., a 16K token context treated as one block for attention computations).\nPhysical blocks (pages): Memory is divided into smaller physical blocks/pages (e.g., 16–32 tokens each), dynamically allocated and mapped to different requests as needed."
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#paged-kv-cache---multiple-requests",
+    "href": "inference/04_inference_servers/slides.html#paged-kv-cache---multiple-requests",
+    "title": "Inference Servers - I",
+    "section": "Paged KV Cache - Multiple Requests",
+    "text": "Paged KV Cache - Multiple Requests"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#paged-kv-cache---multiple-requests-1",
+    "href": "inference/04_inference_servers/slides.html#paged-kv-cache---multiple-requests-1",
+    "title": "Inference Servers - I",
+    "section": "Paged KV Cache - Multiple Requests",
+    "text": "Paged KV Cache - Multiple Requests\n\n\nEach request’s KV cache is divided into multiple physical blocks (pages) that can be allocated independently.\nMultiple requests can share the same physical blocks if they have similar context lengths, improving memory efficiency and GPU utilization."
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#paged-attention",
+    "href": "inference/04_inference_servers/slides.html#paged-attention",
+    "title": "Inference Servers - I",
+    "section": "Paged Attention",
+    "text": "Paged Attention"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides.html#paged-attention-1",
+    "href": "inference/04_inference_servers/slides.html#paged-attention-1",
+    "title": "Inference Servers - I",
     "section": "Paged Attention",
     "text": "Paged Attention\n\n\nPagedAttention allows storing continuous keys and values in non-contiguous memory space\nDuring the attention computation, the PagedAttention kernel identifies and fetches different KV blocks separately\nComputes attention across these non-contiguous blocks\nThis is done in a custom CUDA kernel optimized for the block-table lookup pattern"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#memory-efficiency-of-paged-kv-cache",
-    "href": "inference/04_inference_servers/slides-3.html#memory-efficiency-of-paged-kv-cache",
-    "title": "Inference Servers - II",
+    "objectID": "inference/04_inference_servers/slides.html#memory-efficiency-of-paged-kv-cache",
+    "href": "inference/04_inference_servers/slides.html#memory-efficiency-of-paged-kv-cache",
+    "title": "Inference Servers - I",
     "section": "Memory Efficiency of Paged KV Cache",
     "text": "Memory Efficiency of Paged KV Cache\nMinimizes internal fragmentation\n\n\n\nOnly happens at the last block of a sequence\n#num wasted tokens per sequence &lt; block size\nSeq len: O(100) – O(1000) tokens\nBlock size: 16 or 32 tokens\nNo external frgmentation\nOn average,wasted space &lt; 4% ofKV cache"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#paging-enables-sharing",
-    "href": "inference/04_inference_servers/slides-3.html#paging-enables-sharing",
-    "title": "Inference Servers - II",
+    "objectID": "inference/04_inference_servers/slides.html#paging-enables-sharing",
+    "href": "inference/04_inference_servers/slides.html#paging-enables-sharing",
+    "title": "Inference Servers - I",
     "section": "Paging enables sharing",
     "text": "Paging enables sharing\nParallel Sampling"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#paging-enables-sharing-1",
-    "href": "inference/04_inference_servers/slides-3.html#paging-enables-sharing-1",
-    "title": "Inference Servers - II",
+    "objectID": "inference/04_inference_servers/slides.html#paging-enables-sharing-1",
+    "href": "inference/04_inference_servers/slides.html#paging-enables-sharing-1",
+    "title": "Inference Servers - I",
     "section": "Paging enables sharing",
     "text": "Paging enables sharing\nParallel Sampling"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#paging-enables-sharing-2",
-    "href": "inference/04_inference_servers/slides-3.html#paging-enables-sharing-2",
-    "title": "Inference Servers - II",
+    "objectID": "inference/04_inference_servers/slides.html#paging-enables-sharing-2",
+    "href": "inference/04_inference_servers/slides.html#paging-enables-sharing-2",
+    "title": "Inference Servers - I",
     "section": "Paging enables sharing",
     "text": "Paging enables sharing\nShared Prompts"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#llm-inference-patterns",
-    "href": "inference/04_inference_servers/slides-3.html#llm-inference-patterns",
-    "title": "Inference Servers - II",
-    "section": "LLM Inference Patterns",
-    "text": "LLM Inference Patterns\nPrefix sharing patterns:\n\nSystem Prompts: All users share the same 1K-4K token system instructions\nRAG Context: Multiple queries against the same document chunks\nMulti-turn Conversations: Every request includes the same system prompt (“You are a helpful assistant…”).\nAgent Workflows: ReAct patterns with repetitive tool descriptions"
+    "objectID": "inference/04_inference_servers/slides.html#vllm-system-architecture",
+    "href": "inference/04_inference_servers/slides.html#vllm-system-architecture",
+    "title": "Inference Servers - I",
+    "section": "vLLM System Architecture",
+    "text": "vLLM System Architecture"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#prefix-caching",
-    "href": "inference/04_inference_servers/slides-3.html#prefix-caching",
-    "title": "Inference Servers - II",
-    "section": "Prefix Caching",
-    "text": "Prefix Caching\n\nReusable KV cache\nOnly depends on the prefix tokens\n\n\nExample:\nSystem Prompt: 2,000 tokens\nUser Query: 50 tokens\nResponse: 500 tokens\nWithout caching: Process 2,050 tokens every request.\nWith caching: Process 50 tokens (user query only) -&gt; 97% reduction!"
+    "objectID": "inference/04_inference_servers/slides.html#vllm-system-architecture-1",
+    "href": "inference/04_inference_servers/slides.html#vllm-system-architecture-1",
+    "title": "Inference Servers - I",
+    "section": "vLLM System Architecture",
+    "text": "vLLM System Architecture\n\nExplore code at DeepWiki"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#prefix-caching-1",
-    "href": "inference/04_inference_servers/slides-3.html#prefix-caching-1",
-    "title": "Inference Servers - II",
-    "section": "Prefix Caching",
-    "text": "Prefix Caching\n\nMeasured improvements:\n\nTTFT (Time to First Token) reduction: 5-20× faster for cache hits\nGPU compute saved: 40-90% for workloads with shared prefixes\nMemory overhead: near-zero with PagedAttention (shared physical blocks)\n\nEconomic Impact:\n\nAt 1M requests/day with 2K shared prefix\nSavings: 2B tokens of redundant compute daily\nCost reduction: $10K-50K/day depending on model size\n\nPrefix caching can reduce compute and latency by an order of magnitude in some use cases."
+    "objectID": "inference/04_inference_servers/slides.html#vllm-efficiency",
+    "href": "inference/04_inference_servers/slides.html#vllm-efficiency",
+    "title": "Inference Servers - I",
+    "section": "vLLM Efficiency",
+    "text": "vLLM Efficiency\n\n\n\n\nNumber of batches accomodated\n\n\n\n\nMemory usage efficiency\n\n\n\n\nthroughput (reqs/s)"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#prefix-caching-2",
-    "href": "inference/04_inference_servers/slides-3.html#prefix-caching-2",
-    "title": "Inference Servers - II",
-    "section": "Prefix Caching",
-    "text": "Prefix Caching\n\nAnthropic Claude Sonnet, Google Gemini -&gt; Up to 90% cost savings and 85% latency reduction with prompt caching.\nFrameworks like vLLM, TensorRT-LLM, and SGLang support automatic prefix caching for different open-source LLMs.\nIn agent workflows, the benefit is even more pronounced (input-to-output token ratios of 100:1)"
+    "objectID": "inference/04_inference_servers/slides.html#using-vllm",
+    "href": "inference/04_inference_servers/slides.html#using-vllm",
+    "title": "Inference Servers - I",
+    "section": "Using vLLM",
+    "text": "Using vLLM\nPython Class\npip install vllm\nfrom vllm import LLM\n# Example prompts.\nprompts = [\"Hello, my name is\", \"The capital of France is\"]\n# Create an LLM with HF model name.\nllm = LLM(model=\"meta-llama/Meta-Llama-3.1-8B\")\n# Generate texts from the prompts.\noutputs = llm.generate(prompts)\nOpenAI-compatible server\n# Start the vLLM server.\nvllm serve meta-llama/Meta-Llama-3.1-8B\n\n# Send a request to the server.\ncurl http://localhost:8000/v1/completions \\\n-H \"Content-Type: application/json\" \\\n-d '{\n\"model\": \"meta-llama/Meta-Llama-3.1-8B\",\n\"prompt\": \"San Francisco is a\",\n\"max_tokens\": 7,\n\"temperature\": 0\n}'"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#vllm-prefix-caching",
-    "href": "inference/04_inference_servers/slides-3.html#vllm-prefix-caching",
-    "title": "Inference Servers - II",
-    "section": "vLLM Prefix Caching",
-    "text": "vLLM Prefix Caching\nvLLM implements hash-based automatic prefix caching (enabled with --enable-prefix-caching by default):\n\n\nEach KV block is hashed based on its token content\nIf a hash matches an existing block in the cache -&gt; reuse it (skip prefill for those tokens)\nLRU eviction, Block-level granularity\n\n\nCan we do this at token level?"
+    "objectID": "inference/04_inference_servers/slides.html#key-config-options",
+    "href": "inference/04_inference_servers/slides.html#key-config-options",
+    "title": "Inference Servers - I",
+    "section": "Key Config Options",
+    "text": "Key Config Options\nKey configuration parameters:\n\n--gpu-memory-utilization 0.90: Fraction of GPU memory to use for KV cache (default 0.9)\n--max-model-len 4096: Maximum sequence length\n--block-size 16: Number of tokens per KV block\n--tensor-parallel-size N: Number of GPUs for tensor parallelism\n--enable-prefix-caching: Enable automatic hash-based prefix caching"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#radixattention-sglang",
-    "href": "inference/04_inference_servers/slides-3.html#radixattention-sglang",
-    "title": "Inference Servers - II",
-    "section": "RadixAttention (SGLang)",
-    "text": "RadixAttention (SGLang)\nPaper: SGLang: Efficient Execution of Structured Language Model Programs - Zheng et al., NeurIPS 2024\nRadixAttention, which uses a radix tree data structure for KV cache management:\n(root)\n ├── \"cat\"\n │     ├── \"sat\"   (cat sat)\n │     └── \"flew\"   (cat flew)\n └── \"dog\"\n\n\n\nAll seen token sequences are stored in a radix tree\nEach node in the tree points to cached KV blocks in GPU memory"
+    "objectID": "inference/04_inference_servers/slides.html#vllm-model-support",
+    "href": "inference/04_inference_servers/slides.html#vllm-model-support",
+    "title": "Inference Servers - I",
+    "section": "vLLM Model support",
+    "text": "vLLM Model support"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#radixattention-sglang-1",
-    "href": "inference/04_inference_servers/slides-3.html#radixattention-sglang-1",
-    "title": "Inference Servers - II",
-    "section": "RadixAttention (SGLang)",
-    "text": "RadixAttention (SGLang)\n\n\ngreen - newly added nodes | blue - cached nodes accessed during the time point | red - nodes that have been evicted\n\n\nEdges are labeled with token sequences (not single tokens, space-efficient)\nNew request: traverse the tree to find the longest matching prefix\nOnly compute KV for the remaining (unmatched) tokens"
+    "objectID": "inference/04_inference_servers/slides.html#vllm-model-support-1",
+    "href": "inference/04_inference_servers/slides.html#vllm-model-support-1",
+    "title": "Inference Servers - I",
+    "section": "vLLM Model support",
+    "text": "vLLM Model support\n\nTransformer-like LLMs (e.g., Llama)\nMixture-of-Expert LLMs (e.g., DeepSeek)\nMulti-modal LLMs (e.g., Qwen-VL)\nState-Space Models (e.g., Mamba)\nEmbedding Models (e.g. E5-Mistral)"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#radixattention-sglang-2",
-    "href": "inference/04_inference_servers/slides-3.html#radixattention-sglang-2",
-    "title": "Inference Servers - II",
-    "section": "RadixAttention (SGLang)",
-    "text": "RadixAttention (SGLang)\n \n\nRadixAttention enables efficient prefix matching, insertion, and eviction.\nIt handles trees with hundreds of thousands of tokens."
+    "objectID": "inference/04_inference_servers/slides.html#vllm-other-features",
+    "href": "inference/04_inference_servers/slides.html#vllm-other-features",
+    "title": "Inference Servers - I",
+    "section": "vLLM other features",
+    "text": "vLLM other features\n\nSupport for quantized models (e.g., 4-bit, 8-bit)\nCustom attention mechanisms (e.g., FlashAttention, Triton, FlashInfer)\nCustom decoding strategies (e.g., beam search, nucleus sampling)\nCustom decoding libraries (e.g., FlashInfer)\nPrefix Caching\nSpeculative Decoding\nStructured outputs (e.g., JSON, XML)"
   },
   {
-    "objectID": "inference/04_inference_servers/slides-3.html#radix-attention",
-    "href": "inference/04_inference_servers/slides-3.html#radix-attention",
-    "title": "Inference Servers - II",
-    "section": "Radix Attention",
-    "text": "Radix Attention\n \n\nLRU eviction when memory pressure occurs"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#cache-aware-scheduling",
-    "href": "inference/04_inference_servers/slides-3.html#cache-aware-scheduling",
-    "title": "Inference Servers - II",
-    "section": "Cache Aware Scheduling",
-    "text": "Cache Aware Scheduling\n\nSort waiting requests by matched prefix length - schedule longer matches first to maximize cache hits\n\nSingle Worker :"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#cache-aware-scheduling-1",
-    "href": "inference/04_inference_servers/slides-3.html#cache-aware-scheduling-1",
-    "title": "Inference Servers - II",
-    "section": "Cache Aware Scheduling",
-    "text": "Cache Aware Scheduling\nCache-aware load balancer SGL Router"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#results",
-    "href": "inference/04_inference_servers/slides-3.html#results",
-    "title": "Inference Servers - II",
-    "section": "Results",
-    "text": "Results\n\n\nPerformance: SGLang achieved up to 6.4× higher throughput compared to state-of-the-art inference systems across diverse benchmarks"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#vllm-vs-sglang-prefix-caching-comparison",
-    "href": "inference/04_inference_servers/slides-3.html#vllm-vs-sglang-prefix-caching-comparison",
-    "title": "Inference Servers - II",
-    "section": "vLLM vs SGLang Prefix Caching Comparison",
-    "text": "vLLM vs SGLang Prefix Caching Comparison\n\n\n\n\n\n\n\n\nFeature\nvLLM Prefix Caching\nSGLang RadixAttention\n\n\n\n\nData structure\nHash table (per-block)\nRadix tree (token-level)\n\n\nMatching granularity\nBlock-level (16 tokens)\nToken-level\n\n\nCross-request sharing\nYes\nYes\n\n\nImage/multimodal\nPer-image hash\nHash of image tokens as key"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#prefix-caching-in-action",
-    "href": "inference/04_inference_servers/slides-3.html#prefix-caching-in-action",
-    "title": "Inference Servers - II",
-    "section": "Prefix Caching in Action",
-    "text": "Prefix Caching in Action\n# vLLM with prefix caching\npython -m vllm.entrypoints.openai.api_server \\\n    --model meta-llama/Llama-3.1-8B-Instruct \\\n    --enable-prefix-caching\n\n# SGLang with RadixAttention (ON by default)\npython -m sglang.launch_server \\\n    --model-path meta-llama/Llama-3.1-8B-Instruct \\\n    --port 30000\n\n# Test: Send same system prompt with different user messages\n# Measure TTFT for first request vs subsequent requests\n# First request: full prefill (slower TTFT)\n# Subsequent requests with same prefix: cache hit (much faster TTFT)"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#when-caching-doesnt-help",
-    "href": "inference/04_inference_servers/slides-3.html#when-caching-doesnt-help",
-    "title": "Inference Servers - II",
-    "section": "When Caching Doesn’t Help",
-    "text": "When Caching Doesn’t Help\n\nUnique contexts: Zero shot tasks with no shared prompts\nVery long sequences: When KV cache size &gt;&gt; compute cost\nHigh churn: Cache eviction rate &gt; hit rate\nShort prefixes: Overhead dominates for &lt; 100 token prefixes"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#disaggregated-serving",
-    "href": "inference/04_inference_servers/slides-3.html#disaggregated-serving",
-    "title": "Inference Servers - II",
-    "section": "Disaggregated Serving",
-    "text": "Disaggregated Serving"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#is-throughput-the-right-metric",
-    "href": "inference/04_inference_servers/slides-3.html#is-throughput-the-right-metric",
-    "title": "Inference Servers - II",
-    "section": "Is Throughput the Right Metric?",
-    "text": "Is Throughput the Right Metric?\nApplications have Diverse SLOs:"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#llm-inference-latency",
-    "href": "inference/04_inference_servers/slides-3.html#llm-inference-latency",
-    "title": "Inference Servers - II",
-    "section": "LLM Inference Latency",
-    "text": "LLM Inference Latency\n\n\n\n\n\n\n\n\nExisting systems maximize the overall throughput\n\nHigh throughput ≠ good user experience if latency SLOs are not met"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#high-throughput-high-goodput",
-    "href": "inference/04_inference_servers/slides-3.html#high-throughput-high-goodput",
-    "title": "Inference Servers - II",
-    "section": "High Throughput ≠ High Goodput",
-    "text": "High Throughput ≠ High Goodput\nGoodput Definition: &gt; The maximum request rate per GPU that meets both TTFT and TPOT SLOs at 90%+ attainment."
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#high-throughput-high-goodput-1",
-    "href": "inference/04_inference_servers/slides-3.html#high-throughput-high-goodput-1",
-    "title": "Inference Servers - II",
-    "section": "High Throughput ≠ High Goodput",
-    "text": "High Throughput ≠ High Goodput\nGoodput Definition: &gt; The maximum request rate per GPU that meets both TTFT and TPOT SLOs at 90%+ attainment."
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#the-hardware-mismatch-problem",
-    "href": "inference/04_inference_servers/slides-3.html#the-hardware-mismatch-problem",
-    "title": "Inference Servers - II",
-    "section": "The Hardware Mismatch Problem",
-    "text": "The Hardware Mismatch Problem\nModern GPUs are designed for training (compute-bound), but inference has asymmetric needs:\n\n\nPrefill Requirements:\n\nHigh FLOPS (tensor cores)\nModerate memory bandwidth\n\nDecode Requirements:\n\nHigh memory bandwidth (HBM)\nLarge memory capacity (for KV cache)\nLower compute acceptable\n\n\n\n\n\n\nThe Problem: Single GPU must satisfy both, leading to over-provisioning."
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#phase-colocation-issues",
-    "href": "inference/04_inference_servers/slides-3.html#phase-colocation-issues",
-    "title": "Inference Servers - II",
-    "section": "Phase Colocation Issues",
-    "text": "Phase Colocation Issues\nWhen prefill and decode share GPUs:\n\n\n\n\n\n\n\n\n\nBatching Tradeoffs:\n\nMixing phases causes interference\nBatching prefills helps utilization but increases TTFT\nBatching decodes helps throughput but increases TPOT\n\n\nSLO Conflicts:\n\nTTFT (Time To First Token) requires fast prefill\nTPOT (Time Per Output Token) requires uninterrupted decode\nOptimizing one hurts the other"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#phase-colocation-issues-1",
-    "href": "inference/04_inference_servers/slides-3.html#phase-colocation-issues-1",
-    "title": "Inference Servers - II",
-    "section": "Phase Colocation Issues",
-    "text": "Phase Colocation Issues\n\n\nWhen prefill and decode share GPUs:\nContinuous Batching Batch R1 and R2 together in 1 GPU\n\n\nSeparate prefill / decode R1 and R2 in separate GPUs\n\n\n\nResource Contention:\n\nPrefill saturates compute -&gt; decode stalls\nDecode saturates bandwidth -&gt; prefill slows"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#overprovision-resource-to-meet-slo",
-    "href": "inference/04_inference_servers/slides-3.html#overprovision-resource-to-meet-slo",
-    "title": "Inference Servers - II",
-    "section": "Overprovision Resource to meet SLO",
-    "text": "Overprovision Resource to meet SLO"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#colocation-with-parallelism",
-    "href": "inference/04_inference_servers/slides-3.html#colocation-with-parallelism",
-    "title": "Inference Servers - II",
-    "section": "Colocation with Parallelism",
-    "text": "Colocation with Parallelism\nPrefill Prefer tensor parallel (TP)\nDecode Prefer pipeline parallelism (PP) or data parallelism (DP)"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#colocation-with-parallelism-1",
-    "href": "inference/04_inference_servers/slides-3.html#colocation-with-parallelism-1",
-    "title": "Inference Servers - II",
-    "section": "Colocation with Parallelism",
-    "text": "Colocation with Parallelism\nPrefill Prefer tensor parallel (TP)\nDecode Prefer pipeline parallelism (PP) or data parallelism (DP)"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#solution-disaggregating-prefill-and-decode",
-    "href": "inference/04_inference_servers/slides-3.html#solution-disaggregating-prefill-and-decode",
-    "title": "Inference Servers - II",
-    "section": "Solution: Disaggregating Prefill and Decode",
-    "text": "Solution: Disaggregating Prefill and Decode\nDistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving - Yinmin Zhong et al., 2024"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#solution-disaggregating-prefill-and-decode-1",
-    "href": "inference/04_inference_servers/slides-3.html#solution-disaggregating-prefill-and-decode-1",
-    "title": "Inference Servers - II",
-    "section": "Solution: Disaggregating Prefill and Decode",
-    "text": "Solution: Disaggregating Prefill and Decode"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#disaggregation-achieves-better-goodput",
-    "href": "inference/04_inference_servers/slides-3.html#disaggregation-achieves-better-goodput",
-    "title": "Inference Servers - II",
-    "section": "Disaggregation achieves better goodput",
-    "text": "Disaggregation achieves better goodput\n\n\nColocate 1 GPU for both Prefill and Decode \n\nDisaggregate (2P1D) 2 GPU for Prefill + 1 GPU for Decode\n\n\n\nSimple Disaggregation achieves 2x goodput (per GPU)"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#implmentation",
-    "href": "inference/04_inference_servers/slides-3.html#implmentation",
-    "title": "Inference Servers - II",
-    "section": "Implmentation",
-    "text": "Implmentation"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#evaluation",
-    "href": "inference/04_inference_servers/slides-3.html#evaluation",
-    "title": "Inference Servers - II",
-    "section": "Evaluation",
-    "text": "Evaluation\n\nAchieves 2.0x - 4.48x goodput compared to vanilla vLLM\n\nChatbot: 2.0 - 3.4x\nCode Completion: 3.2x\nSummarization: 4.5x"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#distserve-adaptation",
-    "href": "inference/04_inference_servers/slides-3.html#distserve-adaptation",
-    "title": "Inference Servers - II",
-    "section": "DistServe Adaptation",
-    "text": "DistServe Adaptation\n\nCase Study : Deploying DeepSeek with PD Disaggregation and Large-Scale Expert Parallelism on 96 H100 GPUs"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#distserve-adaptation-1",
-    "href": "inference/04_inference_servers/slides-3.html#distserve-adaptation-1",
-    "title": "Inference Servers - II",
-    "section": "DistServe Adaptation",
-    "text": "DistServe Adaptation\nOrchestration Layer: Nvidia Dynamo, llm-d"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#distserve-adaptation-2",
-    "href": "inference/04_inference_servers/slides-3.html#distserve-adaptation-2",
-    "title": "Inference Servers - II",
-    "section": "DistServe Adaptation",
-    "text": "DistServe Adaptation\nStorage Layer : LLMCache (CPU DRAM + SSD), MoonCake"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#when-does-disaggregation-not-make-sense",
-    "href": "inference/04_inference_servers/slides-3.html#when-does-disaggregation-not-make-sense",
-    "title": "Inference Servers - II",
-    "section": "When Does Disaggregation NOT Make Sense?",
-    "text": "When Does Disaggregation NOT Make Sense?\n\nLow request volume: Not enough requests to justify separate pools\nVery short prompts: Prefill is already cheap, transfer overhead dominates\nSingle GPU deployments: No other GPUs to disaggregate onto\nLow-latency requirements: KV cache transfer adds latency that may violate tight SLOs"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#infeerence-orchestration-next-frontier",
-    "href": "inference/04_inference_servers/slides-3.html#infeerence-orchestration-next-frontier",
-    "title": "Inference Servers - II",
-    "section": "Infeerence Orchestration : Next Frontier",
-    "text": "Infeerence Orchestration : Next Frontier"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#the-evolution-of-inference-infrastructure",
-    "href": "inference/04_inference_servers/slides-3.html#the-evolution-of-inference-infrastructure",
-    "title": "Inference Servers - II",
-    "section": "The Evolution of Inference Infrastructure",
-    "text": "The Evolution of Inference Infrastructure\nGeneration 1 (2018-2020): Custom Flask/FastAPI wrappers around PyTorch\nGeneration 2 (2020-2022): Triton Inference Server + TensorRT\nGeneration 3 (2022-2024): vLLM, SGLang\nGeneration 4 (2025+): Disaggregated, SLO-aware, autoscaling (Dynamo)"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#nvidia-dynamo-overview",
-    "href": "inference/04_inference_servers/slides-3.html#nvidia-dynamo-overview",
-    "title": "Inference Servers - II",
-    "section": "NVIDIA Dynamo Overview",
-    "text": "NVIDIA Dynamo Overview\nGitHub: ai-dynamo/dynamo\nProduct page: NVIDIA Dynamo"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#dynamo-architecture",
-    "href": "inference/04_inference_servers/slides-3.html#dynamo-architecture",
-    "title": "Inference Servers - II",
-    "section": "Dynamo Architecture",
-    "text": "Dynamo Architecture\n\nComponents:\n\nSmart Router\nGPU Planner\nDisaggregated Serving\nKV Block Manager"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#dynamo---disaggregated-serving",
-    "href": "inference/04_inference_servers/slides-3.html#dynamo---disaggregated-serving",
-    "title": "Inference Servers - II",
-    "section": "Dynamo - Disaggregated Serving",
-    "text": "Dynamo - Disaggregated Serving\n\n\nFaster TTFT\nFaster ITL\nApply suitable parallelism for prefill and decode separately\nPair different GPU SKUs"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#dynamo---kv-aware-routing",
-    "href": "inference/04_inference_servers/slides-3.html#dynamo---kv-aware-routing",
-    "title": "Inference Servers - II",
-    "section": "Dynamo - KV-Aware Routing",
-    "text": "Dynamo - KV-Aware Routing\nSignificant boost in TTFT and End to End Latency with real data (100K requests with DeepSeek R1)"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#dynamo---memory-and-data-transfer",
-    "href": "inference/04_inference_servers/slides-3.html#dynamo---memory-and-data-transfer",
-    "title": "Inference Servers - II",
-    "section": "Dynamo - Memory and Data Transfer",
-    "text": "Dynamo - Memory and Data Transfer\n\nLow latency transfer between multiple nodes\nDynamicity required for scaling and transfer to storage\nCommon layer for inference specific network optimization."
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#dynamo-deployment-example",
-    "href": "inference/04_inference_servers/slides-3.html#dynamo-deployment-example",
-    "title": "Inference Servers - II",
-    "section": "Dynamo Deployment Example",
-    "text": "Dynamo Deployment Example\n# specify model + SLA, Dynamo handles the rest\napiVersion: nvidia.com/v1beta1\nkind: DynamoGraphDeploymentRequest\nmetadata:\n  name: my-model\nspec:\n  model: Qwen/Qwen3-0.6B\n  backend: vllm\n  sla:\n    ttft: 200.0  # ms\n    itl: 20.0    # ms\n  autoApply: true"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#comparison-inference-stack-decision-matrix",
-    "href": "inference/04_inference_servers/slides-3.html#comparison-inference-stack-decision-matrix",
-    "title": "Inference Servers - II",
-    "section": "Comparison: Inference Stack Decision Matrix",
-    "text": "Comparison: Inference Stack Decision Matrix\n\n\n\n\n\n\n\n\n\n\n\nFactor\nvLLM\nSGLang\nTRT-LLM\nllama.cpp\n\n\n\n\nThroughput\nHigh\nHigh\nHighest\nModerate\n\n\nEase of use\n★★★★★\n★★★★\n★★★\n★★★★\n\n\nModel support\nBroadest\nBroad\nLimited (compile needed)\nGGUF only\n\n\nPrefix caching\nHash-based blocks\nRadixAttention (tree)\nBuilt-in\nSlot-based\n\n\nQuantization\nAWQ/GPTQ/FP8\nAWQ/GPTQ/FP8\nFP8/INT8/INT4\nk-quant/IQ (2-8 bit)\n\n\nHardware\nNVIDIA/AMD/Intel/TPU\nNVIDIA/AMD\nNVIDIA only\nAny (CPU/GPU/Metal)\n\n\nBest for\nGeneral serving\nStructured gen, cache-heavy\nMax perf, NVIDIA\nEdge/local, privacy\n\n\nOrchestration\nSingle/multi-node\nSingle/multi-node\nVia Dynamo\nSingle node"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#choosing-your-stack-scenario-based",
-    "href": "inference/04_inference_servers/slides-3.html#choosing-your-stack-scenario-based",
-    "title": "Inference Servers - II",
-    "section": "Choosing Your Stack: Scenario-Based",
-    "text": "Choosing Your Stack: Scenario-Based\n\nScenario 1:\n“Run a chatbot on my desktop / laptop” -&gt; llama.cpp with Q4_K_M quantization, Metal backend. Full privacy, no cloud needed.\n\n\nScenario 2:\n“Serve Llama-70B to 100 concurrent users on 4× A100” -&gt; vLLM or SGLang with tensor parallelism. Enable prefix caching for chat workloads.\n\n\nScenario 3:\n“Structured JSON extraction from documents at scale” -&gt; SGLang — RadixAttention maximizes prefix reuse for repeated templates, compressed FSM for structured output.\n\n\nScenario 4:\n“Deploy DeepSeek-R1 across a 64-GPU cluster” -&gt; NVIDIA Dynamo with disaggregated serving, vLLM or TRT-LLM backend. Smart router for KV cache locality."
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#key-takeaways",
-    "href": "inference/04_inference_servers/slides-3.html#key-takeaways",
-    "title": "Inference Servers - II",
-    "section": "Key Takeaways",
-    "text": "Key Takeaways\n\nPrefill is compute-bound, decode is memory-bound\nContinuous batching (Orca) eliminates idle GPU time by scheduling at iteration level -&gt; 2-36× throughput over static batching\nPagedAttention (vLLM) eliminates KV cache fragmentation with OS-inspired virtual memory -&gt; reduces waste from 60-80% to &lt;4%, enabling 2-4× more throughput\nPrefix caching avoids redundant prefill computation -&gt; 5-20× TTFT reduction for workloads with shared prefixes\nDisaggregated serving (DistServe) separates prefill and decode onto different GPUs -&gt; independent optimization and 1.4-2.35× throughput improvement\nProduction orchestration (NVIDIA Dynamo) adds smart routing, dynamic scaling, KV cache management, and SLO-aware planning across GPU clusters -&gt; up to 7× throughput on Blackwell"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#food-for-thought-system-design-question",
-    "href": "inference/04_inference_servers/slides-3.html#food-for-thought-system-design-question",
-    "title": "Inference Servers - II",
-    "section": "Food for thought : System Design Question",
-    "text": "Food for thought : System Design Question\nScenario:\nYou need to serve a 70B parameter model for a chatbot application with:\n\n50K users, 10K concurrent at peak\nAverage input: 2K tokens, output: 500 tokens\nSLO: TTFT &lt; 200ms, TPOT &lt; 50ms\nBudget: 20x H100s\n\nQuestions:\n\nShould you use disaggregated serving? Why/why not?\nWhat batching strategy and chunk size?\nPrefix caching strategy?\nQuantization approach?"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides-3.html#further-reading",
-    "href": "inference/04_inference_servers/slides-3.html#further-reading",
-    "title": "Inference Servers - II",
+    "objectID": "inference/04_inference_servers/slides.html#further-reading",
+    "href": "inference/04_inference_servers/slides.html#further-reading",
+    "title": "Inference Servers - I",
     "section": "Further Reading",
-    "text": "Further Reading\n\nSGLang: Efficient Execution of Structured Language Model Programs - Zheng et al., NeurIPS 2024\nDistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving - Yinmin Zhong et al., 2024\nNVIDIA Dynamo: An Orchestrator for Large Language Model Inference - NVIDIA, 2025"
+    "text": "Further Reading\n\nOrca: A Distributed Serving System for Transformer-Based Generative Models (OSDI 2022)\nMastering LLM Techniques: Inference Optimization – NVIDIA Blog\nMinivLLM: Minimal vLLM Implementation\nMiniSGLang: Minimal SGLang Implementation\nvLLM: Efficient Memory Management for LLM Serving with PagedAttention (2023)"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#model-artifacts",
+    "href": "inference/04_inference_servers/demos.html#model-artifacts",
+    "title": "Inference Demos",
+    "section": "Model Artifacts",
+    "text": "Model Artifacts\nMeta LLaMA 3.1 8B Instruct"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#llm-inference",
+    "href": "inference/04_inference_servers/demos.html#llm-inference",
+    "title": "Inference Demos",
+    "section": "LLM Inference",
+    "text": "LLM Inference\nNOTE: See README.md in the code shared for details on how to run the inference demos.\n\nLLM Inference Mechanics\n\nllm-inference-mechanics.ipynb"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#examine-the-model-artifacts",
+    "href": "inference/04_inference_servers/demos.html#examine-the-model-artifacts",
+    "title": "Inference Demos",
+    "section": "Examine the model artifacts",
+    "text": "Examine the model artifacts\n\nhf-checkpoint-internals-qwen3-4b.ipynb"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#llama.cpp-safetensors-to-gguf",
+    "href": "inference/04_inference_servers/demos.html#llama.cpp-safetensors-to-gguf",
+    "title": "Inference Demos",
+    "section": "llama.cpp : SafeTensors to GGUF",
+    "text": "llama.cpp : SafeTensors to GGUF\n\nturn a Hugging Face model into one FP16 GGUF file\n\n00-convert.sh script"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#llama.cpp-inference",
+    "href": "inference/04_inference_servers/demos.html#llama.cpp-inference",
+    "title": "Inference Demos",
+    "section": "llama.cpp : Inference",
+    "text": "llama.cpp : Inference\n\nload a GGUF model and run inference on it (prompt, chat, server)\n\ninfer.sh script"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#llama.cpp-gguf-analysis",
+    "href": "inference/04_inference_servers/demos.html#llama.cpp-gguf-analysis",
+    "title": "Inference Demos",
+    "section": "llama.cpp : GGUF Analysis",
+    "text": "llama.cpp : GGUF Analysis\n\nanalyze a GGUF model and print out the quantization parameters\n\n01-anatomy.sh script"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#llama.cpp-gguf-quantization",
+    "href": "inference/04_inference_servers/demos.html#llama.cpp-gguf-quantization",
+    "title": "Inference Demos",
+    "section": "llama.cpp : GGUF Quantization",
+    "text": "llama.cpp : GGUF Quantization\n\nquantize a GGUF model to a lower precision (e.g., FP16, INT8, INT4, etc.)\n\n02-quantize.sh script"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#llama.cpp-inside-quants",
+    "href": "inference/04_inference_servers/demos.html#llama.cpp-inside-quants",
+    "title": "Inference Demos",
+    "section": "llama.cpp : Inside Quants",
+    "text": "llama.cpp : Inside Quants\n\nanalyze the quantized parameters of a GGUF model and print out the details\n\n03-inside-kquants.sh script"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#llama.cpp-ppl-curve",
+    "href": "inference/04_inference_servers/demos.html#llama.cpp-ppl-curve",
+    "title": "Inference Demos",
+    "section": "llama.cpp : ppl curve",
+    "text": "llama.cpp : ppl curve\n\nplot the perplexity curve of a GGUF model at different quantization levels (e.g., FP16, INT8, INT4, etc.)\n\n04-ppl-curve.sh script"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#llama.cpp-llama-bench",
+    "href": "inference/04_inference_servers/demos.html#llama.cpp-llama-bench",
+    "title": "Inference Demos",
+    "section": "llama.cpp : llama-bench",
+    "text": "llama.cpp : llama-bench\n\nbenchmark the inference speed of a GGUF model at different quantization levels (e.g., FP16, INT8, INT4, etc.)\n\n06-bench.sh script"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#llama.cpp-iquants",
+    "href": "inference/04_inference_servers/demos.html#llama.cpp-iquants",
+    "title": "Inference Demos",
+    "section": "llama.cpp : iquants",
+    "text": "llama.cpp : iquants\n\ncreate an importance matrix for a GGUF model and quantize to IQ2\n05-imatrix.sh script"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#kv-cache",
+    "href": "inference/04_inference_servers/demos.html#kv-cache",
+    "title": "Inference Demos",
+    "section": "KV Cache",
+    "text": "KV Cache\nKV Cache"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#vllm-continuous-batching",
+    "href": "inference/04_inference_servers/demos.html#vllm-continuous-batching",
+    "title": "Inference Demos",
+    "section": "vLLM: Continuous Batching",
+    "text": "vLLM: Continuous Batching\nNOTES : Pls see vllm-demos.zip for the code and instructions to run the demos.\n\nclient_continuous_batching.py"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#vllm-kv-cache-pool",
+    "href": "inference/04_inference_servers/demos.html#vllm-kv-cache-pool",
+    "title": "Inference Demos",
+    "section": "vLLM : KV Cache Pool",
+    "text": "vLLM : KV Cache Pool\n\nVary gpu_memory_utilization to see how the KV cache pool size affects KV size"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#vllm-fp8-kv-cache",
+    "href": "inference/04_inference_servers/demos.html#vllm-fp8-kv-cache",
+    "title": "Inference Demos",
+    "section": "vLLM : FP8 KV Cache",
+    "text": "vLLM : FP8 KV Cache\n\nrun serve.sh with --kv-cache-dtype fp8 and compare_kv_pool.sh to see how quantization affects the KV cache pool size"
+  },
+  {
+    "objectID": "inference/04_inference_servers/demos.html#vllm-prefix-caching",
+    "href": "inference/04_inference_servers/demos.html#vllm-prefix-caching",
+    "title": "Inference Demos",
+    "section": "vLLM : Prefix caching",
+    "text": "vLLM : Prefix caching\n\nRun serve.sh and benchmark_prefix_caching.py\n\n7 | Transformers vs vLLM | Why serving engines exist | serve.sh | ../benchmark_transformers_vs_vllm.py |\n8 | Benchmark methodology | Throughput ≠ goodput; TTFT/TPOT/ITL | any | bench.sh |\n9 | MoE vs dense decode speed | MoE serving (active vs total params) | /projects/vllm scripts | bench.sh |"
   },
   {
     "objectID": "inference/03_inference_math/slides.html#inference",
@@ -3371,430 +3511,731 @@
     "text": "Summary\n\nQuantization reduces model size and speeds up inference\nSymmetric (absmax) and asymmetric (zero-point) quantization are common techniques\nLLM.int8() addresses outliers in activations for better quantization performance\nActivation quantization can be static (calibration) or dynamic (on-the-fly)\nQAT prepares models for quantization during training\nllama.cpp ecosystem provides various quantization techniques (legacy, K-quants, I-quants) for CPU inference"
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#overview",
-    "href": "inference/04_inference_servers/slides.html#overview",
-    "title": "Inference Servers - I",
+    "objectID": "inference/04_inference_servers/slides-3.html#overview",
+    "href": "inference/04_inference_servers/slides-3.html#overview",
+    "title": "Inference Servers - II",
     "section": "Overview",
-    "text": "Overview\n\nStatic and Continuous Batching\nPaged Attention\nvLLM"
+    "text": "Overview\n\nPrefix Caching and KV Reuse\nDisaggregated Serving\nInference Orchestration"
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#inference-forward-pass-analysis",
-    "href": "inference/04_inference_servers/slides.html#inference-forward-pass-analysis",
-    "title": "Inference Servers - I",
-    "section": "Inference / Forward Pass Analysis",
-    "text": "Inference / Forward Pass Analysis\n\nNo weight updates, but still lots of matrix multiplies and data movement"
+    "objectID": "inference/04_inference_servers/slides-3.html#recap-continuous-batching",
+    "href": "inference/04_inference_servers/slides-3.html#recap-continuous-batching",
+    "title": "Inference Servers - II",
+    "section": "Recap: Continuous Batching",
+    "text": "Recap: Continuous Batching\n\n\nDynamically batch requests at the token level, allowing for early return and better GPU utilization.\nAs soon as one request in the batch finishes generating its next token, it can be returned to the client, while the remaining requests continue processing."
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#inference-forward-pass-analysis-1",
-    "href": "inference/04_inference_servers/slides.html#inference-forward-pass-analysis-1",
-    "title": "Inference Servers - I",
-    "section": "Inference / Forward Pass Analysis",
-    "text": "Inference / Forward Pass Analysis\nRepeat until the sequence\n\nReaches its pre-defined maximum length (e.g., 2048 tokens)\nGenerates certain tokens (e.g., “&lt;|end of sequence|&gt;”)"
+    "objectID": "inference/04_inference_servers/slides-3.html#recap-paged-attention",
+    "href": "inference/04_inference_servers/slides-3.html#recap-paged-attention",
+    "title": "Inference Servers - II",
+    "section": "Recap: Paged Attention",
+    "text": "Recap: Paged Attention\n\n\nLogical blocks: The model’s attention mechanism operates on the entire context as a single logical block (e.g., a 16K token context treated as one block for attention computations).\nPhysical blocks (pages): Memory is divided into smaller physical blocks/pages (e.g., 16–32 tokens each), dynamically allocated and mapped to different requests as needed."
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#llm-inference-challenges",
-    "href": "inference/04_inference_servers/slides.html#llm-inference-challenges",
-    "title": "Inference Servers - I",
-    "section": "LLM Inference Challenges",
-    "text": "LLM Inference Challenges\nWhy is LLM inference harder than standard neural network inference?\n\nVariable-length compute : inputs and outputs have no fixed tensor shapes\nBatching is difficult : sequences finish at different times\nNeed to balance TTFT, ITL, and throughput simultaneously"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#llm-inference-challenges-1",
-    "href": "inference/04_inference_servers/slides.html#llm-inference-challenges-1",
-    "title": "Inference Servers - I",
-    "section": "LLM Inference Challenges",
-    "text": "LLM Inference Challenges\nWhy is LLM inference harder than standard neural network inference?\n\nGPU memory management: KV caching, Prefix caching"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#model-artifacts",
-    "href": "inference/04_inference_servers/slides.html#model-artifacts",
-    "title": "Inference Servers - I",
-    "section": "Model Artifacts",
-    "text": "Model Artifacts"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#memory-model-parameters",
-    "href": "inference/04_inference_servers/slides.html#memory-model-parameters",
-    "title": "Inference Servers - I",
-    "section": "Memory : Model Parameters",
-    "text": "Memory : Model Parameters\nMemory = Model Memory + KV Cache Memory + Activation Memory\n\nStep 1: Count Parameters\nExample: LLaMA-2 13B\n(D=5,120, F=13,824, N=40, K=40, H=128, L=40, V=32,000)\n\n\n\n\nComponent\nFormula\nTotal\n\n\n\n\nEmbeddings\n\\(2 \\times V \\times D\\)\n328M\n\n\nMLP\n\\(3 \\times D \\times F \\times L\\)\n8,488M\n\n\nAttention\n\\((2D^2 + 2D(K \\times H)) \\times L\\)\n4,196M\n\n\nTotal\n\n≈ 13B\n\n\n\n\nStep 2: Compute Memory Size\nparams_size = num_params × bytes_per_param\n\n\n\nPrecision\nSize\nFormula\n\n\n\n\nBF16/FP16\n26 GB\n13B × 2 bytes\n\n\nINT8\n13 GB\n13B × 1 byte\n\n\nINT4\n6.5 GB\n13B × 0.5 byte\n\n\n\n\n\n\n\n\n\n\nTip\n\n\nRule of thumb: Memory (GB) \\(\\approx\\) num_params (B) \\(\\times\\) bytes_per_param\nA 7B model in FP16 needs ~14 GB. A 70B model needs ~140 GB."
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#prefill-vs-decode",
-    "href": "inference/04_inference_servers/slides.html#prefill-vs-decode",
-    "title": "Inference Servers - I",
-    "section": "Prefill vs Decode",
-    "text": "Prefill vs Decode\n\n\n\n\n\n\n\n\n\n\nProperty\nPrefill Phase\nDecode Phase\n\n\n\n\nOperation type\nGEMM (matrix × matrix)\nGEMV (matrix × vector)\n\n\nArithmetic intensity\nHigh\nVery low\n\n\nGPU utilization\nHigh (saturates compute)\nLow (limited by bandwidth)\n\n\nBottleneck\nCompute (FLOPS)\nMemory bandwidth (GB/s)\n\n\nParallelism\nAll prompt tokens in parallel\nOne token at a time, sequential\n\n\nTime scaling\n∝ prompt_length\n∝ output_length × kv_cache_size\n\n\nBatch dimension\nbatch_size × seq_len (large)\nbatch_size × 1 (small)"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#the-roofline-model",
-    "href": "inference/04_inference_servers/slides.html#the-roofline-model",
-    "title": "Inference Servers - I",
-    "section": "The Roofline Model",
-    "text": "The Roofline Model\n\n\nPerformance is bounded by:\n\nCompute : how fast GPU does math (FLOPs/s)\nBandwidth : how fast data moves (GB/s)\nCapacity : whether weights + KV cache fit at all (GB)\n\n\n\n\n\n\n\n\nNote\n\n\nKnee point = bandwidth-bound to compute-bound transisiton -&gt; minimum AI needed to fully utilize GPU’s compute.\n\n\n\n\n\n\n\nFigure: Roofline model of attention operators in LLM Serving, data from A100 PCIe 80GB.\n\n\n\\[\\text{Performance} = \\min(\\text{Peak FLOPs}, \\text{AI} \\times \\text{BW})\\]"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#inference-tradeoffs",
-    "href": "inference/04_inference_servers/slides.html#inference-tradeoffs",
-    "title": "Inference Servers - I",
-    "section": "Inference Tradeoffs",
-    "text": "Inference Tradeoffs\nCannot optimize for all three simultaneously.\nThree way tradeoff between accuracy, latency, and cost\n\n\n\n\n\n\n\n\n\nPriority\nTradeoff\nEngineering Bridges\n\n\n\n\nAccuracy + Low Latency\nHigher cost\nUse smaller models to reduce serving cost; recover accuracy with RAG, fine-tuning, and tool use. Quantization cuts GPU memory footprint further.\n\n\nAccuracy + Low Cost\nHigher latency\nBatch inference, async pipelines, and queue-tolerant architectures absorb the latency gracefully.\n\n\nLow Latency + Low Cost\nAccuracy at risk\nSmaller or distilled models with quantization; improve accuracy via RAG, fine-tuning"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#serving-systems",
-    "href": "inference/04_inference_servers/slides.html#serving-systems",
-    "title": "Inference Servers - I",
-    "section": "Serving Systems",
-    "text": "Serving Systems\nFront End - API, scheduling, memory\nBack End - Math and compute optimizations, graph compilation, kernels"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#cost-of-serving",
-    "href": "inference/04_inference_servers/slides.html#cost-of-serving",
-    "title": "Inference Servers - I",
-    "section": "Cost of Serving",
-    "text": "Cost of Serving\nOrca paper (Yu et al., OSDI 2022) provides a cost analysis of serving GPT3 175B models on Azure:\n\nIn Azure, a GPT3 175B instance requires 2 VMs, each of which has 8 NVIDIA A100 40GB GPUs\nAt Azure East US, the VM price is $27.197/hour.\n\n2 VMs = $54.394/hour -&gt; $39,707.62/month -&gt; $476,491.44/year\n\nIf we need to host 400 GPT3 175B instances, $190.6M/year"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#static-batching-request-level-batching",
-    "href": "inference/04_inference_servers/slides.html#static-batching-request-level-batching",
-    "title": "Inference Servers - I",
-    "section": "Static Batching / Request-Level Batching",
-    "text": "Static Batching / Request-Level Batching\nTraditional systems use static batching to improve GPU utilization:\n\nGroup incoming requests into fixed-size batches (e.g., 8, 16, 32)\nProcess each batch in parallel on the GPU\nHigh GPU utilization for large batches\n\n\nDrawbacks:\n\nNo early return and tail latency dictated by longest sequence in the batch\nInternal fragmentation from padding to max sequence length\nGPU utilization: 30-40% for small batches, drops to 10-20% for larger batches (padding + waiting on the longest) due to padding overhead"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#static-batching-request-level-batching---i",
-    "href": "inference/04_inference_servers/slides.html#static-batching-request-level-batching---i",
-    "title": "Inference Servers - I",
-    "section": "Static Batching / Request-Level Batching - I",
-    "text": "Static Batching / Request-Level Batching - I"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#static-batching-request-level-batching---ii",
-    "href": "inference/04_inference_servers/slides.html#static-batching-request-level-batching---ii",
-    "title": "Inference Servers - I",
-    "section": "Static Batching / Request-Level Batching - II",
-    "text": "Static Batching / Request-Level Batching - II"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#static-batching-request-level-batching---iii",
-    "href": "inference/04_inference_servers/slides.html#static-batching-request-level-batching---iii",
-    "title": "Inference Servers - I",
-    "section": "Static Batching / Request-Level Batching - III",
-    "text": "Static Batching / Request-Level Batching - III\n\nDownsides : Inference server and Execution engine interact at request level. Server batches requests together, but engine processes them as a single batch. No visibility into individual request completion. They interact only at beginning and end of the batch"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#continuous-batching",
-    "href": "inference/04_inference_servers/slides.html#continuous-batching",
-    "title": "Inference Servers - I",
-    "section": "Continuous Batching",
-    "text": "Continuous Batching\nOrca : A Distributed Serving System for Transformer-Based Generative Models, 2022\n\nDo dynamic batching of requests as they arrive\nProcess batching at token level instead of request level\nEarly return as soon as a request in the batch finishes\nSupport for token-level interleaving of requests"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#continuous-batching-1",
-    "href": "inference/04_inference_servers/slides.html#continuous-batching-1",
-    "title": "Inference Servers - I",
-    "section": "Continuous Batching",
-    "text": "Continuous Batching"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#continuous-batching-2",
-    "href": "inference/04_inference_servers/slides.html#continuous-batching-2",
-    "title": "Inference Servers - I",
-    "section": "Continuous Batching",
-    "text": "Continuous Batching\nContinuous Batching:\n\nDynamically batch requests at the token level, allowing for early return and better GPU utilization.\nAs soon as one request in the batch finishes generating its next token, it can be returned to the client, while the remaining requests continue processing.\n\n\nEarly finished and late arrived requests are handled much more efficiently. The server can immediately return results for completed requests without waiting for the entire batch to finish, significantly reducing tail latency and improving user experience."
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuous-batching",
-    "href": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuous-batching",
-    "title": "Inference Servers - I",
-    "section": "Prefill and Decode in continuous batching",
-    "text": "Prefill and Decode in continuous batching\n\nSome requests can be in prefill phase while others are in decode phase\nWe can’t batch prefill and decode together since they have different compute and memory characteristics"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuos-batching",
-    "href": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuos-batching",
-    "title": "Inference Servers - I",
-    "section": "Prefill and Decode in continuos batching",
-    "text": "Prefill and Decode in continuos batching\nRequests in different phases"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuos-batching-1",
-    "href": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuos-batching-1",
-    "title": "Inference Servers - I",
-    "section": "Prefill and Decode in continuos batching",
-    "text": "Prefill and Decode in continuos batching\nRequests have different lengths"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuos-batching-2",
-    "href": "inference/04_inference_servers/slides.html#prefill-and-decode-in-continuos-batching-2",
-    "title": "Inference Servers - I",
-    "section": "Prefill and Decode in continuos batching",
-    "text": "Prefill and Decode in continuos batching\nSolution: Split the request"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#orca-results",
-    "href": "inference/04_inference_servers/slides.html#orca-results",
-    "title": "Inference Servers - I",
-    "section": "Orca Results",
-    "text": "Orca Results\n\n\n\n\n36.9x improvement in throughput.\n\n\nCompared to baseline cost of ~190M/year for 400 GPT3 175B instances, Orca’s optimizations could reduce this to around $5.15M/year, making large-scale LLM deployment much more economically feasible."
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#continuous-batching-mechanics",
-    "href": "inference/04_inference_servers/slides.html#continuous-batching-mechanics",
-    "title": "Inference Servers - I",
-    "section": "Continuous Batching Mechanics",
-    "text": "Continuous Batching Mechanics\nThe Loop:\n\nSelection: Choose candidate requests for next iteration\nBatch Formation: Combine prefill chunks and decode tokens\nForward Pass: Run model on current batch\nCompletion Check: Identify finished sequences\nAdmission: Add new requests from queue\nIteration: Repeat\n\nBenefits:\n\nNo Waiting: Short requests exit immediately, don’t wait for long ones\nGPU Saturation: Keep compute units busy 80%+ of time\n\nExcample code : MinivLLM’s continuous batching loop"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#chunked-prefill",
-    "href": "inference/04_inference_servers/slides.html#chunked-prefill",
-    "title": "Inference Servers - I",
-    "section": "Chunked Prefill",
-    "text": "Chunked Prefill\nA large prefill can dominate an iteration and spike latency for decode requests.\nChunked prefill addresses this:\n\nSplit large prefills into chunks (e.g., 512 tokens at a time)\nInterleave prefill chunks with decode steps\nPrevents a single large prefill from blocking decode for all other requests\n\nThis is now standard in vLLM (enabled by default) and SGLang."
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#scheduling-policies",
-    "href": "inference/04_inference_servers/slides.html#scheduling-policies",
-    "title": "Inference Servers - I",
-    "section": "Scheduling Policies",
-    "text": "Scheduling Policies\n\n\nScheduling\n\nFirst-Come-First-Served (FCFS)\nPriority-Based\nLongest Prefix Match (LPM)\n\n\n\n\n\nPreemption Strategies:\n\nSwap: Move KV cache to CPU memory when preempting\nRecompute: Discard KV cache, regenerate when resuming\n\nCost: 2× compute for the prompt\nBenefit: No memory bandwidth cost for swap\n\n\nRule of Thumb: Swap for long sequences (KV cache &gt;&gt; compute cost), recompute for short sequences."
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#kv-cache",
-    "href": "inference/04_inference_servers/slides.html#kv-cache",
-    "title": "Inference Servers - I",
-    "section": "KV Cache",
-    "text": "KV Cache"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#kv-cache-1",
-    "href": "inference/04_inference_servers/slides.html#kv-cache-1",
-    "title": "Inference Servers - I",
-    "section": "KV Cache",
-    "text": "KV Cache\nGeneration Phase (Autoregressive Decoding):\n\nGenerate tokens one at a time autoregressively\nAt each step, compute attention over all previously generated tokens\nKeys and Values for past tokens remain unchanged\nOnly the new token’s Query needs to attend to all previous Keys/Values"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#kv-cache-2",
-    "href": "inference/04_inference_servers/slides.html#kv-cache-2",
-    "title": "Inference Servers - I",
-    "section": "KV Cache",
-    "text": "KV Cache"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#kv-cache-3",
-    "href": "inference/04_inference_servers/slides.html#kv-cache-3",
-    "title": "Inference Servers - I",
-    "section": "KV Cache",
-    "text": "KV Cache\n\n\nProblem: Without caching, we recompute K and V for all previous tokens at every step!\n\nStep 1: Compute K, V for token 1\nStep 2: Recompute K, V for tokens 1, 2\nStep 3: Recompute K, V for tokens 1, 2, 3\n…\nStep N: Recompute K, V for all N tokens → O(N²) redundant computation\n\n\nSolution: KV Cache — Store computed K and V vectors and reuse them"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#kv-cache-4",
-    "href": "inference/04_inference_servers/slides.html#kv-cache-4",
-    "title": "Inference Servers - I",
-    "section": "KV Cache",
-    "text": "KV Cache\n\nReduced per-token compute from O(N) to O(1) by caching K and V for all past tokens\nReduced TTFT, increased throughput"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#kv-cache-with-attention-variants",
-    "href": "inference/04_inference_servers/slides.html#kv-cache-with-attention-variants",
-    "title": "Inference Servers - I",
-    "section": "KV Cache with Attention Variants",
-    "text": "KV Cache with Attention Variants\n\n\n\n\n\n\n\n\n\n\n\n\nPer-token KV cache memory formula:\n\\[\\text{KV}_{\\text{per token}} = 2 \\times n_{\\text{layers}} \\times n_{\\text{kv heads}} \\times d_{\\text{head}} \\times \\text{dtype bytes}\\]"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#kv-cache-with-attention-variants-1",
-    "href": "inference/04_inference_servers/slides.html#kv-cache-with-attention-variants-1",
-    "title": "Inference Servers - I",
-    "section": "KV Cache with Attention Variants",
-    "text": "KV Cache with Attention Variants\n\n\nKV Cache size for DeepSeek V3:\n\n\n\nAttention Type\nMemory per Token\n\n\n\n\nMHA\n4 MB\n\n\nMQA\n32 KB\n\n\nGQA (8 groups)\n500 KB\n\n\nMLA\n70 KB"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#kv-cache-5",
-    "href": "inference/04_inference_servers/slides.html#kv-cache-5",
-    "title": "Inference Servers - I",
-    "section": "KV Cache",
-    "text": "KV Cache"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#kv-cache-6",
-    "href": "inference/04_inference_servers/slides.html#kv-cache-6",
-    "title": "Inference Servers - I",
-    "section": "KV Cache",
-    "text": "KV Cache\nEfficient KV cache management is critical for LLM inference performance:\n\nPre-allocate KV cache for maximum context length (e.g., 16K tokens)\nStore KV cache in GPU memory for fast access during decoding\nImplement efficient indexing to retrieve K and V for past tokens"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#kv-cache-management",
-    "href": "inference/04_inference_servers/slides.html#kv-cache-management",
-    "title": "Inference Servers - I",
-    "section": "KV Cache Management",
-    "text": "KV Cache Management\nRequest Scheduler\nPrompt : my cat is"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#kv-cache-management-1",
-    "href": "inference/04_inference_servers/slides.html#kv-cache-management-1",
-    "title": "Inference Servers - I",
-    "section": "KV Cache Management",
-    "text": "KV Cache Management\nRequest Scheduler\n\n\n\n\n\n\n\n\n\nimage source"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#kv-cache-management-2",
-    "href": "inference/04_inference_servers/slides.html#kv-cache-management-2",
-    "title": "Inference Servers - I",
-    "section": "KV Cache Management",
-    "text": "KV Cache Management\nSolution:\n\nPre-allocate KV cache for maximum context length (e.g., 16K tokens)\nStore KV cache in GPU memory for fast access during decoding\nImplement efficient indexing to retrieve K and V for past tokens"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#memory-waste-from-kv-cache",
-    "href": "inference/04_inference_servers/slides.html#memory-waste-from-kv-cache",
-    "title": "Inference Servers - I",
-    "section": "Memory Waste from KV Cache",
-    "text": "Memory Waste from KV Cache\n\n\nInternal fragmentation: over-allocated due to the unknown output length\nReservation: not used at the current step, but used in the future\nExternal fragmentation: due to different sequence lengths"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#paged-kv-cache",
-    "href": "inference/04_inference_servers/slides.html#paged-kv-cache",
-    "title": "Inference Servers - I",
+    "objectID": "inference/04_inference_servers/slides-3.html#paged-kv-cache",
+    "href": "inference/04_inference_servers/slides-3.html#paged-kv-cache",
+    "title": "Inference Servers - II",
     "section": "Paged KV Cache",
-    "text": "Paged KV Cache"
+    "text": "Paged KV Cache\n\nPaged Attention \nEach request’s KV cache is divided into multiple physical blocks (pages) that can be allocated independently.\nMultiple requests can share the same physical blocks if they have similar context lengths, improving memory efficiency and GPU utilization."
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#paged-kv-cache-1",
-    "href": "inference/04_inference_servers/slides.html#paged-kv-cache-1",
-    "title": "Inference Servers - I",
-    "section": "Paged KV Cache",
-    "text": "Paged KV Cache\nvLLM PagedAttention : Efficient Memory Management for Large Language Model Serving with PagedAttention\nInspired by virtual memory management in operating systems:\n\nAllocate KV cache in smaller pages (e.g., 1K tokens)\nDynamically map pages to active requests\nReduced internal fragmentation"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#paged-kv-cache-2",
-    "href": "inference/04_inference_servers/slides.html#paged-kv-cache-2",
-    "title": "Inference Servers - I",
-    "section": "Paged KV Cache",
-    "text": "Paged KV Cache"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#paged-kv-cache-3",
-    "href": "inference/04_inference_servers/slides.html#paged-kv-cache-3",
-    "title": "Inference Servers - I",
-    "section": "Paged KV Cache",
-    "text": "Paged KV Cache\n\n\nLogical blocks: The model’s attention mechanism operates on the entire context as a single logical block (e.g., a 16K token context treated as one block for attention computations).\nPhysical blocks (pages): Memory is divided into smaller physical blocks/pages (e.g., 16–32 tokens each), dynamically allocated and mapped to different requests as needed."
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#paged-kv-cache---multiple-requests",
-    "href": "inference/04_inference_servers/slides.html#paged-kv-cache---multiple-requests",
-    "title": "Inference Servers - I",
-    "section": "Paged KV Cache - Multiple Requests",
-    "text": "Paged KV Cache - Multiple Requests"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#paged-kv-cache---multiple-requests-1",
-    "href": "inference/04_inference_servers/slides.html#paged-kv-cache---multiple-requests-1",
-    "title": "Inference Servers - I",
-    "section": "Paged KV Cache - Multiple Requests",
-    "text": "Paged KV Cache - Multiple Requests\n\n\nEach request’s KV cache is divided into multiple physical blocks (pages) that can be allocated independently.\nMultiple requests can share the same physical blocks if they have similar context lengths, improving memory efficiency and GPU utilization."
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#paged-attention",
-    "href": "inference/04_inference_servers/slides.html#paged-attention",
-    "title": "Inference Servers - I",
-    "section": "Paged Attention",
-    "text": "Paged Attention"
-  },
-  {
-    "objectID": "inference/04_inference_servers/slides.html#paged-attention-1",
-    "href": "inference/04_inference_servers/slides.html#paged-attention-1",
-    "title": "Inference Servers - I",
+    "objectID": "inference/04_inference_servers/slides-3.html#paged-attention",
+    "href": "inference/04_inference_servers/slides-3.html#paged-attention",
+    "title": "Inference Servers - II",
     "section": "Paged Attention",
     "text": "Paged Attention\n\n\nPagedAttention allows storing continuous keys and values in non-contiguous memory space\nDuring the attention computation, the PagedAttention kernel identifies and fetches different KV blocks separately\nComputes attention across these non-contiguous blocks\nThis is done in a custom CUDA kernel optimized for the block-table lookup pattern"
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#memory-efficiency-of-paged-kv-cache",
-    "href": "inference/04_inference_servers/slides.html#memory-efficiency-of-paged-kv-cache",
-    "title": "Inference Servers - I",
+    "objectID": "inference/04_inference_servers/slides-3.html#memory-efficiency-of-paged-kv-cache",
+    "href": "inference/04_inference_servers/slides-3.html#memory-efficiency-of-paged-kv-cache",
+    "title": "Inference Servers - II",
     "section": "Memory Efficiency of Paged KV Cache",
     "text": "Memory Efficiency of Paged KV Cache\nMinimizes internal fragmentation\n\n\n\nOnly happens at the last block of a sequence\n#num wasted tokens per sequence &lt; block size\nSeq len: O(100) – O(1000) tokens\nBlock size: 16 or 32 tokens\nNo external frgmentation\nOn average,wasted space &lt; 4% ofKV cache"
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#paging-enables-sharing",
-    "href": "inference/04_inference_servers/slides.html#paging-enables-sharing",
-    "title": "Inference Servers - I",
+    "objectID": "inference/04_inference_servers/slides-3.html#paging-enables-sharing",
+    "href": "inference/04_inference_servers/slides-3.html#paging-enables-sharing",
+    "title": "Inference Servers - II",
     "section": "Paging enables sharing",
     "text": "Paging enables sharing\nParallel Sampling"
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#paging-enables-sharing-1",
-    "href": "inference/04_inference_servers/slides.html#paging-enables-sharing-1",
-    "title": "Inference Servers - I",
+    "objectID": "inference/04_inference_servers/slides-3.html#paging-enables-sharing-1",
+    "href": "inference/04_inference_servers/slides-3.html#paging-enables-sharing-1",
+    "title": "Inference Servers - II",
     "section": "Paging enables sharing",
     "text": "Paging enables sharing\nParallel Sampling"
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#paging-enables-sharing-2",
-    "href": "inference/04_inference_servers/slides.html#paging-enables-sharing-2",
-    "title": "Inference Servers - I",
+    "objectID": "inference/04_inference_servers/slides-3.html#paging-enables-sharing-2",
+    "href": "inference/04_inference_servers/slides-3.html#paging-enables-sharing-2",
+    "title": "Inference Servers - II",
     "section": "Paging enables sharing",
     "text": "Paging enables sharing\nShared Prompts"
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#vllm-system-architecture",
-    "href": "inference/04_inference_servers/slides.html#vllm-system-architecture",
-    "title": "Inference Servers - I",
-    "section": "vLLM System Architecture",
-    "text": "vLLM System Architecture"
+    "objectID": "inference/04_inference_servers/slides-3.html#llm-inference-patterns",
+    "href": "inference/04_inference_servers/slides-3.html#llm-inference-patterns",
+    "title": "Inference Servers - II",
+    "section": "LLM Inference Patterns",
+    "text": "LLM Inference Patterns\nPrefix sharing patterns:\n\nSystem Prompts: All users share the same 1K-4K token system instructions\nRAG Context: Multiple queries against the same document chunks\nMulti-turn Conversations: Every request includes the same system prompt (“You are a helpful assistant…”).\nAgent Workflows: ReAct patterns with repetitive tool descriptions"
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#vllm-system-architecture-1",
-    "href": "inference/04_inference_servers/slides.html#vllm-system-architecture-1",
-    "title": "Inference Servers - I",
-    "section": "vLLM System Architecture",
-    "text": "vLLM System Architecture\n\nExplore code at DeepWiki"
+    "objectID": "inference/04_inference_servers/slides-3.html#prefix-caching",
+    "href": "inference/04_inference_servers/slides-3.html#prefix-caching",
+    "title": "Inference Servers - II",
+    "section": "Prefix Caching",
+    "text": "Prefix Caching\n\nReusable KV cache\nOnly depends on the prefix tokens\n\n\nExample:\nSystem Prompt: 2,000 tokens\nUser Query: 50 tokens\nResponse: 500 tokens\nWithout caching: Process 2,050 tokens every request.\nWith caching: Process 50 tokens (user query only) -&gt; 97% reduction!"
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#vllm-efficiency",
-    "href": "inference/04_inference_servers/slides.html#vllm-efficiency",
-    "title": "Inference Servers - I",
-    "section": "vLLM Efficiency",
-    "text": "vLLM Efficiency\n\n\n\n\nNumber of batches accomodated\n\n\n\n\nMemory usage efficiency\n\n\n\n\nthroughput (reqs/s)"
+    "objectID": "inference/04_inference_servers/slides-3.html#prefix-caching-1",
+    "href": "inference/04_inference_servers/slides-3.html#prefix-caching-1",
+    "title": "Inference Servers - II",
+    "section": "Prefix Caching",
+    "text": "Prefix Caching\n\nMeasured improvements:\n\nTTFT (Time to First Token) reduction: 5-20× faster for cache hits\nGPU compute saved: 40-90% for workloads with shared prefixes\nMemory overhead: near-zero with PagedAttention (shared physical blocks)\n\nEconomic Impact:\n\nAt 1M requests/day with 2K shared prefix\nSavings: 2B tokens of redundant compute daily\nCost reduction: $10K-50K/day depending on model size\n\nPrefix caching can reduce compute and latency by an order of magnitude in some use cases."
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#using-vllm",
-    "href": "inference/04_inference_servers/slides.html#using-vllm",
-    "title": "Inference Servers - I",
-    "section": "Using vLLM",
-    "text": "Using vLLM\nPython Class\npip install vllm\nfrom vllm import LLM\n# Example prompts.\nprompts = [\"Hello, my name is\", \"The capital of France is\"]\n# Create an LLM with HF model name.\nllm = LLM(model=\"meta-llama/Meta-Llama-3.1-8B\")\n# Generate texts from the prompts.\noutputs = llm.generate(prompts)\nOpenAI-compatible server\n# Start the vLLM server.\nvllm serve meta-llama/Meta-Llama-3.1-8B\n\n# Send a request to the server.\ncurl http://localhost:8000/v1/completions \\\n-H \"Content-Type: application/json\" \\\n-d '{\n\"model\": \"meta-llama/Meta-Llama-3.1-8B\",\n\"prompt\": \"San Francisco is a\",\n\"max_tokens\": 7,\n\"temperature\": 0\n}'"
+    "objectID": "inference/04_inference_servers/slides-3.html#prefix-caching-2",
+    "href": "inference/04_inference_servers/slides-3.html#prefix-caching-2",
+    "title": "Inference Servers - II",
+    "section": "Prefix Caching",
+    "text": "Prefix Caching\n\nAnthropic Claude Sonnet, Google Gemini -&gt; Up to 90% cost savings and 85% latency reduction with prompt caching.\nFrameworks like vLLM, TensorRT-LLM, and SGLang support automatic prefix caching for different open-source LLMs.\nIn agent workflows, the benefit is even more pronounced (input-to-output token ratios of 100:1)"
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#key-config-options",
-    "href": "inference/04_inference_servers/slides.html#key-config-options",
-    "title": "Inference Servers - I",
-    "section": "Key Config Options",
-    "text": "Key Config Options\nKey configuration parameters:\n\n--gpu-memory-utilization 0.90: Fraction of GPU memory to use for KV cache (default 0.9)\n--max-model-len 4096: Maximum sequence length\n--block-size 16: Number of tokens per KV block\n--tensor-parallel-size N: Number of GPUs for tensor parallelism\n--enable-prefix-caching: Enable automatic hash-based prefix caching"
+    "objectID": "inference/04_inference_servers/slides-3.html#vllm-prefix-caching",
+    "href": "inference/04_inference_servers/slides-3.html#vllm-prefix-caching",
+    "title": "Inference Servers - II",
+    "section": "vLLM Prefix Caching",
+    "text": "vLLM Prefix Caching\nvLLM implements hash-based automatic prefix caching (enabled with --enable-prefix-caching by default):\n\n\nEach KV block is hashed based on its token content\nIf a hash matches an existing block in the cache -&gt; reuse it (skip prefill for those tokens)\nLRU eviction, Block-level granularity\n\n\nCan we do this at token level?"
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#vllm-model-support",
-    "href": "inference/04_inference_servers/slides.html#vllm-model-support",
-    "title": "Inference Servers - I",
-    "section": "vLLM Model support",
-    "text": "vLLM Model support"
+    "objectID": "inference/04_inference_servers/slides-3.html#radixattention-sglang",
+    "href": "inference/04_inference_servers/slides-3.html#radixattention-sglang",
+    "title": "Inference Servers - II",
+    "section": "RadixAttention (SGLang)",
+    "text": "RadixAttention (SGLang)\nPaper: SGLang: Efficient Execution of Structured Language Model Programs - Zheng et al., NeurIPS 2024\nRadixAttention, which uses a radix tree data structure for KV cache management:\n(root)\n ├── \"cat\"\n │     ├── \"sat\"   (cat sat)\n │     └── \"flew\"   (cat flew)\n └── \"dog\"\n\n\n\nAll seen token sequences are stored in a radix tree\nEach node in the tree points to cached KV blocks in GPU memory"
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#vllm-model-support-1",
-    "href": "inference/04_inference_servers/slides.html#vllm-model-support-1",
-    "title": "Inference Servers - I",
-    "section": "vLLM Model support",
-    "text": "vLLM Model support\n\nTransformer-like LLMs (e.g., Llama)\nMixture-of-Expert LLMs (e.g., DeepSeek)\nMulti-modal LLMs (e.g., Qwen-VL)\nState-Space Models (e.g., Mamba)\nEmbedding Models (e.g. E5-Mistral)"
+    "objectID": "inference/04_inference_servers/slides-3.html#radixattention-sglang-1",
+    "href": "inference/04_inference_servers/slides-3.html#radixattention-sglang-1",
+    "title": "Inference Servers - II",
+    "section": "RadixAttention (SGLang)",
+    "text": "RadixAttention (SGLang)\n\n\ngreen - newly added nodes | blue - cached nodes accessed during the time point | red - nodes that have been evicted\n\n\nEdges are labeled with token sequences (not single tokens, space-efficient)\nNew request: traverse the tree to find the longest matching prefix\nOnly compute KV for the remaining (unmatched) tokens"
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#vllm-other-features",
-    "href": "inference/04_inference_servers/slides.html#vllm-other-features",
-    "title": "Inference Servers - I",
-    "section": "vLLM other features",
-    "text": "vLLM other features\n\nSupport for quantized models (e.g., 4-bit, 8-bit)\nCustom attention mechanisms (e.g., FlashAttention, Triton, FlashInfer)\nCustom decoding strategies (e.g., beam search, nucleus sampling)\nCustom decoding libraries (e.g., FlashInfer)\nPrefix Caching\nSpeculative Decoding\nStructured outputs (e.g., JSON, XML)"
+    "objectID": "inference/04_inference_servers/slides-3.html#radixattention-sglang-2",
+    "href": "inference/04_inference_servers/slides-3.html#radixattention-sglang-2",
+    "title": "Inference Servers - II",
+    "section": "RadixAttention (SGLang)",
+    "text": "RadixAttention (SGLang)\n \n\nRadixAttention enables efficient prefix matching, insertion, and eviction.\nIt handles trees with hundreds of thousands of tokens."
   },
   {
-    "objectID": "inference/04_inference_servers/slides.html#further-reading",
-    "href": "inference/04_inference_servers/slides.html#further-reading",
-    "title": "Inference Servers - I",
+    "objectID": "inference/04_inference_servers/slides-3.html#radix-attention",
+    "href": "inference/04_inference_servers/slides-3.html#radix-attention",
+    "title": "Inference Servers - II",
+    "section": "Radix Attention",
+    "text": "Radix Attention\n \n\nLRU eviction when memory pressure occurs"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#cache-aware-scheduling",
+    "href": "inference/04_inference_servers/slides-3.html#cache-aware-scheduling",
+    "title": "Inference Servers - II",
+    "section": "Cache Aware Scheduling",
+    "text": "Cache Aware Scheduling\n\nSort waiting requests by matched prefix length - schedule longer matches first to maximize cache hits\n\nSingle Worker :"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#cache-aware-scheduling-1",
+    "href": "inference/04_inference_servers/slides-3.html#cache-aware-scheduling-1",
+    "title": "Inference Servers - II",
+    "section": "Cache Aware Scheduling",
+    "text": "Cache Aware Scheduling\nCache-aware load balancer SGL Router"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#results",
+    "href": "inference/04_inference_servers/slides-3.html#results",
+    "title": "Inference Servers - II",
+    "section": "Results",
+    "text": "Results\n\n\nPerformance: SGLang achieved up to 6.4× higher throughput compared to state-of-the-art inference systems across diverse benchmarks"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#vllm-vs-sglang-prefix-caching-comparison",
+    "href": "inference/04_inference_servers/slides-3.html#vllm-vs-sglang-prefix-caching-comparison",
+    "title": "Inference Servers - II",
+    "section": "vLLM vs SGLang Prefix Caching Comparison",
+    "text": "vLLM vs SGLang Prefix Caching Comparison\n\n\n\n\n\n\n\n\nFeature\nvLLM Prefix Caching\nSGLang RadixAttention\n\n\n\n\nData structure\nHash table (per-block)\nRadix tree (token-level)\n\n\nMatching granularity\nBlock-level (16 tokens)\nToken-level\n\n\nCross-request sharing\nYes\nYes\n\n\nImage/multimodal\nPer-image hash\nHash of image tokens as key"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#prefix-caching-in-action",
+    "href": "inference/04_inference_servers/slides-3.html#prefix-caching-in-action",
+    "title": "Inference Servers - II",
+    "section": "Prefix Caching in Action",
+    "text": "Prefix Caching in Action\n# vLLM with prefix caching\npython -m vllm.entrypoints.openai.api_server \\\n    --model meta-llama/Llama-3.1-8B-Instruct \\\n    --enable-prefix-caching\n\n# SGLang with RadixAttention (ON by default)\npython -m sglang.launch_server \\\n    --model-path meta-llama/Llama-3.1-8B-Instruct \\\n    --port 30000\n\n# Test: Send same system prompt with different user messages\n# Measure TTFT for first request vs subsequent requests\n# First request: full prefill (slower TTFT)\n# Subsequent requests with same prefix: cache hit (much faster TTFT)"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#when-caching-doesnt-help",
+    "href": "inference/04_inference_servers/slides-3.html#when-caching-doesnt-help",
+    "title": "Inference Servers - II",
+    "section": "When Caching Doesn’t Help",
+    "text": "When Caching Doesn’t Help\n\nUnique contexts: Zero shot tasks with no shared prompts\nVery long sequences: When KV cache size &gt;&gt; compute cost\nHigh churn: Cache eviction rate &gt; hit rate\nShort prefixes: Overhead dominates for &lt; 100 token prefixes"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#disaggregated-serving",
+    "href": "inference/04_inference_servers/slides-3.html#disaggregated-serving",
+    "title": "Inference Servers - II",
+    "section": "Disaggregated Serving",
+    "text": "Disaggregated Serving"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#is-throughput-the-right-metric",
+    "href": "inference/04_inference_servers/slides-3.html#is-throughput-the-right-metric",
+    "title": "Inference Servers - II",
+    "section": "Is Throughput the Right Metric?",
+    "text": "Is Throughput the Right Metric?\nApplications have Diverse SLOs:"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#llm-inference-latency",
+    "href": "inference/04_inference_servers/slides-3.html#llm-inference-latency",
+    "title": "Inference Servers - II",
+    "section": "LLM Inference Latency",
+    "text": "LLM Inference Latency\n\n\n\n\n\n\n\n\nExisting systems maximize the overall throughput\n\nHigh throughput ≠ good user experience if latency SLOs are not met"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#high-throughput-high-goodput",
+    "href": "inference/04_inference_servers/slides-3.html#high-throughput-high-goodput",
+    "title": "Inference Servers - II",
+    "section": "High Throughput ≠ High Goodput",
+    "text": "High Throughput ≠ High Goodput\nGoodput Definition: &gt; The maximum request rate per GPU that meets both TTFT and TPOT SLOs at 90%+ attainment."
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#high-throughput-high-goodput-1",
+    "href": "inference/04_inference_servers/slides-3.html#high-throughput-high-goodput-1",
+    "title": "Inference Servers - II",
+    "section": "High Throughput ≠ High Goodput",
+    "text": "High Throughput ≠ High Goodput\nGoodput Definition: &gt; The maximum request rate per GPU that meets both TTFT and TPOT SLOs at 90%+ attainment."
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#the-hardware-mismatch-problem",
+    "href": "inference/04_inference_servers/slides-3.html#the-hardware-mismatch-problem",
+    "title": "Inference Servers - II",
+    "section": "The Hardware Mismatch Problem",
+    "text": "The Hardware Mismatch Problem\nModern GPUs are designed for training (compute-bound), but inference has asymmetric needs:\n\n\nPrefill Requirements:\n\nHigh FLOPS (tensor cores)\nModerate memory bandwidth\n\nDecode Requirements:\n\nHigh memory bandwidth (HBM)\nLarge memory capacity (for KV cache)\nLower compute acceptable\n\n\n\n\n\n\nThe Problem: Single GPU must satisfy both, leading to over-provisioning."
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#phase-colocation-issues",
+    "href": "inference/04_inference_servers/slides-3.html#phase-colocation-issues",
+    "title": "Inference Servers - II",
+    "section": "Phase Colocation Issues",
+    "text": "Phase Colocation Issues\nWhen prefill and decode share GPUs:\n\n\n\n\n\n\n\n\n\nBatching Tradeoffs:\n\nMixing phases causes interference\nBatching prefills helps utilization but increases TTFT\nBatching decodes helps throughput but increases TPOT\n\n\nSLO Conflicts:\n\nTTFT (Time To First Token) requires fast prefill\nTPOT (Time Per Output Token) requires uninterrupted decode\nOptimizing one hurts the other"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#phase-colocation-issues-1",
+    "href": "inference/04_inference_servers/slides-3.html#phase-colocation-issues-1",
+    "title": "Inference Servers - II",
+    "section": "Phase Colocation Issues",
+    "text": "Phase Colocation Issues\n\n\nWhen prefill and decode share GPUs:\nContinuous Batching Batch R1 and R2 together in 1 GPU\n\n\nSeparate prefill / decode R1 and R2 in separate GPUs\n\n\n\nResource Contention:\n\nPrefill saturates compute -&gt; decode stalls\nDecode saturates bandwidth -&gt; prefill slows"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#overprovision-resource-to-meet-slo",
+    "href": "inference/04_inference_servers/slides-3.html#overprovision-resource-to-meet-slo",
+    "title": "Inference Servers - II",
+    "section": "Overprovision Resource to meet SLO",
+    "text": "Overprovision Resource to meet SLO"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#colocation-with-parallelism",
+    "href": "inference/04_inference_servers/slides-3.html#colocation-with-parallelism",
+    "title": "Inference Servers - II",
+    "section": "Colocation with Parallelism",
+    "text": "Colocation with Parallelism\nPrefill Prefer tensor parallel (TP)\nDecode Prefer pipeline parallelism (PP) or data parallelism (DP)"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#colocation-with-parallelism-1",
+    "href": "inference/04_inference_servers/slides-3.html#colocation-with-parallelism-1",
+    "title": "Inference Servers - II",
+    "section": "Colocation with Parallelism",
+    "text": "Colocation with Parallelism\nPrefill Prefer tensor parallel (TP)\nDecode Prefer pipeline parallelism (PP) or data parallelism (DP)"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#solution-disaggregating-prefill-and-decode",
+    "href": "inference/04_inference_servers/slides-3.html#solution-disaggregating-prefill-and-decode",
+    "title": "Inference Servers - II",
+    "section": "Solution: Disaggregating Prefill and Decode",
+    "text": "Solution: Disaggregating Prefill and Decode\nDistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving - Yinmin Zhong et al., 2024"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#solution-disaggregating-prefill-and-decode-1",
+    "href": "inference/04_inference_servers/slides-3.html#solution-disaggregating-prefill-and-decode-1",
+    "title": "Inference Servers - II",
+    "section": "Solution: Disaggregating Prefill and Decode",
+    "text": "Solution: Disaggregating Prefill and Decode"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#disaggregation-achieves-better-goodput",
+    "href": "inference/04_inference_servers/slides-3.html#disaggregation-achieves-better-goodput",
+    "title": "Inference Servers - II",
+    "section": "Disaggregation achieves better goodput",
+    "text": "Disaggregation achieves better goodput\n\n\nColocate 1 GPU for both Prefill and Decode \n\nDisaggregate (2P1D) 2 GPU for Prefill + 1 GPU for Decode\n\n\n\nSimple Disaggregation achieves 2x goodput (per GPU)"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#implmentation",
+    "href": "inference/04_inference_servers/slides-3.html#implmentation",
+    "title": "Inference Servers - II",
+    "section": "Implmentation",
+    "text": "Implmentation"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#evaluation",
+    "href": "inference/04_inference_servers/slides-3.html#evaluation",
+    "title": "Inference Servers - II",
+    "section": "Evaluation",
+    "text": "Evaluation\n\nAchieves 2.0x - 4.48x goodput compared to vanilla vLLM\n\nChatbot: 2.0 - 3.4x\nCode Completion: 3.2x\nSummarization: 4.5x"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#distserve-adaptation",
+    "href": "inference/04_inference_servers/slides-3.html#distserve-adaptation",
+    "title": "Inference Servers - II",
+    "section": "DistServe Adaptation",
+    "text": "DistServe Adaptation\n\nCase Study : Deploying DeepSeek with PD Disaggregation and Large-Scale Expert Parallelism on 96 H100 GPUs"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#distserve-adaptation-1",
+    "href": "inference/04_inference_servers/slides-3.html#distserve-adaptation-1",
+    "title": "Inference Servers - II",
+    "section": "DistServe Adaptation",
+    "text": "DistServe Adaptation\nOrchestration Layer: Nvidia Dynamo, llm-d"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#distserve-adaptation-2",
+    "href": "inference/04_inference_servers/slides-3.html#distserve-adaptation-2",
+    "title": "Inference Servers - II",
+    "section": "DistServe Adaptation",
+    "text": "DistServe Adaptation\nStorage Layer : LLMCache (CPU DRAM + SSD), MoonCake"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#when-does-disaggregation-not-make-sense",
+    "href": "inference/04_inference_servers/slides-3.html#when-does-disaggregation-not-make-sense",
+    "title": "Inference Servers - II",
+    "section": "When Does Disaggregation NOT Make Sense?",
+    "text": "When Does Disaggregation NOT Make Sense?\n\nLow request volume: Not enough requests to justify separate pools\nVery short prompts: Prefill is already cheap, transfer overhead dominates\nSingle GPU deployments: No other GPUs to disaggregate onto\nLow-latency requirements: KV cache transfer adds latency that may violate tight SLOs"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#infeerence-orchestration-next-frontier",
+    "href": "inference/04_inference_servers/slides-3.html#infeerence-orchestration-next-frontier",
+    "title": "Inference Servers - II",
+    "section": "Infeerence Orchestration : Next Frontier",
+    "text": "Infeerence Orchestration : Next Frontier"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#the-evolution-of-inference-infrastructure",
+    "href": "inference/04_inference_servers/slides-3.html#the-evolution-of-inference-infrastructure",
+    "title": "Inference Servers - II",
+    "section": "The Evolution of Inference Infrastructure",
+    "text": "The Evolution of Inference Infrastructure\nGeneration 1 (2018-2020): Custom Flask/FastAPI wrappers around PyTorch\nGeneration 2 (2020-2022): Triton Inference Server + TensorRT\nGeneration 3 (2022-2024): vLLM, SGLang\nGeneration 4 (2025+): Disaggregated, SLO-aware, autoscaling (Dynamo)"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#nvidia-dynamo-overview",
+    "href": "inference/04_inference_servers/slides-3.html#nvidia-dynamo-overview",
+    "title": "Inference Servers - II",
+    "section": "NVIDIA Dynamo Overview",
+    "text": "NVIDIA Dynamo Overview\nGitHub: ai-dynamo/dynamo\nProduct page: NVIDIA Dynamo"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#dynamo-architecture",
+    "href": "inference/04_inference_servers/slides-3.html#dynamo-architecture",
+    "title": "Inference Servers - II",
+    "section": "Dynamo Architecture",
+    "text": "Dynamo Architecture\n\nComponents:\n\nSmart Router\nGPU Planner\nDisaggregated Serving\nKV Block Manager"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#dynamo---disaggregated-serving",
+    "href": "inference/04_inference_servers/slides-3.html#dynamo---disaggregated-serving",
+    "title": "Inference Servers - II",
+    "section": "Dynamo - Disaggregated Serving",
+    "text": "Dynamo - Disaggregated Serving\n\n\nFaster TTFT\nFaster ITL\nApply suitable parallelism for prefill and decode separately\nPair different GPU SKUs"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#dynamo---kv-aware-routing",
+    "href": "inference/04_inference_servers/slides-3.html#dynamo---kv-aware-routing",
+    "title": "Inference Servers - II",
+    "section": "Dynamo - KV-Aware Routing",
+    "text": "Dynamo - KV-Aware Routing\nSignificant boost in TTFT and End to End Latency with real data (100K requests with DeepSeek R1)"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#dynamo---memory-and-data-transfer",
+    "href": "inference/04_inference_servers/slides-3.html#dynamo---memory-and-data-transfer",
+    "title": "Inference Servers - II",
+    "section": "Dynamo - Memory and Data Transfer",
+    "text": "Dynamo - Memory and Data Transfer\n\nLow latency transfer between multiple nodes\nDynamicity required for scaling and transfer to storage\nCommon layer for inference specific network optimization."
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#dynamo-deployment-example",
+    "href": "inference/04_inference_servers/slides-3.html#dynamo-deployment-example",
+    "title": "Inference Servers - II",
+    "section": "Dynamo Deployment Example",
+    "text": "Dynamo Deployment Example\n# specify model + SLA, Dynamo handles the rest\napiVersion: nvidia.com/v1beta1\nkind: DynamoGraphDeploymentRequest\nmetadata:\n  name: my-model\nspec:\n  model: Qwen/Qwen3-0.6B\n  backend: vllm\n  sla:\n    ttft: 200.0  # ms\n    itl: 20.0    # ms\n  autoApply: true"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#comparison-inference-stack-decision-matrix",
+    "href": "inference/04_inference_servers/slides-3.html#comparison-inference-stack-decision-matrix",
+    "title": "Inference Servers - II",
+    "section": "Comparison: Inference Stack Decision Matrix",
+    "text": "Comparison: Inference Stack Decision Matrix\n\n\n\n\n\n\n\n\n\n\n\nFactor\nvLLM\nSGLang\nTRT-LLM\nllama.cpp\n\n\n\n\nThroughput\nHigh\nHigh\nHighest\nModerate\n\n\nEase of use\n★★★★★\n★★★★\n★★★\n★★★★\n\n\nModel support\nBroadest\nBroad\nLimited (compile needed)\nGGUF only\n\n\nPrefix caching\nHash-based blocks\nRadixAttention (tree)\nBuilt-in\nSlot-based\n\n\nQuantization\nAWQ/GPTQ/FP8\nAWQ/GPTQ/FP8\nFP8/INT8/INT4\nk-quant/IQ (2-8 bit)\n\n\nHardware\nNVIDIA/AMD/Intel/TPU\nNVIDIA/AMD\nNVIDIA only\nAny (CPU/GPU/Metal)\n\n\nBest for\nGeneral serving\nStructured gen, cache-heavy\nMax perf, NVIDIA\nEdge/local, privacy\n\n\nOrchestration\nSingle/multi-node\nSingle/multi-node\nVia Dynamo\nSingle node"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#choosing-your-stack-scenario-based",
+    "href": "inference/04_inference_servers/slides-3.html#choosing-your-stack-scenario-based",
+    "title": "Inference Servers - II",
+    "section": "Choosing Your Stack: Scenario-Based",
+    "text": "Choosing Your Stack: Scenario-Based\n\nScenario 1:\n“Run a chatbot on my desktop / laptop” -&gt; llama.cpp with Q4_K_M quantization, Metal backend. Full privacy, no cloud needed.\n\n\nScenario 2:\n“Serve Llama-70B to 100 concurrent users on 4× A100” -&gt; vLLM or SGLang with tensor parallelism. Enable prefix caching for chat workloads.\n\n\nScenario 3:\n“Structured JSON extraction from documents at scale” -&gt; SGLang — RadixAttention maximizes prefix reuse for repeated templates, compressed FSM for structured output.\n\n\nScenario 4:\n“Deploy DeepSeek-R1 across a 64-GPU cluster” -&gt; NVIDIA Dynamo with disaggregated serving, vLLM or TRT-LLM backend. Smart router for KV cache locality."
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#key-takeaways",
+    "href": "inference/04_inference_servers/slides-3.html#key-takeaways",
+    "title": "Inference Servers - II",
+    "section": "Key Takeaways",
+    "text": "Key Takeaways\n\nPrefill is compute-bound, decode is memory-bound\nContinuous batching (Orca) eliminates idle GPU time by scheduling at iteration level -&gt; 2-36× throughput over static batching\nPagedAttention (vLLM) eliminates KV cache fragmentation with OS-inspired virtual memory -&gt; reduces waste from 60-80% to &lt;4%, enabling 2-4× more throughput\nPrefix caching avoids redundant prefill computation -&gt; 5-20× TTFT reduction for workloads with shared prefixes\nDisaggregated serving (DistServe) separates prefill and decode onto different GPUs -&gt; independent optimization and 1.4-2.35× throughput improvement\nProduction orchestration (NVIDIA Dynamo) adds smart routing, dynamic scaling, KV cache management, and SLO-aware planning across GPU clusters -&gt; up to 7× throughput on Blackwell"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#food-for-thought-system-design-question",
+    "href": "inference/04_inference_servers/slides-3.html#food-for-thought-system-design-question",
+    "title": "Inference Servers - II",
+    "section": "Food for thought : System Design Question",
+    "text": "Food for thought : System Design Question\nScenario:\nYou need to serve a 70B parameter model for a chatbot application with:\n\n50K users, 10K concurrent at peak\nAverage input: 2K tokens, output: 500 tokens\nSLO: TTFT &lt; 200ms, TPOT &lt; 50ms\nBudget: 20x H100s\n\nQuestions:\n\nShould you use disaggregated serving? Why/why not?\nWhat batching strategy and chunk size?\nPrefix caching strategy?\nQuantization approach?"
+  },
+  {
+    "objectID": "inference/04_inference_servers/slides-3.html#further-reading",
+    "href": "inference/04_inference_servers/slides-3.html#further-reading",
+    "title": "Inference Servers - II",
     "section": "Further Reading",
-    "text": "Further Reading\n\nOrca: A Distributed Serving System for Transformer-Based Generative Models (OSDI 2022)\nMastering LLM Techniques: Inference Optimization – NVIDIA Blog\nMinivLLM: Minimal vLLM Implementation\nMiniSGLang: Minimal SGLang Implementation\nvLLM: Efficient Memory Management for LLM Serving with PagedAttention (2023)"
+    "text": "Further Reading\n\nSGLang: Efficient Execution of Structured Language Model Programs - Zheng et al., NeurIPS 2024\nDistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving - Yinmin Zhong et al., 2024\nNVIDIA Dynamo: An Orchestrator for Large Language Model Inference - NVIDIA, 2025"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#motivation",
+    "href": "inference/05_speculative/slides.html#motivation",
+    "title": "Speculative Decoding",
+    "section": "Motivation",
+    "text": "Motivation"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#the-memory-wall-problem",
+    "href": "inference/05_speculative/slides.html#the-memory-wall-problem",
+    "title": "Speculative Decoding",
+    "section": "The Memory Wall Problem",
+    "text": "The Memory Wall Problem\nLLM inference is memory-bound, not compute-bound:\n\n\n\n\n\nEach token requires full forward pass\nKV-cache helps avoid recomputation but still requires:\n\nReading all model parameters every step\nComputing attention against growing KV-cache\nSampling one token… then repeating\n\n\n\n\n\n\n\n\n\n\n\nKey Observation\n\n\nMany tokens are “easy” to predict (e.g., common words, code boilerplate, repetitive patterns). Verification of K candidate tokens costs approximately the same as generating 1 token!"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#the-cpu-analogy-speculative-execution",
+    "href": "inference/05_speculative/slides.html#the-cpu-analogy-speculative-execution",
+    "title": "Speculative Decoding",
+    "section": "The CPU Analogy: Speculative Execution",
+    "text": "The CPU Analogy: Speculative Execution\nFrom CPU Architecture to LLMs:\n\n\nCPU Branch Prediction\n\nCPU guesses which branch will be taken\nExecutes speculatively, rolls back if wrong\nMassive performance wins despite some wasted work\n\n\n\nint count = 0;\n\ndata = {1, 2, 3, 4, 5};      \n\nfor (int x : data) {\n    if (x &gt; 0)          // CPU predicts whether this is true\n        count++;\n}"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#llm-speculative-decoding",
+    "href": "inference/05_speculative/slides.html#llm-speculative-decoding",
+    "title": "Speculative Decoding",
+    "section": "LLM Speculative Decoding",
+    "text": "LLM Speculative Decoding\n\nSmall/fast draft model guesses next K tokens\nLarge model verifies all K in parallel (one forward pass!)\nAccept correct prefix, resample from divergence point\nLossless: Sample from the exact same distribution!"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#llm-speculative-decoding-1",
+    "href": "inference/05_speculative/slides.html#llm-speculative-decoding-1",
+    "title": "Speculative Decoding",
+    "section": "LLM Speculative Decoding",
+    "text": "LLM Speculative Decoding\n\n\n\n\n\n\n\n\nCritical Insight\n\n\nScoring K tokens in parallel ≈ same latency as generating 1 token because:\n\nMemory bandwidth is the bottleneck\nGPU compute is underutilized in single-token generation\nParallel verification exploits available FLOPs"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#the-universal-framework",
+    "href": "inference/05_speculative/slides.html#the-universal-framework",
+    "title": "Speculative Decoding",
+    "section": "The Universal Framework",
+    "text": "The Universal Framework\nDraft -&gt; Verify -&gt; Accept/Reject\n\nDraft: Generate K candidate tokens cheaply via a draft mechanism\n\nMethods differ in HOW they draft (separate model, heads, n-grams)\n\nVerify: Run target model on all candidates in parallel\n\nGet true probabilities for each position\nSingle forward pass for all K tokens\n\nAccept/Reject: Use rejection sampling to maintain target distribution\n\nAccept prefix of correct tokens\nResample at first rejection point using modified rejection sampling\n\n\n\n\\[\\text{Speedup} = \\frac{K \\cdot \\alpha}{1 + \\frac{T_{\\text{draft}}}{T_{\\text{verify}}}}\\]\nWhere \\(\\alpha\\) is the acceptance rate and \\(K\\) is the draft length."
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#the-foundation-2022-2023",
+    "href": "inference/05_speculative/slides.html#the-foundation-2022-2023",
+    "title": "Speculative Decoding",
+    "section": "The Foundation (2022-2023)",
+    "text": "The Foundation (2022-2023)\nTwo concurrent Google papers established the field:\nFast Inference from Transformers via Speculative Decoding (Leviathan et al., 2022)\nAccelerating Large Language Model Decoding with Speculative Sampling (Chen et al., 2023)"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#algorithm-auto-regressive-sampling-ars",
+    "href": "inference/05_speculative/slides.html#algorithm-auto-regressive-sampling-ars",
+    "title": "Speculative Decoding",
+    "section": "Algorithm: Auto-regressive Sampling (ArS)",
+    "text": "Algorithm: Auto-regressive Sampling (ArS)\n\n\nOne token per forward pass. This is what we want to speed up."
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#algorithm-speculative-sampling-sps",
+    "href": "inference/05_speculative/slides.html#algorithm-speculative-sampling-sps",
+    "title": "Speculative Decoding",
+    "section": "Algorithm: Speculative Sampling (SpS)",
+    "text": "Algorithm: Speculative Sampling (SpS)"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#modified-rejection-sampling",
+    "href": "inference/05_speculative/slides.html#modified-rejection-sampling",
+    "title": "Speculative Decoding",
+    "section": "Modified Rejection Sampling",
+    "text": "Modified Rejection Sampling\nGuarantees lossless sampling from target distribution:\n\n\nCase 1: Target prob &gt;= Draft prob \\[p_{\\text{target}}(x) \\geq p_{\\text{draft}}(x)\\]\nAlways accept (target “likes” this token at least as much)\n\nCase 2: Target prob &lt; Draft prob\n\\[p_{\\text{target}}(x) &lt; p_{\\text{draft}}(x)\\]\nReject with probability \\(\\frac{p_{\\text{draft}}(x) - p_{\\text{target}}(x)}{p_{\\text{draft}}(x)}\\)\nIf rejected, resample from the residual distribution.\n\n\n\n\n\n\n\n\nTheorem (Chen et al., 2023)\n\n\nModified rejection sampling guarantees that the final output distribution is identical to sampling from the target model alone."
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#modified-rejection-sampling-illustrated",
+    "href": "inference/05_speculative/slides.html#modified-rejection-sampling-illustrated",
+    "title": "Speculative Decoding",
+    "section": "Modified Rejection Sampling: Illustrated",
+    "text": "Modified Rejection Sampling: Illustrated\nExample: Draft model proposes token “the” at position \\(t+1\\)\n\n\n\n\n\nToken\n\\(p_{\\text{draft}}\\)\n\\(p_{\\text{target}}\\)\n\n\n\n\nthe\n0.50\n0.30\n\n\na\n0.20\n0.35\n\n\nthis\n0.15\n0.25\n\n\nan\n0.10\n0.05\n\n\nthat\n0.05\n0.05\n\n\n\n\n\n\n\n\n\n\nIntuition\n\n\nThe residual distribution captures what the target model “wanted more of” than the draft. Tokens the draft overestimated (like “the”) get zero residual probability. Tokens the target preferred more (like “a”, “this”) get the leftover mass — ensuring the combined process exactly matches the target distribution.\n\n\n\n\n\n\n\nStep 1: Draft sampled “the” (\\(p_d = 0.50\\), \\(p_t = 0.30\\))\n\\(p_t &lt; p_d\\) → accept with prob \\(\\frac{p_t}{p_d} = \\frac{0.30}{0.50} = 0.60\\)\n\n\nStep 2: Coin flip says reject! → resample from residual\n\n\nStep 3: Compute residual \\(p'(x) = \\text{norm}(\\max(0,\\; p_t - p_d))\\)\n\n\n\nToken\n\\(p_t - p_d\\)\n\\(p'\\) (residual)\n\n\n\n\nthe\n-0.20 → 0\n0.00\n\n\na\n+0.15\n0.43\n\n\nthis\n+0.10\n0.29\n\n\nan\n-0.05 → 0\n0.00\n\n\nthat\n0.00 → 0\n0.00\n\n\n\nResample → picks “a”"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#draft-model-options-chen-et-al.",
+    "href": "inference/05_speculative/slides.html#draft-model-options-chen-et-al.",
+    "title": "Speculative Decoding",
+    "section": "Draft Model Options (Chen et al.)",
+    "text": "Draft Model Options (Chen et al.)\n\nSmaller models, same family\n\nEasy to obtain, similar distribution, Different serving topology needed\n\nDistilled model\n\nOptimized for speculation, Training cost is high\n\nN-gram\n\nZero overhead, no training, Limited to simple patterns"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#results",
+    "href": "inference/05_speculative/slides.html#results",
+    "title": "Speculative Decoding",
+    "section": "Results",
+    "text": "Results\n\n\n\n\n\n\n\n\nSetup: 4B parameter draft model optimized for 16 TPU topology (matching 70B Chinchilla)\nPerformance: 1.8ms/token vs 14.1ms/token for target (7.8x theoretical)\nReal-world: ~2-3x speedup depending on domain\nTemperature effect: Higher temperature → lower acceptance rate\n\nGreedy decoding (temp=0) gives highest speedup"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#limitations",
+    "href": "inference/05_speculative/slides.html#limitations",
+    "title": "Speculative Decoding",
+    "section": "Limitations",
+    "text": "Limitations\n\nDraft Model Acquisition:\n\nNeed a separate, well-aligned draft model\nTraining cost can be significant\nDistribution shift between draft and target\n\nServing Complexity\n\nTwo models to serve and maintain\nDifferent optimal topologies for different model sizes\nMemory overhead of second model\n\nSingle Candidate\n\nOnly one draft sequence per iteration\nSuboptimal use of parallel verification capacity\n\nFixed Draft Length:\n\nγ is static, but difficulty varies by context\nEasy tokens waste draft capacity\nHard tokens might need more speculation"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#medusa-no-separate-draft-model",
+    "href": "inference/05_speculative/slides.html#medusa-no-separate-draft-model",
+    "title": "Speculative Decoding",
+    "section": "Medusa: No Separate Draft Model!",
+    "text": "Medusa: No Separate Draft Model!"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#medusa-architecture-cai-et-al.-2024",
+    "href": "inference/05_speculative/slides.html#medusa-architecture-cai-et-al.-2024",
+    "title": "Speculative Decoding",
+    "section": "Medusa Architecture (Cai et al., 2024)",
+    "text": "Medusa Architecture (Cai et al., 2024)\n\n\nIdea: Add K small “Medusa heads” on top of target model’s last hidden states\nHead k: Predicts token at position t+k+1\nParameters: ~0.5% additional parameters per head\nTraining: Freeze backbone, train heads with cross-entropy loss"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#medusa-tree-attention-verification",
+    "href": "inference/05_speculative/slides.html#medusa-tree-attention-verification",
+    "title": "Speculative Decoding",
+    "section": "Medusa: Tree Attention Verification",
+    "text": "Medusa: Tree Attention Verification\n\n\n\nEach head generates multiple top predictions:\n\nHead 1: {a₁, a₂, …, aₖ}\nHead 2: {b₁, b₂, …, bₖ}\nHead 3: {c₁, c₂, …, bₖ}\n\nConstruct sparse tree of candidate continuations\nCustom attention mask: each token only attends to ancestors in tree\nUse appropriate positional encoding for tree structure"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#medusa-tree-attention-verification-1",
+    "href": "inference/05_speculative/slides.html#medusa-tree-attention-verification-1",
+    "title": "Speculative Decoding",
+    "section": "Medusa: Tree Attention Verification",
+    "text": "Medusa: Tree Attention Verification"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#medusa-training-medusa-1-frozen-backbone",
+    "href": "inference/05_speculative/slides.html#medusa-training-medusa-1-frozen-backbone",
+    "title": "Speculative Decoding",
+    "section": "Medusa Training : MEDUSA-1: Frozen Backbone",
+    "text": "Medusa Training : MEDUSA-1: Frozen Backbone\n\n\n\nCross-entropy loss between MEDUSA head predictions and ground truth tokens\nFor ground truth token \\(y_{t+k+1}\\) at position \\(t + k + 1\\):\n\nLoss for k-th head: \\(L_k = -\\log p_t^{(k)}(y_{t+k+1})\\)\n\\(p_t^{(k)}(y)\\) = probability of token y predicted by k-th head\nAdd weight \\(\\lambda_k\\) to balance loss across different heads\n\nTotal MEDUSA loss: \\[L_{MEDUSA-1} = \\sum_{k=1}^{K} -\\lambda_k \\log p_t^{(k)}(y_{t+k+1})\\]"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#medusa-training-medusa-2-joint-training",
+    "href": "inference/05_speculative/slides.html#medusa-training-medusa-2-joint-training",
+    "title": "Speculative Decoding",
+    "section": "Medusa Training : MEDUSA-2 : Joint Training",
+    "text": "Medusa Training : MEDUSA-2 : Joint Training\n\n\nObjective: Maintain base model capability while training heads.\n\nCombined Loss: Add the backbone model’s cross-entropy loss to the MEDUSA loss.\nBackbone Loss: \\[L_{\\text{LLM}} = -\\log p_t^{(0)}(y_{t+1})\\]\nBalance: Use weight \\(\\lambda_0\\) to balance the base model and Medusa heads.\n\nTotal MEDUSA-2 Loss: \\[L_{\\text{MEDUSA-2}} = L_{\\text{LLM}} + \\lambda_0 L_{\\text{MEDUSA-1}}\\]"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#medusa-results",
+    "href": "inference/05_speculative/slides.html#medusa-results",
+    "title": "Speculative Decoding",
+    "section": "Medusa: Results",
+    "text": "Medusa: Results\n\n\n\n\n\nResults - Speedup: ~2-3× on average - Arithmetic Intensioty : 41× operational intensity gain"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#medusa-limitations",
+    "href": "inference/05_speculative/slides.html#medusa-limitations",
+    "title": "Speculative Decoding",
+    "section": "Medusa: Limitations",
+    "text": "Medusa: Limitations\nKey Limitations 1. Position-Independent Prediction: Head 2 doesn’t know what Head 1 predicted 2. Limited Information: Only sees top-layer features 3. No dependencies: Can’t model dependencies between draft tokens 4. Speedup plateaus: ~3× even with more heads\n\n\n\n\n\n\n\nThe Core Problem\n\n\nMedusa heads predict position i+k independently of positions i+1, i+2, …, i+k-1. Lower acceptance rates for later positions in the draft."
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#eagle-series-feature-level-autoregression",
+    "href": "inference/05_speculative/slides.html#eagle-series-feature-level-autoregression",
+    "title": "Speculative Decoding",
+    "section": "EAGLE Series: Feature-Level Autoregression",
+    "text": "EAGLE Series: Feature-Level Autoregression"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#eagle-core-innovation",
+    "href": "inference/05_speculative/slides.html#eagle-core-innovation",
+    "title": "Speculative Decoding",
+    "section": "EAGLE : Core Innovation",
+    "text": "EAGLE : Core Innovation\nKey Insight: Autoregression at the feature level is simpler than at the token level.\n\nFeatures contain richer information than just next-token logits\npredict next feature vector f_{n+1} instead of token t_{n+1}"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#eagle-feature-uncertainty",
+    "href": "inference/05_speculative/slides.html#eagle-feature-uncertainty",
+    "title": "Speculative Decoding",
+    "section": "EAGLE : Feature Uncertainty",
+    "text": "EAGLE : Feature Uncertainty"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#eagle-architecture",
+    "href": "inference/05_speculative/slides.html#eagle-architecture",
+    "title": "Speculative Decoding",
+    "section": "EAGLE : Architecture",
+    "text": "EAGLE : Architecture\n\n\nDraft model predicts next feature vector f_{n+1} based on embedding of current token and previous features\nUse predicted feature to compute token probabilities for next token\nTree structure allows multiple candidates to be verified in parallel"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#eagle-1-training",
+    "href": "inference/05_speculative/slides.html#eagle-1-training",
+    "title": "Speculative Decoding",
+    "section": "EAGLE-1: Training",
+    "text": "EAGLE-1: Training\nTraining Loss \\[L = L_{\\text{fea}} + L_{\\text{token}}\\]\n\nL_fea: Regression loss for feature prediction\nL_token: Classification loss for token prediction"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#eagle-1-verification",
+    "href": "inference/05_speculative/slides.html#eagle-1-verification",
+    "title": "Speculative Decoding",
+    "section": "Eagle-1 : Verification",
+    "text": "Eagle-1 : Verification\n\nMulti-Round Speculative Sampling For tree-structured drafts:\n\nTry candidate 1 with original p\nIf rejected -&gt; residual p₁ = norm(max(0, p - p̂₁))\nTry candidate 2 against p₁ (not original p!)\nContinue until acceptance or exhaustion\n\nMaintains invariant: sampling from “remaining” probability mass."
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#eagle-1-results",
+    "href": "inference/05_speculative/slides.html#eagle-1-results",
+    "title": "Speculative Decoding",
+    "section": "EAGLE-1: Results",
+    "text": "EAGLE-1: Results\n\n\nSpeedup: ~3×\nAverage acceptance length τ: 3-4 tokens\nLossless: Provably maintains target distribution"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#eagle-2-context-aware-speculation-2024",
+    "href": "inference/05_speculative/slides.html#eagle-2-context-aware-speculation-2024",
+    "title": "Speculative Decoding",
+    "section": "EAGLE-2: Context-Aware Speculation (2024)",
+    "text": "EAGLE-2: Context-Aware Speculation (2024)\nProblem: Static tree structure wastes resources on “easy” vs “hard” tokens.\n\n\nAcceptance rate is context-dependent, not just position-dependent\n“10+2” : next token uncertain (=, +, etc.)\n“10+2=” : next token almost certain (“1”)\n\n\nSolution: Dynamic tree construction using draft model confidence\n\nHigh confidence -&gt; expand tree deeper\nLow confidence -&gt; prune, keep tree shallow"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#eagle-2-context-aware-dynamic-draft-tree",
+    "href": "inference/05_speculative/slides.html#eagle-2-context-aware-dynamic-draft-tree",
+    "title": "Speculative Decoding",
+    "section": "EAGLE-2: Context-aware dynamic draft tree",
+    "text": "EAGLE-2: Context-aware dynamic draft tree"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#eagle-2-context-aware-dynamic-draft-tree-1",
+    "href": "inference/05_speculative/slides.html#eagle-2-context-aware-dynamic-draft-tree-1",
+    "title": "Speculative Decoding",
+    "section": "EAGLE-2: Context-aware dynamic draft tree",
+    "text": "EAGLE-2: Context-aware dynamic draft tree"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#eagle-2-results",
+    "href": "inference/05_speculative/slides.html#eagle-2-results",
+    "title": "Speculative Decoding",
+    "section": "EAGLE-2: Results",
+    "text": "EAGLE-2: Results\n\n\n\n\n\n\n\nImportant\n\n\nPerformance\n\n20-40% faster than EAGLE-1\nNo additional training required (completely lossless)\nContext-aware: Easy contexts (code boilerplate) get deeper trees\nHard contexts (creative writing) get shallower, wider trees"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#eagle-3-training-time-test-2025",
+    "href": "inference/05_speculative/slides.html#eagle-3-training-time-test-2025",
+    "title": "Speculative Decoding",
+    "section": "EAGLE-3: Training-Time Test (2025)",
+    "text": "EAGLE-3: Training-Time Test (2025)\nProblem: EAGLE-1/2’s feature-regression loss caps the draft — and acceptance stopped improving with more training data.\n\nDrop the feature loss: train the draft on its own multi-step rollouts — training-time test — so training matches how the draft is actually used at inference\nMulti-layer fusion: draft consumes low + mid + high layer features from the target, not just the top layer\nResult: 3–6.5× speedup, and acceptance now scales with draft training data\n\n\n\n\n\n\n\n\nEAGLE 3.1 (May 2026)\n\n\nFixes “attention drift” at deeper speculation depths (normalize target hidden states between draft steps). Up to 2× longer acceptance on long context, robust to chat-template/system-prompt shifts; 2.03× per-user throughput on Kimi K2.6. Backward compatible with EAGLE-3 checkpoints (vLLM ≥ 0.22)."
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#native-multi-token-prediction-mtp",
+    "href": "inference/05_speculative/slides.html#native-multi-token-prediction-mtp",
+    "title": "Speculative Decoding",
+    "section": "Native Multi-Token Prediction (MTP)",
+    "text": "Native Multi-Token Prediction (MTP)\nSpeculation is moving into pretraining: frontier models now ship with their own draft head.\n\nDeepSeek-style MTP: a small sequential head predicts token t+2 keeping the causal chain — unlike Medusa’s independent heads\nTrained alongside the base model → highest acceptance, zero extra model to serve\nNow standard: DeepSeek V3/V4, Qwen3-Next / Qwen 3.6, Gemma 4, GLM, MiMo, Nemotron …\nFirst-class in vLLM & SGLang: deepseek_mtp, qwen3_next_mtp, gemma4_mtp, …\n\n\n\n\n\n\n\n\nWhy it wins\n\n\nThe draft head sees the target’s own trunk features and was trained on the same data distribution — acceptance rates reach 85–90% for the +1 token (DeepSeek-V3 report)."
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#parallel-drafting-dflash-dspark",
+    "href": "inference/05_speculative/slides.html#parallel-drafting-dflash-dspark",
+    "title": "Speculative Decoding",
+    "section": "2026: Parallel Drafting — DFlash & DSpark",
+    "text": "2026: Parallel Drafting — DFlash & DSpark\n\n\nDFlash (Z Lab, ICML 2026)\n\nDraft = small block-diffusion model: whole block in one forward pass\nConditioned on target hidden states; reuses target embedding + LM head\n6×+ lossless; up to 2.5× over EAGLE-3\nUp to 15× for gpt-oss-120b on Blackwell (NVIDIA)\nIn vLLM speculators [arXiv:2602.06036]\n\n\nDSpark (DeepSeek, Jun 2026)\n\nSemi-autoregressive block drafter + tiny sequential head (fixes suffix decay)\nConfidence-scheduled verification: variable per-request verify length, load-aware\nV4-Flash 60–85% faster per user; accepted length +26–31% vs EAGLE-3\nSGLang: --speculative-algorithm DSPARK; training code: DeepSpec (MIT) [arXiv:2607.05147]"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#where-the-field-is-heading",
+    "href": "inference/05_speculative/slides.html#where-the-field-is-heading",
+    "title": "Speculative Decoding",
+    "section": "Where the Field Is Heading",
+    "text": "Where the Field Is Heading\n\nDrafting goes non-autoregressive: block diffusion (DFlash), semi-AR blocks (DSpark) — the serial draft loop was the last bottleneck\nVerification becomes adaptive: confidence-scheduled, load-aware verify windows instead of a fixed K\nSpeculation moves into pretraining: native MTP heads are table stakes for frontier models\nRobustness engineering: EAGLE 3.1 — long context, chat templates, OOD system prompts\nThe “~3×” ceiling is history: 2026 frontier is 4–6×+ lossless, more with hardware co-design"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#inference-framework-support",
+    "href": "inference/05_speculative/slides.html#inference-framework-support",
+    "title": "Speculative Decoding",
+    "section": "Inference Framework Support",
+    "text": "Inference Framework Support\n\n\n\n\n\n\n\nFramework\nMethods Supported\n\n\n\n\nvLLM\nEAGLE-2, EAGLE-3, Medusa, N-gram, Suffix Decoding\n\n\nSGLang\nEAGLE-3, MTP (DeepSeek), Standalone, N-gram\n\n\nTensorRT-LLM\nDraft-target, EAGLE-3, MTP, User-provided\n\n\nHugging Face Transformers\nUniversal Assisted Generation (UAG), Dynamic Speculation\n\n\nllama.cpp\nUniversal Assisted Decoding, Speculative stats"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#demo-1-hugging-face-transformers",
+    "href": "inference/05_speculative/slides.html#demo-1-hugging-face-transformers",
+    "title": "Speculative Decoding",
+    "section": "Demo 1: Hugging Face Transformers",
+    "text": "Demo 1: Hugging Face Transformers\n\n\n\n\n\n\nSetup\n\n\nUsing assistant_model parameter for automatic speculative decoding.\n\n\n\nfrom transformers import AutoModelForCausalLM, AutoTokenizer\nimport torch\nimport time\n\n# Target model (large)\nmodel_name = \"unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit\"\nassistant_name = \"double7/vicuna-68m\"  # Tiny assistant\n\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_name, \n    torch_dtype=torch.bfloat16,\n    device_map=\"auto\"\n)\nassistant = AutoModelForCausalLM.from_pretrained(\n    assistant_name,\n    torch_dtype=torch.bfloat16,\n    device_map=\"auto\"\n)\n\nprompt = \"Explain quantum computing in simple terms:\"\ninputs = tokenizer(prompt, return_tensors=\"pt\").to(model.device)\n\n# Baseline\nstart = time.time()\noutputs = model.generate(**inputs, max_new_tokens=100)\nbaseline_time = time.time() - start\nprint(f\"Baseline: {baseline_time:.2f}s\")\n\n# With speculative decoding\nstart = time.time()\noutputs = model.generate(\n    **inputs, \n    assistant_model=assistant,\n    max_new_tokens=100\n)\nspec_time = time.time() - start\nprint(f\"Speculative: {spec_time:.2f}s\")\nprint(f\"Speedup: {baseline_time/spec_time:.2f}x\")"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#demo-2-vllm-with-eagle-3",
+    "href": "inference/05_speculative/slides.html#demo-2-vllm-with-eagle-3",
+    "title": "Speculative Decoding",
+    "section": "Demo 2: vLLM with EAGLE-3",
+    "text": "Demo 2: vLLM with EAGLE-3"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#when-to-use-speculative-decoding",
+    "href": "inference/05_speculative/slides.html#when-to-use-speculative-decoding",
+    "title": "Speculative Decoding",
+    "section": "When to Use Speculative Decoding?",
+    "text": "When to Use Speculative Decoding?\n\n\n✅ Best For\n\nLow batch sizes (1-16): Memory-bound regime\nInteractive applications: Chatbots, coding assistants\nRepetitive content: Code generation, structured outputs\nLatency-sensitive: Real-time applications\nGreedy decoding: Highest acceptance rates\n\n\n❌ Avoid When\n\nHigh batch sizes (32+): Compute-bound, benefits diminish\nVery high temperature: Acceptance rate drops\nCreative writing: Unpredictable tokens, low acceptance\nMemory constrained: Draft model adds overhead\n\n\n\n\n\n\n\n\nRule of Thumb\n\n\nIf your GPU utilization is &lt;50% during decoding, speculative decoding will likely help. Check with nvidia-smi or profiling tools."
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#temperature-vs-acceptance-rate",
+    "href": "inference/05_speculative/slides.html#temperature-vs-acceptance-rate",
+    "title": "Speculative Decoding",
+    "section": "Temperature vs Acceptance Rate",
+    "text": "Temperature vs Acceptance Rate\n\n\n\nTemperature\nAcceptance Rate\nSpeedup\n\n\n\n\n0.0 (Greedy)\n85-95%\n4-6×\n\n\n0.5\n70-80%\n3-4×\n\n\n0.7\n60-70%\n2.5-3×\n\n\n1.0\n50-60%\n2-2.5×\n\n\n&gt;1.0\n&lt;50%\n1.5-2×\n\n\n\n\nDynamic Adjustment Modern frameworks (vLLM, SGLang) automatically adjust draft length based on observed acceptance rates."
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#integration-with-other-optimizations",
+    "href": "inference/05_speculative/slides.html#integration-with-other-optimizations",
+    "title": "Speculative Decoding",
+    "section": "Integration with Other Optimizations",
+    "text": "Integration with Other Optimizations\nSpeculative decoding is orthogonal to other techniques:\n\nQuantization: Can quantize both draft and target (e.g., FP8, INT8)\nFlashAttention: Works seamlessly with tree attention\nContinuous Batching: Needs careful KV cache management for rejected branches\nPrefix Caching: Draft tokens can use cached prefixes\nDisaggregated Serving: EAGLE-3 works with prefill-decode disaggregation\n\n\n\n\n\n\n\nKV Cache Management\n\n\nNaive approach: Discard all draft entries, recompute for accepted ones.\nBetter: Selective retention (EAGLE’s approach) - Keep KV for accepted path only - Discard KV for rejected branches - Track cache positions corresponding to tree nodes"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#key-takeaways",
+    "href": "inference/05_speculative/slides.html#key-takeaways",
+    "title": "Speculative Decoding",
+    "section": "Key Takeaways",
+    "text": "Key Takeaways\n\nSpeculative decoding is lossless: Exact same distribution as target model\nSpeedup comes from parallel verification: K tokens verified in ~same time as 1 generated\nEvolution:\n\nOriginal: Separate draft models\nMedusa: Added heads (position-independent)\nEAGLE: Feature-level autoregression\nEAGLE-3: Training-time test + multi-layer fusion\n\nProduction ready: vLLM, SGLang, TensorRT-LLM, Transformers all have native support\nBest for: Low batch sizes, repetitive content, latency-sensitive applications"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#performance-cheat-sheet",
+    "href": "inference/05_speculative/slides.html#performance-cheat-sheet",
+    "title": "Speculative Decoding",
+    "section": "Performance Cheat Sheet",
+    "text": "Performance Cheat Sheet\n\n\n\n\n\n\n\n\n\n\nMethod\nMax Speedup\nOverhead\nTraining Required\nFramework Support\n\n\n\n\nOriginal (draft model)\n2-3×\nFull draft model\nYes (separate model)\nAll\n\n\nMedusa\n~2-3×\n~0.5% params\nYes (heads only)\nvLLM, SGLang, MLC\n\n\nEAGLE-1\n~3×\n~2% params\nYes (feature head)\nvLLM, SGLang, MLC\n\n\nEAGLE-2\n~4×\n~2% params\nNo (same as EAGLE-1)\nvLLM, SGLang\n\n\nEAGLE-3\n3-6.5×\n~3% params\nYes (advanced)\nvLLM, SGLang, TensorRT\n\n\nDeepSeek MTP\n~1.8×\nBuilt-in\nPre-trained\nSGLang, TensorRT"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#essential-papers",
+    "href": "inference/05_speculative/slides.html#essential-papers",
+    "title": "Speculative Decoding",
+    "section": "Essential Papers",
+    "text": "Essential Papers\n\nLeviathan et al. (2022) - “Fast Inference from Transformers via Speculative Decoding” [arXiv:2211.17192]\nChen et al. (2023) - “Accelerating Large Language Model Decoding with Speculative Sampling” [arXiv:2302.01318]\nCai et al. (2024) - “Medusa: Simple LLM Inference Acceleration Framework” [arXiv:2401.10774]\nLi et al. (2024) - “EAGLE: Speculative Sampling…” [arXiv:2401.15077]\nLi et al. (2025) - “EAGLE-3: Scaling up Inference Acceleration via Training-Time Test” [arXiv:2503.01840]\nXia et al. (2024) - “Unlocking Efficiency: A Comprehensive Survey of Speculative Decoding” [arXiv:2401.07851]"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#questions",
+    "href": "inference/05_speculative/slides.html#questions",
+    "title": "Speculative Decoding",
+    "section": "Questions?",
+    "text": "Questions?"
   }
 ]
