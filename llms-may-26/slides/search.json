@@ -557,7 +557,7 @@
     "href": "inference/04_inference_servers/demos.html#llama.cpp-safetensors-to-gguf",
     "title": "Inference Demos",
     "section": "llama.cpp : SafeTensors to GGUF",
-    "text": "llama.cpp : SafeTensors to GGUF\n\nturn a Hugging Face model into one FP16 GGUF file\n\n00-convert.sh script"
+    "text": "llama.cpp : SafeTensors to GGUF\nNOTES : Pls see demos-llama-zpp.zip for the scripts and instructions to run the llama.cpp demos.\n\nturn a Hugging Face model into one FP16 GGUF file\n\n00-convert.sh script"
   },
   {
     "objectID": "inference/04_inference_servers/demos.html#llama.cpp-inference",
