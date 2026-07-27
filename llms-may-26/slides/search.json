@@ -557,7 +557,7 @@
     "href": "inference/04_inference_servers/demos.html#llama.cpp-safetensors-to-gguf",
     "title": "Inference Demos",
     "section": "llama.cpp : SafeTensors to GGUF",
-    "text": "llama.cpp : SafeTensors to GGUF\nNOTES : Pls see demos-llama-zpp.zip for the scripts and instructions to run the llama.cpp demos.\n\nturn a Hugging Face model into one FP16 GGUF file\n\n00-convert.sh script"
+    "text": "llama.cpp : SafeTensors to GGUF\n\nturn a Hugging Face model into one FP16 GGUF file\n\n00-convert.sh script"
   },
   {
     "objectID": "inference/04_inference_servers/demos.html#llama.cpp-inference",
@@ -3991,7 +3991,7 @@
     "href": "inference/05_speculative/slides.html#draft-model-options-chen-et-al.",
     "title": "Speculative Decoding",
     "section": "Draft Model Options (Chen et al.)",
-    "text": "Draft Model Options (Chen et al.)\n\nSmaller models, same family\n\nEasy to obtain, similar distribution, Different serving topology needed\n\nDistilled model\n\nOptimized for speculation, Training cost is high\n\nN-gram\n\nZero overhead, no training, Limited to simple patterns"
+    "text": "Draft Model Options (Chen et al.)\n\nSmaller models, same family\n\nEasy to obtain, similar distribution, Different serving topology needed\n\nDistilled model\n\nOptimized for speculation, Training cost is high\n\nN-gram\n\nZero overhead, no training, Limited to simple patterns\n\nEarly-exit self-speculation (LayerSkip)\n\nDraft = the target’s own first E layers; no second model, needs early-exit-aware training"
   },
   {
     "objectID": "inference/05_speculative/slides.html#results",
@@ -4026,7 +4026,7 @@
     "href": "inference/05_speculative/slides.html#medusa-tree-attention-verification",
     "title": "Speculative Decoding",
     "section": "Medusa: Tree Attention Verification",
-    "text": "Medusa: Tree Attention Verification\n\n\n\nEach head generates multiple top predictions:\n\nHead 1: {a₁, a₂, …, aₖ}\nHead 2: {b₁, b₂, …, bₖ}\nHead 3: {c₁, c₂, …, bₖ}\n\nConstruct sparse tree of candidate continuations\nCustom attention mask: each token only attends to ancestors in tree\nUse appropriate positional encoding for tree structure"
+    "text": "Medusa: Tree Attention Verification\n\n\n\nEach head generates multiple top predictions:\n\nHead 1: {a₁, a₂, …, aₖ}\nHead 2: {b₁, b₂, …, bₖ}\nHead 3: {c₁, c₂, …, cₖ}\n\nConstruct sparse tree of candidate continuations\nCustom attention mask: each token only attends to ancestors in tree\nUse appropriate positional encoding for tree structure"
   },
   {
     "objectID": "inference/05_speculative/slides.html#medusa-tree-attention-verification-1",
@@ -4054,56 +4054,56 @@
     "href": "inference/05_speculative/slides.html#medusa-results",
     "title": "Speculative Decoding",
     "section": "Medusa: Results",
-    "text": "Medusa: Results\n\n\n\n\n\nResults - Speedup: ~2-3× on average - Arithmetic Intensioty : 41× operational intensity gain"
+    "text": "Medusa: Results\n\n\n\n\n\nResults\n\nSpeedup: ~2-3× on average\nArithmetic Intensity : 41× operational intensity gain"
   },
   {
     "objectID": "inference/05_speculative/slides.html#medusa-limitations",
     "href": "inference/05_speculative/slides.html#medusa-limitations",
     "title": "Speculative Decoding",
     "section": "Medusa: Limitations",
-    "text": "Medusa: Limitations\nKey Limitations 1. Position-Independent Prediction: Head 2 doesn’t know what Head 1 predicted 2. Limited Information: Only sees top-layer features 3. No dependencies: Can’t model dependencies between draft tokens 4. Speedup plateaus: ~3× even with more heads\n\n\n\n\n\n\n\nThe Core Problem\n\n\nMedusa heads predict position i+k independently of positions i+1, i+2, …, i+k-1. Lower acceptance rates for later positions in the draft."
+    "text": "Medusa: Limitations\nKey Limitations\n\nPosition-Independent Prediction: Head 2 doesn’t know what Head 1 predicted\nLimited Information: Only sees top-layer features\nNo dependencies: Can’t model dependencies between draft tokens\nSpeedup plateaus: ~3× even with more heads\n\n\n\n\n\n\n\n\nThe Core Problem\n\n\nMedusa heads predict position i+k independently of positions i+1, i+2, …, i+k-1. Lower acceptance rates for later positions in the draft."
   },
   {
     "objectID": "inference/05_speculative/slides.html#eagle-series-feature-level-autoregression",
     "href": "inference/05_speculative/slides.html#eagle-series-feature-level-autoregression",
     "title": "Speculative Decoding",
     "section": "EAGLE Series: Feature-Level Autoregression",
-    "text": "EAGLE Series: Feature-Level Autoregression"
+    "text": "EAGLE Series: Feature-Level Autoregression\n\nfeature = the last-layer hidden state, the d-dimensional vector just before the LM head"
   },
   {
     "objectID": "inference/05_speculative/slides.html#eagle-core-innovation",
     "href": "inference/05_speculative/slides.html#eagle-core-innovation",
     "title": "Speculative Decoding",
     "section": "EAGLE : Core Innovation",
-    "text": "EAGLE : Core Innovation\nKey Insight: Autoregression at the feature level is simpler than at the token level.\n\nFeatures contain richer information than just next-token logits\npredict next feature vector f_{n+1} instead of token t_{n+1}"
+    "text": "EAGLE : Core Innovation\nKey Insight: Autoregression at the feature level is simpler than at the token level.\n\n\nFeatures contain richer information than just next-token logits\npredict next feature vector \\(f_{n+1}\\) instead of token \\(t_{n+1}\\)\n\n\nfeature = the last-layer hidden state, the d-dimensional vector just before the LM head"
   },
   {
     "objectID": "inference/05_speculative/slides.html#eagle-feature-uncertainty",
     "href": "inference/05_speculative/slides.html#eagle-feature-uncertainty",
     "title": "Speculative Decoding",
     "section": "EAGLE : Feature Uncertainty",
-    "text": "EAGLE : Feature Uncertainty"
+    "text": "EAGLE : Feature Uncertainty\n\n\n\n\nAre features enough to predict the next feature?\npure feature-to-feature regression is ill-posed"
   },
   {
     "objectID": "inference/05_speculative/slides.html#eagle-architecture",
     "href": "inference/05_speculative/slides.html#eagle-architecture",
     "title": "Speculative Decoding",
     "section": "EAGLE : Architecture",
-    "text": "EAGLE : Architecture\n\n\nDraft model predicts next feature vector f_{n+1} based on embedding of current token and previous features\nUse predicted feature to compute token probabilities for next token\nTree structure allows multiple candidates to be verified in parallel"
+    "text": "EAGLE : Architecture\n\n\nDraft predicts f_{n+1} from previous features f_&lt;=n and the embedding of the just-sampled token t_{n+1} (shifted by one).\nUse predicted feature to compute token probabilities for next token\nTree structure allows multiple candidates to be verified in parallel"
   },
   {
     "objectID": "inference/05_speculative/slides.html#eagle-1-training",
     "href": "inference/05_speculative/slides.html#eagle-1-training",
     "title": "Speculative Decoding",
     "section": "EAGLE-1: Training",
-    "text": "EAGLE-1: Training\nTraining Loss \\[L = L_{\\text{fea}} + L_{\\text{token}}\\]\n\nL_fea: Regression loss for feature prediction\nL_token: Classification loss for token prediction"
+    "text": "EAGLE-1: Training\nTraining Loss \\[L = L_{\\text{fea}} + 0.1 \\times L_{\\text{token}}\\]\n\nL_fea: Regression loss for feature prediction\nL_token: Classification loss for token prediction"
   },
   {
     "objectID": "inference/05_speculative/slides.html#eagle-1-verification",
     "href": "inference/05_speculative/slides.html#eagle-1-verification",
     "title": "Speculative Decoding",
-    "section": "Eagle-1 : Verification",
-    "text": "Eagle-1 : Verification\n\nMulti-Round Speculative Sampling For tree-structured drafts:\n\nTry candidate 1 with original p\nIf rejected -&gt; residual p₁ = norm(max(0, p - p̂₁))\nTry candidate 2 against p₁ (not original p!)\nContinue until acceptance or exhaustion\n\nMaintains invariant: sampling from “remaining” probability mass."
+    "section": "EAGLE-1 : Verification",
+    "text": "EAGLE-1 : Verification\n\nMulti-Round Speculative Sampling\nFor tree-structured drafts:\n\nTry candidate 1 with original p\nIf rejected -&gt; residual p₁ = norm(max(0, p - p̂₁))\nTry candidate 2 against p₁ (not original p!)\nContinue until acceptance or exhaustion\n\nMaintains invariant: sampling from “remaining” probability mass."
   },
   {
     "objectID": "inference/05_speculative/slides.html#eagle-1-results",
@@ -4120,60 +4120,95 @@
     "text": "EAGLE-2: Context-Aware Speculation (2024)\nProblem: Static tree structure wastes resources on “easy” vs “hard” tokens.\n\n\nAcceptance rate is context-dependent, not just position-dependent\n“10+2” : next token uncertain (=, +, etc.)\n“10+2=” : next token almost certain (“1”)\n\n\nSolution: Dynamic tree construction using draft model confidence\n\nHigh confidence -&gt; expand tree deeper\nLow confidence -&gt; prune, keep tree shallow"
   },
   {
-    "objectID": "inference/05_speculative/slides.html#eagle-2-context-aware-dynamic-draft-tree",
-    "href": "inference/05_speculative/slides.html#eagle-2-context-aware-dynamic-draft-tree",
+    "objectID": "inference/05_speculative/slides.html#eagle-2-tree-expand",
+    "href": "inference/05_speculative/slides.html#eagle-2-tree-expand",
     "title": "Speculative Decoding",
-    "section": "EAGLE-2: Context-aware dynamic draft tree",
-    "text": "EAGLE-2: Context-aware dynamic draft tree"
+    "section": "EAGLE-2: Tree Expand",
+    "text": "EAGLE-2: Tree Expand"
   },
   {
-    "objectID": "inference/05_speculative/slides.html#eagle-2-context-aware-dynamic-draft-tree-1",
-    "href": "inference/05_speculative/slides.html#eagle-2-context-aware-dynamic-draft-tree-1",
+    "objectID": "inference/05_speculative/slides.html#eagle-2-tree-rerank-mask",
+    "href": "inference/05_speculative/slides.html#eagle-2-tree-rerank-mask",
     "title": "Speculative Decoding",
-    "section": "EAGLE-2: Context-aware dynamic draft tree",
-    "text": "EAGLE-2: Context-aware dynamic draft tree"
+    "section": "EAGLE-2: Tree Rerank + Mask",
+    "text": "EAGLE-2: Tree Rerank + Mask"
   },
   {
     "objectID": "inference/05_speculative/slides.html#eagle-2-results",
     "href": "inference/05_speculative/slides.html#eagle-2-results",
     "title": "Speculative Decoding",
     "section": "EAGLE-2: Results",
-    "text": "EAGLE-2: Results\n\n\n\n\n\n\n\nImportant\n\n\nPerformance\n\n20-40% faster than EAGLE-1\nNo additional training required (completely lossless)\nContext-aware: Easy contexts (code boilerplate) get deeper trees\nHard contexts (creative writing) get shallower, wider trees"
+    "text": "EAGLE-2: Results\n\n\n\n\n\n\n\nImportant\n\n\nPerformance\n\n20-40% faster than EAGLE-1\nNo additional training required (reuses the EAGLE-1 draft head unchanged)\ncompletely lossless\nContext-aware: Easy contexts (code boilerplate) get deeper trees\nHard contexts (creative writing) get shallower, wider trees"
   },
   {
     "objectID": "inference/05_speculative/slides.html#eagle-3-training-time-test-2025",
     "href": "inference/05_speculative/slides.html#eagle-3-training-time-test-2025",
     "title": "Speculative Decoding",
     "section": "EAGLE-3: Training-Time Test (2025)",
-    "text": "EAGLE-3: Training-Time Test (2025)\nProblem: EAGLE-1/2’s feature-regression loss caps the draft — and acceptance stopped improving with more training data.\n\nDrop the feature loss: train the draft on its own multi-step rollouts — training-time test — so training matches how the draft is actually used at inference\nMulti-layer fusion: draft consumes low + mid + high layer features from the target, not just the top layer\nResult: 3–6.5× speedup, and acceptance now scales with draft training data\n\n\n\n\n\n\n\n\nEAGLE 3.1 (May 2026)\n\n\nFixes “attention drift” at deeper speculation depths (normalize target hidden states between draft steps). Up to 2× longer acceptance on long context, robust to chat-template/system-prompt shifts; 2.03× per-user throughput on Kimi K2.6. Backward compatible with EAGLE-3 checkpoints (vLLM ≥ 0.22)."
+    "text": "EAGLE-3: Training-Time Test (2025)\nProblem: EAGLE-1/2’s feature-regression loss caps the draft model and acceptance stopped improving with more training data.\n\nDrop the feature loss: train the draft on its own multi-step rollouts - training-time test - so training matches how the draft is actually used at inference\nMulti-layer fusion: draft consumes low + mid + high layer features from the target, not just the top layer\nResult: 3–6.5× speedup, and acceptance now scales with draft training data"
   },
   {
     "objectID": "inference/05_speculative/slides.html#native-multi-token-prediction-mtp",
     "href": "inference/05_speculative/slides.html#native-multi-token-prediction-mtp",
     "title": "Speculative Decoding",
     "section": "Native Multi-Token Prediction (MTP)",
-    "text": "Native Multi-Token Prediction (MTP)\nSpeculation is moving into pretraining: frontier models now ship with their own draft head.\n\nDeepSeek-style MTP: a small sequential head predicts token t+2 keeping the causal chain — unlike Medusa’s independent heads\nTrained alongside the base model → highest acceptance, zero extra model to serve\nNow standard: DeepSeek V3/V4, Qwen3-Next / Qwen 3.6, Gemma 4, GLM, MiMo, Nemotron …\nFirst-class in vLLM & SGLang: deepseek_mtp, qwen3_next_mtp, gemma4_mtp, …\n\n\n\n\n\n\n\n\nWhy it wins\n\n\nThe draft head sees the target’s own trunk features and was trained on the same data distribution — acceptance rates reach 85–90% for the +1 token (DeepSeek-V3 report)."
+    "text": "Native Multi-Token Prediction (MTP)\nSpeculation moved into pretraining: the model ships with its own draft module.\n\n\nSequential MTP modules (DeepSeek-V3): module \\(k\\) = one transformer block predicting token \\(t+k+1\\) autoregressively, the causal chain is kept, unlike Medusa’s independent heads\nInput at each step: \\(\\text{concat}(\\text{RMSNorm}(h_{\\text{prev}}),\\ \\text{RMSNorm}(\\text{emb of shifted token}))\\) - the same feature + shifted-token trick as EAGLE\nShared embedding + output head with the main model -&gt; tiny extra cost"
   },
   {
-    "objectID": "inference/05_speculative/slides.html#parallel-drafting-dflash-dspark",
-    "href": "inference/05_speculative/slides.html#parallel-drafting-dflash-dspark",
+    "objectID": "inference/05_speculative/slides.html#native-mtp-in-production",
+    "href": "inference/05_speculative/slides.html#native-mtp-in-production",
     "title": "Speculative Decoding",
-    "section": "2026: Parallel Drafting — DFlash & DSpark",
-    "text": "2026: Parallel Drafting — DFlash & DSpark\n\n\nDFlash (Z Lab, ICML 2026)\n\nDraft = small block-diffusion model: whole block in one forward pass\nConditioned on target hidden states; reuses target embedding + LM head\n6×+ lossless; up to 2.5× over EAGLE-3\nUp to 15× for gpt-oss-120b on Blackwell (NVIDIA)\nIn vLLM speculators [arXiv:2602.06036]\n\n\nDSpark (DeepSeek, Jun 2026)\n\nSemi-autoregressive block drafter + tiny sequential head (fixes suffix decay)\nConfidence-scheduled verification: variable per-request verify length, load-aware\nV4-Flash 60–85% faster per user; accepted length +26–31% vs EAGLE-3\nSGLang: --speculative-algorithm DSPARK; training code: DeepSpec (MIT) [arXiv:2607.05147]"
+    "section": "Native MTP in Production",
+    "text": "Native MTP in Production\n\nNow standard equipment: DeepSeek V3/V4, Qwen3-Next / Qwen 3.6, Gemma 4, GLM-4.x, MiMo, Nemotron, MiniMax …\nZero extra model to serve; draft lives in the checkpoint\nFirst-class serving support- vLLM: deepseek_mtp, qwen3_next_mtp, gemma4_mtp, …; SGLang & TensorRT-LLM: native MTP paths\nDSpark (next) is DeepSeek upgrading its own MTP drafter post-hoc - same weights, better speculation"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#dflash-block-diffusion-parallel-drafting",
+    "href": "inference/05_speculative/slides.html#dflash-block-diffusion-parallel-drafting",
+    "title": "Speculative Decoding",
+    "section": "DFlash: Block-Diffusion (parallel) Drafting",
+    "text": "DFlash: Block-Diffusion (parallel) Drafting\n\n\nDraft = tiny diffusion model: fills K &lt;mask&gt; slots in one bidirectional pass - no serial draft loop\nConditioned on fused target context features (multi-layer, EAGLE-3 style) via cross-use of the target’s KV\nReuses target embedding + LM head; only the few middle draft layers are trained"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#dflash-results",
+    "href": "inference/05_speculative/slides.html#dflash-results",
+    "title": "Speculative Decoding",
+    "section": "DFlash: Results",
+    "text": "DFlash: Results\n\n\n4.6–6.1× lossless on math/code benchmarks vs 1.8–2.2× for EAGLE-3\nChat (MT-Bench) gains least (2.75×) - low predictability, the recurring theme\nNVIDIA: up to 15× for gpt-oss-120b on Blackwell at equal interactivity (TensorRT-LLM integration)\nShips in vLLM speculators [arXiv:2602.06036]"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#dspark-parallel-sequential-drafting",
+    "href": "inference/05_speculative/slides.html#dspark-parallel-sequential-drafting",
+    "title": "Speculative Decoding",
+    "section": "DSpark: Parallel + Sequential Drafting",
+    "text": "DSpark: Parallel + Sequential Drafting\n\n\n(1) Target decodes a token as usual\n(2) Parallel block drafts all K slots at once; a tiny sequential block then refines them left-to-right (kills late-block “suffix decay”); each token gets a confidence score \\(C_k\\)\nHardware-aware prefix scheduler: keep only the draft prefix worth verifying under current load (here E, F, G kept — H dropped)\n(3) Target verifies the kept prefix — standard accept/reject, still exact"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#dspark-in-deepseek-v4",
+    "href": "inference/05_speculative/slides.html#dspark-in-deepseek-v4",
+    "title": "Speculative Decoding",
+    "section": "DSpark in DeepSeek V4",
+    "text": "DSpark in DeepSeek V4\n\n\nConditional acceptance stays flat ≈0.85–0.9 across all draft positions - the sequential block fixes the late-position decay that plagues AR drafters\n60–85% faster per-user on V4-Flash, 57–78% on V4-Pro\nAccepted length +26–31% vs EAGLE-3, +16–18% vs DFlash\nShipping: SGLang --speculative-algorithm DSPARK; drafter training open-sourced as DeepSpec (MIT)"
   },
   {
     "objectID": "inference/05_speculative/slides.html#where-the-field-is-heading",
     "href": "inference/05_speculative/slides.html#where-the-field-is-heading",
     "title": "Speculative Decoding",
     "section": "Where the Field Is Heading",
-    "text": "Where the Field Is Heading\n\nDrafting goes non-autoregressive: block diffusion (DFlash), semi-AR blocks (DSpark) — the serial draft loop was the last bottleneck\nVerification becomes adaptive: confidence-scheduled, load-aware verify windows instead of a fixed K\nSpeculation moves into pretraining: native MTP heads are table stakes for frontier models\nRobustness engineering: EAGLE 3.1 — long context, chat templates, OOD system prompts\nThe “~3×” ceiling is history: 2026 frontier is 4–6×+ lossless, more with hardware co-design"
+    "text": "Where the Field Is Heading\n\nDrafting going non-autoregressive: block diffusion (DFlash), semi-AR blocks (DSpark), no serial draft loop\nVerification becomes adaptive: confidence-scheduled, load-aware verify windows instead of a fixed K\nSpeculation moving into pretraining: native MTP heads are begin shipped along with models"
+  },
+  {
+    "objectID": "inference/05_speculative/slides.html#model-free-drafting",
+    "href": "inference/05_speculative/slides.html#model-free-drafting",
+    "title": "Speculative Decoding",
+    "section": "Model-Free Drafting",
+    "text": "Model-Free Drafting\nNo draft model at all\n\nN-gram / prompt-lookup: match the last few generated tokens against the prompt + output so far; propose whatever followed last time\n\nvLLM ngram / ngram_gpu; HF prompt_lookup_num_tokens\n\nSuffix Decoding (Snowflake Arctic): a suffix tree over previous outputs + current prompt; drafts long continuations, adaptively sized per step\n\n2.3–6.3× on agentic pipelines; vLLM suffix method\n\nWhere they win: agents (tool-call loops), RAG, code editing, self-refinement - anywhere output repeats input"
   },
   {
     "objectID": "inference/05_speculative/slides.html#inference-framework-support",
     "href": "inference/05_speculative/slides.html#inference-framework-support",
     "title": "Speculative Decoding",
     "section": "Inference Framework Support",
-    "text": "Inference Framework Support\n\n\n\n\n\n\n\nFramework\nMethods Supported\n\n\n\n\nvLLM\nEAGLE-2, EAGLE-3, Medusa, N-gram, Suffix Decoding\n\n\nSGLang\nEAGLE-3, MTP (DeepSeek), Standalone, N-gram\n\n\nTensorRT-LLM\nDraft-target, EAGLE-3, MTP, User-provided\n\n\nHugging Face Transformers\nUniversal Assisted Generation (UAG), Dynamic Speculation\n\n\nllama.cpp\nUniversal Assisted Decoding, Speculative stats"
+    "text": "Inference Framework Support\n\n\n\n\n\n\n\nFramework\nMethods Supported\n\n\n\n\nvLLM\nDraft model, EAGLE / EAGLE-3 (3.1), Medusa, MTP, N-gram, Suffix, DFlash (speculators)\n\n\nSGLang\nEAGLE-3, DSpark, MTP (DeepSeek), Standalone, N-gram\n\n\nTensorRT-LLM\nDraft-target, EAGLE-3, MTP, ReDrafter, User-provided\n\n\nHugging Face Transformers\nAssisted generation, UAG (cross-tokenizer), Prompt lookup, Early-exit\n\n\nllama.cpp\nDraft-model speculative decoding (--model-draft)"
   },
   {
     "objectID": "inference/05_speculative/slides.html#demo-1-hugging-face-transformers",
@@ -4183,18 +4218,18 @@
     "text": "Demo 1: Hugging Face Transformers\n\n\n\n\n\n\nSetup\n\n\nUsing assistant_model parameter for automatic speculative decoding.\n\n\n\nfrom transformers import AutoModelForCausalLM, AutoTokenizer\nimport torch\nimport time\n\n# Target model (large)\nmodel_name = \"unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit\"\nassistant_name = \"double7/vicuna-68m\"  # Tiny assistant\n\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_name, \n    torch_dtype=torch.bfloat16,\n    device_map=\"auto\"\n)\nassistant = AutoModelForCausalLM.from_pretrained(\n    assistant_name,\n    torch_dtype=torch.bfloat16,\n    device_map=\"auto\"\n)\n\nprompt = \"Explain quantum computing in simple terms:\"\ninputs = tokenizer(prompt, return_tensors=\"pt\").to(model.device)\n\n# Baseline\nstart = time.time()\noutputs = model.generate(**inputs, max_new_tokens=100)\nbaseline_time = time.time() - start\nprint(f\"Baseline: {baseline_time:.2f}s\")\n\n# With speculative decoding\nstart = time.time()\noutputs = model.generate(\n    **inputs, \n    assistant_model=assistant,\n    max_new_tokens=100\n)\nspec_time = time.time() - start\nprint(f\"Speculative: {spec_time:.2f}s\")\nprint(f\"Speedup: {baseline_time/spec_time:.2f}x\")"
   },
   {
-    "objectID": "inference/05_speculative/slides.html#demo-2-vllm-with-eagle-3",
-    "href": "inference/05_speculative/slides.html#demo-2-vllm-with-eagle-3",
+    "objectID": "inference/05_speculative/slides.html#demo-2-vllm-with-mtp",
+    "href": "inference/05_speculative/slides.html#demo-2-vllm-with-mtp",
     "title": "Speculative Decoding",
-    "section": "Demo 2: vLLM with EAGLE-3",
-    "text": "Demo 2: vLLM with EAGLE-3"
+    "section": "Demo 2: vLLM with MTP",
+    "text": "Demo 2: vLLM with MTP\n# example run, pls see --spec-method and --speculative-config config for more details\nvllm serve nvidia/Qwen3.6-35B-A3B-NVFP4 \\\n    --host 0.0.0.0 \\\n    --port 8000 \\\n    --tensor-parallel-size 1 \\\n    --trust-remote-code \\\n    --quantization modelopt \\\n    --kv-cache-dtype fp8 \\\n    --attention-backend flashinfer \\\n    --moe-backend marlin \\\n    --gpu-memory-utilization 0.4 \\\n    --max-model-len 262144 \\\n    --max-num-seqs 4 \\\n    --max-num-batched-tokens 8192 \\\n    --enable-chunked-prefill \\\n    --async-scheduling \\\n    --enable-prefix-caching \\\n    --speculative-config '{\"method\":\"mtp\",\"num_speculative_tokens\":3,\"moe_backend\":\"triton\"}' \\\n    --load-format fastsafetensors \\\n    --enable-auto-tool-choice \\\n    --tool-call-parser qwen3_coder"
   },
   {
     "objectID": "inference/05_speculative/slides.html#when-to-use-speculative-decoding",
     "href": "inference/05_speculative/slides.html#when-to-use-speculative-decoding",
     "title": "Speculative Decoding",
     "section": "When to Use Speculative Decoding?",
-    "text": "When to Use Speculative Decoding?\n\n\n✅ Best For\n\nLow batch sizes (1-16): Memory-bound regime\nInteractive applications: Chatbots, coding assistants\nRepetitive content: Code generation, structured outputs\nLatency-sensitive: Real-time applications\nGreedy decoding: Highest acceptance rates\n\n\n❌ Avoid When\n\nHigh batch sizes (32+): Compute-bound, benefits diminish\nVery high temperature: Acceptance rate drops\nCreative writing: Unpredictable tokens, low acceptance\nMemory constrained: Draft model adds overhead\n\n\n\n\n\n\n\n\nRule of Thumb\n\n\nIf your GPU utilization is &lt;50% during decoding, speculative decoding will likely help. Check with nvidia-smi or profiling tools."
+    "text": "When to Use Speculative Decoding?\n\n\n✅ Best For\n\nLow batch sizes (1-16): Memory-bound regime\nInteractive applications: Chatbots, coding assistants\nRepetitive content: Code generation, structured outputs\nLatency-sensitive: Real-time applications\nGreedy decoding: Highest acceptance rates\n\n\n❌ Avoid When\n\nHigh batch + short context: Compute-bound, benefits diminish\n\n2026 update: at long context the KV-cache is the bottleneck — speculation keeps paying even at batch 256 (MagicDec); modern schedulers adapt to load (DSpark) instead of switching off\n\nVery high temperature: Acceptance rate drops\nCreative writing: Unpredictable tokens, low acceptance\nMemory constrained: Draft model adds overhead\n\n\n\n\n\n\n\n\nRule of Thumb\n\n\nIf your GPU utilization is &lt;50% during decoding, speculative decoding will likely help. Check with nvidia-smi or profiling tools."
   },
   {
     "objectID": "inference/05_speculative/slides.html#temperature-vs-acceptance-rate",
@@ -4222,7 +4257,7 @@
     "href": "inference/05_speculative/slides.html#performance-cheat-sheet",
     "title": "Speculative Decoding",
     "section": "Performance Cheat Sheet",
-    "text": "Performance Cheat Sheet\n\n\n\n\n\n\n\n\n\n\nMethod\nMax Speedup\nOverhead\nTraining Required\nFramework Support\n\n\n\n\nOriginal (draft model)\n2-3×\nFull draft model\nYes (separate model)\nAll\n\n\nMedusa\n~2-3×\n~0.5% params\nYes (heads only)\nvLLM, SGLang, MLC\n\n\nEAGLE-1\n~3×\n~2% params\nYes (feature head)\nvLLM, SGLang, MLC\n\n\nEAGLE-2\n~4×\n~2% params\nNo (same as EAGLE-1)\nvLLM, SGLang\n\n\nEAGLE-3\n3-6.5×\n~3% params\nYes (advanced)\nvLLM, SGLang, TensorRT\n\n\nDeepSeek MTP\n~1.8×\nBuilt-in\nPre-trained\nSGLang, TensorRT"
+    "text": "Performance Cheat Sheet\n\n\n\n\n\n\n\n\n\n\nMethod\nMax Speedup\nOverhead\nTraining Required\nFramework Support\n\n\n\n\nOriginal (draft model)\n2-3×\nFull draft model\nYes (separate model)\nAll\n\n\nMedusa\n~2-3×\n~0.5% params\nYes (heads only)\nvLLM, SGLang, MLC\n\n\nEAGLE-1\n~3×\n~2% params\nYes (feature head)\nvLLM, SGLang, MLC\n\n\nEAGLE-2\n~4×\n~2% params\nNo (same as EAGLE-1)\nvLLM, SGLang\n\n\nEAGLE-3 / 3.1\n3-6.5×\n~3% params\nYes (advanced)\nvLLM, SGLang, TensorRT\n\n\nNative MTP\n~1.8×\nBuilt-in\nPre-trained\nvLLM, SGLang, TensorRT\n\n\nN-gram / Suffix\n2-6× (repetitive)\nNone (CPU index)\nNo\nvLLM, HF, SGLang\n\n\nDFlash\n4.6-6.1×\n1-block diffusion draft\nYes (draft layers)\nvLLM (speculators), TRT-LLM\n\n\nDSpark\n1.6-1.85× per-user (V4)\nDraft module\nYes (DeepSpec)\nSGLang"
   },
   {
     "objectID": "inference/05_speculative/slides.html#essential-papers",
