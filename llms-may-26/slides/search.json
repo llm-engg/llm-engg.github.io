@@ -1243,6 +1243,265 @@
     ]
   },
   {
+    "objectID": "eval/slides-1.html#overview",
+    "href": "eval/slides-1.html#overview",
+    "title": "LLM Evaluation - I",
+    "section": "Overview",
+    "text": "Overview\n\nUnderstanding Evaluation\nBenchmarks\n\nKnowledge-based benchmarks\nInstruction-following benchmarks\nAgent benchmarks\nReasoning benchmarks\nSafety benchmarks"
+  },
+  {
+    "objectID": "eval/slides-1.html#evaluation",
+    "href": "eval/slides-1.html#evaluation",
+    "title": "LLM Evaluation - I",
+    "section": "Evaluation",
+    "text": "Evaluation\n\nGiven a fixed model, how good it is?\nWhat benchmarks can we use?\nHow are evaluations done?"
+  },
+  {
+    "objectID": "eval/slides-1.html#benchmarks",
+    "href": "eval/slides-1.html#benchmarks",
+    "title": "LLM Evaluation - I",
+    "section": "Benchmarks",
+    "text": "Benchmarks\n\nDeepSeek R1"
+  },
+  {
+    "objectID": "eval/slides-1.html#benchmarks-1",
+    "href": "eval/slides-1.html#benchmarks-1",
+    "title": "LLM Evaluation - I",
+    "section": "Benchmarks",
+    "text": "Benchmarks\n\nKimi K2.5"
+  },
+  {
+    "objectID": "eval/slides-1.html#benchmarks---artificialanalysis.ai",
+    "href": "eval/slides-1.html#benchmarks---artificialanalysis.ai",
+    "title": "LLM Evaluation - I",
+    "section": "Benchmarks - ArtificialAnalysis.ai",
+    "text": "Benchmarks - ArtificialAnalysis.ai\nArtificialAnalysis.ai"
+  },
+  {
+    "objectID": "eval/slides-1.html#benchmarks---openrouter",
+    "href": "eval/slides-1.html#benchmarks---openrouter",
+    "title": "LLM Evaluation - I",
+    "section": "Benchmarks - OpenRouter",
+    "text": "Benchmarks - OpenRouter\nOpenRouter"
+  },
+  {
+    "objectID": "eval/slides-1.html#benchmarks---chatbotarena",
+    "href": "eval/slides-1.html#benchmarks---chatbotarena",
+    "title": "LLM Evaluation - I",
+    "section": "Benchmarks - ChatBotArena",
+    "text": "Benchmarks - ChatBotArena\nChatBotArena"
+  },
+  {
+    "objectID": "eval/slides-1.html#thinking-about-evaluation",
+    "href": "eval/slides-1.html#thinking-about-evaluation",
+    "title": "LLM Evaluation - I",
+    "section": "Thinking about Evaluation",
+    "text": "Thinking about Evaluation\n\nNot just about “accuracy” or “score”\nWhat are the capabilities of the model?\nWhat are the failure modes?\nHow does it perform on different types of tasks?\nHow does it perform on different types of inputs?\n\n\n\n\n\n\n\n\nNote\n\n\n\nEvaluation is a very profound and important topic\nIt determines the future of language models and their applications"
+  },
+  {
+    "objectID": "eval/slides-1.html#who-evaluates-and-why",
+    "href": "eval/slides-1.html#who-evaluates-and-why",
+    "title": "LLM Evaluation - I",
+    "section": "Who Evaluates and Why?",
+    "text": "Who Evaluates and Why?\n\nEnd-users care about specific capabilities and failure modes\n\nUser or company wants to make a purchase decision (model A or model B) for their use case (e.g., customer service chatbots).\nResearchers want to measure the raw capabilities of a model (e.g., intelligence).\nWe want to understand the benefits + harms of a model (for business and policy reasons).\nModel developers want to get feedback to improve the model.\n\nThere is no one true measure of a model’s performance"
+  },
+  {
+    "objectID": "eval/slides-1.html#evaluation-framework---inputs",
+    "href": "eval/slides-1.html#evaluation-framework---inputs",
+    "title": "LLM Evaluation - I",
+    "section": "Evaluation Framework - Inputs",
+    "text": "Evaluation Framework - Inputs\nWhat are the inputs?\n\nWhat use cases are covered?\nDo we have representation of difficult inputs in the tail?\nAre the inputs adapted to the model (e.g., multi-turn)?"
+  },
+  {
+    "objectID": "eval/slides-1.html#evaluation-framework",
+    "href": "eval/slides-1.html#evaluation-framework",
+    "title": "LLM Evaluation - I",
+    "section": "Evaluation Framework",
+    "text": "Evaluation Framework\nHow do call the language model?\n\nHow do you prompt the language model?\nDoes the language model use chain-of-thought, tools, RAG, etc.?\nAre we evaluating the language model or an agentic system (model developer wants former, user wants latter)?"
+  },
+  {
+    "objectID": "eval/slides-1.html#evaluation-framework-1",
+    "href": "eval/slides-1.html#evaluation-framework-1",
+    "title": "LLM Evaluation - I",
+    "section": "Evaluation Framework",
+    "text": "Evaluation Framework\nHow do you evaluate the outputs?\n\nAre the reference outputs used for evaluation error-free?\nWhat metrics do you use (e.g., pass@k)?\nHow do you factor in cost (e.g., inference + training)?\nHow do you factor in asymmetric errors (e.g., hallucinations in a medical setting vs creative writing)?\nHow do you handle open-ended generation (no ground truth)?"
+  },
+  {
+    "objectID": "eval/slides-1.html#evaluation-framework-2",
+    "href": "eval/slides-1.html#evaluation-framework-2",
+    "title": "LLM Evaluation - I",
+    "section": "Evaluation Framework",
+    "text": "Evaluation Framework\nHow to interpret the results?\n\nHow do you interpret a number (e.g., 91%) - is it ready for deployment?\nHow do we assess generalization in the face of train-test overlap?\nAre we evaluating the final model or the method?"
+  },
+  {
+    "objectID": "eval/slides-1.html#perplexity",
+    "href": "eval/slides-1.html#perplexity",
+    "title": "LLM Evaluation - I",
+    "section": "Perplexity",
+    "text": "Perplexity\n\\[perplexity = exp(-1/N * sum(log(p(x_i)))) \\]\n\nCommon metric for evaluating LMs, especially in the context of language modeling tasks.\nIt measures how well a language model predicts a sample of text.\nlower perplexity =&gt; model is better at predicting\nhigher perplexity =&gt; model is worse at predicting the text."
+  },
+  {
+    "objectID": "eval/slides-1.html#perplexity-1",
+    "href": "eval/slides-1.html#perplexity-1",
+    "title": "LLM Evaluation - I",
+    "section": "Perplexity",
+    "text": "Perplexity\n\nNot always correlated with downstream task performance (e.g., question answering, summarization).\nSensitive to the choice of test set and may not reflect real-world performance.\nDoes not capture the quality of generated text (e.g., coherence, relevance, factuality).\nStill useful for measuring the raw language modeling capabilities\n\n\n\n\n\n\n\n\n\nCurrent models have shifted to downstream evaluation (e.g., question answering, summarization) rather than perplexity-based evaluation."
+  },
+  {
+    "objectID": "eval/slides-1.html#knowledge-based-benchmarks",
+    "href": "eval/slides-1.html#knowledge-based-benchmarks",
+    "title": "LLM Evaluation - I",
+    "section": "Knowledge-Based Benchmarks",
+    "text": "Knowledge-Based Benchmarks"
+  },
+  {
+    "objectID": "eval/slides-1.html#mmlu",
+    "href": "eval/slides-1.html#mmlu",
+    "title": "LLM Evaluation - I",
+    "section": "MMLU",
+    "text": "MMLU\nHendrycks et al. (2020)\n\nConsists of multiple-choice questions across 57 subjects, designed to test a model’s ability to understand and reason across a wide range of topics.\nCollected by graduate and undergraduate students from freely available sources online\nReally about testing knowledge, not language understanding\nEvaluated on GPT-3 using few-shot prompting\n\n\nHEML - MMLU"
+  },
+  {
+    "objectID": "eval/slides-1.html#mmlu-pro",
+    "href": "eval/slides-1.html#mmlu-pro",
+    "title": "LLM Evaluation - I",
+    "section": "MMLU Pro",
+    "text": "MMLU Pro\nWang et all 2024\n\n\nRemoved noisy/trivial questions from MMLU\nExpanded 4 choices to 10 choices\nEvaluated using chain of thought (gives model more of a chance)\nAccuracy of models drop by 16% to 33% (not as saturated)\n\nHEML - MMLU Pro"
+  },
+  {
+    "objectID": "eval/slides-1.html#graduate-level-google-proof-qa-gpqa",
+    "href": "eval/slides-1.html#graduate-level-google-proof-qa-gpqa",
+    "title": "LLM Evaluation - I",
+    "section": "Graduate-Level Google-Proof Q&A (GPQA)",
+    "text": "Graduate-Level Google-Proof Q&A (GPQA)\n\n\n\n\n\n\n\nQuestions written by PhD experts in various fields (e.g., physics, machine learning, economics)"
+  },
+  {
+    "objectID": "eval/slides-1.html#gpqa",
+    "href": "eval/slides-1.html#gpqa",
+    "title": "LLM Evaluation - I",
+    "section": "GPQA",
+    "text": "GPQA\n\nQuestions are designed to be “Google-proof” (i.e., not easily answerable by searching the web)\nPhD experts achieve 65% accuracy, Non-experts achieve 34% over 30 minutes with access to Google\nGPT-4 achieves 39%\nHELM GPQA"
+  },
+  {
+    "objectID": "eval/slides-1.html#humanitys-last-exam",
+    "href": "eval/slides-1.html#humanitys-last-exam",
+    "title": "LLM Evaluation - I",
+    "section": "Humanity’s Last Exam",
+    "text": "Humanity’s Last Exam"
+  },
+  {
+    "objectID": "eval/slides-1.html#humanitys-last-exam-1",
+    "href": "eval/slides-1.html#humanitys-last-exam-1",
+    "title": "LLM Evaluation - I",
+    "section": "Humanity’s Last Exam",
+    "text": "Humanity’s Last Exam\n\n2500 questions: multimodal, many subjects, multiple-choice + short-answer\n$500,000 USD prize pool, with prizes of $5,000 USD for each of the top 50 questions and $500 USD for each of the next 500 questions"
+  },
+  {
+    "objectID": "eval/slides-1.html#humanitys-last-exam-2",
+    "href": "eval/slides-1.html#humanitys-last-exam-2",
+    "title": "LLM Evaluation - I",
+    "section": "Humanity’s Last Exam",
+    "text": "Humanity’s Last Exam\n\nLeaderboard"
+  },
+  {
+    "objectID": "eval/slides-1.html#instruction-following-benchmarks",
+    "href": "eval/slides-1.html#instruction-following-benchmarks",
+    "title": "LLM Evaluation - I",
+    "section": "Instruction-Following Benchmarks",
+    "text": "Instruction-Following Benchmarks"
+  },
+  {
+    "objectID": "eval/slides-1.html#chatbot-arena",
+    "href": "eval/slides-1.html#chatbot-arena",
+    "title": "LLM Evaluation - I",
+    "section": "Chatbot Arena",
+    "text": "Chatbot Arena\nChiang et al. (2024) arena.ai\n\nRandom person from the Internet types in prompt\nThey get response from two random (anonymized) models\nThey rate which one is better\nELO scores are computed based on the pairwise comparisons\nFeatures: live (not static) inputs, can accomodate new models"
+  },
+  {
+    "objectID": "eval/slides-1.html#instruction-following-eval-ifeval",
+    "href": "eval/slides-1.html#instruction-following-eval-ifeval",
+    "title": "LLM Evaluation - I",
+    "section": "Instruction-Following Eval (IFEval)",
+    "text": "Instruction-Following Eval (IFEval)\n\n\nAdd simple synthetic constraints to instructions\nConstraints can be automatically verified, but not the semantics of the response\nFairly simple instructions, constraints are a bit artificial\n\nHELM IFEval\nOthers - IFBench, Alpaca, MOSAIC, etc."
+  },
+  {
+    "objectID": "eval/slides-1.html#agent-benchmarks",
+    "href": "eval/slides-1.html#agent-benchmarks",
+    "title": "LLM Evaluation - I",
+    "section": "Agent Benchmarks",
+    "text": "Agent Benchmarks\n\nConsider tasks that require tool use (e.g., running code) and iterating over a period of time\nAgent = language model + agent scaffolding (logic for deciding how to use the LM)"
+  },
+  {
+    "objectID": "eval/slides-1.html#swebench",
+    "href": "eval/slides-1.html#swebench",
+    "title": "LLM Evaluation - I",
+    "section": "SWEBench",
+    "text": "SWEBench\n\n2294 tasks across 12 Python repositories\nGiven codebase + issue description, submit a PR\nEvaluation metric: unit tests"
+  },
+  {
+    "objectID": "eval/slides-1.html#swebench-verified",
+    "href": "eval/slides-1.html#swebench-verified",
+    "title": "LLM Evaluation - I",
+    "section": "SWEBench Verified",
+    "text": "SWEBench Verified\nOpenAI 2025\nOriginal SWE-bench had:\n\nUnsolvable / underspecified tasks\nUnreliable unit tests\nThis led to systematic underestimation of model capabilities\nCurated ~500 high-quality tasks, verified by human engineers\n\n\nLeaderboard"
+  },
+  {
+    "objectID": "eval/slides-1.html#mlebench",
+    "href": "eval/slides-1.html#mlebench",
+    "title": "LLM Evaluation - I",
+    "section": "MLEBench",
+    "text": "MLEBench\n\n75 Kaggle competitions (require training models, processing data, etc.)\n\n\n\nMLEBench Leaderboard"
+  },
+  {
+    "objectID": "eval/slides-1.html#reasoning-benchmarksd",
+    "href": "eval/slides-1.html#reasoning-benchmarksd",
+    "title": "LLM Evaluation - I",
+    "section": "Reasoning Benchmarksd",
+    "text": "Reasoning Benchmarksd"
+  },
+  {
+    "objectID": "eval/slides-1.html#arc-agi",
+    "href": "eval/slides-1.html#arc-agi",
+    "title": "LLM Evaluation - I",
+    "section": "ARC-AGI",
+    "text": "ARC-AGI\n\nCan we isolate reasoning from knowledge?\nArguably, reasoning captures a more pure form of intelligence (isn’t just about memorizing facts)"
+  },
+  {
+    "objectID": "eval/slides-1.html#arc-agi-2",
+    "href": "eval/slides-1.html#arc-agi-2",
+    "title": "LLM Evaluation - I",
+    "section": "ARC-AGI 2",
+    "text": "ARC-AGI 2\n\nARGC AGI Leaderboard"
+  },
+  {
+    "objectID": "eval/slides-1.html#safety-benchmarks",
+    "href": "eval/slides-1.html#safety-benchmarks",
+    "title": "LLM Evaluation - I",
+    "section": "Safety Benchmarks",
+    "text": "Safety Benchmarks"
+  },
+  {
+    "objectID": "eval/slides-1.html#airbench",
+    "href": "eval/slides-1.html#airbench",
+    "title": "LLM Evaluation - I",
+    "section": "AirBench",
+    "text": "AirBench\n\nBased on regulatory frameworks and company policies\nTaxonomized into 314 risk categories, 5694 prompts\n\n\nHELM Airbench"
+  },
+  {
+    "objectID": "eval/slides-1.html#jailbreaking",
+    "href": "eval/slides-1.html#jailbreaking",
+    "title": "LLM Evaluation - I",
+    "section": "Jailbreaking",
+    "text": "Jailbreaking\n\nLanguage models are trained to refuse harmful instructions\nGreedy Coordinate Gradient (GCG) automatically optimizes prompts to bypass safety fire \n\n[JialBreak Bench] (https://huggingface.co/datasets/JailbreakBench/JBB-Behaviors)"
+  },
+  {
+    "objectID": "eval/slides-1.html#further-reading",
+    "href": "eval/slides-1.html#further-reading",
+    "title": "LLM Evaluation - I",
+    "section": "Further Reading",
+    "text": "Further Reading\n\nThe LLM Evaluation Guidebook (https://huggingface.co/spaces/OpenEvals/evaluation-guidebook)\nThe Anatomy of an LLM Benchmark (https://cameronrwolfe.substack.com/p/llm-bench)"
+  },
+  {
     "objectID": "arch/03_modern_arch/slides.html#topics-covered",
     "href": "arch/03_modern_arch/slides.html#topics-covered",
     "title": "Modern Architectures - I",
@@ -2893,6 +3152,671 @@
     "title": "Mixture of Experts",
     "section": "Questions?",
     "text": "Questions?"
+  },
+  {
+    "objectID": "eval/slides-2.html#recap",
+    "href": "eval/slides-2.html#recap",
+    "title": "Application Evals",
+    "section": "Recap",
+    "text": "Recap\n\nModel Evaluations\nBenchmarks\n\nKnowledge-based benchmarks\nInstruction-following benchmarks\nAgent benchmarks\nReasoning benchmarks\nSafety benchmarks"
+  },
+  {
+    "objectID": "eval/slides-2.html#evaluating-by-vibes",
+    "href": "eval/slides-2.html#evaluating-by-vibes",
+    "title": "Application Evals",
+    "section": "Evaluating by Vibes",
+    "text": "Evaluating by Vibes\nSuppose a LLM system (a legal assistant or a medical advisor) is not producing expected output. How to fix it?\n\n\n“Change the prompt, generate 3-4 examples, results look good =&gt; Ship it!”\n\n\n\n\n\n\nQuestions?\n\nDoes this approach cover all aspects of user queries?\nDoes it capture all failure modes?"
+  },
+  {
+    "objectID": "eval/slides-2.html#evaluating-by-vibes-1",
+    "href": "eval/slides-2.html#evaluating-by-vibes-1",
+    "title": "Application Evals",
+    "section": "Evaluating by Vibes",
+    "text": "Evaluating by Vibes\nIssues\n\nCan’t anticipate all failure modes just by looking at a few examples.\nFixing 2 issues might introduce or regress 4 new ones\nWe make more changes to the prompt\nAfter few iterations =&gt; “is the product getting better or worse?” and no one can answer\n\n\nSolution\n\nNo Evals =&gt; no faster iteration, no confidence in changes, no way to track progress over time\nWhat are unit tests for LLMs? Can we automate this process?"
+  },
+  {
+    "objectID": "eval/slides-2.html#reference-based-evaluation",
+    "href": "eval/slides-2.html#reference-based-evaluation",
+    "title": "Application Evals",
+    "section": "Reference Based Evaluation",
+    "text": "Reference Based Evaluation\n\nCompare LLM output to a reference answer (exact match, BLEU, ROUGE, BERTScore)\n\n\n\n\n\n\n\n\n\n\nMetric\nMeasures\nWhere it works\nWhere it breaks\n\n\n\n\nExact match\nString equality\nClosed-form answers: classification labels, extracted entities, short factual answers\nParaphrases, formatting drift, extra words\n\n\nBLEU\nn-gram precision vs reference(s)\nMachine translation with multiple references\nAnything open-ended; penalizes valid paraphrases\n\n\nROUGE\nn-gram recall vs reference\nExtractive summarization with fixed references\nAbstractive summarization, creative outputs\n\n\nBERTScore\nContextual embedding similarity\nSlight paraphrase robustness over BLEU\nStill shallow; doesn’t catch factual errors\n\n\nTask-specific (F1 on NER, pass@k on code)\nWhatever the task defines\nThe task\nAnything outside the task"
+  },
+  {
+    "objectID": "eval/slides-2.html#why-reference-based-evaluationd-fail-for-llms",
+    "href": "eval/slides-2.html#why-reference-based-evaluationd-fail-for-llms",
+    "title": "Application Evals",
+    "section": "Why Reference-Based Evaluationd Fail for LLMs?",
+    "text": "Why Reference-Based Evaluationd Fail for LLMs?\n\nParaphrase insensitivity.\n\n“The cat sat on the mat” and “On the mat sat the cat” - identical meaning , near-zero BLEU overlap.\n\nNo semantic grounding.\n\n“Paris is the capital of France” (correct) and “Paris is the capital of Germany” (wrong), n-gram overlap can’t distinguish\n\nOpenness of the output space.\n\n“write a haiku about autumn,” infinite valid outputs exist. No single reference or even 10 references covers the space."
+  },
+  {
+    "objectID": "eval/slides-2.html#when-reference-based-evaluation-works",
+    "href": "eval/slides-2.html#when-reference-based-evaluation-works",
+    "title": "Application Evals",
+    "section": "When Reference-Based Evaluation Works",
+    "text": "When Reference-Based Evaluation Works\n\nThe output space is small and enumerable.\n\nClassification, extraction, multiple choice.\n\nThe output is a structured object.\n\nJSON schema validation, email IDs, format compliance etc.\n\nA programmatic check is ground truth.\n\nCode execution (does the test pass?), math (does sympy agree?), SQL (does the query return the same rows?).\n\nMany others"
+  },
+  {
+    "objectID": "eval/slides-2.html#three-gulfs-model",
+    "href": "eval/slides-2.html#three-gulfs-model",
+    "title": "Application Evals",
+    "section": "Three Gulfs Model",
+    "text": "Three Gulfs Model\n\nGulf of Specification (Developer ↔︎ LLM Pipeline)\n\nchallenge of communicating your intent to the LLM\n\nGulf of Comprehension (Developer ↔︎ Data)\n\ncannot manually review every input and output\nthere will be errors and outliers that are hard to spot at scale.\n\nGulf of Generalisation (Data ↔︎ LLM Pipeline)\n\n\n\n\nHow to develop effective evaluation strategies that bridge these gulfs and enable us to build better LLM applications?"
+  },
+  {
+    "objectID": "eval/slides-2.html#eval-regimes",
+    "href": "eval/slides-2.html#eval-regimes",
+    "title": "Application Evals",
+    "section": "Eval Regimes",
+    "text": "Eval Regimes\nEvaluation breaks cleanly into three regimes.\n\nOffline (pre-ship): Error analysis, synthetic data generation, LLM-as-judge development\nOnline (production): Monitoring with automated evaluators, guardrails, incident response\nGuardrails (runtime): Real-time constraints and safety checks"
+  },
+  {
+    "objectID": "eval/slides-2.html#offline-evaluation",
+    "href": "eval/slides-2.html#offline-evaluation",
+    "title": "Application Evals",
+    "section": "Offline Evaluation",
+    "text": "Offline Evaluation\nSystematic testing against a fixed dataset before the changes / application reaches users.\nWhat it answers.\n\nDid this prompt change regress anything?\nIs model A better than model B for this task?\nWhat’s the baseline?\n\n\nImplementation Strategies\n\nBenchmark datasets (MMLU, HumanEval, HLE) - capability assessment.\nGolden sets - curated, domain-specific, with reference answers or rubrics.\nLLM-as-judge scoring.\nHuman annotation\n\n\nSlow to run but run frequently during development (CI?)"
+  },
+  {
+    "objectID": "eval/slides-2.html#online-evaluation",
+    "href": "eval/slides-2.html#online-evaluation",
+    "title": "Application Evals",
+    "section": "Online Evaluation",
+    "text": "Online Evaluation\nMeasurement in production, on real users.\nWhat it answers.\n\nAre the users actually happier?\nDid the business metric move?\nDoes offline testing correlate with real-world performance?\n\n\nImplementation Strategies\n\nA/B tests - show variant A to half, variant B to the other.\nImplicit signals - session length, session abandonment, retry rate.\nExplicit feedback - upvotes and downvotes, support tickets.\nShadow traffic - run the new model silently alongside the old, compare.\n\n\nSlow to collect (days to weeks), noisy, but real signal that matters most."
+  },
+  {
+    "objectID": "eval/slides-2.html#guardrails",
+    "href": "eval/slides-2.html#guardrails",
+    "title": "Application Evals",
+    "section": "Guardrails",
+    "text": "Guardrails\nRuntime checks on every single request/response, blocking on violations.\nWhat it answers.\n\nIs this output safe to return to the user right now?\nPII leaks, prompt injection, off-topic responses, hallucinated citations.\n\n\nImplementation Strategies\n\nInput classifiers (toxic / jailbreak detection).\nOutput validators (JSON schema, regex, allowlist).\nSafety LLMs-as-judges (fast, small).\nHard stops - refuse-to-answer, fallback templates.\n\n\nHas to be fast, run synchronously in the critical path on every request, add to latency"
+  },
+  {
+    "objectID": "eval/slides-2.html#example-ncert-doubt-solver",
+    "href": "eval/slides-2.html#example-ncert-doubt-solver",
+    "title": "Application Evals",
+    "section": "Example : NCERT Doubt Solver",
+    "text": "Example : NCERT Doubt Solver\n\n\n\n\n\n\n\n\n\nEvaluation\nWhen\nSignal\nDecision\n\n\n\n\nOffline\nPre-ship\nExpert judgments on golden set\nFix prompt, build evaluators\n\n\nOnline\nProduction\nUser satisfaction, engagement metrics\nRoll out changes, monitor impact\n\n\nGuardrails\nRuntime\nSafety violations, format errors\nBlock response, trigger fallback"
+  },
+  {
+    "objectID": "eval/slides-2.html#task-decomposition",
+    "href": "eval/slides-2.html#task-decomposition",
+    "title": "Application Evals",
+    "section": "Task Decomposition",
+    "text": "Task Decomposition\nComponent Level vs End-to-End Evaluation\n\nEnd-to-end eval\n\nInput goes in, final output comes out, you grade the output.\nPro : Measures what the user experiences. The only thing that ultimately matters.\nCon : When it fails, you don’t know why. A bad answer could be bad retrieval, bad reranking, bad generation, or all three compounding.\n\n\n\nComponent-level eval\nEach subsystem evaluated against its own inputs and outputs.\n\nPro : When a component regresses, you know where to fix.\nCon : A system of components that each score 95% can still compound to a system that’s 80% (probabilities multiply). Component-level evals can miss emergent failure modes that only appear in the end-to-end system."
+  },
+  {
+    "objectID": "eval/slides-2.html#task-decomosition---example",
+    "href": "eval/slides-2.html#task-decomosition---example",
+    "title": "Application Evals",
+    "section": "Task Decomosition - Example",
+    "text": "Task Decomosition - Example\n\n\n\n\n\n\n\n\nStage\nComponent eval\nMetric\n\n\n\n\nRetrieval\n“Is the relevant doc in the top-k?”\nRecall@k, MRR\n\n\nReranking\n“Is the best doc on top?”\nnDCG, precision@1\n\n\nGeneration\n“Does the answer stay grounded in retrieved context?”\nFaithfulness (LLM judge)\n\n\nEnd-to-end\n“Is the final answer correct?”\nExact-match / LLM judge"
+  },
+  {
+    "objectID": "eval/slides-2.html#the-evaluation-lifecycle",
+    "href": "eval/slides-2.html#the-evaluation-lifecycle",
+    "title": "Application Evals",
+    "section": "The Evaluation Lifecycle",
+    "text": "The Evaluation Lifecycle"
+  },
+  {
+    "objectID": "eval/slides-2.html#why-error-analysis",
+    "href": "eval/slides-2.html#why-error-analysis",
+    "title": "Application Evals",
+    "section": "Why Error Analysis",
+    "text": "Why Error Analysis\n\nLLMs have infinite surface area for potential failures. We cannot anticipate what will break.\nOnly after observing real failures can we define criteria that matter.\nThe act of reviewing data builds intuition that no automated system can replicate.\nAutomated evaluators built for imagined failure modes waste effort and miss real problems."
+  },
+  {
+    "objectID": "eval/slides-2.html#five-stages-of-error-analysis",
+    "href": "eval/slides-2.html#five-stages-of-error-analysis",
+    "title": "Application Evals",
+    "section": "Five Stages of Error Analysis",
+    "text": "Five Stages of Error Analysis"
+  },
+  {
+    "objectID": "eval/slides-2.html#stage-1-generating-synthetic-queries-data",
+    "href": "eval/slides-2.html#stage-1-generating-synthetic-queries-data",
+    "title": "Application Evals",
+    "section": "Stage 1 : Generating Synthetic Queries / Data",
+    "text": "Stage 1 : Generating Synthetic Queries / Data\n\nLook into what are different dimensions / aspects of user queries?\n\nExample for a recipe app:\n\nDietary Restriction: vegan, gluten-free, none\nCuisine Type: Italian, Asian, comfort food\nQuery Complexity: simple request, multi-step, edge case"
+  },
+  {
+    "objectID": "eval/slides-2.html#generating-synthetic-queries-data",
+    "href": "eval/slides-2.html#generating-synthetic-queries-data",
+    "title": "Application Evals",
+    "section": "Generating Synthetic Queries / Data",
+    "text": "Generating Synthetic Queries / Data\nTwo-step generation process:\n\nGenerate structured tuples: (Vegan, Italian, Multi-step)\nConvert tuples to natural language: “I need a dairy-free lasagna recipe that I can prep the day before”\n\nKey rules:\n\nWrite 20 tuples by hand first (builds intuition about the problem space)\nStart with failure hypotheses (what do you suspect will break?)\nRun synthetic queries through your actual system to capture full traces\nSample 100 traces for error analysis\n\n\nFix obvious problems first - don’t generate synthetic data for issues you can fix immediately"
+  },
+  {
+    "objectID": "eval/slides-2.html#generating-synthetic-queries-data-1",
+    "href": "eval/slides-2.html#generating-synthetic-queries-data-1",
+    "title": "Application Evals",
+    "section": "Generating Synthetic Queries / Data",
+    "text": "Generating Synthetic Queries / Data\nWhen synthetic data may not be reliable:\n\nDomains requiring deep expertise (medical, legal) where LLMs lack nuanced understanding\nScenarios where your system’s behavior changes the query distribution\nCases where the synthetic data doesn’t match real user intent patterns"
+  },
+  {
+    "objectID": "eval/slides-2.html#stage-2-read-and-label",
+    "href": "eval/slides-2.html#stage-2-read-and-label",
+    "title": "Application Evals",
+    "section": "Stage 2 : Read and Label",
+    "text": "Stage 2 : Read and Label\nOpen Coding\n\nRead raw traces, anayze them manually (Don’t delegate to an automated system like LLM)\nWrite free-form notes about what’s wrong\n\nmade up a statistic\nignored the user’s dietary restriction\nresponse is condescending\n\nFocus on observable problems, not hypothesized causes\nHave a domain expert verbalize their thought process while reviewing. One hour of this surfaces more insight than days of automated analysis.\n\n\ndo this for 30-50 traces, more the better. Stop when you see the same problems repeated."
+  },
+  {
+    "objectID": "eval/slides-2.html#stage-3-cluster-failure-modes",
+    "href": "eval/slides-2.html#stage-3-cluster-failure-modes",
+    "title": "Application Evals",
+    "section": "Stage 3 : Cluster Failure Modes",
+    "text": "Stage 3 : Cluster Failure Modes\nAxial Coding\n\nGroup similar problems into categories (failure modes)\nExample\n\nHallucinated facts\nIgnored user instructions or constraints\nToxic or biased output\nformat errors\nincomplete response\n\nRefine categories iteratively as you review more traces"
+  },
+  {
+    "objectID": "eval/slides-2.html#stage-4-label-traces-with-new-taxonomy",
+    "href": "eval/slides-2.html#stage-4-label-traces-with-new-taxonomy",
+    "title": "Application Evals",
+    "section": "Stage 4 : Label Traces with New Taxonomy",
+    "text": "Stage 4 : Label Traces with New Taxonomy\nLabeling\n\nGo back through each trace and label it with your failure mode taxonomy\nWhen you finish, start again from trace 1 and relabel everything\nWhy repeat the pass? - your understanding of the criteria has changed - your standards become more nuanced as you review more traces - you will notice issues you missed on the first pass\nThis shift in judgment is called evaluation criteria drift\nSecond-pass labeling produces more consistent and higher-quality annotations"
+  },
+  {
+    "objectID": "eval/slides-2.html#stage-5-quantify-and-iterate",
+    "href": "eval/slides-2.html#stage-5-quantify-and-iterate",
+    "title": "Application Evals",
+    "section": "Stage 5 : Quantify and Iterate",
+    "text": "Stage 5 : Quantify and Iterate\n\nKeep doing this till no new failure modes are seen\nBy the end, you should have a set of well-defined failure modes, each with examples from real traces"
+  },
+  {
+    "objectID": "eval/slides-2.html#prioritization",
+    "href": "eval/slides-2.html#prioritization",
+    "title": "Application Evals",
+    "section": "Prioritization",
+    "text": "Prioritization\n\nCount how often each failure mode occurs\nEstimate user impact for each (frustration, task failure, harm)\nPrioritize: fix high-frequency + high-impact first\nAdd representative examples of each failure mode to your golden dataset"
+  },
+  {
+    "objectID": "eval/slides-2.html#what-is-a-trace",
+    "href": "eval/slides-2.html#what-is-a-trace",
+    "title": "Application Evals",
+    "section": "What is a Trace?",
+    "text": "What is a Trace?\n“A trace is the complete record of all actions, messages, tool calls, and data retrievals from a single initial user query through to the final response. It includes every step across all agents, tools, and system components in a session.”\nA complete trace includes:\n\nThe original user query\nAll retrieved documents/contexts\nEvery LLM call (prompt + response)\nAll tool calls and their results\nThe final output shown to the user\nMetadata: latency, token usage, model version, prompt version"
+  },
+  {
+    "objectID": "eval/slides-2.html#why-traces-matter",
+    "href": "eval/slides-2.html#why-traces-matter",
+    "title": "Application Evals",
+    "section": "Why traces matter?",
+    "text": "Why traces matter?\n\nWithout full traces, you can’t distinguish retrieval failures from generation failures\nWithout tool call logs, you can’t tell if the agent chose the wrong tool or used it incorrectly\nWithout latency data, you can’t identify cost/performance regressions"
+  },
+  {
+    "objectID": "eval/slides-2.html#surfacing-problematic-traces",
+    "href": "eval/slides-2.html#surfacing-problematic-traces",
+    "title": "Application Evals",
+    "section": "Surfacing Problematic Traces",
+    "text": "Surfacing Problematic Traces\nInitially, don’t wait for user complaints or rely on automated metrics.\nRandom Sampling (the baseline)\n\nReview a random sample of traces\nIf you find few issues, escalate to stress testing: deliberately create queries that test your prompt constraints\n\nUse Evals for Initial Screening\n\nUse existing test suite if any. (Unit tests also work)\nDo error analysis on flagged traces\n\nEfficient Sampling\n\nOutlier detection: unusually long conversations, sessions with multiple retries\nMetric-based sorting: surface traces with anomalous scores\nStratified sampling: ensure coverage across user segments, query types, time periods"
+  },
+  {
+    "objectID": "eval/slides-2.html#error-analysis---how-often",
+    "href": "eval/slides-2.html#error-analysis---how-often",
+    "title": "Application Evals",
+    "section": "Error Analysis - How Often?",
+    "text": "Error Analysis - How Often?\n\n\n\n\n\n\n\n\nSystem State\nReview Frequency\nFocus\n\n\n\n\nNew system\nWeekly\nStabilize failure patterns; build initial taxonomy\n\n\nStable system, no changes\nMonthly\nMonitor for drift; sample 100+ fresh traces\n\n\nAfter significant changes\nImmediate\nNew features, prompt updates, model switches\n\n\nBetween major analyses\nWeekly\n10–20 traces, focusing on outliers\n\n\nAfter incidents\nImmediate\nUser complaint spikes, production alerts"
+  },
+  {
+    "objectID": "eval/slides-2.html#from-error-analysis-to-evaluations",
+    "href": "eval/slides-2.html#from-error-analysis-to-evaluations",
+    "title": "Application Evals",
+    "section": "From Error Analysis to Evaluations",
+    "text": "From Error Analysis to Evaluations"
+  },
+  {
+    "objectID": "eval/slides-2.html#cost-benefit-hierarchy-of-evaluation-methods",
+    "href": "eval/slides-2.html#cost-benefit-hierarchy-of-evaluation-methods",
+    "title": "Application Evals",
+    "section": "Cost-Benefit Hierarchy of Evaluation Methods",
+    "text": "Cost-Benefit Hierarchy of Evaluation Methods\n\n\n\n\n\n\n\n\n\nEvaluator Type\nBuild Cost\nMaintenance Cost\nWhen to Use\n\n\n\n\nAssertions / regex checks\nMinutes\nNear zero\nObjective constraints: JSON schema, required fields, format validation\n\n\nCode-based checks\nHours\nLow\nStructured validation: fact extraction, numerical comparison, code execution\n\n\nReference-based comparison\nHours\nLow\nWhen you have known correct answers\n\n\nLLM-as-Judge (general)\nDays + 100+ labels\nWeekly\nSubjective qualities after exhausting cheaper options\n\n\nLLM-as-Judge (specialized)\nDays + 50+ labels per mode\nWeekly\nSpecific failure modes that persist after prompt fixes\n\n\n\nCore principle: Start at the bottom of this hierarchy and climb only when cheaper methods fail."
+  },
+  {
+    "objectID": "eval/slides-2.html#cost-benefit-hierarchy-of-evaluation-methods-1",
+    "href": "eval/slides-2.html#cost-benefit-hierarchy-of-evaluation-methods-1",
+    "title": "Application Evals",
+    "section": "Cost-Benefit Hierarchy of Evaluation Methods",
+    "text": "Cost-Benefit Hierarchy of Evaluation Methods"
+  },
+  {
+    "objectID": "eval/slides-2.html#llm-as-a-judge",
+    "href": "eval/slides-2.html#llm-as-a-judge",
+    "title": "Application Evals",
+    "section": "LLM-as-a-Judge",
+    "text": "LLM-as-a-Judge"
+  },
+  {
+    "objectID": "eval/slides-2.html#to-build-an-automated-evaluator-or-not",
+    "href": "eval/slides-2.html#to-build-an-automated-evaluator-or-not",
+    "title": "Application Evals",
+    "section": "To build an automated evaluator or not?",
+    "text": "To build an automated evaluator or not?\nWhen not to build an evaluator:\n\nA simple assertion or regex catches it (build the assertion instead)\nIt’s a one-off bug (fix the bug, move on)\nThe failure mode is hypothetical (you haven’t seen it in real traces)\nThe cost of building + maintaining exceeds the cost of occasional failures\n\n\nWhen to build an evaluator:\n\nThe failure mode persists after fixing your prompts\nYou will iterate on this component repeatedly (the evaluator pays for itself)\nThe failure mode is high-impact and hard to catch with assertions\nYou need to monitor this quality in production\n\n\n\nThe cost-benefit calculation:\n\nSimple assertions and reference-based checks: cheap, always worth it\nLLM-as-Judge: requires 100+ labeled examples, ongoing weekly maintenance, coordination between developers/PMs/experts - only build for persistent generalization failures"
+  },
+  {
+    "objectID": "eval/slides-2.html#llm-as-judge-via-critique-shadowing",
+    "href": "eval/slides-2.html#llm-as-judge-via-critique-shadowing",
+    "title": "Application Evals",
+    "section": "LLM-as-Judge via Critique Shadowing",
+    "text": "LLM-as-Judge via Critique Shadowing"
+  },
+  {
+    "objectID": "eval/slides-2.html#step-1-finding-the-principal-domain-expert",
+    "href": "eval/slides-2.html#step-1-finding-the-principal-domain-expert",
+    "title": "Application Evals",
+    "section": "Step 1: Finding the Principal Domain Expert",
+    "text": "Step 1: Finding the Principal Domain Expert\nIdentify one person who:\n\nDeeply understands your users and their needs\nCan make consistent quality judgments about the AI’s outputs\nCan articulate why something is good or bad (the critique matters)\n\nThis person becomes your ground truth. All judge calibration is measured against their judgment.\n\nExamples of Principal Domain Experts:\n\nA psychologist for a mental health AI assistant.\nA lawyer for an AI that analyzes legal documents.\nA customer service director for a support chatbot.\nA teacher or curriculum developer for an educational AI tool."
+  },
+  {
+    "objectID": "eval/slides-2.html#the-role-of-the-domain-expert",
+    "href": "eval/slides-2.html#the-role-of-the-domain-expert",
+    "title": "Application Evals",
+    "section": "The Role of the Domain Expert",
+    "text": "The Role of the Domain Expert\n\nThe effective strategy is to appoint a single, internal domain expert as the final decision-maker on quality”\n\nWhy a single expert over a panel?\n\nFaster iteration, consistent standards, and clear accountability\n\n\nWhen you need multiple annotators:\n\nHigh-stakes domains requiring diverse perspectives (medical, legal)\nWhen you need inter-annotator agreement as a calibration signal\nWhen no single person has sufficient breadth\n\n\n\nIf using multiple annotators, follow this process:\n\nDraft initial rubric with clear pass/fail definitions and examples\nEach annotator labels a shared set independently\nMeasure IAA with Cohen’s κ\nHold alignment sessions to discuss disagreements and refine rubric\nIterate until agreement is consistently high (κ &gt; 0.7)"
+  },
+  {
+    "objectID": "eval/slides-2.html#step-2-create-a-dataset",
+    "href": "eval/slides-2.html#step-2-create-a-dataset",
+    "title": "Application Evals",
+    "section": "Step 2: Create a Dataset",
+    "text": "Step 2: Create a Dataset\n\nExtract 100+ traces from production or synthetic testing\nEnsure diversity: happy path, edge cases, known failure modes\nInclude metadata: user segment, query type, time, model version\nStore in a data viewer/notebook for easy review\n\nDimensions for Structuring Your Dataset\n\nFeatures\nScenarios\nPersonas"
+  },
+  {
+    "objectID": "eval/slides-2.html#step-2-create-a-dataset-1",
+    "href": "eval/slides-2.html#step-2-create-a-dataset-1",
+    "title": "Application Evals",
+    "section": "Step 2: Create a Dataset",
+    "text": "Step 2: Create a Dataset\nFeatures Dimension"
+  },
+  {
+    "objectID": "eval/slides-2.html#step-2-create-a-dataset-2",
+    "href": "eval/slides-2.html#step-2-create-a-dataset-2",
+    "title": "Application Evals",
+    "section": "Step 2: Create a Dataset",
+    "text": "Step 2: Create a Dataset\nScenarios Dimension"
+  },
+  {
+    "objectID": "eval/slides-2.html#step-2-create-a-dataset-3",
+    "href": "eval/slides-2.html#step-2-create-a-dataset-3",
+    "title": "Application Evals",
+    "section": "Step 2: Create a Dataset",
+    "text": "Step 2: Create a Dataset\nPersonas Dimension"
+  },
+  {
+    "objectID": "eval/slides-2.html#generating-data",
+    "href": "eval/slides-2.html#generating-data",
+    "title": "Application Evals",
+    "section": "Generating Data",
+    "text": "Generating Data\n\nUse Existing Data\nGenerate Synthetic Data (with LLMs or programmatically)\n\nUsing LLMs to generate synthetic data:"
+  },
+  {
+    "objectID": "eval/slides-2.html#generating-query---response-pairs",
+    "href": "eval/slides-2.html#generating-query---response-pairs",
+    "title": "Application Evals",
+    "section": "Generating Query - Response Pairs",
+    "text": "Generating Query - Response Pairs\n\nGenerate User Inputs: Use the LLM prompts to create realistic user inputs.\nFeed Inputs into Your AI System: Input the user interactions into your AI as it currently exists.\nCapture AI Responses: Record the AI’s responses to form complete interactions.\nOrganize the Interactions: Create a table to store the user inputs, AI responses, and relevant metadata."
+  },
+  {
+    "objectID": "eval/slides-2.html#step-3-direct-the-expert-to-make-passfail-judgments-with-critiques",
+    "href": "eval/slides-2.html#step-3-direct-the-expert-to-make-passfail-judgments-with-critiques",
+    "title": "Application Evals",
+    "section": "Step 3: Direct the Expert to Make Pass/Fail Judgments with Critiques",
+    "text": "Step 3: Direct the Expert to Make Pass/Fail Judgments with Critiques\nThe expert reviews each trace and records:\n\nJudgment: PASS or FAIL (binary, no Likert scales like 1 to 5)\nCritique: A written explanation of why it passed or failed\nFailure mode tag: Which category from your axial coding (e.g., “hallucinated_fact,” “ignored_constraint”)\n\nThe critique is the most important output.\n\nExample:\n\nJudgment: FAIL\nCritique: “The response states that the return window is 30 days, but our policy changed to 60 days on March 1. The model is using outdated information. This is a factual accuracy failure.”\nTag: outdated_information"
+  },
+  {
+    "objectID": "eval/slides-2.html#why-are-simple-passfail-metrics-important",
+    "href": "eval/slides-2.html#why-are-simple-passfail-metrics-important",
+    "title": "Application Evals",
+    "section": "Why are simple pass/fail metrics important?",
+    "text": "Why are simple pass/fail metrics important?\n\nClarity and Focus: forces everyone to consider what truly matters, simplifies the evaluation to a single, crucial question.\nActionable Insights: Easy to interpret and act upon, helping you quickly identify whether the AI meets the user’s needs.\nForces Articulation of Expectations: Uncovers nuances and unspoken assumptions about how the AI should behave.\nEfficient Use of Resources: Keeps the evaluation process manageable, avoid getting bogged down in detailed metrics"
+  },
+  {
+    "objectID": "eval/slides-2.html#role-of-critiques",
+    "href": "eval/slides-2.html#role-of-critiques",
+    "title": "Application Evals",
+    "section": "Role of Critiques",
+    "text": "Role of Critiques\n\nClarify Expectations: Forces domain experts to explain their reasoning, uncovering valuable guidance for refining the AI system.\n\n\n\nTraining Signal: The critique trains an LLM-as-judge to approximate expert judgment at scale.\n\n\n\n\nCapture Nuances: Note when something was mostly correct but had areas for improvement.\n\n\n\n\nGuide Improvement: Specific feedback pinpoints how the AI can be enhanced.\n\n\n\n\nBalance Simplicity with Depth: Pass/fail gives a clear verdict; the critique provides the reasoning behind it."
+  },
+  {
+    "objectID": "eval/slides-2.html#example-critiques",
+    "href": "eval/slides-2.html#example-critiques",
+    "title": "Application Evals",
+    "section": "Example Critiques",
+    "text": "Example Critiques\n\n\n\n\n\n\n\n\n\nUser Interaction with AI\nJudgment\nCritique\n\n\n\n\nUser: “What’s the weather like in New York today?”AI: “The weather in New York today is sunny with a high of 75°F and a low of 60°F.”\nPass\nThe AI provided accurate and relevant weather information for New York and fulfilled the user’s request effectively.\n\n\nUser: “I need to cancel my flight booking for next week.”AI: “Your flight booking for next week has been canceled. A confirmation email has been sent to you.”\nPass\nThe AI completed the user’s request by canceling the flight and sending a confirmation.However, it should have asked for confirmation before proceeding to avoid accidental cancellations. Although it fulfilled the request, adding a confirmation step would improve user safety.\n\n\nUser: “I need help with my billing statement.”AI: “Please provide your account number and full name.”\nFail\nThe AI requested sensitive information without first verifying the user’s identity through a secure process, creating a security risk.It should guide the user through secure authentication before requesting account details."
+  },
+  {
+    "objectID": "eval/slides-2.html#data-review",
+    "href": "eval/slides-2.html#data-review",
+    "title": "Application Evals",
+    "section": "Data Review",
+    "text": "Data Review\n\nProvide a custom built data viewer or notebook for the expert to review traces and record judgments/ critiques\nSystem state should be easy to see (model version, prompt version, retrieval context)\nTools to verify the system state (eg DB search)"
+  },
+  {
+    "objectID": "eval/slides-2.html#step-4-fix-errors-in-system",
+    "href": "eval/slides-2.html#step-4-fix-errors-in-system",
+    "title": "Application Evals",
+    "section": "Step 4: Fix Errors in System",
+    "text": "Step 4: Fix Errors in System\nBefore building a judge, fix the obvious problems:\n\nUpdate the prompt with missing constraints\nAdd retrieval for information the model got wrong\nFix formatting, tone, or style issues\n\nWhy fix first:\nMany failure modes disappear after prompt fixes. Don’t build evaluators for problems you can solve directly."
+  },
+  {
+    "objectID": "eval/slides-2.html#step-5-build-llm-as-a-judge-iteratively",
+    "href": "eval/slides-2.html#step-5-build-llm-as-a-judge-iteratively",
+    "title": "Application Evals",
+    "section": "Step 5: Build LLM-as-a-Judge, Iteratively",
+    "text": "Step 5: Build LLM-as-a-Judge, Iteratively\nTake the expert’s critiques and use them to build a judge:\nSystem prompt: \"You are a quality evaluator for [application]. \nJudge outputs as PASS or FAIL based on these criteria: [rubric derived from critiques].\"\n\nFew-shot examples: 3–5 (trace, judgment, critique) tuples from the expert\nDetailed Example : Query Evaluator\nYou are a Honeycomb query evaluator with advanced capabilities to judge if a query is good or not.\nYou understand the nuances of the Honeycomb query language, including what is likely to be\nmost useful from an analytics perspective. \n\nHere is information about the Honeycomb query language:\n{{query_language_info}}\n\nHere are some guidelines for evaluating queries:\n{{guidelines}}\n\nExample evaluations:\n\n&lt;examples&gt;\n\n&lt;example-1&gt;\n&lt;nlq&gt;show me traces where ip is 10.0.2.90&lt;/nlq&gt;\n&lt;query&gt;\n{\n  \"breakdowns\": [\"trace.trace_id\"],\n  \"calculations\": [{\"op\": \"COUNT\"}],\n  \"filters\": [{\"column\": \"net.host.ip\", \"op\": \"=\", \"value\": \"10.0.2.90\"}]\n}\n&lt;/query&gt;\n&lt;critique&gt;\n{\n  \"critique\": \"The query correctly filters for traces with an IP address of 10.0.2.90 \n   and counts the occurrences of those traces, grouped by trace.trace_id. The response \n   is good as it meets the requirement of showing traces from a specific IP address \n   without additional complexities.\",\n  \"outcome\": \"good\"\n}\n&lt;/critique&gt;\n&lt;/example-1&gt;\n\n&lt;example-2&gt;\n&lt;nlq&gt;show me slowest trace&lt;/nlq&gt;\n&lt;query&gt;\n{\n  \"calculations\": [{\"column\": \"duration_ms\", \"op\": \"MAX\"}],\n  \"orders\": [{\"column\": \"duration_ms\", \"op\": \"MAX\", \"order\": \"descending\"}],\n  \"limit\": 1\n}\n&lt;/query&gt;\n&lt;critique&gt;\n{\n  \"critique\": \"While the query attempts to find the slowest trace using MAX(duration_ms) \n   and ordering correctly, it fails to group by trace.trace_id. Without this grouping, \n   the query only shows the MAX(duration_ms) measurement over time, not the actual \n   slowest trace.\",\n  \"outcome\": \"bad\"\n}\n&lt;/critique&gt;\n&lt;/example-2&gt;\n\n&lt;example-3&gt;\n&lt;nlq&gt;count window-hash where window-hash exists per hour&lt;/nlq&gt;\n&lt;query&gt;\n{\n  \"breakdowns\": [\"window-hash\"],\n  \"calculations\": [{\"op\": \"COUNT\"}],\n  \"filters\": [{\"column\": \"window-hash\", \"op\": \"exists\"}],\n  \"time_range\": 3600\n}\n&lt;/query&gt;\n&lt;critique&gt;\n{\n  \"critique\": \"While the query correctly counts window-hash occurrences, the time_range \n   of 3600 seconds (1 hour) is insufficient for per-hour analysis. When we say 'per hour', \n   we need a time_range of at least 36000 seconds to show meaningful hourly patterns.\",\n  \"outcome\": \"bad\"\n}\n&lt;/critique&gt;\n&lt;/example-3&gt;\n\n&lt;/examples&gt;\n\nFor the following query, first write a detailed critique explaining your reasoning,\nthen provide a pass/fail judgment in the same format as above.\n\n&lt;nlq&gt;{{user_input}}&lt;/nlq&gt;\n&lt;query&gt;\n{{generated_query}}\n&lt;/query&gt;\n&lt;critique&gt;"
+  },
+  {
+    "objectID": "eval/slides-2.html#iterative-prompt-improvement",
+    "href": "eval/slides-2.html#iterative-prompt-improvement",
+    "title": "Application Evals",
+    "section": "Iterative Prompt Improvement",
+    "text": "Iterative Prompt Improvement\n\nImporove the Judge’s prompt based on error analysis of its disagreements with the expert\nAdd more few-shot examples where the judge fails"
+  },
+  {
+    "objectID": "eval/slides-2.html#step-5-building-the-judge",
+    "href": "eval/slides-2.html#step-5-building-the-judge",
+    "title": "Application Evals",
+    "section": "Step 5 : Building the Judge",
+    "text": "Step 5 : Building the Judge\nKey design decisions:\n\nUse a strong model (Claude Opus, GPT 5.x pro or Gemini 3.x pro)- judging is harder than generation\nPrompt the judge to produce reasoning before the final judgment (chain-of-thought)\nInclude the same context the original model saw (retrieved docs, conversation history)\nStructure output as JSON: {“reasoning”: “…”, “judgment”: “PASS|FAIL”, “confidence”: “HIGH|MEDIUM|LOW”}"
+  },
+  {
+    "objectID": "eval/slides-2.html#data-split",
+    "href": "eval/slides-2.html#data-split",
+    "title": "Application Evals",
+    "section": "Data Split",
+    "text": "Data Split\nTraining Set ~10-20% of labeled traces purpose - used for few-shot examples in the judge prompt\nValidation Set ~40% of labeled traces, purpose - To iteratively test and refine judge prompt, used to measure agreement with human and calibrate the judge\nTest Set ~40% of labeled traces, used for final evaluation of the judge’s performance before deployment"
+  },
+  {
+    "objectID": "eval/slides-2.html#step-6-perform-error-analysis-on-the-judge",
+    "href": "eval/slides-2.html#step-6-perform-error-analysis-on-the-judge",
+    "title": "Application Evals",
+    "section": "Step 6: Perform Error Analysis on the Judge",
+    "text": "Step 6: Perform Error Analysis on the Judge\nRun the judge on the same traces the human labeled. Compare:\n\n\n\n\n\n\n\n\nMetric\nWhat It Measures\nTarget\n\n\n\n\nAccuracy\nOverall correct percentage\n&gt; 85%\n\n\nCohen’s κ\nAgreement corrected for chance\n&gt; 0.7 (good), &gt; 0.8 (excellent)\n\n\nTrue Positive Rate\nCatches failures that are real\n&gt; 80%\n\n\nTrue Negative Rate\nDoesn’t flag good outputs as failures\n&gt; 80%\n\n\nCalibration\nConfidence scores match actual accuracy\nWell-calibrated confidence\n\n\n\n\nIf agreement is low, iterate:\n\nAdd more few-shot examples where the judge failed\nRefine the rubric based on disagreement patterns\nTry a different judge model\nSplit into specialized judges for different failure modes"
+  },
+  {
+    "objectID": "eval/slides-2.html#step-7-running-the-judge",
+    "href": "eval/slides-2.html#step-7-running-the-judge",
+    "title": "Application Evals",
+    "section": "Step 7 : Running the Judge",
+    "text": "Step 7 : Running the Judge\n\nAfter validation, run the judge on synthetic or real world traffic\nClassify traces and identify classes of failures\nPrioritize fixes based on frequency and impact"
+  },
+  {
+    "objectID": "eval/slides-2.html#create-more-specialized-judges-if-needed",
+    "href": "eval/slides-2.html#create-more-specialized-judges-if-needed",
+    "title": "Application Evals",
+    "section": "Create More Specialized Judges (if needed)",
+    "text": "Create More Specialized Judges (if needed)\nOne general judge may not catch all failure modes.\n\nFactual accuracy judge: Focuses on grounding claims in retrieved context\nTone/style judge: Evaluates brand voice, user-appropriateness\nCompleteness judge: Checks that all parts of the user’s request were addressed\n\nEach specialized judge follows the same 7-step process but with a narrower scope."
+  },
+  {
+    "objectID": "eval/slides-2.html#correcting-for-judge-bias",
+    "href": "eval/slides-2.html#correcting-for-judge-bias",
+    "title": "Application Evals",
+    "section": "Correcting for Judge Bias",
+    "text": "Correcting for Judge Bias\n\nUse judge calibration metrics to estimate the true system failure rate\nInputs: True Positive Rate (TPR) and False Positive Rate (FPR)\nExample:\n\nJudge reports 20% failures\nFPR = 10% → some flagged failures are actually good outputs\nTPR = 90% → some real failures are still missed\n\nApply Bayesian correction to adjust the observed failure rate\nAdd confidence intervals to reflect uncertainty in TPR/FPR estimates\nWhy it matters:\n\nAvoid false alarms in production\nAvoid missing real quality regressions"
+  },
+  {
+    "objectID": "eval/slides-2.html#building-a-judge---workflow-summary",
+    "href": "eval/slides-2.html#building-a-judge---workflow-summary",
+    "title": "Application Evals",
+    "section": "Building a Judge - Workflow Summary",
+    "text": "Building a Judge - Workflow Summary\nHigh-level flow:\nDomain Expert Reviews Traces\n        ↓\nMakes Pass/Fail Judgments + Written Critiques\n        ↓\nCritiques Become Training Signal\n        ↓\nBuild LLM-as-Judge (with few-shot examples from critiques)\n        ↓\nValidate Against Human Labels (κ, accuracy, TPR/FPR)\n        ↓\nIterate Until Agreement Threshold Met\n        ↓\nDeploy Judge; Monitor; Feed Failures Back to Error Analysis"
+  },
+  {
+    "objectID": "eval/slides-2.html#multi-turn-evaluation",
+    "href": "eval/slides-2.html#multi-turn-evaluation",
+    "title": "Application Evals",
+    "section": "Multi-turn Evaluation",
+    "text": "Multi-turn Evaluation\nWhen evaluating multi-turn conversations, three importaant aspects come to matter:\n\n\nContext and Memory: Does the AI remember earlier parts of the conversation? How does behaviour change as the conversation lengthens?\n\n\n\n\nConsistency: Do responses align across turns without contradictions?\n\n\n\n\nOverall Session Goals: Unlike single turn-response pairs, we care whether the entire session achieved the user’s objective."
+  },
+  {
+    "objectID": "eval/slides-2.html#two-levels-of-evaluation",
+    "href": "eval/slides-2.html#two-levels-of-evaluation",
+    "title": "Application Evals",
+    "section": "Two Levels of Evaluation",
+    "text": "Two Levels of Evaluation\nSession Level (recommended starting point):\n\nEvaluates the entire conversation for goal achievement\nUses binary pass/fail initially\nExample : A session fails if a prospect wanting a two-bedroom tour ends up with no clear tour options, even if individual responses were polite\n\nTurn Level (for debugging):\n\nAssesses individual turn-by-turn responses\nMeasures quality, relevance, correctness, safety, tone\nChallenging to scale across long conversations\nUsed specifically when you’re debugging an overall problem identified at session level"
+  },
+  {
+    "objectID": "eval/slides-2.html#key-strategies-for-multi-turn-evaluation",
+    "href": "eval/slides-2.html#key-strategies-for-multi-turn-evaluation",
+    "title": "Application Evals",
+    "section": "Key Strategies for Multi-turn Evaluation",
+    "text": "Key Strategies for Multi-turn Evaluation\n\nStart at session level, zoom to turn level only for debugging\nTry to isolate multi-turn failures as single-turn tests to determine if they’re truly multi-turn issues\nFor true multi-turn issues, freeze the conversation at the failure point and use that as your iteration baseline\nDeliberately perturb your traces to test system robustness\nVary conversation lengths in your test set to catch performance degradation"
+  },
+  {
+    "objectID": "eval/slides-2.html#judging-paradigms",
+    "href": "eval/slides-2.html#judging-paradigms",
+    "title": "Application Evals",
+    "section": "Judging Paradigms",
+    "text": "Judging Paradigms\nFrom Zheng et al. (MT-Bench and Chatbot Arena), three ways to structure LLM-as-judge evaluation:\n\nPointwise (Absolute Scoring)\nPairwise (Head-to-Head Comparison)\nListwise (Ranking Multiple Outputs)"
+  },
+  {
+    "objectID": "eval/slides-2.html#pointwise-absolute-scoring",
+    "href": "eval/slides-2.html#pointwise-absolute-scoring",
+    "title": "Application Evals",
+    "section": "Pointwise (Absolute Scoring)",
+    "text": "Pointwise (Absolute Scoring)\nThe judge scores a single output against a rubric.\nPrompt template:\nEvaluate the following response to the user's query.\n\nUser query: {query}\nResponse: {response}\n\nRate the response on a scale of 1–5 based on these criteria:\n[CRITERIA]\n\nProvide your reasoning first, then the final score."
+  },
+  {
+    "objectID": "eval/slides-2.html#pointwise-absolute-scoring-1",
+    "href": "eval/slides-2.html#pointwise-absolute-scoring-1",
+    "title": "Application Evals",
+    "section": "Pointwise (Absolute Scoring)",
+    "text": "Pointwise (Absolute Scoring)\nWhen to use:\n\nYou have clear rubrics and want consistent scoring\nYou need to compare against a threshold (“is this good enough?”)\nYou want to track score distributions over time\n\n\nProblems:\n\nJudges tend to cluster scores in the middle (low discrimination)\nScore drift over time (a “4” today may not mean the same as a “4” last month)\nHard to compare across different prompts\n\n\nUse binary pass/fail instead of 1–5. The rubric becomes a checklist of requirements. The judge checks each and returns PASS or FAIL."
+  },
+  {
+    "objectID": "eval/slides-2.html#pairwise-head-to-head-comparison",
+    "href": "eval/slides-2.html#pairwise-head-to-head-comparison",
+    "title": "Application Evals",
+    "section": "Pairwise (Head-to-Head Comparison)",
+    "text": "Pairwise (Head-to-Head Comparison)\nThe judge sees two responses to the same prompt and picks the better one.\nPrompt template:\nCompare Response A and Response B to the following query.\n\nQuery: {query}\nResponse A: {response_a}\nResponse B: {response_b}\n\nWhich response is better? Consider: helpfulness, accuracy, completeness, clarity.\nFirst explain your reasoning, then state your final verdict: [[A]] or [[B]] or [[tie]]"
+  },
+  {
+    "objectID": "eval/slides-2.html#pairwise-head-to-head-comparison-1",
+    "href": "eval/slides-2.html#pairwise-head-to-head-comparison-1",
+    "title": "Application Evals",
+    "section": "Pairwise (Head-to-Head Comparison)",
+    "text": "Pairwise (Head-to-Head Comparison)\nWhen to use:\n\nComparing two model variants or prompt versions\nA/B testing\nBuilding ranked datasets for fine-tuning\n\n\nProblems:\n\nPosition bias (judge favors the first response shown)\nNon-transitivity (A &gt; B, B &gt; C, but C &gt; A)\nO(n²) comparisons needed for n variants\n\n\n\nMitigations:\n\nSwap position (show A first, then B first) and average\nUse consistent position randomization\nRequire reasoning before verdict"
+  },
+  {
+    "objectID": "eval/slides-2.html#listwise-ranking",
+    "href": "eval/slides-2.html#listwise-ranking",
+    "title": "Application Evals",
+    "section": "Listwise (Ranking)",
+    "text": "Listwise (Ranking)\nThe judge sees N responses and ranks them all.\nPrompt template:\nRank the following responses to the query from best to worst.\nQuery: {query}\nResponse 1: {response_1}\nResponse 2: {response_2}\n...\nResponse N: {response_n}\nConsider helpfulness, accuracy, completeness, clarity. First explain your reasoning, then provide a final ranking."
+  },
+  {
+    "objectID": "eval/slides-2.html#listwise-ranking-1",
+    "href": "eval/slides-2.html#listwise-ranking-1",
+    "title": "Application Evals",
+    "section": "Listwise (Ranking)",
+    "text": "Listwise (Ranking)\nWhen to use:\n\nComparing many variants at once\nBuilding leaderboards\nWhen you need a total order\n\n\nProblems:\n\nCognitive load increases with N (judge quality degrades)\nMost LLMs struggle to rank more than 5–7 items reliably\nO(n log n) comparisons in tournament style, but single-call listwise is O(n)\n\n\n\nRecommendation:\nFor most applications, pointwise with binary pass/fail or pairwise with position-swapping (Chatbot Arena’s approach) are the right choices."
+  },
+  {
+    "objectID": "eval/slides-2.html#judge-biases-and-mitigations",
+    "href": "eval/slides-2.html#judge-biases-and-mitigations",
+    "title": "Application Evals",
+    "section": "Judge Biases and Mitigations",
+    "text": "Judge Biases and Mitigations\n\n\n\n\n\n\n\n\n\n\nBias\nDescription\nEvidence\nMitigation\n\n\n\n\nPosition bias\nFavors response in first position\nZheng et al.: 70%+ preference for first position in some models\nSwap positions; average results; randomize order\n\n\nLength bias\nPrefers longer responses\nWang et al. (2024): length correlates with score even when content is identical\nLength-controlled prompting; normalize by length; penalize verbosity\n\n\nSelf-preference\nModel favors outputs from its own family\nZheng et al.: GPT-4 prefers GPT-4 outputs; Claude prefers Claude outputs\nUse a different model family for judging; don’t use same-model-as-judge\n\n\nVerbosity bias\nEquates word count with quality\nArena data: verbose responses win more often\nRequire conciseness in rubric; count tokens as cost, not quality\n\n\nStyle bias\nPrefers confident, assertive tone\nChen et al. (2024): judges score confident wrong answers higher than hedged correct ones\nInclude “appropriately hedged” in rubric; penalize overconfidence\n\n\nRecency bias\nRemembers recent examples better\nAffects few-shot prompting patterns\nRandomize few-shot example order; use consistent sets"
+  },
+  {
+    "objectID": "eval/slides-2.html#judge-biases-and-mitigations-1",
+    "href": "eval/slides-2.html#judge-biases-and-mitigations-1",
+    "title": "Application Evals",
+    "section": "Judge Biases and Mitigations",
+    "text": "Judge Biases and Mitigations\nPractical guidance:\n\nFor self-evaluation (monitoring your own system): same model is acceptable but watch for inflated scores\nFor comparative evaluation (A vs B testing): always use a third model or human judges\nUse a stronger model for judging than for generation"
+  },
+  {
+    "objectID": "eval/slides-2.html#calibration-measuring-judge-quality---cohens-kappa-κ",
+    "href": "eval/slides-2.html#calibration-measuring-judge-quality---cohens-kappa-κ",
+    "title": "Application Evals",
+    "section": "Calibration: Measuring Judge Quality - Cohen’s Kappa (κ)",
+    "text": "Calibration: Measuring Judge Quality - Cohen’s Kappa (κ)\nMeasures inter-annotator agreement (Judge and Human) corrected for chance.\n\nCohen's κ = (p_o - p_e) / (1 - p_e)\n\nwhere:\n  p_o = observed agreement (both say pass, or both say fail)\n  p_e = expected agreement by chance\n\n\n\n\n\n\n\n\nκ Value\nInterpretation\nUsable as Judge?\n\n\n\n\n&lt; 0.2\nSlight agreement\nNo\n\n\n0.2 – 0.4\nFair agreement\nNo\n\n\n0.4 – 0.6\nModerate agreement\nMarginal,needs improvement\n\n\n0.6 – 0.8\nSubstantial agreement\nYes, good enough for most uses\n\n\n0.8 – 1.0\nAlmost perfect agreement\nYes, excellent\n\n\n\nTarget: κ &gt; 0.7 for a production judge. Below 0.6, the judge’s signal is too noisy to be useful."
+  },
+  {
+    "objectID": "eval/slides-2.html#true-positive-rate-and-true-negative-rate",
+    "href": "eval/slides-2.html#true-positive-rate-and-true-negative-rate",
+    "title": "Application Evals",
+    "section": "True Positive Rate and True Negative Rate",
+    "text": "True Positive Rate and True Negative Rate\nBeyond overall agreement, you need to know what kind of errors the judge makes:\n\nTPR (Recall): Of all real failures, what fraction does the judge catch?\nTPR = True Positives / (True Positives + False Negatives)\nTNR (Specificity): Of all good outputs, what fraction does the judge correctly pass?\nTNR = True Negatives / (True Negatives + False Positives)\n\nBoth should be &gt; 80%. A judge with high TPR but low TNR fires false alarms constantly. A judge with high TNR but low TPR misses real problems."
+  },
+  {
+    "objectID": "eval/slides-2.html#length-controlled-scoring",
+    "href": "eval/slides-2.html#length-controlled-scoring",
+    "title": "Application Evals",
+    "section": "Length-Controlled Scoring",
+    "text": "Length-Controlled Scoring\n\nMeasure length correlation: Compute correlation between response length and judge score\nIf correlation &gt; 0.3: Length bias is significant\nMitigations:\n\nAdd explicit instruction: “Do not consider response length in your evaluation”\nNormalize: judge scores the content not the volume\nPenalize verbosity: “A shorter response that fully answers the question is better than a longer one”\nUse pairwise comparison (length difference is less salient when comparing two responses)"
+  },
+  {
+    "objectID": "eval/slides-2.html#rubric-design",
+    "href": "eval/slides-2.html#rubric-design",
+    "title": "Application Evals",
+    "section": "Rubric Design",
+    "text": "Rubric Design\nBinary vs Likert vs Structured\n\n\n\n\n\n\n\n\n\n\nFormat\nPros\nCons\nWhen to Use\n\n\n\n\nBinary (PASS/FAIL)\nHigh agreement; actionable; easy to automate; clear threshold\nLoses granularity for “how bad?”\nDefault for all evaluators\n\n\nLikert (1–5)\nGranular; can detect gradual improvement\nLow inter-annotator agreement; score drift; ambiguous what “3” means\nOnly when tracking gradual improvement on a stable rubric\n\n\nStructured (per-dimension)\nPinpoints specific weaknesses; actionable debugging\nMore annotation effort; complex to automate\nWhen you need to diagnose which aspect failed\n\n\n\n\n\n“Start with binary labels to understand what ‘bad’ looks like. Numeric labels are advanced and usually not necessary.”"
+  },
+  {
+    "objectID": "eval/slides-2.html#rubric-design-1",
+    "href": "eval/slides-2.html#rubric-design-1",
+    "title": "Application Evals",
+    "section": "Rubric Design",
+    "text": "Rubric Design\nInstead of: \"Rate factual accuracy 1–5\"\nUse:       \"Does the response contain any claims not supported by the retrieved context? [YES/NO]\"\n           \"Does the response correctly state the return policy? [YES/NO]\"\n           \"Does the response include all numerical claims from the source? [YES/NO]\"\nThis preserves the actionability of binary labels while providing diagnostic granularity."
+  },
+  {
+    "objectID": "eval/slides-2.html#writing-effective-rubrics",
+    "href": "eval/slides-2.html#writing-effective-rubrics",
+    "title": "Application Evals",
+    "section": "Writing Effective Rubrics",
+    "text": "Writing Effective Rubrics\n\n\nMake it task-specific, not generic\n\nBad: “Rate the quality of this response”\nGood: “The response must include the user’s dietary restriction. The response must not suggest foods containing the restricted ingredient.”\n\nInclude examples (few-shot)\n\nShow 2–3 examples of passing responses with why they pass\nShow 2–3 examples of failing responses with why they fail\n\nDefine the decision boundary explicitly\n\nWhat exactly constitutes a failure? Be precise enough that two people would agree.\n\nSeparate criteria into independent checks\n\nEach criterion should be independently assessable\nAvoid compound criteria: “accurate and helpful and concise” → three separate checks\n\nIterate based on disagreement\n\nWhen the judge disagrees with the human, the rubric is probably ambiguous\nRefine the rubric, not just the judge prompt"
+  },
+  {
+    "objectID": "eval/slides-2.html#meta-evaluation",
+    "href": "eval/slides-2.html#meta-evaluation",
+    "title": "Application Evals",
+    "section": "Meta-Evaluation",
+    "text": "Meta-Evaluation\n\nEnsembling Judges: When one judge isn’t enough, consider multiple:\nSwap-and-Average (for pairwise) - Run each comparison twice with positions swapped. Average the results. Eliminates position bias at 2× cost.\nMajority Voting (3 judges) - Run 3 different judges on the same output. Take the majority judgment. Reduces variance from any single judge’s biases.\n  - Cost: 3× single judge\n  - Agreement improvement: typically 5–15% boost in κ\n  - Worth it when: stakes are high, judge quality is marginal, you need production monitoring"
+  },
+  {
+    "objectID": "eval/slides-2.html#rag-metrics",
+    "href": "eval/slides-2.html#rag-metrics",
+    "title": "Application Evals",
+    "section": "RAG Metrics",
+    "text": "RAG Metrics\n\nRecall@k: Do all relevant chunks for a query appear in your top K results? (most important)\nPrecision@k: Is the top-k retrieved documents relevant?\nMRR (Mean Reciprocal Rank): How high is the best relevant document ranked?\nnDCG (normalized Discounted Cumulative Gain): Are relevant documents ranked higher than irrelevant"
+  },
+  {
+    "objectID": "eval/slides-2.html#what-not-to-do",
+    "href": "eval/slides-2.html#what-not-to-do",
+    "title": "Application Evals",
+    "section": "What NOT to Do",
+    "text": "What NOT to Do\nThis section draws from Hamel’s FAQ and other blogs to cover common anti-patterns."
+  },
+  {
+    "objectID": "eval/slides-2.html#do-not-use-generic-ready-to-use-metrics",
+    "href": "eval/slides-2.html#do-not-use-generic-ready-to-use-metrics",
+    "title": "Application Evals",
+    "section": "Do Not Use Generic Ready-to-Use Metrics",
+    "text": "Do Not Use Generic Ready-to-Use Metrics\nWhy generic metrics fail:\n\nThey measure abstract qualities (“helpfulness,” “coherence,” “quality”) that may not matter for your use case\nGood scores on generic metrics don’t mean your system works for your users\nThey create a cargo cult: teams optimize for the metric instead of the user outcome\nThey waste engineering time on superfluous tasks\n\nThe exception : using generic metrics for exploration:\nExperienced practitioners do use generic metrics - just not as evaluations.\nOnce you understand why generic metrics fail as evaluations, you can repurpose them as exploration tools:\n\nBERTScore can surface traces with anomalous semantic patterns (worth human review)\nROUGE can identify outputs that diverge significantly from expected patterns\n“Helpfulness” scores can sort traces for prioritization\n\n\nKey distinction: Use generic metrics to find traces worth reviewing, not to judge quality."
+  },
+  {
+    "objectID": "eval/slides-2.html#do-not-practice-eval-driven-development",
+    "href": "eval/slides-2.html#do-not-practice-eval-driven-development",
+    "title": "Application Evals",
+    "section": "Do Not Practice Eval-Driven Development",
+    "text": "Do Not Practice Eval-Driven Development\n\n“LLMs have infinite surface area for potential failures. You can’t anticipate what will break.”\n\n\nThe problem:\n\nTDD works because you know what “correct” looks like (a function returns the right value)\nLLM outputs have emergent failure modes you can’t predict\nWriting evaluators for imagined failures wastes effort\nPremature evals constrain exploration and create blind spots\n\nThe right approach: Error-analysis-driven development.\n\nBuild the feature\nTest it manually (error analysis)\nFind real failure modes\nWrite evaluators for persistent failures\nIterate\n\nThe exception:\n\nHard constraints where you know exactly what success looks like (“never mention competitors,” “always include a disclaimer”)\nRegression tests for previously-fixed bugs (prevent recurrence)\nSafety/evaluator constraints that are policy requirements (not quality optimization)"
+  },
+  {
+    "objectID": "eval/slides-2.html#do-not-build-an-evaluator-for-every-failure-mode",
+    "href": "eval/slides-2.html#do-not-build-an-evaluator-for-every-failure-mode",
+    "title": "Application Evals",
+    "section": "Do Not Build an Evaluator for Every Failure Mode",
+    "text": "Do Not Build an Evaluator for Every Failure Mode\nThe cost hierarchy matters. Many failures are:\n\nOne-off bugs (fix and move on - no evaluator needed)\nPrompt issues (fix the prompt - evaluator becomes unnecessary)\nObvious constraints (use an assertion, not an LLM judge)\n\nBuild LLM-as-judge evaluators only for:\n\nPersistent generalization failures (survive prompt fixes)\nSubjective qualities that assertions can’t capture\nFailure modes you’ll iterate on repeatedly"
+  },
+  {
+    "objectID": "eval/slides-2.html#do-not-outsource-core-annotation",
+    "href": "eval/slides-2.html#do-not-outsource-core-annotation",
+    "title": "Application Evals",
+    "section": "Do Not Outsource Core Annotation",
+    "text": "Do Not Outsource Core Annotation\n\nWhy outsourcing fails:\n\nExternal annotators lack product context\nMisalignment on quality criteria leads to noisy labels\nTime spent onboarding annotators exceeds time for internal review\nCore product understanding diffuses outside the team\n\nWhen external help is appropriate:\n\nPurely mechanical tasks (identifying phone numbers, validating email format) - after rigorous internal rubric\nTasks without product context (translation quality - requires linguistic expertise, not product knowledge)\nEngaging external SMEs to act as your internal domain expert (not annotators - advisors)\n\nExample AnkiHub hired 4th-year medical students to evaluate their RAG system for medical content. These are annotators with domain expertise, not generic annotators."
+  },
+  {
+    "objectID": "eval/slides-2.html#do-not-automate-open-coding-with-llms",
+    "href": "eval/slides-2.html#do-not-automate-open-coding-with-llms",
+    "title": "Application Evals",
+    "section": "Do Not Automate Open Coding with LLMs",
+    "text": "Do Not Automate Open Coding with LLMs\nLLMs can help with axial coding (organizing patterns), but never outsource the initial open coding:\n\nExample : ‘An LLM might lump “app crashes after login” and “login takes too long” under “login issues” - but these are completely different problems requiring different fixes. Only human review catches the nuance that matters’\nWhat LLMs can help with in the eval workflow:\n\nFirst-pass axial coding (after you’ve done 30–50 open codes)\nMapping annotations to defined failure modes\nSuggesting prompt improvements\nAnalyzing annotation data for patterns\n\nWhat LLMs cannot replace:\n\nInitial open coding and trace review\nValidating failure taxonomies (need human review)\nGround truth labeling for judge calibration\nRoot cause analysis (subtle workflow-specific patterns)\n\n\n“Always read through the raw traces yourself at the start. This is how you discover new types of failures, understand user pain points, and build intuition about your data. Never skip this or delegate it.” - Hamel FAQ"
+  },
+  {
+    "objectID": "eval/slides-2.html#cicd-vs-production-evaluation",
+    "href": "eval/slides-2.html#cicd-vs-production-evaluation",
+    "title": "Application Evals",
+    "section": "CI/CD vs Production Evaluation",
+    "text": "CI/CD vs Production Evaluation\n\n\n\n\n\n\n\n\nDimension\nCI/CD Evaluation\nProduction Evaluation\n\n\n\n\nDataset\nSmall (100+ examples), purpose-built, curated\nSampled from live traffic, large, uncurated\n\n\nFocus\nRegression prevention, known edge cases\nDrift detection, novel failure modes\n\n\nChecks\nFast, deterministic (assertions, regex)\nCan use slower LLM-as-judge (async)\n\n\nFrequency\nEvery PR, every deployment\nContinuous sampling\n\n\nCost constraint\nTight (runs many times)\nLooser (async, batched)\n\n\nAction on failure\nBlock deployment\nAlert, investigate, add to CI dataset"
+  },
+  {
+    "objectID": "eval/slides-2.html#the-regression-gate",
+    "href": "eval/slides-2.html#the-regression-gate",
+    "title": "Application Evals",
+    "section": "The Regression Gate",
+    "text": "The Regression Gate\nPurpose: Prevent known failures from recurring. Block bad deployments.\nDataset characteristics:\n\nCovers core features and regression tests for past bugs\nSmall enough to run quickly and cheaply\nFavors deterministic checks over LLM-as-judge (cost and speed)\n\nImplementation:\n# Fast, deterministic CI checks\ndef ci_eval_suite(output, trace):\n    checks = [\n        assert_json_schema(output, expected_schema),\n        assert_contains_required_facts(output, required_facts),\n        assert_no_disallowed_content(output, blocklist),\n        assert_response_time(trace.latency, max_ms=2000),\n    ]\n    return all(checks)"
+  },
+  {
+    "objectID": "eval/slides-2.html#production-the-monitoring-layer",
+    "href": "eval/slides-2.html#production-the-monitoring-layer",
+    "title": "Application Evals",
+    "section": "Production: The Monitoring Layer",
+    "text": "Production: The Monitoring Layer\nPurpose: Detect novel failures and drift. Feed learnings back into CI.\nDataset characteristics:\n\nSampled from production traffic (you don’t control the inputs)\nNo reference outputs (evaluate quality without knowing “correct”)\nLarge volume allows statistical significance\n\nImplementation:\n# Async production evaluation\nasync def production_eval(trace_batch):\n    # Run LLM-as-judge on sampled traces\n    results = await judge.evaluate_batch(trace_batch)\n    \n    # Track metrics over time\n    metrics.log(\"failure_rate\", results.failure_rate)\n    metrics.log(\"avg_latency\", results.latency)\n    metrics.log(\"judge_confidence\", results.confidence)\n    \n    # Alert on anomalies\n    if results.failure_rate &gt; threshold:\n        alert(\"Elevated failure rate detected\")\n    \n    # Feed novel failures back to CI dataset\n    for failure in results.new_failures:\n        ci_dataset.add(failure.trace)"
+  },
+  {
+    "objectID": "eval/slides-2.html#guardrails-vs-evaluators",
+    "href": "eval/slides-2.html#guardrails-vs-evaluators",
+    "title": "Application Evals",
+    "section": "Guardrails vs Evaluators",
+    "text": "Guardrails vs Evaluators\n\n\n\n\n\n\n\n\n\nDimension\nGuardrails\nEvaluators\n\n\n\n\nWhen they run\nInline, synchronous, before user sees output\nAsync or batch, after response\n\n\nSpeed requirement\nFast (milliseconds)\nCan be slow (seconds acceptable)\n\n\nComplexity\nSimple, deterministic (regex, keyword lists, schema validation)\nComplex, nuanced (LLM-as-judge)\n\n\nAction on failure\nBlock, redact, refuse, or regenerate\nLog, alert, feed into improvement loop\n\n\nWhat they catch\nClear-cut, high-impact failures (PII, profanity, malformed JSON)\nSubjective qualities (factual accuracy, tone, completeness)\n\n\nFalse positive cost\nHigh (blocks good outputs = user friction)\nLow (doesn’t block, just reports)\n\n\n\nThe relationship:\n\nGuardrails protect users from immediate harm\nEvaluators help you improve quality over time\nWhen production evaluators reveal a clear-cut failure pattern, consider promoting it to a guardrail\nDon’t use off-the-shelf LLM guardrails blindly - always look at the prompt"
+  },
+  {
+    "objectID": "eval/slides-2.html#prompt-versioning",
+    "href": "eval/slides-2.html#prompt-versioning",
+    "title": "Application Evals",
+    "section": "Prompt Versioning",
+    "text": "Prompt Versioning\nVersion prompts in Git.\n\nVersion control every prompt change\nLink prompt versions to evaluation results (which eval was run against which prompt)\nRollback capability when a change degrades quality\nUse notebooks or an integrated prompt environment for experimentation\nPromote to Git only after eval validation\n\nThe workflow:\n\nExperiment with prompt changes in a notebook\nRun eval suite against the new prompt\nCompare results to baseline\nIf improvement or no regression: commit the prompt change with eval results\nIf regression: iterate or revert"
+  },
+  {
+    "objectID": "eval/slides-2.html#cost-latency-and-reliability-as-co-equal-metrics",
+    "href": "eval/slides-2.html#cost-latency-and-reliability-as-co-equal-metrics",
+    "title": "Application Evals",
+    "section": "Cost, Latency, and Reliability as Co-Equal Metrics",
+    "text": "Cost, Latency, and Reliability as Co-Equal Metrics\n\n\n\n\n\n\n\n\nDimension\nKey Metrics\nWhy It Matters\n\n\n\n\nTask accuracy\nCorrectness, relevance, groundedness, completeness\nDoes it do the job?\n\n\nLatency\nTime to first token (TTFT), time per output token, end-to-end latency, p95/p99\nUser experience; streaming perception\n\n\nCost\nTokens per request, cost per request, cost per feature, cost trends\nBusiness viability at scale\n\n\nReliability\nSuccess rate, error types, availability, recovery behavior\nTrust and dependability\n\n\nSafety\nUnsafe content rate, PII exposure, guardrail activation rate\nRisk management"
+  },
+  {
+    "objectID": "eval/slides-2.html#improving-accuracy-quick-changes",
+    "href": "eval/slides-2.html#improving-accuracy-quick-changes",
+    "title": "Application Evals",
+    "section": "Improving Accuracy: Quick Changes",
+    "text": "Improving Accuracy: Quick Changes\nPrompt refinement:\n\nClarify ambiguous wording. Add targeted few-shot examples for specific failures. Use role-based guidance.\nUse role based guidance (persona) (You’re a expert lawyer…) or audience role (You’re explainign to highschool student)\n\nInduce Reasoning\n\nFor complex tasks (planning or logic), Induce CoT by prompting for non-reasoning models eg : ‘Think Step by Step’, ‘Break down your reasoning’, ‘First list the facts, then draw a conclusion’"
+  },
+  {
+    "objectID": "eval/slides-2.html#improving-accuracy-medium-effort-changes",
+    "href": "eval/slides-2.html#improving-accuracy-medium-effort-changes",
+    "title": "Application Evals",
+    "section": "Improving Accuracy: Medium-Effort Changes",
+    "text": "Improving Accuracy: Medium-Effort Changes\nTask Decomposition:\n\nBreak complex tasks into smaller steps. Use a chain of calls to the model, with intermediate checks.\nExample : Instead of answering the user question directly, break down into three steps. 1. extract user intent 2. retrieve or call tools 3. Summarize the response\n\nTuning RAG components:\n\nExperiment with hybrid search or different retriever architectures.\nTry different chunking strategies\n\nFixing tool misuse:\n\nClear tool descriptions, parameters, and expected formats matter"
+  },
+  {
+    "objectID": "eval/slides-2.html#improving-accuracy-advanced-strategies",
+    "href": "eval/slides-2.html#improving-accuracy-advanced-strategies",
+    "title": "Application Evals",
+    "section": "Improving Accuracy: Advanced Strategies",
+    "text": "Improving Accuracy: Advanced Strategies\nFientuning\n\nIf prompting cannot fix, finetuning can help\nCreate hundred or so examples for each failure mode\nUseful for high volume but narrow domains. Models keep getting better at few-shot prompting, so finetuning is often not worth the cost and effort for general use cases.\nMore complex (data prep, training, deployment) and can introduce new failure modes if not done carefully. If base model changes, need to redo everything.\n\nSystematic prompt optimisation\n\nAutomatic prompt optimiuzation tools like DSPy can help here\n\nHuman Review and Feedback Loops\n\nHuman reviewers can provide qualitative feedback on model outputs\nFeedback can be used to update prompts, retrain models, or adjust evaluation metrics\nContinuous feedback loops help maintain and improve model performance over time"
+  },
+  {
+    "objectID": "eval/slides-2.html#cost-reduction-strategies",
+    "href": "eval/slides-2.html#cost-reduction-strategies",
+    "title": "Application Evals",
+    "section": "Cost Reduction Strategies",
+    "text": "Cost Reduction Strategies\n\nUse cheaper models for easy tasks, expensive for harder tasks\nDevelop with stronger models, swap out with cheaper models for easy components\nReduce token usage by summarizing context, using xml or yaml (tool calls need JSON)\nUse prompt caching or prefix caching\nModel cascading: run a cheaper model first, only call the expensive model if the cheap one is uncertain (based on confidence or heuristics)"
+  },
+  {
+    "objectID": "eval/slides-2.html#further-reading",
+    "href": "eval/slides-2.html#further-reading",
+    "title": "Application Evals",
+    "section": "Further Reading",
+    "text": "Further Reading\n\nA Field Guide to Rapidly Improving AI Products\nYour AI Product Needs Evals\nUsing LLM-as-a-Judge For Evaluation: A Complete Guide\nLLM Evals: Everything You Need to Know\nEvaluating the Effectiveness of LLM-Evaluators (aka LLM-as-Judge)\nLessons from A year of Building with LLMs\nError Analysis: The Highest ROI Technique In AI Engineering\nEvaluation Frameworks\n\nDeepEval\nBrainTrust\nArize"
   },
   {
     "objectID": "inference/01_sampling_methods/detour.html#the-premise",
