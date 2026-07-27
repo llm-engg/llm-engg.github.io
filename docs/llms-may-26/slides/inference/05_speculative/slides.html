@@ -498,11 +498,6 @@ CCE, IISc
 </div>
 </div>
 </div></div>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) The residual column is wrong. Positive parts of p_t - p_d are a: +0.15 and this: +0.10; the normalizer is 0.25, so p'(a) = 0.60 and p'(this) = 0.40. The printed 0.43/0.29 come from dividing by 0.35 and do not even sum to 1.
-[FIX] Set the p' column to a = 0.60, this = 0.40. Verify: python3 -c "import numpy as np; pt=np.array([.30,.35,.25,.05,.05]); pd=np.array([.50,.20,.15,.10,.05]); r=np.maximum(pt-pd,0); print(r/r.sum())"
-[INSTRUCTOR] With corrected numbers this example can *prove* exactness live: P(output = "a") = P(draft proposes "a")*1 + P(reject)*p'(a) = 0.20 + 0.25*0.60 = 0.35 = p_target("a"). (Total rejection mass = 0.5*0.4 ["the"] + 0.1*0.5 ["an"] = 0.25.) Let a student check "this" the same way: 0.15 + 0.25*0.40 = 0.25. The theorem stops being magic at that moment.
--->
 </section>
 <section id="draft-model-options-chen-et-al." class="slide level2">
 <h2>Draft Model Options (Chen et al.)</h2>
@@ -519,12 +514,11 @@ CCE, IISc
 <ul>
 <li>Zero overhead, no training, Limited to simple patterns</li>
 </ul></li>
+<li>Early-exit self-speculation (LayerSkip)
+<ul>
+<li>Draft = the target’s own first E layers; no second model, needs early-exit-aware training</li>
+</ul></li>
 </ul>
-<!-- NOTES-BLOCK
-[FIX] (nice) Each bullet crams pros and cons into one comma-run line; a 3-row pro/con table makes "Different serving topology needed" read as the con it is.
-[TERM] "N-gram" drafting here = prompt-lookup decoding: match the last few generated tokens against the prompt/output so far and propose whatever followed last time. No model at all -- shines on summarization and code-editing where output copies input. This is vLLM's `ngram` method and HF's `prompt_lookup_num_tokens`.
-[READING] Saxena, "Prompt Lookup Decoding" (github.com/apoorvumang/prompt-lookup-decoding); Zhou et al., "DistillSpec" (arXiv:2310.08461) for the distillation option done right.
--->
 </section>
 <section id="results" class="slide level2">
 <h2>Results</h2>
@@ -544,11 +538,6 @@ CCE, IISc
 <li>Greedy decoding (temp=0) gives highest speedup</li>
 </ul></li>
 </ul>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) Three bullets drift from the paper whose own figures are on this slide: (1) measured speedups are 1.92-2.46x (Table 1, left image; abstract says "2-2.5x"), not "~2-3x"; (2) "7.8x theoretical" is just the latency ratio 14.1/1.8 per call -- the actual ceiling at K=4 is (K+1) tokens per (4*1.8 + 14.1) ms = ~3.3x; (3) Chen et al. never sweep temperature -- they compare greedy vs nucleus (2.01x vs 1.92x on XSum), and their best number is nucleus on HumanEval (2.46x), so domain matters more than sampling mode.
-[FIX] Reword: "16 TPU v4 chips"; "draft 1.8 vs target 14.1 ms/token (~8x cheaper per call)"; "1.9-2.5x measured; greedy edges out nucleus on the same task". Keep the temperature claim but source it to Leviathan et al. (they report alpha for T=0 vs T=1) rather than Chen.
-[INSTRUCTOR] Use the right figure's middle panel to land the optimal-K point: acceptance efficiency falls monotonically with K and XSum's best wall-clock is K=3 -- that is why production defaults are K=3-5, not 10.
--->
 </section>
 <section id="limitations" class="slide level2">
 <h2>Limitations</h2>
@@ -577,18 +566,10 @@ CCE, IISc
 <li class="fragment">Hard tokens might need more speculation</li>
 </ul></li>
 </ul>
-<!-- NOTES-BLOCK
-[TERM] (should-fix) gamma appears here for the first time while the rest of the deck says K -- write "K (Leviathan's gamma)" or just K.
-[INSTRUCTOR] Make "draft model acquisition" concrete with the deck's own later evidence: in eagle-1-results.png classic speculative sampling shows N/A for Vicuna 7B/13B -- no small same-tokenizer sibling exists. That empirical gap is the bridge to Medusa/EAGLE; preview the roadmap here ("next: what if the draft lives INSIDE the target?").
--->
 </section>
 <section id="medusa-no-separate-draft-model" class="slide level2">
 <h2>Medusa: No Separate Draft Model!</h2>
 
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) This custom figure labels Head 1..4 -> t+1..t+4, but the paper figure on the very next slide (medusa-0.png) has the *base LM head* producing t+1 and Medusa head k producing t+k+1. Adjacent contradictory figures are guaranteed confusion.
-[FIX] Relabel the outputs t+2..t+5, or add an "LM Head -> t+1" row to the drawing.
--->
 <img data-src="images/medusa-flow.png" class="r-stretch"></section>
 <section id="medusa-architecture-cai-et-al.-2024" class="slide level2">
 <h2>Medusa Architecture (Cai et al., 2024)</h2>
@@ -599,11 +580,6 @@ CCE, IISc
 <li class="fragment"><strong>Parameters</strong>: ~0.5% additional parameters per head</li>
 <li class="fragment"><strong>Training</strong>: Freeze backbone, train heads with cross-entropy loss</li>
 </ul>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) "~0.5% per head" is hard to reconcile with the head's actual shape: each head = ResBlock (d x d) + its own unembedding (d x V). For Vicuna-7B (d=4096, V=32000) that is ~148M params, i.e. ~2% per head.
-[FIX] Say "~2% per head (d^2 + d*V)" -- check: python3 -c "d,V=4096,32000; print((d*d+d*V)/6.7e9)" -- or cite where 0.5% comes from if you keep it.
-[INSTRUCTOR] Two details that make this feel attainable: heads are initialized from a *copy of the original LM head* (they start out predicting t+1 and only need to learn the shift), and MEDUSA-1 trains on a frozen backbone in roughly a day on one A100 for 7B -- a fine-tune anyone in this class could run.
--->
 </section>
 <section id="medusa-tree-attention-verification" class="slide level2">
 <h2>Medusa: Tree Attention Verification</h2>
@@ -614,7 +590,7 @@ CCE, IISc
 <ul>
 <li>Head 1: {a₁, a₂, …, aₖ}</li>
 <li>Head 2: {b₁, b₂, …, bₖ}</li>
-<li>Head 3: {c₁, c₂, …, bₖ}</li>
+<li>Head 3: {c₁, c₂, …, cₖ}</li>
 </ul></li>
 <li><p>Construct sparse tree of candidate continuations</p></li>
 <li><p>Custom attention mask: each token only attends to ancestors in tree</p></li>
@@ -624,19 +600,10 @@ CCE, IISc
 <p><img data-src="images/medusa-2.png"></p>
 </div></div>
 <!-- end columns -->
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) Typo in item 1: "Head 3: {c1, c2, ..., bk}" -- the last element should be ck.
-[FIX] Also note heads may use different top-k: your own figure (medusa-2.png) shows top-2 for head 1 and top-3 for head 2, giving 2 + 2*3 = 8 tree nodes -- matching the 8-row mask on the right.
-[TERM] "Tree attention" needs its one-liner on first use: flatten the candidate tree into a single sequence and hand-craft the attention mask so each token attends only to its ancestors -- one forward pass then verifies every root-to-leaf path simultaneously.
-[Q-ADVANCED] "Who decides the tree shape?" -> Medusa: a FIXED sparse tree tuned offline on a calibration set (the 64-node, depth-4 tree on the next slide). Making it dynamic per-context is EAGLE-2's whole contribution -- plant that seed now.
--->
 </section>
 <section id="medusa-tree-attention-verification-1" class="slide level2">
 <h2>Medusa: Tree Attention Verification</h2>
 
-<!-- NOTES-BLOCK
-[INSTRUCTOR] This is the actual production tree for MEDUSA-2 Vicuna-7B (paper Fig. 6): 64 nodes, depth 4. Point at the red path = the accepted continuation for this query, and at the asymmetry: top-1 predictions earn deep chains, low-rank predictions get a node or two -- verification budget goes where acceptance is likely.
--->
 <img data-src="images/medusa-3.png" class="r-stretch"></section>
 <section id="medusa-training-medusa-1-frozen-backbone" class="slide level2">
 <h2>Medusa Training : MEDUSA-1: Frozen Backbone</h2>
@@ -656,9 +623,6 @@ CCE, IISc
 <p><img data-src="images/medusa-1.png"></p>
 </div></div>
 <!-- end columns -->
-<!-- NOTES-BLOCK
-[INSTRUCTOR] Say WHY lambda_k must decay with k (the paper uses a power like 0.8^k): head k predicts k+1 positions ahead with no intermediate tokens, so its loss is intrinsically larger and would otherwise dominate the sum. Also worth naming the lineage: this multi-token-prediction head idea is exactly what DeepSeek-V3 later baked into pretraining as MTP -- it returns in the Cheat Sheet.
--->
 </section>
 <section id="medusa-training-medusa-2-joint-training" class="slide level2">
 <h2>Medusa Training : MEDUSA-2 : Joint Training</h2>
@@ -674,10 +638,6 @@ CCE, IISc
 </div><div class="column" style="width:40%;">
 <p><img data-src="images/medusa-0.png"></p>
 </div></div>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] The formula undersells MEDUSA-2; the recipe is the content: (1) warm up the heads first MEDUSA-1-style so random-head gradients don't wreck the backbone, (2) then unfreeze everything with a much smaller backbone LR, (3) lambda_0 trades "stay a good LM" against "be a good drafter". Mention the self-distillation trick too: when the original finetuning data is unavailable, generate training text from the model itself.
-[Q-ADVANCED] "Is MEDUSA-2 still lossless?" -> No, twice over: the backbone weights change (it is a different model now), and Medusa's default *typical acceptance* scheme trades exact distribution-matching for higher accepted length. This is the first crack in the lecture's "lossless" theme -- flag it here and resolve it on the Takeaways slide.
--->
 </section>
 <section id="medusa-results" class="slide level2">
 <h2>Medusa: Results</h2>
@@ -686,17 +646,22 @@ CCE, IISc
 <div class="column" style="width:50%;">
 <p><img data-src="images/medusa-ai.png"></p>
 </div><div class="column" style="width:50%;">
-<p><strong>Results</strong> - <strong>Speedup</strong>: ~2-3× on average - <strong>Arithmetic Intensioty</strong> : 41× operational intensity gain</p>
+<p><strong>Results</strong></p>
+<ul>
+<li><strong>Speedup</strong>: ~2-3× on average</li>
+<li><strong>Arithmetic Intensity</strong> : 41× operational intensity gain</li>
+</ul>
 </div></div>
-<!-- NOTES-BLOCK
-[FIX] (should-fix) Markdown bug: no blank line between "**Results**" and the bullets, so they render as one paragraph with a literal "- ". Add the blank line. Typo: "Intensioty" -> "Intensity". Exact numbers from the top figure worth putting on the slide: Medusa-1 2.18x (7B) / 2.33x (13B), Medusa-2 2.83x; category spread 2.58x (humanities) to 3.62x (extraction).
-[CORRECTNESS] (should-fix) "41x operational intensity gain" is unsourced: your own bottom-left figure (paper Fig. 18) shows the *attention matmul* OI going from ~1 (autoregressive) to ~13-60 depending on candidate count, at batch 16 on A100-PCIe -- attention-only, not whole-model, and candidate-count-dependent. Either restate honestly ("OI of attention rises from ~1 to tens") or cite where 41x is printed.
-[INSTRUCTOR] The category spread is the teachable bit: extraction/coding accelerate most because continuations are predictable -- the same domain story as Chen et al.'s XSum vs HumanEval.
--->
 </section>
 <section id="medusa-limitations" class="slide level2">
 <h2>Medusa: Limitations</h2>
-<p><strong>Key Limitations</strong> 1. <strong>Position-Independent Prediction</strong>: Head 2 doesn’t know what Head 1 predicted 2. <strong>Limited Information</strong>: Only sees top-layer features 3. <strong>No dependencies</strong>: Can’t model dependencies between draft tokens 4. <strong>Speedup plateaus</strong>: ~3× even with more heads</p>
+<p><strong>Key Limitations</strong></p>
+<ol type="1">
+<li><strong>Position-Independent Prediction</strong>: Head 2 doesn’t know what Head 1 predicted</li>
+<li><strong>Limited Information</strong>: Only sees top-layer features</li>
+<li><strong>No dependencies</strong>: Can’t model dependencies between draft tokens</li>
+<li><strong>Speedup plateaus</strong>: ~3× even with more heads</li>
+</ol>
 <div class="fragment">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
@@ -712,36 +677,33 @@ CCE, IISc
 </div>
 </div>
 </div>
-<!-- NOTES-BLOCK
-[FLOW] This slide is the hinge of the lecture: limitations 1+3 set up EAGLE (make the draft autoregressive), "speedup plateaus" sets up EAGLE-2 (spend tree budget adaptively). Say that two-step roadmap out loud before advancing.
-[Q-ADVANCED] "Why does adding more heads plateau instead of scale?" -> three compounding effects: acceptance decays with position (head k never sees head k-1's choice), the candidate tree grows multiplicatively so verification cost creeps up, and any later-position correctness is wasted once an earlier position rejects.
--->
 </section>
 <section id="eagle-series-feature-level-autoregression" class="slide level2">
 <h2>EAGLE Series: Feature-Level Autoregression</h2>
 
-<!-- NOTES-BLOCK
-[TERM] (should-fix) "Feature" is used from here to the end of the deck without definition. Add one line on this slide: feature = the last-layer hidden state, the d-dimensional vector just before the LM head. One sentence here saves the whole EAGLE section for beginners.
--->
-<img data-src="images/eagle-flow.png" class="r-stretch"></section>
+<img data-src="images/eagle-flow.png" class="r-stretch"><p><strong>feature</strong> = <em>the last-layer hidden state, the d-dimensional vector just before the LM head</em></p>
+</section>
 <section id="eagle-core-innovation" class="slide level2">
 <h2>EAGLE : Core Innovation</h2>
 <p><strong>Key Insight</strong>: Autoregression at the <strong>feature level</strong> is simpler than at the token level.</p>
-<ul>
-<li class="fragment">Features contain richer information than just next-token logits</li>
-<li class="fragment">predict next feature vector f_{n+1} instead of token t_{n+1}</li>
-</ul>
 
-<!-- NOTES-BLOCK
-[INTUITION] Why feature-level is easier, in one breath: the feature is a continuous, deterministic summary the big model already computed; the token is a lossy random draw from it. Regressing "next summary from current summary" is a smooth problem a single layer can learn; predicting "next token from tokens" means being a whole (bad) tiny LM. eagle-5.png is the receipt: feature&shifted-token beats feature-only beats token-only on both speedup and accuracy.
-[INSTRUCTOR] On the figure: the trainable part is ONE transformer layer (yellow) -- the embedding and LM head are the target's own, frozen. That is why EAGLE's overhead is ~1 extra layer per draft token.
--->
-<img data-src="images/eagle-1.png" class="r-stretch"></section>
+<img data-src="images/eagle-1.png" class="r-stretch"><ul>
+<li class="fragment">Features contain richer information than just next-token logits</li>
+<li class="fragment">predict next feature vector <span class="math inline">\(f_{n+1}\)</span> instead of token <span class="math inline">\(t_{n+1}\)</span></li>
+</ul>
+<div style="font-size:0.5em">
+<p><strong>feature</strong> = <em>the last-layer hidden state, the d-dimensional vector just before the LM head</em></p>
+</div>
+</section>
 <section id="eagle-feature-uncertainty" class="slide level2">
 <h2>EAGLE : Feature Uncertainty</h2>
 <div class="columns">
 <div class="column fragment">
 <p><img data-src="images/eagle-2.png"></p>
+<ul>
+<li>Are features enough to predict the next feature?</li>
+<li>pure feature-to-feature regression is ill-posed</li>
+</ul>
 </div><div class="column fragment">
 <p><img data-src="images/eagle-3.png"></p>
 </div></div>
@@ -753,42 +715,29 @@ CCE, IISc
 <p><img data-src="images/eagle-5.png"></p>
 </div></div>
 <!-- end columns -->
-<!-- NOTES-BLOCK
-[INSTRUCTOR] Four figures, zero text -- narrate as one story: (1) at "I", the target may sample "am" (p=0.6) or "always" (p=0.4); (2) the NEXT feature depends on which one the coin picked -- f_always and f_am lead to different futures (top row); (3) so pure feature-to-feature regression is ill-posed: the draft cannot know the coin flip; (4) EAGLE's fix (bottom-left): also feed the embedding of the just-sampled token -- "feature & shifted-token -> next feature". Bottom-right: the ablation where that combination wins on speedup AND draft accuracy.
-[Q-ADVANCED] "Isn't feeding the sampled token cheating / leakage?" -> no: at draft time the draft itself just sampled that token, so it is known information that resolves the stochastic branch -- the same reason a decoder consumes its own previous output.
--->
 </section>
 <section id="eagle-architecture" class="slide level2">
 <h2>EAGLE : Architecture</h2>
 
 <img data-src="images/eagle-arch.png" class="r-stretch"><ul>
-<li>Draft model predicts next feature vector f_{n+1} based on embedding of current token and previous features</li>
+<li>Draft predicts f_{n+1} from previous features f_&lt;=n and the embedding of the just-sampled token t_{n+1} (shifted by one).</li>
 <li>Use predicted feature to compute token probabilities for next token</li>
 <li>Tree structure allows multiple candidates to be verified in parallel</li>
 </ul>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) "embedding of current token" under-specifies the one trick that matters: to predict f_{n+1}, the draft consumes f_n PLUS the embedding of t_{n+1} -- the token *just sampled for the next position* (token sequence shifted one ahead of the feature sequence; see the (f_how, e_can), (f_can, e_I) input pairs in the figure).
-[FIX] Reword bullet 1: "Draft predicts f_{n+1} from previous features f_<=n and the embedding of the just-sampled token t_{n+1} (shifted by one)."
-[INSTRUCTOR] Size intuition to say aloud: the draft is one transformer layer + FC reusing the target's frozen embedding and LM head -- roughly 1/32 of a Llama-7B forward per draft token. That is why K draft steps cost so little.
--->
 </section>
 <section id="eagle-1-training" class="slide level2">
 <h2>EAGLE-1: Training</h2>
-<p><strong>Training Loss</strong> <span class="math display">\[L = L_{\text{fea}} + L_{\text{token}}\]</span></p>
+<p><strong>Training Loss</strong> <span class="math display">\[L = L_{\text{fea}} + 0.1 \times L_{\text{token}}\]</span></p>
 <ul>
 <li><strong>L_fea</strong>: Regression loss for feature prediction</li>
 <li><strong>L_token</strong>: Classification loss for token prediction</li>
 </ul>
-<!-- NOTES-BLOCK
-[FIX] (nice) The paper weights the sum: L = L_reg + 0.1 * L_cls (Smooth-L1 on features, cross-entropy on tokens); without the 0.1 the token CE dominates. Worth showing the weight.
-[INSTRUCTOR] The selling point vs. training a draft model: a fixed ~68k-dialogue ShareGPT set, 1-2 days on a handful of A100s even for 70B targets; features come from a single frozen forward pass of the target. The paper's ablation also shows EAGLE is robust to NOT using target-generated text -- cheap data, cheap compute.
-[Q-ADVANCED] "If the draft predicts features with regression error, doesn't the error compound over K steps?" -> yes, and acceptance at deeper draft positions falls accordingly -- that compounding is exactly what EAGLE-3 later attacks with training-time test.
--->
 </section>
 <section id="eagle-1-verification" class="slide level2">
-<h2>Eagle-1 : Verification</h2>
+<h2>EAGLE-1 : Verification</h2>
 
-<img data-src="images/eagle-tree.png" class="r-stretch"><p><strong>Multi-Round Speculative Sampling</strong> For tree-structured drafts:</p>
+<img data-src="images/eagle-tree.png" class="r-stretch"><p><strong>Multi-Round Speculative Sampling</strong></p>
+<p>For tree-structured drafts:</p>
 <ol type="1">
 <li>Try candidate 1 with original p</li>
 <li>If rejected -&gt; residual p₁ = norm(max(0, p - p̂₁))</li>
@@ -796,12 +745,6 @@ CCE, IISc
 <li>Continue until acceptance or exhaustion</li>
 </ol>
 <p>Maintains invariant: sampling from “remaining” probability mass.</p>
-<!-- NOTES-BLOCK
-[FIX] (nice) Heading style: "Eagle-1 :  Verification" -> "EAGLE-1: Verification".
-[INSTRUCTOR] Connect the two halves of the slide: the tree gives SEVERAL sibling candidates per position, and multi-round rejection is "rejection sampling without replacement" -- each failed sibling subtracts its mass from p before the next sibling is tried. Stress step 3: testing candidate 2 against the ORIGINAL p would over-sample tokens the draft likes; that is the bug students would write.
-[Q-ADVANCED] "Is tree verification still exactly lossless?" -> yes: multi-round speculative sampling preserves the target distribution (EAGLE App. A; the token-tree guarantee originates in SpecInfer, Miao et al. 2023).
-[READING] SpecInfer (arXiv:2305.09781) -- origin of tree-based verification; EAGLE paper Appendix A for the multi-round proof.
--->
 </section>
 <section id="eagle-1-results" class="slide level2">
 <h2>EAGLE-1: Results</h2>
@@ -811,10 +754,6 @@ CCE, IISc
 <li>Average acceptance length τ: 3-4 tokens</li>
 <li>Lossless: Provably maintains target distribution</li>
 </ul>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] Two things to point at in the figure beyond the headline: (1) classic speculative sampling shows N/A or ~1.1x for Vicuna -- the "no suitable draft model" limitation made real (a 7B draft for a 13B target costs more than it saves); (2) Medusa's 1.9-2.2x vs EAGLE's 2.8-3.1x is the measured payoff of autoregressive drafting. Caveat the numbers: greedy, MT-bench; at T=1 EAGLE drops to ~1.9-2.7x (bottom panel of eagle-2-results.png).
-[TERM] tau (acceptance length) gets used without a gloss: average number of tokens accepted per verification cycle -- directly multiplies into the speedup.
--->
 </section>
 <section id="eagle-2-context-aware-speculation-2024" class="slide level2">
 <h2>EAGLE-2: Context-Aware Speculation (2024)</h2>
@@ -832,25 +771,14 @@ CCE, IISc
 <li>Low confidence -&gt; prune, keep tree shallow</li>
 </ul>
 </div>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] The "10+2" example generalizes into the slide's thesis: acceptance depends on CONTEXT, not just position, so any fixed tree wastes budget after easy prefixes and starves hard ones. EAGLE-2's enabling observation: the draft's own confidence is well-calibrated against actual acceptance (paper Fig. 2 scatter, right panel of eagle-2-tree.png) -- a free value estimate, no extra model needed.
-[Q-ADVANCED] "Does shaping the tree with draft confidence break losslessness?" -> no: the tree only chooses WHAT gets verified; the accept/reject rule is untouched, so the output distribution is unchanged.
--->
 </section>
-<section id="eagle-2-context-aware-dynamic-draft-tree" class="slide level2">
-<h2>EAGLE-2: Context-aware dynamic draft tree</h2>
+<section id="eagle-2-tree-expand" class="slide level2">
+<h2>EAGLE-2: Tree Expand</h2>
 
-<!-- NOTES-BLOCK
-[FIX] (nice) This and the next slide share an identical title -- rename to "...: Expand" and "...: Rerank + mask" so the two-phase structure is visible in the outline.
-[INSTRUCTOR] Expansion = shallow beam search with cumulative draft probability as the value: node values multiply down the path (0.6 x 0.8 = 0.48 for "is a"); only the top-2 frontier nodes get expanded further. Have students compute one product themselves.
--->
 <img data-src="images/eagle-tree-2.png" class="r-stretch"></section>
-<section id="eagle-2-context-aware-dynamic-draft-tree-1" class="slide level2">
-<h2>EAGLE-2: Context-aware dynamic draft tree</h2>
+<section id="eagle-2-tree-rerank-mask" class="slide level2">
+<h2>EAGLE-2: Tree Rerank + Mask</h2>
 
-<!-- NOTES-BLOCK
-[INSTRUCTOR] Rerank keeps the global top-8 nodes by cumulative probability -- note "the" (0.06) survives while deeper "nice" (0.05) and "do" (0.03) are cut -- then flattens and builds the ancestor-only mask. Callback: "same tree-attention machinery you saw in Medusa, but the tree is now built per-context instead of fixed offline."
--->
 <img data-src="images/eagle-3-tree-3.png" class="r-stretch"></section>
 <section id="eagle-2-results" class="slide level2">
 <h2>EAGLE-2: Results</h2>
@@ -867,121 +795,105 @@ CCE, IISc
 <p><strong>Performance</strong></p>
 <ul>
 <li><strong>20-40% faster than EAGLE-1</strong></li>
-<li>No additional training required (completely lossless)</li>
+<li>No additional training required (reuses the EAGLE-1 draft head unchanged)</li>
+<li>completely lossless</li>
 <li>Context-aware: Easy contexts (code boilerplate) get deeper trees</li>
 <li>Hard contexts (creative writing) get shallower, wider trees</li>
 </ul>
 </div>
 </div>
 </div>
-<!-- NOTES-BLOCK
-[FIX] (should-fix) "No additional training required (completely lossless)" fuses two separate facts -- split into: "reuses the EAGLE-1 draft head unchanged (no retraining)" and "still lossless". Add the headline numbers from the figure: 3.3-4.3x greedy, 3.1-3.9x at T=1.
-[FLOW] (addressed) EAGLE-3 gap resolved: the "EAGLE-3: Training-Time Test" slide and the 2026-trends slides now follow this one.
--->
 </section>
 <section id="eagle-3-training-time-test-2025" class="slide level2">
 <h2>EAGLE-3: Training-Time Test (2025)</h2>
-<p><strong>Problem</strong>: EAGLE-1/2’s feature-regression loss caps the draft — and acceptance stopped improving with more training data.</p>
+<p><strong>Problem</strong>: EAGLE-1/2’s feature-regression loss caps the draft model and acceptance stopped improving with more training data.</p>
 <ul>
-<li class="fragment"><strong>Drop the feature loss</strong>: train the draft on its own multi-step rollouts — <em>training-time test</em> — so training matches how the draft is actually used at inference</li>
+<li class="fragment"><strong>Drop the feature loss</strong>: train the draft on its own multi-step rollouts - <em>training-time test</em> - so training matches how the draft is actually used at inference</li>
 <li class="fragment"><strong>Multi-layer fusion</strong>: draft consumes low + mid + high layer features from the target, not just the top layer</li>
 <li class="fragment"><strong>Result</strong>: 3–6.5× speedup, and acceptance now <em>scales</em> with draft training data</li>
 </ul>
-<div class="fragment">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>EAGLE 3.1 (May 2026)</strong></p>
-</div>
-<div class="callout-content">
-<p>Fixes “attention drift” at deeper speculation depths (normalize target hidden states between draft steps). Up to 2× longer acceptance on long context, robust to chat-template/system-prompt shifts; 2.03× per-user throughput on Kimi K2.6. Backward compatible with EAGLE-3 checkpoints (vLLM ≥ 0.22).</p>
-</div>
-</div>
-</div>
-</div>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] Frame this as the third act of the EAGLE story: EAGLE-1 = draft in feature space, EAGLE-2 = spend the tree budget adaptively, EAGLE-3 = fix the TRAINING objective. The feature-regression loss forced the draft to imitate hidden states instead of maximizing accepted tokens; removing it (and training on the draft's own rollouts) is the same train/inference-mismatch lesson as scheduled sampling vs teacher forcing -- say that parallel out loud.
-[TERM] "Training-time test" = simulate inference-time multi-step drafting DURING training, feeding the draft its own previous outputs instead of ground-truth features.
-[Q-ADVANCED] "Why did acceptance plateau with more data in EAGLE-1/2 but scale in EAGLE-3?" -> the regression target (exact hidden states) is a harder, mis-aligned objective; once the loss is 'predict tokens the target will accept across k steps', more data directly buys acceptance (EAGLE-3 paper, Fig. 1 scaling curves).
-[READING] Li et al., "EAGLE-3: Scaling up Inference Acceleration via Training-Time Test" (arXiv:2503.01840); vLLM blog "EAGLE 3.1" (May 26, 2026) for the attention-drift fix and TorchSpec training pipeline.
--->
 </section>
 <section id="native-multi-token-prediction-mtp" class="slide level2">
 <h2>Native Multi-Token Prediction (MTP)</h2>
-<p>Speculation is moving <strong>into pretraining</strong>: frontier models now ship with their own draft head.</p>
-<ul>
-<li class="fragment"><strong>DeepSeek-style MTP</strong>: a small <em>sequential</em> head predicts token t+2 keeping the causal chain — unlike Medusa’s independent heads</li>
-<li class="fragment">Trained alongside the base model → highest acceptance, zero extra model to serve</li>
-<li class="fragment">Now standard: <strong>DeepSeek V3/V4, Qwen3-Next / Qwen 3.6, Gemma 4, GLM, MiMo, Nemotron</strong> …</li>
-<li class="fragment">First-class in vLLM &amp; SGLang: <code>deepseek_mtp</code>, <code>qwen3_next_mtp</code>, <code>gemma4_mtp</code>, …</li>
+<p>Speculation moved <strong>into pretraining</strong>: the model ships with its own draft module.</p>
+
+<img data-src="images/mtp-deepseek.png" class="r-stretch"><ul>
+<li><strong>Sequential MTP modules</strong> (DeepSeek-V3): module <span class="math inline">\(k\)</span> = one transformer block predicting token <span class="math inline">\(t+k+1\)</span> autoregressively, the <strong>causal chain is kept</strong>, unlike Medusa’s independent heads</li>
+<li>Input at each step: <span class="math inline">\(\text{concat}(\text{RMSNorm}(h_{\text{prev}}),\ \text{RMSNorm}(\text{emb of shifted token}))\)</span> - the same <em>feature + shifted-token</em> trick as EAGLE</li>
+<li><strong>Shared</strong> embedding + output head with the main model -&gt; tiny extra cost</li>
 </ul>
-<div class="fragment">
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Why it wins</strong></p>
-</div>
-<div class="callout-content">
-<p>The draft head sees the target’s own trunk features <em>and</em> was trained on the same data distribution — acceptance rates reach 85–90% for the +1 token (DeepSeek-V3 report).</p>
-</div>
-</div>
-</div>
-</div>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] Close the loop with the Medusa slide: MTP is the Medusa idea done at pretraining time, with DeepSeek's twist that the extra head is sequential (keeps the causal chain) rather than position-independent -- so it dodges exactly the Medusa limitation slide's problem #1. The strategic point for students: if speculation is free at pretraining time, standalone draft training (EAGLE-style) becomes a retrofit for models that shipped without it.
-[DEMO] Verified on this box: /projects/vllm/bin/python -c "import inspect,re; from vllm.config import SpeculativeConfig; print([m for m in sorted(set(re.findall(r'\"([a-z0-9_]+)\"', inspect.getsource(SpeculativeConfig)))) if m.endswith('_mtp') or m=='mtp'])" -- a dozen *_mtp methods in vLLM 0.24.0.
-[Q-ADVANCED] "If MTP heads are so good, why do EAGLE/DFlash still exist?" -> (1) most open checkpoints still ship 1 MTP head = only +1 token per pass; (2) retrofit methods reach deeper (K=4-8) speculation; (3) you can train a better drafter later without touching the base model. The frontier is converging: DSpark is DeepSeek retrofitting a BETTER drafter onto V4's weights.
-[READING] DeepSeek-V3 Technical Report (MTP section); Sebastian Raschka's "Multi-Token Prediction" architecture-gallery entry; FastMTP (arXiv:2509.18362).
--->
 </section>
-<section id="parallel-drafting-dflash-dspark" class="slide level2">
-<h2>2026: Parallel Drafting — DFlash &amp; DSpark</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>DFlash</strong> (Z Lab, ICML 2026)</p>
+<section id="native-mtp-in-production" class="slide level2">
+<h2>Native MTP in Production</h2>
 <ul>
-<li>Draft = small <strong>block-diffusion</strong> model: whole block in <strong>one</strong> forward pass</li>
-<li>Conditioned on target hidden states; reuses target embedding + LM head</li>
-<li><strong>6×+ lossless</strong>; up to 2.5× over EAGLE-3</li>
-<li>Up to <strong>15×</strong> for gpt-oss-120b on Blackwell (NVIDIA)</li>
-<li>In vLLM <code>speculators</code> [arXiv:2602.06036]</li>
+<li class="fragment"><p>Now standard equipment: <strong>DeepSeek V3/V4</strong>, <strong>Qwen3-Next / Qwen 3.6, Gemma 4, GLM-4.x, MiMo, Nemotron, MiniMax</strong> …</p></li>
+<li class="fragment"><p>Zero extra model to serve; draft lives in the checkpoint</p></li>
+<li class="fragment"><p>First-class serving support- vLLM: <code>deepseek_mtp</code>, <code>qwen3_next_mtp</code>, <code>gemma4_mtp</code>, …; SGLang &amp; TensorRT-LLM: native MTP paths</p></li>
+<li class="fragment"><p>DSpark (next) is DeepSeek <em>upgrading</em> its own MTP drafter post-hoc - same weights, better speculation</p></li>
+<li class="fragment"><p><img data-src="images/mtp-results.png"></p></li>
 </ul>
-</div><div class="column" style="width:50%;">
-<p><strong>DSpark</strong> (DeepSeek, Jun 2026)</p>
-<ul>
-<li><strong>Semi-autoregressive block drafter</strong> + tiny sequential head (fixes suffix decay)</li>
-<li><strong>Confidence-scheduled verification</strong>: variable per-request verify length, load-aware</li>
-<li>V4-Flash <strong>60–85% faster</strong> per user; accepted length +26–31% vs EAGLE-3</li>
-<li>SGLang: <code>--speculative-algorithm DSPARK</code>; training code: DeepSpec (MIT) [arXiv:2607.05147]</li>
+</section>
+<section id="dflash-block-diffusion-parallel-drafting" class="slide level2">
+<h2>DFlash: Block-Diffusion (parallel) Drafting</h2>
+
+<img data-src="images/dflash-arch.png" class="r-stretch"><ul>
+<li>Draft = tiny <strong>diffusion</strong> model: fills K <code>&lt;mask&gt;</code> slots in <strong>one bidirectional pass</strong> - no serial draft loop</li>
+<li>Conditioned on <strong>fused target context features</strong> (multi-layer, EAGLE-3 style) via cross-use of the target’s KV</li>
+<li>Reuses target <strong>embedding + LM head</strong>; only the few middle draft layers are trained</li>
 </ul>
-</div></div>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] The unifying observation: after EAGLE-3, the bottleneck moved to the DRAFT itself -- it is still autoregressive, K cheap-but-serial steps. DFlash attacks it with diffusion (draft a block in one shot; diffusion quality is fine for drafts because the target verifies), DSpark with semi-AR blocks plus a scheduler on the OTHER half of the loop: verification length becomes per-request and load-aware (verify more when GPUs idle, less when busy). Point back to the roofline slide: adaptive verify length is choosing your position on the roofline at runtime.
-[INTUITION] Diffusion drafting in one line: "the draft doesn't need to be right, only plausible -- so a generator considered too lossy to serve alone becomes ideal when a verifier guarantees the distribution."
-[Q-ADVANCED] "Is DFlash still lossless if the draft is a diffusion model?" -> yes: losslessness comes from the verification rule, never from the drafter -- ANY proposal process composed with modified rejection sampling preserves the target distribution (same theorem from earlier in the lecture).
-[READING] DFlash (arXiv:2602.06036) + NVIDIA developer blog "Boost Inference Performance up to 15x on NVIDIA Blackwell Using DFlash"; DSpark (arXiv:2607.05147) + LMSYS blog "DSpark in SGLang" (Jul 6, 2026) for the ragged-verify modes.
--->
+</section>
+<section id="dflash-results" class="slide level2">
+<h2>DFlash: Results</h2>
+
+<img data-src="images/dflash-results.png" class="r-stretch"><ul>
+<li><strong>4.6–6.1× lossless</strong> on math/code benchmarks vs <strong>1.8–2.2×</strong> for EAGLE-3</li>
+<li>Chat (MT-Bench) gains least (<strong>2.75×</strong>) - low predictability, the recurring theme</li>
+<li>NVIDIA: up to <strong>15×</strong> for gpt-oss-120b on Blackwell at equal interactivity (TensorRT-LLM integration)</li>
+<li>Ships in vLLM <code>speculators</code> [arXiv:2602.06036]</li>
+</ul>
+</section>
+<section id="dspark-parallel-sequential-drafting" class="slide level2">
+<h2>DSpark: Parallel + Sequential Drafting</h2>
+
+<img data-src="images/dspark-overview.png" class="r-stretch"><ul>
+<li><strong>(1)</strong> Target decodes a token as usual</li>
+<li><strong>(2)</strong> <strong>Parallel block</strong> drafts all K slots at once; a tiny <strong>sequential block</strong> then refines them left-to-right (kills late-block “suffix decay”); each token gets a <strong>confidence score</strong> <span class="math inline">\(C_k\)</span></li>
+<li><strong>Hardware-aware prefix scheduler</strong>: keep only the draft prefix worth verifying under current load (here E, F, G kept — H dropped)</li>
+<li><strong>(3)</strong> Target verifies the kept prefix — standard accept/reject, still exact</li>
+</ul>
+</section>
+<section id="dspark-in-deepseek-v4" class="slide level2">
+<h2>DSpark in DeepSeek V4</h2>
+
+<img data-src="images/dspark-acceptance.png" class="r-stretch"><ul>
+<li>Conditional acceptance stays <strong>flat ≈0.85–0.9 across all draft positions</strong> - the sequential block fixes the late-position decay that plagues AR drafters</li>
+<li><strong>60–85% faster</strong> per-user on V4-Flash, 57–78% on V4-Pro</li>
+<li>Accepted length <strong>+26–31% vs EAGLE-3</strong>, +16–18% vs DFlash</li>
+<li>Shipping: SGLang <code>--speculative-algorithm DSPARK</code>; drafter training open-sourced as <strong>DeepSpec</strong> (MIT)</li>
+</ul>
 </section>
 <section id="where-the-field-is-heading" class="slide level2">
 <h2>Where the Field Is Heading</h2>
 <ol type="1">
-<li class="fragment"><p><strong>Drafting goes non-autoregressive</strong>: block diffusion (DFlash), semi-AR blocks (DSpark) — the serial draft loop was the last bottleneck</p></li>
+<li class="fragment"><p><strong>Drafting going non-autoregressive</strong>: block diffusion (DFlash), semi-AR blocks (DSpark), no serial draft loop</p></li>
 <li class="fragment"><p><strong>Verification becomes adaptive</strong>: confidence-scheduled, load-aware verify windows instead of a fixed K</p></li>
-<li class="fragment"><p><strong>Speculation moves into pretraining</strong>: native MTP heads are table stakes for frontier models</p></li>
-<li class="fragment"><p><strong>Robustness engineering</strong>: EAGLE 3.1 — long context, chat templates, OOD system prompts</p></li>
-<li class="fragment"><p><strong>The “~3×” ceiling is history</strong>: 2026 frontier is 4–6×+ lossless, more with hardware co-design</p></li>
+<li class="fragment"><p><strong>Speculation moving into pretraining</strong>: native MTP heads are begin shipped along with models</p></li>
 </ol>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] Good board exercise to end the section: draw the Draft -> Verify -> Accept loop once more and annotate WHERE each 2024-26 advance attacks it (Medusa/EAGLE/MTP = draft quality; EAGLE-2/DSpark = budget allocation; DFlash/DSpark = draft parallelism; EAGLE-3 = draft training; rejection rule = untouched since 2022). The invariant students should leave with: the 2022 verification theorem is the one piece nobody has needed to change.
-[FLOW] If teaching time is short, this slide can absorb the previous three: keep only trends 1-3 and speak the numbers.
-[Q-ADVANCED] "What's left to speculate on?" -> open problems: speculation under heavy batching (verification FLOPs stop being free), tree/block verification with paged attention kernels, and speculation for reasoning models where long chains shift token statistics mid-generation.
--->
+</section>
+<section id="model-free-drafting" class="slide level2">
+<h2>Model-Free Drafting</h2>
+<p><strong>No draft model at all</strong></p>
+<ul>
+<li class="fragment"><strong>N-gram / prompt-lookup</strong>: match the last few generated tokens against the prompt + output so far; propose whatever followed last time
+<ul>
+<li class="fragment">vLLM <code>ngram</code> / <code>ngram_gpu</code>; HF <code>prompt_lookup_num_tokens</code></li>
+</ul></li>
+<li class="fragment"><strong>Suffix Decoding</strong> (Snowflake Arctic): a suffix tree over previous outputs + current prompt; drafts <em>long</em> continuations, adaptively sized per step
+<ul>
+<li class="fragment"><strong>2.3–6.3×</strong> on agentic pipelines; vLLM <code>suffix</code> method</li>
+</ul></li>
+<li class="fragment">Where they win: <strong>agents</strong> (tool-call loops), <strong>RAG</strong>, code editing, self-refinement - anywhere output repeats input</li>
+</ul>
 </section>
 <section id="inference-framework-support" class="slide level2">
 <h2>Inference Framework Support</h2>
@@ -999,31 +911,26 @@ CCE, IISc
 <tbody>
 <tr class="odd">
 <td><strong>vLLM</strong></td>
-<td>EAGLE-2, EAGLE-3, Medusa, N-gram, Suffix Decoding</td>
+<td>Draft model, EAGLE / EAGLE-3 (3.1), Medusa, MTP, N-gram, Suffix, DFlash (speculators)</td>
 </tr>
 <tr class="even">
 <td><strong>SGLang</strong></td>
-<td>EAGLE-3, MTP (DeepSeek), Standalone, N-gram</td>
+<td>EAGLE-3, <strong>DSpark</strong>, MTP (DeepSeek), Standalone, N-gram</td>
 </tr>
 <tr class="odd">
 <td><strong>TensorRT-LLM</strong></td>
-<td>Draft-target, EAGLE-3, MTP, User-provided</td>
+<td>Draft-target, EAGLE-3, MTP, ReDrafter, User-provided</td>
 </tr>
 <tr class="even">
 <td><strong>Hugging Face Transformers</strong></td>
-<td>Universal Assisted Generation (UAG), Dynamic Speculation</td>
+<td>Assisted generation, UAG (cross-tokenizer), Prompt lookup, Early-exit</td>
 </tr>
 <tr class="odd">
 <td><strong>llama.cpp</strong></td>
-<td>Universal Assisted Decoding, Speculative stats</td>
+<td>Draft-model speculative decoding (<code>--model-draft</code>)</td>
 </tr>
 </tbody>
 </table>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) Verified against the course box (vLLM 0.24.0 at /projects/vllm): supported methods include draft_model, eagle, eagle3, medusa, ngram/ngram_gpu, suffix, and many *_mtp variants. The vLLM row should therefore also list "Draft model" and "MTP" -- your own sd_test.py uses method="draft_model". Also vLLM's method name is "eagle" (EAGLE-1/2 style), not literally "EAGLE-2". And "Universal Assisted Decoding" is an HF-Transformers term; llama.cpp calls it speculative decoding (llama-server --model-draft).
-[FIX] vLLM row: "Draft model, EAGLE / EAGLE-3, Medusa, MTP, N-gram, Suffix decoding". llama.cpp row: "Draft-model speculative decoding (--model-draft)".
-[DEMO] Live one-liner to regenerate the vLLM list in front of the class: /projects/vllm/bin/python -c "import inspect,re; from vllm.config import SpeculativeConfig; print(sorted(set(re.findall(r'\"([a-z0-9_]+)\"', inspect.getsource(SpeculativeConfig)))))"
--->
 </section>
 <section id="demo-1-hugging-face-transformers" class="slide level2">
 <h2>Demo 1: Hugging Face Transformers</h2>
@@ -1079,20 +986,30 @@ CCE, IISc
 <span id="cb2-37"><a></a>spec_time <span class="op">=</span> time.time() <span class="op">-</span> start</span>
 <span id="cb2-38"><a></a><span class="bu">print</span>(<span class="ss">f"Speculative: </span><span class="sc">{</span>spec_time<span class="sc">:.2f}</span><span class="ss">s"</span>)</span>
 <span id="cb2-39"><a></a><span class="bu">print</span>(<span class="ss">f"Speedup: </span><span class="sc">{</span>baseline_time<span class="op">/</span>spec_time<span class="sc">:.2f}</span><span class="ss">x"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) This code errors out as written: double7/vicuna-68m uses the 32k Llama-2 tokenizer while Llama-3.1-8B uses a 128k vocab -- transformers rejects assistant_model with mismatched tokenizers unless you pass tokenizer= and assistant_tokenizer= to generate() (Universal Assisted Generation, a different and slower path). Two more benchmark bugs: the bnb-4bit target muddies the memory-bound timing story, and without do_sample=False Llama-3.1-Instruct's generation_config silently samples (do_sample=True, T=0.6), making the two timings incomparable.
-[FIX] Replace with the pairing already tested in inference/05_speculative/sd_test.py: target Qwen/Qwen3-4B-Instruct-2507 + assistant Qwen/Qwen3-0.6B (shared tokenizer), do_sample=False on both runs, one warm-up generate before timing, and a TextStreamer so the class can watch tokens arrive.
-[DEMO] Run the commented-out top half of sd_test.py live; the streamer makes acceptance *visible* -- tokens arrive in clumps of 2-5 instead of one at a time. That visual is the demo.
-[Q-ADVANCED] "What speedup should we expect here?" -> modest, ~1.3-2x: a 0.6B draft is only ~7x cheaper per call than a 4B target, and HF's verifier is not the fastest -- which tees up "serving frameworks do this better" on the next slide.
--->
 </section>
-<section id="demo-2-vllm-with-eagle-3" class="slide level2">
-<h2>Demo 2: vLLM with EAGLE-3</h2>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) Empty slide -- it currently renders as a bare title.
-[FIX] Two ready options: (a) the live bottom half of sd_test.py -- vLLM with speculative_config={"model": "Qwen/Qwen3-0.6B", "num_speculative_tokens": 5, "method": "draft_model"}, gpu_memory_utilization=0.6 (config style already proven on this box); (b) a true EAGLE-3 run: LLM(model="meta-llama/Llama-3.1-8B-Instruct", speculative_config={"method": "eagle3", "model": "yuhuili/EAGLE3-LLaMA3.1-Instruct-8B", "num_speculative_tokens": 4}). Mind the one-vLLM-server-at-a-time memory constraint on the GB10 box.
-[DEMO] Show vLLM's own scoreboard: the periodic "SpecDecoding metrics" log line prints draft acceptance rate and mean accepted length live. Have students PREDICT the acceptance rate for a code prompt vs a creative-writing prompt, then run both -- it ties the whole lecture (acceptance ~ predictability) into one observable number.
--->
+<section id="demo-2-vllm-with-mtp" class="slide level2">
+<h2>Demo 2: vLLM with MTP</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a></a><span class="co"># example run, pls see --spec-method and --speculative-config config for more details</span></span>
+<span id="cb3-2"><a></a><span class="ex">vllm</span> serve nvidia/Qwen3.6-35B-A3B-NVFP4 <span class="dt">\</span></span>
+<span id="cb3-3"><a></a>    <span class="at">--host</span> 0.0.0.0 <span class="dt">\</span></span>
+<span id="cb3-4"><a></a>    <span class="at">--port</span> 8000 <span class="dt">\</span></span>
+<span id="cb3-5"><a></a>    <span class="at">--tensor-parallel-size</span> 1 <span class="dt">\</span></span>
+<span id="cb3-6"><a></a>    <span class="at">--trust-remote-code</span> <span class="dt">\</span></span>
+<span id="cb3-7"><a></a>    <span class="at">--quantization</span> modelopt <span class="dt">\</span></span>
+<span id="cb3-8"><a></a>    <span class="at">--kv-cache-dtype</span> fp8 <span class="dt">\</span></span>
+<span id="cb3-9"><a></a>    <span class="at">--attention-backend</span> flashinfer <span class="dt">\</span></span>
+<span id="cb3-10"><a></a>    <span class="at">--moe-backend</span> marlin <span class="dt">\</span></span>
+<span id="cb3-11"><a></a>    <span class="at">--gpu-memory-utilization</span> 0.4 <span class="dt">\</span></span>
+<span id="cb3-12"><a></a>    <span class="at">--max-model-len</span> 262144 <span class="dt">\</span></span>
+<span id="cb3-13"><a></a>    <span class="at">--max-num-seqs</span> 4 <span class="dt">\</span></span>
+<span id="cb3-14"><a></a>    <span class="at">--max-num-batched-tokens</span> 8192 <span class="dt">\</span></span>
+<span id="cb3-15"><a></a>    <span class="at">--enable-chunked-prefill</span> <span class="dt">\</span></span>
+<span id="cb3-16"><a></a>    <span class="at">--async-scheduling</span> <span class="dt">\</span></span>
+<span id="cb3-17"><a></a>    <span class="at">--enable-prefix-caching</span> <span class="dt">\</span></span>
+<span id="cb3-18"><a></a>    <span class="at">--speculative-config</span> <span class="st">'{"method":"mtp","num_speculative_tokens":3,"moe_backend":"triton"}'</span> <span class="dt">\</span></span>
+<span id="cb3-19"><a></a>    <span class="at">--load-format</span> fastsafetensors <span class="dt">\</span></span>
+<span id="cb3-20"><a></a>    <span class="at">--enable-auto-tool-choice</span> <span class="dt">\</span></span>
+<span id="cb3-21"><a></a>    <span class="at">--tool-call-parser</span> qwen3_coder</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="when-to-use-speculative-decoding" class="slide level2">
 <h2>When to Use Speculative Decoding?</h2>
@@ -1109,7 +1026,10 @@ CCE, IISc
 </div><div class="column" style="width:50%;">
 <p>❌ Avoid When</p>
 <ul>
-<li><strong>High batch sizes (32+)</strong>: Compute-bound, benefits diminish</li>
+<li><strong>High batch + short context</strong>: Compute-bound, benefits diminish
+<ul>
+<li><em>2026 update</em>: at long context the KV-cache is the bottleneck — speculation keeps paying even at batch 256 (MagicDec); modern schedulers adapt to load (DSpark) instead of switching off</li>
+</ul></li>
 <li><strong>Very high temperature</strong>: Acceptance rate drops</li>
 <li><strong>Creative writing</strong>: Unpredictable tokens, low acceptance</li>
 <li><strong>Memory constrained</strong>: Draft model adds overhead</li>
@@ -1128,10 +1048,6 @@ CCE, IISc
 </div>
 </div>
 </div>
-<!-- NOTES-BLOCK
-[FIX] (nice) nvidia-smi's "GPU-Util" only means "some kernel was resident", not FLOP utilization -- a fully memory-bound decode shows 90%+ GPU-Util. Better quick test: compare batch-1 vs batch-8 throughput; if per-request speed barely drops, you were memory-bound and speculation will help.
-[Q-ADVANCED] "Where exactly is the batch-size crossover?" -> when batch x (K+1) x FLOPs/token approaches the compute roofline; it is model- and GPU-specific. Production servers gate speculation by load rather than guess -- worth checking vLLM's current flags live.
--->
 </section>
 <section id="temperature-vs-acceptance-rate" class="slide level2">
 <h2>Temperature vs Acceptance Rate</h2>
@@ -1174,11 +1090,6 @@ CCE, IISc
 <div class="fragment">
 <p>Dynamic Adjustment Modern frameworks (vLLM, SGLang) automatically adjust draft length based on observed acceptance rates.</p>
 </div>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) This table is unsourced and its speedup column tops out above anything in the papers this deck cites (Chen: 1.9-2.5x; Medusa: 2.2-3.6x; EAGLE-2 greedy: 3.3-4.3x). If kept, label it "illustrative trend -- numbers vary by method/model/hardware"; better, replace with two real anchors: Chen Table 1 (greedy 2.01x vs nucleus 1.92x on XSum) and EAGLE-2 (T=0: 3.6-4.3x -> T=1: 3.1-3.9x). The qualitative trend (higher T -> lower acceptance) is real; these specific cells are not.
-[FIX] (should-fix) "vLLM, SGLang automatically adjust draft length" -- the clean documented example is HF Transformers (dynamic num_assistant_tokens via the default "heuristic" schedule, doubling/shrinking with acceptance). Rewrite as: "e.g., HF Transformers adapts draft length on the fly; serving frameworks typically gate speculation by batch/load instead."
-[Q-ADVANCED] "Why does higher temperature hurt acceptance?" -> flatter target distribution means the draft's argmax-ish guesses carry less of the target's mass, so min(1, p_t/p_d) shrinks on average; at T=0 acceptance collapses to "did the draft match the argmax".
--->
 </section>
 <section id="integration-with-other-optimizations" class="slide level2">
 <h2>Integration with Other Optimizations</h2>
@@ -1204,10 +1115,6 @@ CCE, IISc
 </div>
 </div>
 </div>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) "FlashAttention works seamlessly with tree attention" is overstated: stock FlashAttention kernels do not take arbitrary masks; tree attention needs custom-mask kernels (FlexAttention, FlashInfer) -- one reason vLLM's EAGLE path drafts *chains* rather than full trees. Chain speculation composes trivially; trees are the hard case. Soften the bullet.
-[INSTRUCTOR] The KV callout deserves a drawn moment: draft tokens' KV entries are written DURING verification; on rejection the cache must be rolled back or masked. This interaction with paged/continuous batching is why frameworks took the better part of a year to ship speculation properly.
--->
 </section>
 <section id="key-takeaways" class="slide level2">
 <h2>Key Takeaways</h2>
@@ -1224,10 +1131,6 @@ CCE, IISc
 <li class="fragment"><p><strong>Production ready</strong>: vLLM, SGLang, TensorRT-LLM, Transformers all have native support</p></li>
 <li class="fragment"><p><strong>Best for</strong>: Low batch sizes, repetitive content, latency-sensitive applications</p></li>
 </ol>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) Point 1 needs an asterisk: draft-model SD and EAGLE are lossless, but Medusa as shipped uses *typical acceptance* (and MEDUSA-2 fine-tunes the backbone), which does NOT exactly preserve the original distribution. Suggested wording: "lossless when using rejection-sampling verification; some head-based variants trade exactness for speed."
-[TERM] (should-fix) "Training-time test" appears here with no definition (EAGLE-3 never got a slide): one-liner -- train the draft on its own multi-step rollouts so training matches how it will actually be used at inference.
--->
 </section>
 <section id="performance-cheat-sheet" class="slide level2">
 <h2>Performance Cheat Sheet</h2>
@@ -1278,25 +1181,42 @@ CCE, IISc
 <td>vLLM, SGLang</td>
 </tr>
 <tr class="odd">
-<td>EAGLE-3</td>
+<td>EAGLE-3 / 3.1</td>
 <td>3-6.5×</td>
 <td>~3% params</td>
 <td>Yes (advanced)</td>
 <td>vLLM, SGLang, TensorRT</td>
 </tr>
 <tr class="even">
-<td>DeepSeek MTP</td>
+<td>Native MTP</td>
 <td>~1.8×</td>
 <td>Built-in</td>
 <td>Pre-trained</td>
-<td>SGLang, TensorRT</td>
+<td>vLLM, SGLang, TensorRT</td>
+</tr>
+<tr class="odd">
+<td>N-gram / Suffix</td>
+<td>2-6× (repetitive)</td>
+<td>None (CPU index)</td>
+<td>No</td>
+<td>vLLM, HF, SGLang</td>
+</tr>
+<tr class="even">
+<td>DFlash</td>
+<td>4.6-6.1×</td>
+<td>1-block diffusion draft</td>
+<td>Yes (draft layers)</td>
+<td>vLLM (speculators), TRT-LLM</td>
+</tr>
+<tr class="odd">
+<td>DSpark</td>
+<td>1.6-1.85× per-user (V4)</td>
+<td>Draft module</td>
+<td>Yes (DeepSpec)</td>
+<td>SGLang</td>
 </tr>
 </tbody>
 </table>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) Row-by-row check: "Original 2-3x" -- Chen measured 1.9-2.5x (align with your Results slide). Medusa overhead "~0.5% params" -- see the architecture-slide note (~2%/head). Medusa support "vLLM, SGLang, MLC": SGLang's spec-decode docs list EAGLE/EAGLE-3/MTP/ngram but not Medusa; TGI is the notable Medusa server. MTP support: vLLM 0.24 has deepseek_mtp and friends, so add vLLM to that row. EAGLE-3 "~3% params" -- verify against the published head (e.g. yuhuili/EAGLE3-LLaMA3.1-Instruct-8B on HF) before quoting.
-[FIX] Fastest verification path: vLLM row is confirmed locally (see framework-table note); for SGLang/TGI check their "Speculative Decoding" docs pages the week you teach -- this table is the slide most likely to rot.
--->
 </section>
 <section id="essential-papers" class="slide level2">
 <h2>Essential Papers</h2>
@@ -1308,10 +1228,6 @@ CCE, IISc
 <li class="fragment"><strong>Li et al.</strong> (2025) - “EAGLE-3: Scaling up Inference Acceleration via Training-Time Test” [arXiv:2503.01840]</li>
 <li class="fragment"><strong>Xia et al.</strong> (2024) - “Unlocking Efficiency: A Comprehensive Survey of Speculative Decoding” [arXiv:2401.07851]</li>
 </ol>
-<!-- NOTES-BLOCK
-[FIX] (should-fix) EAGLE-2 is missing even though two result slides quote it: Li et al. (2024), "EAGLE-2: Faster Inference of Language Models with Dynamic Draft Trees" [arXiv:2406.16858]. Also: Leviathan et al. is ICML 2023 (arXiv Nov 2022) -- cite as 2023; EAGLE-1's full title is "EAGLE: Speculative Sampling Requires Rethinking Feature Uncertainty" (the ellipsis hides the paper's actual thesis).
-[READING] Optional further-reading bullet for the curious: Stern et al. 2018 (blockwise parallel decoding -- the precursor); Miao et al. 2023, SpecInfer (tree verification); DeepSeek-V3 technical report, MTP section (speculation baked into pretraining).
--->
 </section>
 <section id="questions" class="slide level2">
 <h2>Questions?</h2>
