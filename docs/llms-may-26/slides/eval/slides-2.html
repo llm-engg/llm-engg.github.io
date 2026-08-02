@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.9.34">
 
   <meta name="author" content="CCE, IISc">
-  <title>Large Language Models : A Hands-On Approach - May, 2026 – Application Evals</title>
+  <title>Large Language Models : A Hands-On Approach - May, 2026 – LLM Evaluation - II</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -99,7 +99,7 @@
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../styles.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -199,7 +199,7 @@
     <div class="slides">
 
 <section id="title-slide" data-state="title-slide" class="quarto-title-block center">
-  <h1 class="title">Application Evals</h1>
+  <h1 class="title">LLM Evaluation - II</h1>
   <p class="subtitle">Large Language Models : A Hands-on Approach</p>
 
 <div class="quarto-title-authors">
@@ -210,6 +210,21 @@ CCE, IISc
 </div>
 </div>
 
+</section>
+<section class="slide level2">
+
+<style>
+/* Tier-2 "further reading" slides: present in the deck, off the lecture path. */
+.reveal section.reference > h2::after {
+  content: " \00b7 further reading";
+  font-size: 0.40em;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: #a06898;
+  white-space: nowrap;
+}
+.reveal section.reference > h2 { border-bottom-style: dashed; }
+</style>
 </section>
 <section id="recap" class="slide level2">
 <h2>Recap</h2>
@@ -225,23 +240,174 @@ CCE, IISc
 </ul></li>
 </ul>
 </section>
+<section id="from-model-evals-to-application-evals" class="slide level2">
+<h2>From Model Evals to Application Evals</h2>
+<p><strong>Last session</strong>: <em>given a fixed model, how good is it?</em></p>
+<ul>
+<li>benchmarks, leaderboards, public scores.</li>
+</ul>
+<div class="fragment">
+<p><strong>Today</strong>: <em>How to evaluate an LLM Application</em> (Customer Support Bot, AI Tutor etc). The model is just one component</p>
+</div>
+<div class="fragment">
+<div style="font-size: 0.8em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Model evaluation</th>
+<th>Application evaluation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Question</strong></td>
+<td>How capable is this model?</td>
+<td>Does <em>my system</em> work for <em>my users</em>?</td>
+</tr>
+<tr class="even">
+<td><strong>Dataset</strong></td>
+<td>Public, fixed, shared</td>
+<td>You have to build</td>
+</tr>
+<tr class="odd">
+<td><strong>Ground truth</strong></td>
+<td>Provided with the benchmark</td>
+<td>Does not exist yet</td>
+</tr>
+<tr class="even">
+<td><strong>Who decides “correct”?</strong></td>
+<td>The benchmark authors</td>
+<td>Your domain expert</td>
+</tr>
+<tr class="odd">
+<td><strong>Comparable across teams?</strong></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<p>A model that tops every leaderboard can still fail in an application setting.</p>
+</blockquote>
+</div>
+</section>
+<section id="todays-roadmap" class="slide level2">
+<h2>Today’s Roadmap</h2>
+<ul>
+<li>LLM Appications Evaluation</li>
+<li>LLM as a Judge</li>
+<li>Eval Metrics</li>
+<li>Evaluation Concepts</li>
+</ul>
+<div style="font-size: 0.8em; opacity: 0.75;">
+<p>Slides marked <em>· further reading</em> are supplementary - skipped in class, kept in the deck.</p>
+</div>
+</section>
+<section id="example-supportbot" class="slide level2">
+<h2>Example: <strong>SupportBot</strong></h2>
+
+<img data-src="images/support-bot.png" class="r-stretch"><p>An e-commerce <strong>customer support assistant</strong>.</p>
+<div style="font-size: 0.9em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 72%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Handles</strong></td>
+<td>order status · returns &amp; refunds · billing · account lookup</td>
+</tr>
+<tr class="even">
+<td><strong>Pipeline</strong></td>
+<td>classify intent =&gt; retrieve policy docs (RAG) =&gt; call <code>order_lookup</code> =&gt; generate reply</td>
+</tr>
+<tr class="odd">
+<td><strong>Scale</strong></td>
+<td>~50k conversations/week; 3 human agents handle escalations</td>
+</tr>
+<tr class="even">
+<td><strong>What can go wrong?</strong></td>
+<td>quoting the wrong refund window costs real money; revealing account details without auth is a security incident</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fragment">
+<blockquote>
+<p>As development progresses, we want to answer two questions: <strong>“Is SupportBot getting better or worse?”</strong> and <strong>“which part of it is broken?”</strong></p>
+</blockquote>
+</div>
+</section>
+<section id="supportbot-what-could-go-wrong" class="slide level2">
+<h2>SupportBot: What Could Go Wrong?</h2>
+<div style="font-size: 0.85em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 84%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Where</th>
+<th>A plausible failure</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Intent</strong></td>
+<td>“I need to change my delivery” - changes the <em>date</em> when the user meant the <em>address</em></td>
+</tr>
+<tr class="even">
+<td><strong>Retrieval</strong></td>
+<td>pulls the <em>old</em> 30-day refund policy; the current one is 60 days</td>
+</tr>
+<tr class="odd">
+<td><strong>Tool call</strong></td>
+<td>user gives an order number for a <em>return</em>; bot also needs user account details and doesn’t say so</td>
+</tr>
+<tr class="even">
+<td><strong>Generation</strong></td>
+<td>retrieval was correct, the reply contradicts</td>
+</tr>
+<tr class="odd">
+<td><strong>Safety</strong></td>
+<td>asks for account number + full name before verifying identity</td>
+</tr>
+<tr class="even">
+<td><strong>Session</strong></td>
+<td>every turn polite and fluent; the refund never actually gets processed</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<img data-src="images/supportbot-failuires.png" class="r-stretch"></section>
 <section id="evaluating-by-vibes" class="slide level2">
 <h2>Evaluating by Vibes</h2>
-<p>Suppose a LLM system (a legal assistant or a medical advisor) is not producing expected output. How to fix it?</p>
+<p><strong>SupportBot</strong> is quoting the wrong refund window. How do you fix it?</p>
 <div class="fragment">
 <blockquote>
 <p>“Change the prompt, generate 3-4 examples, results look good =&gt; Ship it!”</p>
 </blockquote>
 </div>
 <div class="fragment">
+<div class="columns">
+<div class="column">
 <p><img data-src="images/vibe-check.png"></p>
-</div>
-<div class="fragment">
-<p>Questions?</p>
+</div><div class="column">
 <ul>
-<li><p>Does this approach cover all aspects of user queries?</p></li>
-<li><p>Does it capture all failure modes?</p></li>
+<li class="fragment"><p>Does this approach cover all aspects of user queries?</p></li>
+<li class="fragment"><p>Does it capture all failure modes?</p></li>
 </ul>
+</div></div>
 </div>
 </section>
 <section id="evaluating-by-vibes-1" class="slide level2">
@@ -255,24 +421,108 @@ CCE, IISc
 </ul>
 <div class="fragment">
 <p><strong>Solution</strong></p>
+<div class="columns">
+<div class="column">
+<p><img data-src="images/vibe-to-systematic.png" width="436"></p>
+</div><div class="column">
 <ul>
 <li><p>No Evals =&gt; no faster iteration, no confidence in changes, no way to track progress over time</p></li>
 <li><p>What are unit tests for LLMs? Can we automate this process?</p></li>
 </ul>
-<p><img data-src="images/vibe-to-systematic.png" width="436"></p>
+</div></div>
 </div>
+</section>
+<section id="standard-metrics" class="slide level2">
+<h2>Standard Metrics</h2>
+<blockquote>
+<p>An <strong>n-gram</strong> is a run of <em>n</em> consecutive words. In “60 days of delivery”, <em>“60 days”</em> is a 2-gram.</p>
+</blockquote>
+<div style="font-size: 0.85em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 41%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Asks</th>
+<th>Which is really</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>BLEU</strong></td>
+<td>Of the n-grams <strong>I produced</strong>, how many appear in the reference?</td>
+<td><strong>precision</strong></td>
+</tr>
+<tr class="even">
+<td><strong>ROUGE</strong></td>
+<td>Of the <strong>reference’s</strong> n-grams, how many did I recover?</td>
+<td><strong>recall</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>BERTScore</strong></td>
+<td>The same question - but matching embedding <strong>vectors</strong> instead of exact strings, so synonyms count</td>
+<td>soft precision / recall</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="worked-bleu-and-rouge-by-hand" class="slide level2 reference" data-visibility="uncounted">
+<h2>Worked: BLEU and ROUGE by Hand</h2>
+<p>Reference: <em>“Returns are accepted within 60 days of delivery.”</em> (8 tokens)</p>
+<div style="font-size: 0.8em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 55%">
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Candidate</th>
+<th>1-gram overlap</th>
+<th>precision (BLEU-ish)</th>
+<th>recall (ROUGE-ish)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Correct</strong>, paraphrased<br><em>“You’ve got 60 days from when it arrived to send it back.”</em></td>
+<td>2 / 12</td>
+<td><strong>0.17</strong></td>
+<td><strong>0.25</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Wrong</strong>-says 30 days<br><em>“Returns are accepted within 30 days of delivery.”</em></td>
+<td>7 / 8</td>
+<td><strong>0.88</strong></td>
+<td><strong>0.88</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Only <em>“60”</em> and <em>“days”</em> survive the paraphrase. The wrong answer shares seven of eight words with the reference.</p>
+<blockquote>
+<p>Full sacreBLEU on the same pair: <strong>correct 6.8</strong>, <strong>wrong 59.7</strong>. The wrong answer scores <strong>9× higher</strong>.</p>
+</blockquote>
 </section>
 <section id="reference-based-evaluation" class="slide level2">
 <h2>Reference Based Evaluation</h2>
 <ul>
 <li>Compare LLM output to a reference answer (exact match, BLEU, ROUGE, BERTScore)</li>
 </ul>
-<table class="caption-top" style="width:100%;">
+<div style="font-size: 0.8em;">
+<table class="caption-top">
 <colgroup>
-<col style="width: 21%">
-<col style="width: 21%">
-<col style="width: 26%">
-<col style="width: 30%">
+<col style="width: 17%">
+<col style="width: 23%">
+<col style="width: 27%">
+<col style="width: 31%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -308,16 +558,17 @@ CCE, IISc
 <td>Still shallow; doesn’t catch factual errors</td>
 </tr>
 <tr class="odd">
-<td><strong>Task-specific</strong> (F1 on NER, pass@k on code)</td>
+<td><strong>Task-specific</strong> (pass@k on code)</td>
 <td>Whatever the task defines</td>
 <td>The task</td>
 <td>Anything outside the task</td>
 </tr>
 </tbody>
 </table>
+</div>
 </section>
-<section id="why-reference-based-evaluationd-fail-for-llms" class="slide level2">
-<h2>Why Reference-Based Evaluationd Fail for LLMs?</h2>
+<section id="why-reference-based-evaluation-fails-for-llms" class="slide level2">
+<h2>Why Reference-Based Evaluation Fails for LLMs?</h2>
 <ul>
 <li><strong>Paraphrase insensitivity.</strong>
 <ul>
@@ -332,6 +583,11 @@ CCE, IISc
 <li>“write a haiku about autumn,” infinite valid outputs exist. No single reference or even 10 references covers the space.</li>
 </ul></li>
 </ul>
+<div class="fragment">
+<blockquote>
+<p><strong>SupportBot ·</strong> Reference: <em>“Returns are accepted within 60 days of delivery.”</em> Reply: <em>“You’ve got 60 days from when it arrived to send it back.”</em> <strong>Exact match: 0. BLEU: near zero. The answer is perfect.</strong></p>
+</blockquote>
+</div>
 </section>
 <section id="when-reference-based-evaluation-works" class="slide level2">
 <h2>When Reference-Based Evaluation Works</h2>
@@ -353,6 +609,7 @@ CCE, IISc
 </section>
 <section id="three-gulfs-model" class="slide level2">
 <h2>Three Gulfs Model</h2>
+<div style="font-size: 0.8em;">
 <ul>
 <li>Gulf of Specification (Developer ↔︎ LLM Pipeline)
 <ul>
@@ -363,12 +620,31 @@ CCE, IISc
 <li>cannot manually review every input and output</li>
 <li>there will be errors and outliers that are hard to spot at scale.</li>
 </ul></li>
-<li>Gulf of Generalisation (Data ↔︎ LLM Pipeline)</li>
+<li>Gulf of Generalisation (Data ↔︎ LLM Pipeline)
+<ul>
+<li>LLM behaviour varies across inputs; it worked on your 5 examples</li>
+<li>may need task decomposition, better retrieval, fine-tuning</li>
+</ul></li>
 </ul>
-
-<img data-src="images/three-gulfs.png" class="r-stretch"><div class="fragment">
+<p><img data-src="images/three-gulfs.png"></p>
+</div>
+</section>
+<section id="three-gulfs-model-1" class="slide level2">
+<h2>Three Gulfs Model</h2>
 <blockquote>
 <p>How to develop effective evaluation strategies that bridge these gulfs and enable us to build better LLM applications?</p>
+</blockquote>
+<div class="fragment">
+<p><strong>SupportBot ·</strong></p>
+<ul>
+<li><em>Specification:</em> you never told it to ask for an RMA number on returns.</li>
+<li><em>Comprehension:</em> 50k conversations a week - we can read maybe few hundreds.</li>
+<li><em>Generalisation:</em> it handles “where is my order?” and fails “where are my orders?”</li>
+</ul>
+</div>
+<div class="fragment">
+<blockquote>
+<p>Reference-based metrics fail because of the gulfs - specifically Generalisation. So instead of better METRICs, we need a better PROCESS</p>
 </blockquote>
 </div>
 </section>
@@ -380,8 +656,18 @@ CCE, IISc
 <li><strong>Online (production):</strong> Monitoring with automated evaluators, guardrails, incident response</li>
 <li><strong>Guardrails (runtime):</strong> Real-time constraints and safety checks</li>
 </ul>
-
-<img data-src="images/offline-online.png" class="r-stretch"></section>
+<div class="columns">
+<div class="column">
+<p><img data-src="images/offline-online.png"></p>
+</div><div class="column">
+<p><strong>SupportBot ·</strong></p>
+<ul>
+<li class="fragment"><em>Offline:</em> does the new prompt still quote the 60-day window on 200 golden cases?</li>
+<li class="fragment"><em>Online:</em> did escalations to human agents go down this week?</li>
+<li class="fragment"><em>Guardrail:</em> block any reply containing a full card number - <strong>before</strong> it renders.</li>
+</ul>
+</div></div>
+</section>
 <section id="offline-evaluation" class="slide level2">
 <h2>Offline Evaluation</h2>
 <p>Systematic testing against a fixed dataset <em>before</em> the changes / application reaches users.</p>
@@ -447,7 +733,7 @@ CCE, IISc
 </blockquote>
 </div>
 </section>
-<section id="example-ncert-doubt-solver" class="slide level2">
+<section id="example-ncert-doubt-solver" class="slide level2 reference" data-visibility="uncounted">
 <h2>Example : NCERT Doubt Solver</h2>
 <table class="caption-top">
 <colgroup>
@@ -502,12 +788,12 @@ CCE, IISc
 <p>Each subsystem evaluated against its own inputs and outputs.</p>
 <ul>
 <li><strong>Pro :</strong> When a component regresses, you know where to fix.</li>
-<li><strong>Con :</strong> A system of components that each score 95% can still compound to a system that’s 80% (probabilities multiply). Component-level evals can miss emergent failure modes that only appear in the end-to-end system.</li>
+<li><strong>Con :</strong> Components that each score 95% still compound: <strong>0.95⁴ = 0.81</strong>. Four “excellent” stages give a system that fails one request in five. Component-level evals can also miss emergent failures that only appear end-to-end.</li>
 </ul>
 </div>
 </section>
-<section id="task-decomosition---example" class="slide level2">
-<h2>Task Decomosition - Example</h2>
+<section id="task-decomposition---example" class="slide level2">
+<h2>Task Decomposition - Example</h2>
 <table class="caption-top">
 <colgroup>
 <col style="width: 23%">
@@ -545,8 +831,53 @@ CCE, IISc
 </tbody>
 </table>
 </section>
+<section id="rag-metrics" class="slide level2 reference" data-visibility="uncounted">
+<h2>RAG Metrics</h2>
+<ul>
+<li>Recall@k: Do all relevant chunks for a query appear in your top K results? (<strong>most important</strong>)</li>
+<li>Precision@k: Are the top-k retrieved documents relevant?</li>
+<li>MRR (Mean Reciprocal Rank): How high is the best relevant document ranked?</li>
+<li>nDCG (normalized Discounted Cumulative Gain): Are relevant documents ranked higher than irrelevant?</li>
+</ul>
+</section>
+<section id="what-is-a-trace" class="slide level2">
+<h2>What is a Trace?</h2>
+<ul>
+<li>To evaluate a component, we first have to be able to <em>see</em> it. That is what a trace gives.</li>
+</ul>
+<div class="fragment">
+<p><em>“A trace is the complete record of all actions, messages, tool calls, and data retrievals from a single initial user query through to the final response. It includes every step across all agents, tools, and system components in a session.”</em></p>
+</div>
+<div class="fragment">
+<p>A complete trace includes:</p>
+<ul>
+<li>The original user query</li>
+<li>All retrieved documents/contexts</li>
+<li>Every LLM call (prompt + response)</li>
+<li>All tool calls and their results</li>
+<li>The final output shown to the user</li>
+<li>Metadata: latency, token usage, model version, prompt version</li>
+</ul>
+</div>
+<div class="fragment">
+<blockquote>
+<p><strong>SupportBot ·</strong> One trace = the user’s message, the classified intent, the policy chunks retrieved, the <code>order_lookup</code> call <strong>and its arguments</strong>, the generation prompt, the reply. Without the retrieved chunks you cannot tell “wrong policy found” from “right policy ignored.”</p>
+</blockquote>
+</div>
+</section>
+<section id="why-traces-matter" class="slide level2">
+<h2>Why traces matter?</h2>
+<ul>
+<li>Without full traces, you can’t distinguish retrieval failures from generation failures</li>
+<li>Without tool call logs, you can’t tell if the agent chose the wrong tool or used it incorrectly</li>
+<li>Without latency data, you can’t identify cost/performance regressions</li>
+</ul>
+
+<img data-src="images/llm-trace.png" class="r-stretch"></section>
 <section id="the-evaluation-lifecycle" class="slide level2">
 <h2>The Evaluation Lifecycle</h2>
+<p>You can now <em>see</em> your system (traces) and you know <em>what</em> to measure (components, end-to-end).</p>
+<p>The remaining question: <strong>what should you measure first?</strong></p>
 
 <img data-src="images/eval-lifecycle.png" class="r-stretch"></section>
 <section id="why-error-analysis" class="slide level2">
@@ -562,24 +893,51 @@ CCE, IISc
 <h2>Five Stages of Error Analysis</h2>
 
 <img data-src="images/error-analysis-stages.png" class="r-stretch"></section>
-<section id="stage-1-generating-synthetic-queries-data" class="slide level2">
-<h2>Stage 1 : Generating Synthetic Queries / Data</h2>
+<section id="stage-1-bootstrap-an-initial-dataset" class="slide level2">
+<h2>Stage 1 : Bootstrap an Initial Dataset</h2>
+<p><strong>Have production traffic?</strong> Sample it.</p>
+<p><strong>Don’t yet?</strong> Generate synthetic queries.</p>
 <ul>
 <li>Look into what are different dimensions / aspects of user queries?</li>
 </ul>
-<p>Example for a recipe app:</p>
+<p><strong>SupportBot:</strong></p>
+<ul>
+<li><strong>Feature:</strong> order tracking, returns, billing, contact search</li>
+<li><strong>Scenario:</strong> multiple matches, no matches, ambiguous request, invalid data, system error</li>
+<li><strong>Persona:</strong> new user, expert user, frustrated customer, non-native speaker</li>
+</ul>
+<blockquote>
+<p>These three dimensions - <em>feature × scenario × persona</em> - come back in Step 2 when we build the judge’s dataset</p>
+</blockquote>
+</section>
+<section id="stage-1-another-example" class="slide level2 reference" data-visibility="uncounted">
+<h2>Stage 1 : Another Example</h2>
+<p>Example for a <strong>recipe app</strong>:</p>
 <ul>
 <li>Dietary Restriction: vegan, gluten-free, none</li>
 <li>Cuisine Type: Italian, Asian, comfort food</li>
 <li>Query Complexity: simple request, multi-step, edge case</li>
 </ul>
+<p>Tuple → natural language:</p>
+<ol type="1">
+<li>Generate structured tuples: (Vegan, Italian, Multi-step)</li>
+<li>Convert to natural language: <em>“I need a dairy-free lasagna recipe that I can prep the day before”</em></li>
+</ol>
 </section>
+<section id="stage-1-dimensions-in-practice" class="slide level2 reference" data-visibility="uncounted">
+<h2>Stage 1 : Dimensions in Practice</h2>
+<p>The same three axes, as tables you can hand to an expert:</p>
+<div style="font-size: 0.8em;">
+<p>Features → what the system does · Scenarios → what situation the user is in · Personas → who is asking</p>
+</div>
+
+<img data-src="images/data-features.png" style="width:70.0%" class="r-stretch"></section>
 <section id="generating-synthetic-queries-data" class="slide level2">
 <h2>Generating Synthetic Queries / Data</h2>
 <p><strong>Two-step generation process:</strong></p>
 <ol type="1">
-<li>Generate structured tuples: (Vegan, Italian, Multi-step)</li>
-<li>Convert tuples to natural language: “I need a dairy-free lasagna recipe that I can prep the day before”</li>
+<li>Generate structured tuples: <strong>(Returns, Invalid Data Provided, Frustrated Customer)</strong></li>
+<li>Convert tuples to natural language: <em>“i already sent you order 1234567890 twice, where is my refund”</em></li>
 </ol>
 <p><strong>Key rules:</strong></p>
 <ul>
@@ -592,7 +950,7 @@ CCE, IISc
 <p><strong>Fix obvious problems first</strong> - don’t generate synthetic data for issues you can fix immediately</p>
 </div>
 </section>
-<section id="generating-synthetic-queries-data-1" class="slide level2">
+<section id="generating-synthetic-queries-data-1" class="slide level2 reference" data-visibility="uncounted">
 <h2>Generating Synthetic Queries / Data</h2>
 <p><strong>When synthetic data may not be reliable:</strong></p>
 <ul>
@@ -605,12 +963,14 @@ CCE, IISc
 <h2>Stage 2 : Read and Label</h2>
 <p><strong>Open Coding</strong></p>
 <ul>
-<li><p>Read raw traces, anayze them manually (Don’t delegate to an automated system like LLM)</p></li>
+<li><p>Read raw traces, analyze them manually (Don’t delegate to an automated system like LLM)</p></li>
 <li><p>Write free-form notes about what’s wrong</p>
 <ul>
-<li>made up a statistic</li>
-<li>ignored the user’s dietary restriction</li>
-<li>response is condescending</li>
+<li><em>“quoted 30-day returns, policy is 60 - looks like an old doc”</em></li>
+<li><em>“asked for account number before verifying who they are”</em></li>
+<li><em>“user said address, bot changed the delivery date”</em></li>
+<li><em>“three matching orders, bot picked one at random”</em></li>
+<li><em>“tone is condescending”</em></li>
 </ul></li>
 <li><p>Focus on <strong>observable problems</strong>, not hypothesized causes</p></li>
 <li><p>Have a domain expert verbalize their thought process while reviewing. One hour of this surfaces more insight than days of automated analysis.</p></li>
@@ -624,16 +984,19 @@ CCE, IISc
 <p><strong>Axial Coding</strong></p>
 <ul>
 <li>Group similar problems into categories (failure modes)</li>
-<li>Example
+<li><strong>SupportBot</strong>, from the notes on the previous slide:
 <ul>
-<li>Hallucinated facts</li>
-<li>Ignored user instructions or constraints</li>
-<li>Toxic or biased output</li>
-<li>format errors</li>
-<li>incomplete response</li>
+<li><code>stale_policy</code> - answered from an outdated document</li>
+<li><code>auth_bypass</code> - requested sensitive data before verifying identity</li>
+<li><code>intent_mismatch</code> - solved a different problem than the one asked</li>
+<li><code>ambiguity_unresolved</code> - multiple candidates, picked one silently</li>
+<li><code>tone</code> - condescending or dismissive</li>
 </ul></li>
 <li>Refine categories iteratively as you review more traces</li>
 </ul>
+<blockquote>
+<p>Note what happened: five free-form notes became five <em>named, countable</em> failure modes. That naming is the whole of Stage 3.</p>
+</blockquote>
 </section>
 <section id="stage-4-label-traces-with-new-taxonomy" class="slide level2">
 <h2>Stage 4 : Label Traces with New Taxonomy</h2>
@@ -641,7 +1004,12 @@ CCE, IISc
 <ul>
 <li><p>Go back through each trace and label it with your failure mode taxonomy</p></li>
 <li><p>When you finish, start again from trace 1 and relabel everything</p></li>
-<li><p>Why repeat the pass? - your understanding of the criteria has changed - your standards become more nuanced as you review more traces - you will notice issues you missed on the first pass</p></li>
+<li><p>Why repeat the pass?</p>
+<ul>
+<li>your understanding of the criteria has changed</li>
+<li>your standards become more nuanced as you review more traces</li>
+<li>you will notice issues you missed on the first pass</li>
+</ul></li>
 <li><p>This shift in judgment is called <strong>evaluation criteria drift</strong></p></li>
 <li><p>Second-pass labeling produces more consistent and higher-quality annotations</p></li>
 </ul>
@@ -654,7 +1022,7 @@ CCE, IISc
 </ul>
 
 <img data-src="images/error-analysis-stages.png" class="r-stretch"></section>
-<section id="prioritization" class="slide level2">
+<section id="prioritization" class="slide level2 reference" data-visibility="uncounted">
 <h2>Prioritization</h2>
 <ul>
 <li>Count how often each failure mode occurs</li>
@@ -663,29 +1031,7 @@ CCE, IISc
 <li>Add representative examples of each failure mode to your golden dataset</li>
 </ul>
 </section>
-<section id="what-is-a-trace" class="slide level2">
-<h2>What is a Trace?</h2>
-<p><em>“A trace is the complete record of all actions, messages, tool calls, and data retrievals from a single initial user query through to the final response. It includes every step across all agents, tools, and system components in a session.”</em></p>
-<p>A complete trace includes:</p>
-<ul>
-<li>The original user query</li>
-<li>All retrieved documents/contexts</li>
-<li>Every LLM call (prompt + response)</li>
-<li>All tool calls and their results</li>
-<li>The final output shown to the user</li>
-<li>Metadata: latency, token usage, model version, prompt version</li>
-</ul>
-</section>
-<section id="why-traces-matter" class="slide level2">
-<h2>Why traces matter?</h2>
-<ul>
-<li>Without full traces, you can’t distinguish retrieval failures from generation failures</li>
-<li>Without tool call logs, you can’t tell if the agent chose the wrong tool or used it incorrectly</li>
-<li>Without latency data, you can’t identify cost/performance regressions</li>
-</ul>
-
-<img data-src="images/llm-trace.png" class="r-stretch"></section>
-<section id="surfacing-problematic-traces" class="slide level2">
+<section id="surfacing-problematic-traces" class="slide level2 reference" data-visibility="uncounted">
 <h2>Surfacing Problematic Traces</h2>
 <p>Initially, don’t wait for user complaints or rely on automated metrics.</p>
 <p><strong>Random Sampling (the baseline)</strong></p>
@@ -705,7 +1051,7 @@ CCE, IISc
 <li><strong>Stratified sampling</strong>: ensure coverage across user segments, query types, time periods</li>
 </ul>
 </section>
-<section id="error-analysis---how-often" class="slide level2">
+<section id="error-analysis---how-often" class="slide level2 reference" data-visibility="uncounted">
 <h2>Error Analysis - How Often?</h2>
 <table class="caption-top">
 <colgroup>
@@ -751,9 +1097,63 @@ CCE, IISc
 </section>
 <section id="from-error-analysis-to-evaluations" class="slide level2">
 <h2>From Error Analysis to Evaluations</h2>
+<p>You now have a <strong>ranked list of real failure modes</strong>, each with examples from real traces.</p>
+<div class="fragment">
+<p>Next Question is: <strong>for each failure mode, what is the simplest thing that reliably catches it?</strong></p>
+</div>
+</section>
+<section id="why-not-just-fix-the-errors" class="slide level2">
+<h2>“Why Not Just Fix the Errors?”</h2>
+<p><strong>You should.</strong> Fix easy ones first - most failure modes disappear after a few prompt edits. But some persist.</p>
+<div style="font-size: 0.85em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>SupportBot mode</th>
+<th>Cheapest fix</th>
+<th>Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>stale_policy</code></td>
+<td>delete the superseded doc from the index</td>
+<td><strong>gone</strong></td>
+</tr>
+<tr class="even">
+<td><code>ambiguity_unresolved</code></td>
+<td>prompt: <em>“if more than one order matches, ask which”</em></td>
+<td>mostly gone</td>
+</tr>
+<tr class="odd">
+<td><code>intent_mismatch</code></td>
+<td>prompt: <em>“if the request is ambiguous, ask”</em></td>
+<td>reduced - <strong>persists</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fragment">
+<p>But a fix cannot do two things:</p>
+<ol type="1">
+<li><strong>Prove fixes.</strong> <em>“I tried five examples and it looks better”</em> is the vibe check.</li>
+<li><strong>Stay fixed.</strong> <em>“Fixing 2 issues might introduce or regress 4 new ones.”</em> Next prompt edit, next model version, next retrieval change.</li>
+</ol>
+</div>
+<div class="fragment">
+<blockquote>
+<p>Error analysis <strong>finds</strong> bugs. An evaluator <strong>keeps them fixed</strong>.</p>
+</blockquote>
+</div>
 </section>
 <section id="cost-benefit-hierarchy-of-evaluation-methods" class="slide level2">
 <h2>Cost-Benefit Hierarchy of Evaluation Methods</h2>
+<div style="font-size: 0.8em;">
 <table class="caption-top">
 <colgroup>
 <col style="width: 24%">
@@ -802,18 +1202,58 @@ CCE, IISc
 </tr>
 </tbody>
 </table>
-<p><strong>Core principle:</strong> Start at the bottom of this hierarchy and climb only when cheaper methods fail.</p>
+</div>
+<p><strong>Core principle:</strong> Start with the <strong>cheapest</strong> method that could catch the failure, and escalate only when it doesn’t.</p>
 </section>
 <section id="cost-benefit-hierarchy-of-evaluation-methods-1" class="slide level2">
 <h2>Cost-Benefit Hierarchy of Evaluation Methods</h2>
+<div style="font-size: 0.8em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 75%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>SupportBot failure mode</th>
+<th>Cheapest check that catches it</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>auth_bypass</code></td>
+<td><strong>regex</strong> - reply asks for account number with no prior verification step</td>
+</tr>
+<tr class="even">
+<td><code>stale_policy</code></td>
+<td><strong>code check</strong> - does the cited policy ID match the current one?</td>
+</tr>
+<tr class="odd">
+<td><code>ambiguity_unresolved</code></td>
+<td><strong>code check</strong> - &gt;1 order matched but reply contains no clarifying question</td>
+</tr>
+<tr class="even">
+<td><code>intent_mismatch</code></td>
+<td><strong>LLM judge</strong> - needs to compare meaning, not strings</td>
+</tr>
+<tr class="odd">
+<td><code>tone</code></td>
+<td><strong>LLM judge</strong> - irreducibly subjective</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fragment">
+<p>Three of five need no LLM at all</p>
+</div>
+</section>
+<section id="cost-benefit-hierarchy---layered-view" class="slide level2 reference" data-visibility="uncounted">
+<h2>Cost-Benefit Hierarchy - Layered View</h2>
 
 <img data-src="images/eval-hierarchy.png" class="r-stretch"></section>
-<section id="llm-as-a-judge" class="slide level2">
-<h2>LLM-as-a-Judge</h2>
-
-<img data-src="images/llm-as-judge.png" class="r-stretch"></section>
 <section id="to-build-an-automated-evaluator-or-not" class="slide level2">
 <h2>To build an automated evaluator or not?</h2>
+<div style="font-size: 0.8em;">
 <p><strong>When not to build an evaluator:</strong></p>
 <ul>
 <li>A simple assertion or regex catches it (build the assertion instead)</li>
@@ -821,7 +1261,9 @@ CCE, IISc
 <li>The failure mode is hypothetical (you haven’t seen it in real traces)</li>
 <li>The cost of building + maintaining exceeds the cost of occasional failures</li>
 </ul>
+</div>
 <div class="fragment">
+<div style="font-size: 0.8em;">
 <p><strong>When to build an evaluator:</strong></p>
 <ul>
 <li>The failure mode persists after fixing your prompts</li>
@@ -829,6 +1271,7 @@ CCE, IISc
 <li>The failure mode is high-impact and hard to catch with assertions</li>
 <li>You need to monitor this quality in production</li>
 </ul>
+</div>
 </div>
 <div class="fragment">
 <p><strong>The cost-benefit calculation:</strong></p>
@@ -838,8 +1281,474 @@ CCE, IISc
 </ul>
 </div>
 </section>
+<section id="llm-as-a-judge" class="slide level2">
+<h2>LLM-as-a-Judge</h2>
+<p>Easy fixes are done. Next level is : <strong>use a model to grade a model.</strong></p>
+<blockquote>
+<p><em>“If the LLM is unreliable, why would I trust an LLM to grade it?”</em></p>
+</blockquote>
+<div class="fragment">
+<p><img data-src="images/llm-as-judge.png"></p>
+</div>
+</section>
+<section id="judging-paradigms" class="slide level2">
+<h2>Judging Paradigms</h2>
+<p>From Zheng et al.&nbsp;(MT-Bench and Chatbot Arena), three ways to structure LLM-as-judge evaluation:</p>
+<ul>
+<li><strong>Pointwise (Absolute Scoring)</strong></li>
+<li><strong>Pairwise (Head-to-Head Comparison)</strong></li>
+<li><strong>Listwise (Ranking Multiple Outputs)</strong></li>
+</ul>
+</section>
+<section id="pointwise-absolute-scoring" class="slide level2">
+<h2>Pointwise (Absolute Scoring)</h2>
+<p>The judge scores a single output against a rubric.</p>
+<p><strong>Prompt template:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb1-1"><a></a>Evaluate the following response to the user's query.</span>
+<span id="cb1-2"><a></a></span>
+<span id="cb1-3"><a></a>User query: {query}</span>
+<span id="cb1-4"><a></a>Response: {response}</span>
+<span id="cb1-5"><a></a></span>
+<span id="cb1-6"><a></a>Rate the response on a scale of 1–5 based on these criteria:</span>
+<span id="cb1-7"><a></a>[CRITERIA]</span>
+<span id="cb1-8"><a></a></span>
+<span id="cb1-9"><a></a>Provide your reasoning first, then the final score.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="pointwise-absolute-scoring-1" class="slide level2">
+<h2>Pointwise (Absolute Scoring)</h2>
+<p><strong>When to use:</strong></p>
+<ul>
+<li>You have clear rubrics and want consistent scoring</li>
+<li>You need to compare against a threshold (“is this good enough?”)</li>
+<li>You want to track score distributions over time</li>
+</ul>
+<div class="fragment">
+<p><strong>Problems:</strong></p>
+<ul>
+<li>Judges tend to cluster scores in the middle (low discrimination)</li>
+<li>Score drift over time (a “4” today may not mean the same as a “4” last month)</li>
+<li>Hard to compare across different prompts</li>
+</ul>
+<blockquote>
+<p>Use binary pass/fail instead of 1–5. The rubric becomes a checklist of requirements. The judge checks each and returns PASS or FAIL.</p>
+</blockquote>
+</div>
+</section>
+<section id="pairwise-head-to-head-comparison" class="slide level2">
+<h2>Pairwise (Head-to-Head Comparison)</h2>
+<p>The judge sees two responses to the same prompt and picks the better one.</p>
+<p><strong>Prompt template:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a></a>Compare Response A and Response B to the following query.</span>
+<span id="cb2-2"><a></a></span>
+<span id="cb2-3"><a></a>Query: {query}</span>
+<span id="cb2-4"><a></a>Response A: {response_a}</span>
+<span id="cb2-5"><a></a>Response B: {response_b}</span>
+<span id="cb2-6"><a></a></span>
+<span id="cb2-7"><a></a>Which response is better? Consider: helpfulness, accuracy, completeness, clarity.</span>
+<span id="cb2-8"><a></a>First explain your reasoning, then state your final verdict: [<span class="co">[</span><span class="ot">A</span><span class="co">]</span>] or [<span class="co">[</span><span class="ot">B</span><span class="co">]</span>] or [<span class="co">[</span><span class="ot">tie</span><span class="co">]</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="pairwise-head-to-head-comparison-1" class="slide level2">
+<h2>Pairwise (Head-to-Head Comparison)</h2>
+<p><strong>When to use:</strong></p>
+<ul>
+<li>Comparing two model variants or prompt versions</li>
+<li>A/B testing</li>
+<li>Building ranked datasets for fine-tuning</li>
+</ul>
+<div class="fragment">
+<p><strong>Problems:</strong></p>
+<ul>
+<li>Position bias (judge favors the first response shown)</li>
+<li>Non-transitivity (A &gt; B, B &gt; C, but C &gt; A)</li>
+<li>O(n²) comparisons needed for n variants</li>
+</ul>
+</div>
+<div class="fragment">
+<p><strong>Mitigations:</strong></p>
+<ul>
+<li>Swap position (show A first, then B first) and average</li>
+<li>Use consistent position randomization</li>
+<li>Require reasoning before verdict</li>
+</ul>
+</div>
+</section>
+<section id="listwise-ranking" class="slide level2 reference" data-visibility="uncounted">
+<h2>Listwise (Ranking)</h2>
+<p>The judge sees N responses and ranks them all.</p>
+<p><strong>Prompt template:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a></a>Rank the following responses to the query from best to worst.</span>
+<span id="cb3-2"><a></a>Query: {query}</span>
+<span id="cb3-3"><a></a>Response 1: {response_1}</span>
+<span id="cb3-4"><a></a>Response 2: {response_2}</span>
+<span id="cb3-5"><a></a>...</span>
+<span id="cb3-6"><a></a>Response N: {response_n}</span>
+<span id="cb3-7"><a></a>Consider helpfulness, accuracy, completeness, clarity. First explain your reasoning, then provide a final ranking.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="listwise-ranking-1" class="slide level2 reference" data-visibility="uncounted">
+<h2>Listwise (Ranking)</h2>
+<p><strong>When to use:</strong></p>
+<ul>
+<li>Comparing many variants at once</li>
+<li>Building leaderboards</li>
+<li>When you need a total order</li>
+</ul>
+<div class="fragment">
+<p><strong>Problems:</strong></p>
+<ul>
+<li>Cognitive load increases with N (judge quality degrades)</li>
+<li>Most LLMs struggle to rank more than 5–7 items reliably</li>
+<li>O(n log n) comparisons in tournament style, but single-call listwise is O(n)</li>
+</ul>
+</div>
+<div class="fragment">
+<p><strong>Recommendation:</strong></p>
+<p>For most applications, <strong>pointwise with binary pass/fail</strong> or <strong>pairwise with position-swapping</strong> (Chatbot Arena’s approach) are the right choices.</p>
+</div>
+</section>
+<section id="rubric-design" class="slide level2">
+<h2>Rubric Design</h2>
+<p><strong>Binary vs Likert vs Structured</strong></p>
+<div style="font-size: 0.72em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Format</th>
+<th>Pros</th>
+<th>Cons</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Binary (PASS/FAIL)</strong></td>
+<td>High agreement; actionable; easy to automate; clear threshold</td>
+<td>Loses granularity for “how bad?”</td>
+<td>Default for all evaluators</td>
+</tr>
+<tr class="even">
+<td><strong>Likert (1–5)</strong></td>
+<td>Granular; can detect gradual improvement</td>
+<td>Low inter-annotator agreement; score drift; ambiguous what “3” means</td>
+<td>Only when tracking gradual improvement on a stable rubric</td>
+</tr>
+<tr class="odd">
+<td><strong>Structured (per-dimension)</strong></td>
+<td>Pinpoints specific weaknesses; actionable debugging</td>
+<td>More annotation effort; complex to automate</td>
+<td>When you need to diagnose <em>which</em> aspect failed</td>
+</tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<p><em>“Start with binary labels to understand what ‘bad’ looks like. Numeric labels are advanced and usually not necessary.”</em></p>
+</blockquote>
+</section>
+<section id="rubric-design-1" class="slide level2">
+<h2>Rubric Design</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb4-1"><a></a>Instead of: "Rate SupportBot's answer 1–5"</span>
+<span id="cb4-2"><a></a></span>
+<span id="cb4-3"><a></a>Use:       "Does the reply address the intent the user actually stated?      [YES/NO]"</span>
+<span id="cb4-4"><a></a>           "Is every policy claim supported by the retrieved document?       [YES/NO]"</span>
+<span id="cb4-5"><a></a>           "If &gt;1 order matched, does the reply ask which one?               [YES/NO]"</span>
+<span id="cb4-6"><a></a>           "Does it request sensitive data before identity is verified?      [YES/NO]"</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This preserves the actionability of binary labels while providing diagnostic granularity.</p>
+<blockquote>
+<p>Each line is one of SupportBot’s failure modes, turned into a question. Binary answers are easy to automate and people agree on them.</p>
+</blockquote>
+</section>
+<section id="writing-effective-rubrics" class="slide level2 reference" data-visibility="uncounted">
+<h2>Writing Effective Rubrics</h2>
+<div style="font-size: 0.72em;">
+<ol type="1">
+<li><strong>Make it task-specific, not generic</strong>
+<ul>
+<li>Bad: “Rate the quality of this response”</li>
+<li>Good: “The response must include the user’s dietary restriction. The response must not suggest foods containing the restricted ingredient.”</li>
+</ul></li>
+<li><strong>Include examples (few-shot)</strong>
+<ul>
+<li>Show 2–3 examples of passing responses with why they pass</li>
+<li>Show 2–3 examples of failing responses with why they fail</li>
+</ul></li>
+<li><strong>Define the decision boundary explicitly</strong>
+<ul>
+<li>What exactly constitutes a failure? Be precise enough that two people would agree.</li>
+</ul></li>
+<li><strong>Separate criteria into independent checks</strong>
+<ul>
+<li>Each criterion should be independently assessable</li>
+<li>Avoid compound criteria: “accurate and helpful and concise” → three separate checks</li>
+</ul></li>
+<li><strong>Iterate based on disagreement</strong>
+<ul>
+<li>When the judge disagrees with the human, the rubric is probably ambiguous</li>
+<li>Refine the rubric, not just the judge prompt</li>
+</ul></li>
+</ol>
+</div>
+</section>
+<section id="judge-biases-and-mitigations" class="slide level2">
+<h2>Judge Biases and Mitigations</h2>
+<div style="font-size: 0.72em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 29%">
+<col style="width: 22%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Bias</th>
+<th>Description</th>
+<th>Evidence</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Position bias</strong></td>
+<td>Favors response in first position</td>
+<td>Zheng et al.: 70%+ preference for first position in some models</td>
+<td>Swap positions; average results; randomize order</td>
+</tr>
+<tr class="even">
+<td><strong>Length / verbosity bias</strong></td>
+<td>Prefers longer responses; equates word count with quality</td>
+<td>Zheng et al.: verbose answers win more often even when content is identical</td>
+<td>Length-controlled prompting; require conciseness in rubric; count tokens as cost, not quality</td>
+</tr>
+<tr class="odd">
+<td><strong>Self-preference</strong></td>
+<td>Model favors outputs from its own family</td>
+<td>Zheng et al.: GPT-4 prefers GPT-4 outputs; Claude prefers Claude outputs</td>
+<td>Use a different model family for judging; don’t use same-model-as-judge</td>
+</tr>
+<tr class="even">
+<td><strong>Style bias</strong></td>
+<td>Prefers confident, assertive tone</td>
+<td>Judges score confident wrong answers higher than hedged correct ones</td>
+<td>Include “appropriately hedged” in rubric; penalize overconfidence</td>
+</tr>
+<tr class="odd">
+<td><strong>Recency bias</strong></td>
+<td>Remembers recent examples better</td>
+<td>Affects few-shot prompting patterns</td>
+<td>Randomize few-shot example order; use consistent sets</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="judge-biases-and-mitigations-1" class="slide level2 reference" data-visibility="uncounted">
+<h2>Judge Biases and Mitigations</h2>
+<p>Practical guidance:</p>
+<ul>
+<li><p>For <strong>self-evaluation</strong> (monitoring your own system): same model is acceptable but watch for inflated scores</p></li>
+<li><p>For <strong>comparative evaluation</strong> (A vs B testing): always use a third model or human judges</p></li>
+<li><p>Use a stronger model for judging than for generation</p></li>
+</ul>
+</section>
+<section id="calibration-measuring-judge-quality---cohens-kappa-κ" class="slide level2">
+<h2>Calibration: Measuring Judge Quality - Cohen’s Kappa (κ)</h2>
+<p>Measures inter-annotator agreement (<em>Judge and Human</em>) corrected for chance.</p>
+<div class="columns">
+<div class="column">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb5-1"><a></a></span>
+<span id="cb5-2"><a></a>Cohen's κ = (p_o - p_e) / (1 - p_e)</span>
+<span id="cb5-3"><a></a></span>
+<span id="cb5-4"><a></a>where:</span>
+<span id="cb5-5"><a></a>  p_o = observed agreement (both say pass, or both say fail)</span>
+<span id="cb5-6"><a></a>  p_e = expected agreement by chance</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column">
+<div style="font-size: 0.5em;">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: right;">LLM Correct</th>
+<th style="text-align: right;">LLM Incorrect</th>
+<th style="text-align: right;">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Human Correct</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">60</td>
+</tr>
+<tr class="even">
+<td>Human Incorrect</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">40</td>
+</tr>
+<tr class="odd">
+<td>Total</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">100</td>
+</tr>
+</tbody>
+</table>
+<p>P(both Correct)=0.60×0.55=0.33</p>
+<p>P(both Incorrect)=0.40×0.45=0.18</p>
+<p>p_e=0.33+0.18=0.51</p>
+<p>Cohen’s κ = (p_o - p_e) / (1 - p_e) = (0.85 - 0.51) / (1 - 0.51) = 0.694</p>
+</div>
+</div></div>
+<div style="font-size: 0.8em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 37%">
+<col style="width: 46%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>κ Value</th>
+<th>Interpretation</th>
+<th>Usable as Judge?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>&lt; 0.2</td>
+<td>Slight agreement</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>0.2 – 0.4</td>
+<td>Fair agreement</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>0.4 – 0.6</td>
+<td>Moderate agreement</td>
+<td>Marginal, needs improvement</td>
+</tr>
+<tr class="even">
+<td>0.6 – 0.8</td>
+<td>Substantial agreement</td>
+<td>Yes, good enough for most uses</td>
+</tr>
+<tr class="odd">
+<td>0.8 – 1.0</td>
+<td>Almost perfect agreement</td>
+<td>Yes, excellent</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Target: κ &gt; 0.7</strong> for a production judge. Below 0.6, the judge’s signal may be noisy.</p>
+</section>
+<section id="true-positive-rate-and-true-negative-rate" class="slide level2">
+<h2>True Positive Rate and True Negative Rate</h2>
+<div style="font-size: 0.8em;">
+<blockquote>
+<p><strong>Convention:</strong> <strong>positive = the trace FAILED</strong>. The judge was able to catch it.</p>
+</blockquote>
+<p>Beyond overall agreement, you need to know what kind of errors the judge makes:</p>
+<ul>
+<li><p><strong>TPR (Recall):</strong> Of all real failures, what fraction does the judge catch?<br>
+<code>TPR = True Positives / (True Positives + False Negatives)</code></p></li>
+<li><p><strong>TNR (Specificity):</strong> Of all good outputs, what fraction does the judge correctly pass?<br>
+<code>TNR = True Negatives / (True Negatives + False Positives)</code></p></li>
+</ul>
+<p>Both should be &gt; 80%. A judge with high TPR but low TNR raises false detections constantly. A judge with high TNR but low TPR misses real problems.</p>
+</div>
+
+<img data-src="images/pr-2.png" class="r-stretch"></section>
+<section id="length-controlled-scoring" class="slide level2 reference" data-visibility="uncounted">
+<h2>Length-Controlled Scoring</h2>
+<ol type="1">
+<li><strong>Measure length correlation:</strong> Compute correlation between response length and judge score</li>
+<li><strong>If correlation &gt; 0.3:</strong> Length bias is significant</li>
+<li><strong>Mitigations:</strong>
+<ul>
+<li>Add explicit instruction: “Do not consider response length in your evaluation”</li>
+<li>Normalize: judge scores the <em>content</em> not the <em>volume</em></li>
+<li>Penalize verbosity: “A shorter response that fully answers the question is better than a longer one”</li>
+<li>Use pairwise comparison (length difference is less salient when comparing two responses)</li>
+</ul></li>
+</ol>
+</section>
 <section id="llm-as-judge-via-critique-shadowing" class="slide level2">
 <h2>LLM-as-Judge via Critique Shadowing</h2>
+<p>You know what a judge <em>is</em>, which paradigm to use, how to write its rubric, and how to measure it.</p>
+<p><strong>How to build one?</strong></p>
+<div class="fragment">
+<p>Seven steps:</p>
+<div style="font-size: 0.9em;">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Step</th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Find the principal domain expert</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Create a dataset</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Expert makes pass/fail + critiques</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Fix the obvious errors first</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Build the judge, iteratively</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Error-analyse the judge</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>Run it on real traffic</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="fragment">
+<blockquote>
+<p>The judge learns by <strong>shadowing the expert’s critiques</strong> - it is trained to imitate <em>reasoning</em>, not just labels.</p>
+</blockquote>
+</div>
 </section>
 <section id="step-1-finding-the-principal-domain-expert" class="slide level2">
 <h2>Step 1: Finding the Principal Domain Expert</h2>
@@ -855,12 +1764,17 @@ CCE, IISc
 <ul>
 <li>A <strong>psychologist</strong> for a mental health AI assistant.</li>
 <li>A <strong>lawyer</strong> for an AI that analyzes legal documents.</li>
-<li>A <strong>customer service director</strong> for a support chatbot.</li>
+<li>A <strong>customer service director</strong> for a support chatbot. ← <strong>SupportBot</strong></li>
 <li>A <strong>teacher</strong> or <strong>curriculum developer</strong> for an educational AI tool.</li>
 </ul>
 </div>
+<div class="fragment">
+<blockquote>
+<p><strong>SupportBot ·</strong> Customer support personnel. Not the developer</p>
+</blockquote>
+</div>
 </section>
-<section id="the-role-of-the-domain-expert" class="slide level2">
+<section id="the-role-of-the-domain-expert" class="slide level2 reference" data-visibility="uncounted">
 <h2>The Role of the Domain Expert</h2>
 <blockquote>
 <p><em>The effective strategy is to appoint a single, internal domain expert as the final decision-maker on quality”</em></p>
@@ -903,17 +1817,17 @@ CCE, IISc
 <li>Personas</li>
 </ul>
 </section>
-<section id="step-2-create-a-dataset-1" class="slide level2">
+<section id="step-2-create-a-dataset-1" class="slide level2 reference" data-visibility="uncounted">
 <h2>Step 2: Create a Dataset</h2>
 <p><strong>Features Dimension</strong></p>
 
 <img data-src="images/data-features.png" class="r-stretch"></section>
-<section id="step-2-create-a-dataset-2" class="slide level2">
+<section id="step-2-create-a-dataset-2" class="slide level2 reference" data-visibility="uncounted">
 <h2>Step 2: Create a Dataset</h2>
 <p><strong>Scenarios Dimension</strong></p>
 
 <img data-src="images/data-scenerios.png" class="r-stretch"></section>
-<section id="step-2-create-a-dataset-3" class="slide level2">
+<section id="step-2-create-a-dataset-3" class="slide level2 reference" data-visibility="uncounted">
 <h2>Step 2: Create a Dataset</h2>
 <p><strong>Personas Dimension</strong></p>
 
@@ -927,14 +1841,18 @@ CCE, IISc
 <p><strong>Using LLMs to generate synthetic data:</strong></p>
 
 <img data-src="images/data-synth-llm.png" class="r-stretch"></section>
-<section id="generating-query---response-pairs" class="slide level2">
+<section id="generating-query---response-pairs" class="slide level2 reference" data-visibility="uncounted">
 <h2>Generating Query - Response Pairs</h2>
-<ul>
-<li>Generate User Inputs: Use the LLM prompts to create realistic user inputs.</li>
-<li>Feed Inputs into Your AI System: Input the user interactions into your AI as it currently exists.</li>
-<li>Capture AI Responses: Record the AI’s responses to form complete interactions.</li>
-<li>Organize the Interactions: Create a table to store the user inputs, AI responses, and relevant metadata.</li>
-</ul>
+<p>Same loop as <strong>Stage 1</strong> of error analysis - now aimed at building the judge’s labelled set:</p>
+<ol type="1">
+<li>Generate user inputs from the (feature x scenario x persona) tuples</li>
+<li>Feed them through your AI system <strong>as it currently exists</strong></li>
+<li>Capture the full trace, not just the final response</li>
+<li>Organize into a table: input, response, and metadata</li>
+</ol>
+<blockquote>
+<p>The dimensions changed (features/scenarios/personas instead of the recipe app’s diet/cuisine/complexity) - the procedure did not.</p>
+</blockquote>
 </section>
 <section id="step-3-direct-the-expert-to-make-passfail-judgments-with-critiques" class="slide level2">
 <h2>Step 3: Direct the Expert to Make Pass/Fail Judgments with Critiques</h2>
@@ -954,7 +1872,7 @@ CCE, IISc
 </blockquote>
 </div>
 </section>
-<section id="why-are-simple-passfail-metrics-important" class="slide level2">
+<section id="why-are-simple-passfail-metrics-important" class="slide level2 reference" data-visibility="uncounted">
 <h2>Why are simple pass/fail metrics important?</h2>
 <ul>
 <li><p><strong>Clarity and Focus</strong>: forces everyone to consider what truly matters, simplifies the evaluation to a single, crucial question.</p></li>
@@ -994,9 +1912,9 @@ CCE, IISc
 <div style="font-size: 0.72em;">
 <table class="caption-top">
 <colgroup>
-<col style="width: 32%">
-<col style="width: 23%">
-<col style="width: 43%">
+<col style="width: 35%">
+<col style="width: 16%">
+<col style="width: 47%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -1025,7 +1943,7 @@ CCE, IISc
 </table>
 </div>
 </section>
-<section id="data-review" class="slide level2">
+<section id="data-review" class="slide level2 reference" data-visibility="uncounted">
 <h2>Data Review</h2>
 <ul>
 <li>Provide a custom built data viewer or notebook for the expert to review traces and record judgments/ critiques</li>
@@ -1041,126 +1959,137 @@ CCE, IISc
 <li>Add retrieval for information the model got wrong</li>
 <li>Fix formatting, tone, or style issues</li>
 </ul>
+<div class="fragment">
 <p><strong>Why fix first:</strong></p>
 <p>Many failure modes disappear after prompt fixes. Don’t build evaluators for problems you can solve directly.</p>
+<blockquote>
+<p>This is the <em>“why not just fix the errors?”</em> slide again, now within LLM as a Judge development. By Step 5 we bnuild a judge <strong>only</strong> for what survived Step 4.</p>
+</blockquote>
+</div>
 </section>
 <section id="step-5-build-llm-as-a-judge-iteratively" class="slide level2">
 <h2>Step 5: Build LLM-as-a-Judge, Iteratively</h2>
 <p>Take the expert’s critiques and use them to build a judge:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a>System prompt: <span class="st">"You are a quality evaluator for [application]. </span></span>
-<span id="cb1-2"><a></a><span class="er">Judge outputs as PASS or FAIL based on these criteria: </span>[rubric derived <span class="im">from</span> critiques].<span class="st">"</span></span>
-<span id="cb1-3"><a></a></span>
-<span id="cb1-4"><a></a><span class="er">Few-shot examples: 3–5 </span>(trace, judgment, critique) tuples <span class="im">from</span> the expert</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Detailed Example : <a href="https://hamel.dev/blog/posts/llm-judge/#start-with-expert-examples">Query Evaluator</a></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb2-1"><a></a>You are a Honeycomb query evaluator with advanced capabilities to judge if a query is good or not.</span>
-<span id="cb2-2"><a></a>You understand the nuances of the Honeycomb query language, including what is likely to be</span>
-<span id="cb2-3"><a></a>most useful from an analytics perspective. </span>
-<span id="cb2-4"><a></a></span>
-<span id="cb2-5"><a></a>Here is information about the Honeycomb query language:</span>
-<span id="cb2-6"><a></a>{{query_language_info}}</span>
-<span id="cb2-7"><a></a></span>
-<span id="cb2-8"><a></a>Here are some guidelines for evaluating queries:</span>
-<span id="cb2-9"><a></a>{{guidelines}}</span>
-<span id="cb2-10"><a></a></span>
-<span id="cb2-11"><a></a>Example evaluations:</span>
-<span id="cb2-12"><a></a></span>
-<span id="cb2-13"><a></a>&lt;examples&gt;</span>
-<span id="cb2-14"><a></a></span>
-<span id="cb2-15"><a></a>&lt;example-1&gt;</span>
-<span id="cb2-16"><a></a>&lt;nlq&gt;show me traces where ip is 10.0.2.90&lt;/nlq&gt;</span>
-<span id="cb2-17"><a></a>&lt;query&gt;</span>
-<span id="cb2-18"><a></a>{</span>
-<span id="cb2-19"><a></a>  "breakdowns": ["trace.trace_id"],</span>
-<span id="cb2-20"><a></a>  "calculations": [{"op": "COUNT"}],</span>
-<span id="cb2-21"><a></a>  "filters": [{"column": "net.host.ip", "op": "=", "value": "10.0.2.90"}]</span>
-<span id="cb2-22"><a></a>}</span>
-<span id="cb2-23"><a></a>&lt;/query&gt;</span>
-<span id="cb2-24"><a></a>&lt;critique&gt;</span>
-<span id="cb2-25"><a></a>{</span>
-<span id="cb2-26"><a></a>  "critique": "The query correctly filters for traces with an IP address of 10.0.2.90 </span>
-<span id="cb2-27"><a></a>   and counts the occurrences of those traces, grouped by trace.trace_id. The response </span>
-<span id="cb2-28"><a></a>   is good as it meets the requirement of showing traces from a specific IP address </span>
-<span id="cb2-29"><a></a>   without additional complexities.",</span>
-<span id="cb2-30"><a></a>  "outcome": "good"</span>
-<span id="cb2-31"><a></a>}</span>
-<span id="cb2-32"><a></a>&lt;/critique&gt;</span>
-<span id="cb2-33"><a></a>&lt;/example-1&gt;</span>
-<span id="cb2-34"><a></a></span>
-<span id="cb2-35"><a></a>&lt;example-2&gt;</span>
-<span id="cb2-36"><a></a>&lt;nlq&gt;show me slowest trace&lt;/nlq&gt;</span>
-<span id="cb2-37"><a></a>&lt;query&gt;</span>
-<span id="cb2-38"><a></a>{</span>
-<span id="cb2-39"><a></a>  "calculations": [{"column": "duration_ms", "op": "MAX"}],</span>
-<span id="cb2-40"><a></a>  "orders": [{"column": "duration_ms", "op": "MAX", "order": "descending"}],</span>
-<span id="cb2-41"><a></a>  "limit": 1</span>
-<span id="cb2-42"><a></a>}</span>
-<span id="cb2-43"><a></a>&lt;/query&gt;</span>
-<span id="cb2-44"><a></a>&lt;critique&gt;</span>
-<span id="cb2-45"><a></a>{</span>
-<span id="cb2-46"><a></a>  "critique": "While the query attempts to find the slowest trace using MAX(duration_ms) </span>
-<span id="cb2-47"><a></a>   and ordering correctly, it fails to group by trace.trace_id. Without this grouping, </span>
-<span id="cb2-48"><a></a>   the query only shows the MAX(duration_ms) measurement over time, not the actual </span>
-<span id="cb2-49"><a></a>   slowest trace.",</span>
-<span id="cb2-50"><a></a>  "outcome": "bad"</span>
-<span id="cb2-51"><a></a>}</span>
-<span id="cb2-52"><a></a>&lt;/critique&gt;</span>
-<span id="cb2-53"><a></a>&lt;/example-2&gt;</span>
-<span id="cb2-54"><a></a></span>
-<span id="cb2-55"><a></a>&lt;example-3&gt;</span>
-<span id="cb2-56"><a></a>&lt;nlq&gt;count window-hash where window-hash exists per hour&lt;/nlq&gt;</span>
-<span id="cb2-57"><a></a>&lt;query&gt;</span>
-<span id="cb2-58"><a></a>{</span>
-<span id="cb2-59"><a></a>  "breakdowns": ["window-hash"],</span>
-<span id="cb2-60"><a></a>  "calculations": [{"op": "COUNT"}],</span>
-<span id="cb2-61"><a></a>  "filters": [{"column": "window-hash", "op": "exists"}],</span>
-<span id="cb2-62"><a></a>  "time_range": 3600</span>
-<span id="cb2-63"><a></a>}</span>
-<span id="cb2-64"><a></a>&lt;/query&gt;</span>
-<span id="cb2-65"><a></a>&lt;critique&gt;</span>
-<span id="cb2-66"><a></a>{</span>
-<span id="cb2-67"><a></a>  "critique": "While the query correctly counts window-hash occurrences, the time_range </span>
-<span id="cb2-68"><a></a>   of 3600 seconds (1 hour) is insufficient for per-hour analysis. When we say 'per hour', </span>
-<span id="cb2-69"><a></a>   we need a time_range of at least 36000 seconds to show meaningful hourly patterns.",</span>
-<span id="cb2-70"><a></a>  "outcome": "bad"</span>
-<span id="cb2-71"><a></a>}</span>
-<span id="cb2-72"><a></a>&lt;/critique&gt;</span>
-<span id="cb2-73"><a></a>&lt;/example-3&gt;</span>
-<span id="cb2-74"><a></a></span>
-<span id="cb2-75"><a></a>&lt;/examples&gt;</span>
-<span id="cb2-76"><a></a></span>
-<span id="cb2-77"><a></a>For the following query, first write a detailed critique explaining your reasoning,</span>
-<span id="cb2-78"><a></a>then provide a pass/fail judgment in the same format as above.</span>
-<span id="cb2-79"><a></a></span>
-<span id="cb2-80"><a></a>&lt;nlq&gt;{{user_input}}&lt;/nlq&gt;</span>
-<span id="cb2-81"><a></a>&lt;query&gt;</span>
-<span id="cb2-82"><a></a>{{generated_query}}</span>
-<span id="cb2-83"><a></a>&lt;/query&gt;</span>
-<span id="cb2-84"><a></a>&lt;critique&gt;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a></a>System prompt: <span class="st">"You are a quality evaluator for [application]. </span></span>
+<span id="cb6-2"><a></a><span class="er">Judge outputs as PASS or FAIL based on these criteria: </span>[rubric derived <span class="im">from</span> critiques].<span class="st">"</span></span>
+<span id="cb6-3"><a></a></span>
+<span id="cb6-4"><a></a><span class="er">Few-shot examples: 3–5 </span>(trace, judgment, critique) tuples <span class="im">from</span> the expert</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="fragment">
+<p>Detailed Example : a <strong>text-to-SQL</strong> evaluator <em>(pattern from <a href="https://hamel.dev/blog/posts/llm-judge/#start-with-expert-examples">Hamel’s query evaluator</a>)</em></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb7-1"><a></a>You are a SQL query evaluator. You are given a natural-language question and the SQL a</span>
+<span id="cb7-2"><a></a>model generated for it. Judge whether the SQL correctly answers the question asked.</span>
+<span id="cb7-3"><a></a></span>
+<span id="cb7-4"><a></a>Schema:</span>
+<span id="cb7-5"><a></a>  customers(customer_id PK, name, country, created_at)</span>
+<span id="cb7-6"><a></a>  orders(order_id PK, customer_id FK, status, total_amount, created_at)</span>
+<span id="cb7-7"><a></a>  order_items(order_item_id PK, order_id FK, product_id, quantity, unit_price)</span>
+<span id="cb7-8"><a></a></span>
+<span id="cb7-9"><a></a>Guidelines:</span>
+<span id="cb7-10"><a></a>- A query that RUNS is not the same as a query that is CORRECT.</span>
+<span id="cb7-11"><a></a>- Check the grain: does joining a one-to-many table duplicate rows before an aggregate?</span>
+<span id="cb7-12"><a></a>- Check NULL semantics, especially NOT IN against a nullable column.</span>
+<span id="cb7-13"><a></a>- Check that filters and date ranges match what was asked, with no off-by-one.</span>
+<span id="cb7-14"><a></a>- Prefer the simplest query that answers the question.</span>
+<span id="cb7-15"><a></a></span>
+<span id="cb7-16"><a></a>Example evaluations:</span>
+<span id="cb7-17"><a></a></span>
+<span id="cb7-18"><a></a>&lt;examples&gt;</span>
+<span id="cb7-19"><a></a></span>
+<span id="cb7-20"><a></a>&lt;example-1&gt;</span>
+<span id="cb7-21"><a></a>&lt;question&gt;How many orders were placed last month?&lt;/question&gt;</span>
+<span id="cb7-22"><a></a>&lt;sql&gt;</span>
+<span id="cb7-23"><a></a>SELECT COUNT(*) FROM orders</span>
+<span id="cb7-24"><a></a>WHERE created_at &gt;= date_trunc('month', current_date - interval '1 month')</span>
+<span id="cb7-25"><a></a>  AND created_at &lt;  date_trunc('month', current_date);</span>
+<span id="cb7-26"><a></a>&lt;/sql&gt;</span>
+<span id="cb7-27"><a></a>&lt;critique&gt;</span>
+<span id="cb7-28"><a></a>{</span>
+<span id="cb7-29"><a></a>  "critique": "Correct. The range is half-open — inclusive of the first instant of last</span>
+<span id="cb7-30"><a></a>   month, exclusive of the first instant of this month — so no row is double counted and</span>
+<span id="cb7-31"><a></a>   no row at a month boundary is missed. COUNT(*) is right because the question asks for</span>
+<span id="cb7-32"><a></a>   a number of orders, not distinct customers.",</span>
+<span id="cb7-33"><a></a>  "outcome": "good"</span>
+<span id="cb7-34"><a></a>}</span>
+<span id="cb7-35"><a></a>&lt;/critique&gt;</span>
+<span id="cb7-36"><a></a>&lt;/example-1&gt;</span>
+<span id="cb7-37"><a></a></span>
+<span id="cb7-38"><a></a>&lt;example-2&gt;</span>
+<span id="cb7-39"><a></a>&lt;question&gt;What is the total revenue per customer?&lt;/question&gt;</span>
+<span id="cb7-40"><a></a>&lt;sql&gt;</span>
+<span id="cb7-41"><a></a>SELECT c.name, SUM(o.total_amount) AS revenue</span>
+<span id="cb7-42"><a></a>FROM customers c</span>
+<span id="cb7-43"><a></a>JOIN orders o      ON o.customer_id = c.customer_id</span>
+<span id="cb7-44"><a></a>JOIN order_items oi ON oi.order_id  = o.order_id</span>
+<span id="cb7-45"><a></a>GROUP BY c.name;</span>
+<span id="cb7-46"><a></a>&lt;/sql&gt;</span>
+<span id="cb7-47"><a></a>&lt;critique&gt;</span>
+<span id="cb7-48"><a></a>{</span>
+<span id="cb7-49"><a></a>  "critique": "Wrong, and silently so. Joining order_items fans each order out into one row</span>
+<span id="cb7-50"><a></a>   per line item, so total_amount is summed once per item: an order of 100 with three items</span>
+<span id="cb7-51"><a></a>   contributes 300. The query runs and returns plausible-looking numbers. order_items is not</span>
+<span id="cb7-52"><a></a>   needed at all here. Grouping by name rather than customer_id also merges distinct</span>
+<span id="cb7-53"><a></a>   customers who share a name.",</span>
+<span id="cb7-54"><a></a>  "outcome": "bad"</span>
+<span id="cb7-55"><a></a>}</span>
+<span id="cb7-56"><a></a>&lt;/critique&gt;</span>
+<span id="cb7-57"><a></a>&lt;/example-2&gt;</span>
+<span id="cb7-58"><a></a></span>
+<span id="cb7-59"><a></a>&lt;example-3&gt;</span>
+<span id="cb7-60"><a></a>&lt;question&gt;List customers who have never placed an order.&lt;/question&gt;</span>
+<span id="cb7-61"><a></a>&lt;sql&gt;</span>
+<span id="cb7-62"><a></a>SELECT name FROM customers</span>
+<span id="cb7-63"><a></a>WHERE customer_id NOT IN (SELECT customer_id FROM orders);</span>
+<span id="cb7-64"><a></a>&lt;/sql&gt;</span>
+<span id="cb7-65"><a></a>&lt;critique&gt;</span>
+<span id="cb7-66"><a></a>{</span>
+<span id="cb7-67"><a></a>  "critique": "Wrong whenever orders.customer_id contains a NULL. NOT IN evaluates to NULL</span>
+<span id="cb7-68"><a></a>   rather than TRUE once the subquery yields a NULL, so the predicate is never satisfied and</span>
+<span id="cb7-69"><a></a>   the query returns ZERO rows — not an error, just a silently empty result. Use NOT EXISTS,</span>
+<span id="cb7-70"><a></a>   or filter the subquery with WHERE customer_id IS NOT NULL.",</span>
+<span id="cb7-71"><a></a>  "outcome": "bad"</span>
+<span id="cb7-72"><a></a>}</span>
+<span id="cb7-73"><a></a>&lt;/critique&gt;</span>
+<span id="cb7-74"><a></a>&lt;/example-3&gt;</span>
+<span id="cb7-75"><a></a></span>
+<span id="cb7-76"><a></a>&lt;/examples&gt;</span>
+<span id="cb7-77"><a></a></span>
+<span id="cb7-78"><a></a>For the following query, first write a detailed critique explaining your reasoning,</span>
+<span id="cb7-79"><a></a>then give a good/bad judgment in the same format as above.</span>
+<span id="cb7-80"><a></a></span>
+<span id="cb7-81"><a></a>&lt;question&gt;{{user_question}}&lt;/question&gt;</span>
+<span id="cb7-82"><a></a>&lt;sql&gt;</span>
+<span id="cb7-83"><a></a>{{generated_sql}}</span>
+<span id="cb7-84"><a></a>&lt;/sql&gt;</span>
+<span id="cb7-85"><a></a>&lt;critique&gt;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </section>
-<section id="iterative-prompt-improvement" class="slide level2">
-<h2>Iterative Prompt Improvement</h2>
-<ul>
-<li>Imporove the Judge’s prompt based on error analysis of its disagreements with the expert</li>
-<li>Add more few-shot examples where the judge fails</li>
-</ul>
-<p><img data-src="images/judge-prompt-iter.png"></p>
-<p><img data-src="images/judeg-prompt-agreement.png"></p>
-</section>
-<section id="step-5-building-the-judge" class="slide level2">
-<h2>Step 5 : Building the Judge</h2>
+<section id="step-5-contd.-judge-design-decisions" class="slide level2">
+<h2>Step 5 (contd.) : Judge Design Decisions</h2>
 <p><strong>Key design decisions:</strong></p>
 <ul>
-<li>Use a strong model (Claude Opus, GPT 5.x pro or Gemini 3.x pro)- judging is harder than generation</li>
+<li>Use a strong model (Claude Opus, GPT 5.x pro or Gemini 3.x pro)</li>
 <li>Prompt the judge to produce reasoning before the final judgment (chain-of-thought)</li>
 <li>Include the same context the original model saw (retrieved docs, conversation history)</li>
-<li>Structure output as JSON: {“reasoning”: “…”, “judgment”: “PASS|FAIL”, “confidence”: “HIGH|MEDIUM|LOW”}</li>
+<li>Structure output as JSON: <code>{"reasoning": "...", "judgment": "PASS\|FAIL", "confidence": "HIGH\|MEDIUM\|LOW"}</code></li>
 </ul>
 </section>
 <section id="data-split" class="slide level2">
 <h2>Data Split</h2>
-<p><strong>Training Set</strong> ~10-20% of labeled traces purpose - used for few-shot examples in the judge prompt</p>
-<p><strong>Validation Set</strong> ~40% of labeled traces, purpose - To iteratively test and refine judge prompt, used to measure agreement with human and calibrate the judge</p>
-<p><strong>Test Set</strong> ~40% of labeled traces, used for final evaluation of the judge’s performance before deployment</p>
+<p><strong>Training Set</strong>: ~20% of labeled traces - the pool you draw few-shot examples from for the judge prompt (this is <em>prompting</em>, not gradient training)</p>
+<p><strong>Validation Set</strong>: ~40% of labeled traces - to iteratively test and refine the judge prompt; measure agreement with the human here</p>
+<p><strong>Test Set</strong>: ~40% of labeled traces - held out for the final read on judge performance before deployment</p>
+<blockquote>
+<p>We tune this judge against validation dozens of times - which is why the test set must stay untouched.</p>
+</blockquote>
+</section>
+<section id="iterative-prompt-improvement" class="slide level2">
+<h2>Iterative Prompt Improvement</h2>
+<ul>
+<li>Improve the Judge’s prompt based on error analysis of its disagreements with the expert</li>
+<li>Add more few-shot examples where the judge fails</li>
+</ul>
+<p><img data-src="images/judge-prompt-iter.png"></p>
+<p><img data-src="images/judeg-prompt-agreement.png"></p>
 </section>
 <section id="step-6-perform-error-analysis-on-the-judge" class="slide level2">
 <h2>Step 6: Perform Error Analysis on the Judge</h2>
@@ -1224,7 +2153,7 @@ CCE, IISc
 <li>Prioritize fixes based on frequency and impact</li>
 </ul>
 </section>
-<section id="create-more-specialized-judges-if-needed" class="slide level2">
+<section id="create-more-specialized-judges-if-needed" class="slide level2 reference" data-visibility="uncounted">
 <h2>Create More Specialized Judges (if needed)</h2>
 <p>One general judge may not catch all failure modes.</p>
 <ul>
@@ -1234,7 +2163,7 @@ CCE, IISc
 </ul>
 <p><em>Each specialized judge follows the same 7-step process but with a narrower scope.</em></p>
 </section>
-<section id="correcting-for-judge-bias" class="slide level2">
+<section id="correcting-for-judge-bias" class="slide level2 reference" data-visibility="uncounted">
 <h2>Correcting for Judge Bias</h2>
 <ul>
 <li>Use judge calibration metrics to estimate the <strong>true system failure rate</strong></li>
@@ -1245,8 +2174,13 @@ CCE, IISc
 <li><strong>FPR = 10%</strong> → some flagged failures are actually good outputs</li>
 <li><strong>TPR = 90%</strong> → some real failures are still missed</li>
 </ul></li>
-<li>Apply <strong>Bayesian correction</strong> to adjust the observed failure rate</li>
+<li>Correct the observed rate for known judge error rates:</li>
+</ul>
+<p><span class="math display">\[\text{true rate} = \frac{\text{observed rate} - FPR}{TPR - FPR} = \frac{0.20 - 0.10}{0.90 - 0.10} = \mathbf{0.125}\]</span></p>
+<ul>
+<li>The judge reports <strong>20%</strong>; the true failure rate is <strong>~12.5%</strong> - a 60% overstatement</li>
 <li>Add <strong>confidence intervals</strong> to reflect uncertainty in TPR/FPR estimates</li>
+<li>As <span class="math inline">\(TPR - FPR \to 0\)</span> (a judge near chance) the correction explodes - arithmetic cannot rescue a bad judge</li>
 <li>Why it matters:
 <ul>
 <li>Avoid false alarms in production</li>
@@ -1254,26 +2188,42 @@ CCE, IISc
 </ul></li>
 </ul>
 </section>
-<section id="building-a-judge---workflow-summary" class="slide level2">
+<section id="meta-evaluation" class="slide level2 reference" data-visibility="uncounted">
+<h2>Meta-Evaluation</h2>
+<p><strong>Ensembling Judges</strong> - when one judge isn’t enough:</p>
+<ul>
+<li><p><strong>Swap-and-Average (for pairwise)</strong> - the position-bias mitigation from earlier, applied systematically. 2× cost.</p></li>
+<li><p><strong>Majority Voting (3 judges)</strong> - Run 3 <em>different</em> judges on the same output. Take the majority judgment. Reduces variance from any single judge’s biases.</p>
+<ul>
+<li>Cost: 3× single judge</li>
+<li>Agreement improvement: typically 5–15% boost in κ</li>
+<li>Worth it when: stakes are high, judge quality is marginal, you need production monitoring</li>
+</ul></li>
+</ul>
+</section>
+<section id="building-a-judge---workflow-summary" class="slide level2 reference" data-visibility="uncounted">
 <h2>Building a Judge - Workflow Summary</h2>
 <p><strong>High-level flow:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb3-1"><a></a>Domain Expert Reviews Traces</span>
-<span id="cb3-2"><a></a>        ↓</span>
-<span id="cb3-3"><a></a>Makes Pass/Fail Judgments + Written Critiques</span>
-<span id="cb3-4"><a></a>        ↓</span>
-<span id="cb3-5"><a></a>Critiques Become Training Signal</span>
-<span id="cb3-6"><a></a>        ↓</span>
-<span id="cb3-7"><a></a>Build LLM-as-Judge (with few-shot examples from critiques)</span>
-<span id="cb3-8"><a></a>        ↓</span>
-<span id="cb3-9"><a></a>Validate Against Human Labels (κ, accuracy, TPR/FPR)</span>
-<span id="cb3-10"><a></a>        ↓</span>
-<span id="cb3-11"><a></a>Iterate Until Agreement Threshold Met</span>
-<span id="cb3-12"><a></a>        ↓</span>
-<span id="cb3-13"><a></a>Deploy Judge; Monitor; Feed Failures Back to Error Analysis</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb8-1"><a></a>Domain Expert Reviews Traces</span>
+<span id="cb8-2"><a></a>        ↓</span>
+<span id="cb8-3"><a></a>Makes Pass/Fail Judgments + Written Critiques</span>
+<span id="cb8-4"><a></a>        ↓</span>
+<span id="cb8-5"><a></a>Critiques Become Training Signal</span>
+<span id="cb8-6"><a></a>        ↓</span>
+<span id="cb8-7"><a></a>Build LLM-as-Judge (with few-shot examples from critiques)</span>
+<span id="cb8-8"><a></a>        ↓</span>
+<span id="cb8-9"><a></a>Validate Against Human Labels (κ, accuracy, TPR/FPR)</span>
+<span id="cb8-10"><a></a>        ↓</span>
+<span id="cb8-11"><a></a>Iterate Until Agreement Threshold Met</span>
+<span id="cb8-12"><a></a>        ↓</span>
+<span id="cb8-13"><a></a>Deploy Judge; Monitor; Feed Failures Back to Error Analysis</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="multi-turn-evaluation" class="slide level2">
 <h2>Multi-turn Evaluation</h2>
-<p>When evaluating multi-turn conversations, three importaant aspects come to matter:</p>
+<p>Everything so far assumed <strong>one query, one response</strong>. Real products are conversations.</p>
+<div class="fragment">
+<p>When evaluating multi-turn conversations, three important aspects come to matter:</p>
+</div>
 <div class="fragment">
 <ul>
 <li><strong>Context and Memory:</strong> Does the AI remember earlier parts of the conversation? How does behaviour change as the conversation lengthens?</li>
@@ -1288,6 +2238,11 @@ CCE, IISc
 <ul>
 <li><strong>Overall Session Goals:</strong> Unlike single turn-response pairs, we care whether the entire session achieved the user’s objective.</li>
 </ul>
+</div>
+<div class="fragment">
+<blockquote>
+<p><strong>SupportBot ·</strong> Six turns, every one polite, accurate and on-topic. The refund was never processed. <strong>Every turn passes. The session fails.</strong></p>
+</blockquote>
 </div>
 </section>
 <section id="two-levels-of-evaluation" class="slide level2">
@@ -1316,372 +2271,9 @@ CCE, IISc
 <li><strong>Vary conversation lengths</strong> in your test set to catch performance degradation</li>
 </ol>
 </section>
-<section id="judging-paradigms" class="slide level2">
-<h2>Judging Paradigms</h2>
-<p>From Zheng et al.&nbsp;(MT-Bench and Chatbot Arena), three ways to structure LLM-as-judge evaluation:</p>
-<ul>
-<li><strong>Pointwise (Absolute Scoring)</strong></li>
-<li><strong>Pairwise (Head-to-Head Comparison)</strong></li>
-<li><strong>Listwise (Ranking Multiple Outputs)</strong></li>
-</ul>
-</section>
-<section id="pointwise-absolute-scoring" class="slide level2">
-<h2>Pointwise (Absolute Scoring)</h2>
-<p>The judge scores a single output against a rubric.</p>
-<p><strong>Prompt template:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb4-1"><a></a>Evaluate the following response to the user's query.</span>
-<span id="cb4-2"><a></a></span>
-<span id="cb4-3"><a></a>User query: {query}</span>
-<span id="cb4-4"><a></a>Response: {response}</span>
-<span id="cb4-5"><a></a></span>
-<span id="cb4-6"><a></a>Rate the response on a scale of 1–5 based on these criteria:</span>
-<span id="cb4-7"><a></a>[CRITERIA]</span>
-<span id="cb4-8"><a></a></span>
-<span id="cb4-9"><a></a>Provide your reasoning first, then the final score.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="pointwise-absolute-scoring-1" class="slide level2">
-<h2>Pointwise (Absolute Scoring)</h2>
-<p><strong>When to use:</strong></p>
-<ul>
-<li>You have clear rubrics and want consistent scoring</li>
-<li>You need to compare against a threshold (“is this good enough?”)</li>
-<li>You want to track score distributions over time</li>
-</ul>
-<div class="fragment">
-<p><strong>Problems:</strong></p>
-<ul>
-<li>Judges tend to cluster scores in the middle (low discrimination)</li>
-<li>Score drift over time (a “4” today may not mean the same as a “4” last month)</li>
-<li>Hard to compare across different prompts</li>
-</ul>
-<blockquote>
-<p>Use binary pass/fail instead of 1–5. The rubric becomes a checklist of requirements. The judge checks each and returns PASS or FAIL.</p>
-</blockquote>
-</div>
-</section>
-<section id="pairwise-head-to-head-comparison" class="slide level2">
-<h2>Pairwise (Head-to-Head Comparison)</h2>
-<p>The judge sees two responses to the same prompt and picks the better one.</p>
-<p><strong>Prompt template:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a></a>Compare Response A and Response B to the following query.</span>
-<span id="cb5-2"><a></a></span>
-<span id="cb5-3"><a></a>Query: {query}</span>
-<span id="cb5-4"><a></a>Response A: {response_a}</span>
-<span id="cb5-5"><a></a>Response B: {response_b}</span>
-<span id="cb5-6"><a></a></span>
-<span id="cb5-7"><a></a>Which response is better? Consider: helpfulness, accuracy, completeness, clarity.</span>
-<span id="cb5-8"><a></a>First explain your reasoning, then state your final verdict: [<span class="co">[</span><span class="ot">A</span><span class="co">]</span>] or [<span class="co">[</span><span class="ot">B</span><span class="co">]</span>] or [<span class="co">[</span><span class="ot">tie</span><span class="co">]</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="pairwise-head-to-head-comparison-1" class="slide level2">
-<h2>Pairwise (Head-to-Head Comparison)</h2>
-<p><strong>When to use:</strong></p>
-<ul>
-<li>Comparing two model variants or prompt versions</li>
-<li>A/B testing</li>
-<li>Building ranked datasets for fine-tuning</li>
-</ul>
-<div class="fragment">
-<p><strong>Problems:</strong></p>
-<ul>
-<li>Position bias (judge favors the first response shown)</li>
-<li>Non-transitivity (A &gt; B, B &gt; C, but C &gt; A)</li>
-<li>O(n²) comparisons needed for n variants</li>
-</ul>
-</div>
-<div class="fragment">
-<p><strong>Mitigations:</strong></p>
-<ul>
-<li>Swap position (show A first, then B first) and average</li>
-<li>Use consistent position randomization</li>
-<li>Require reasoning before verdict</li>
-</ul>
-</div>
-</section>
-<section id="listwise-ranking" class="slide level2">
-<h2>Listwise (Ranking)</h2>
-<p>The judge sees N responses and ranks them all.</p>
-<p><strong>Prompt template:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a></a>Rank the following responses to the query from best to worst.</span>
-<span id="cb6-2"><a></a>Query: {query}</span>
-<span id="cb6-3"><a></a>Response 1: {response_1}</span>
-<span id="cb6-4"><a></a>Response 2: {response_2}</span>
-<span id="cb6-5"><a></a>...</span>
-<span id="cb6-6"><a></a>Response N: {response_n}</span>
-<span id="cb6-7"><a></a>Consider helpfulness, accuracy, completeness, clarity. First explain your reasoning, then provide a final ranking.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="listwise-ranking-1" class="slide level2">
-<h2>Listwise (Ranking)</h2>
-<p><strong>When to use:</strong></p>
-<ul>
-<li>Comparing many variants at once</li>
-<li>Building leaderboards</li>
-<li>When you need a total order</li>
-</ul>
-<div class="fragment">
-<p><strong>Problems:</strong></p>
-<ul>
-<li>Cognitive load increases with N (judge quality degrades)</li>
-<li>Most LLMs struggle to rank more than 5–7 items reliably</li>
-<li>O(n log n) comparisons in tournament style, but single-call listwise is O(n)</li>
-</ul>
-</div>
-<div class="fragment">
-<p><strong>Recommendation:</strong></p>
-<p>For most applications, <strong>pointwise with binary pass/fail</strong> or <strong>pairwise with position-swapping</strong> (Chatbot Arena’s approach) are the right choices.</p>
-</div>
-</section>
-<section id="judge-biases-and-mitigations" class="slide level2">
-<h2>Judge Biases and Mitigations</h2>
-<div style="font-size: 0.72em;">
-<table class="caption-top">
-<colgroup>
-<col style="width: 22%">
-<col style="width: 29%">
-<col style="width: 22%">
-<col style="width: 26%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Bias</th>
-<th>Description</th>
-<th>Evidence</th>
-<th>Mitigation</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Position bias</strong></td>
-<td>Favors response in first position</td>
-<td>Zheng et al.: 70%+ preference for first position in some models</td>
-<td>Swap positions; average results; randomize order</td>
-</tr>
-<tr class="even">
-<td><strong>Length bias</strong></td>
-<td>Prefers longer responses</td>
-<td>Wang et al.&nbsp;(2024): length correlates with score even when content is identical</td>
-<td>Length-controlled prompting; normalize by length; penalize verbosity</td>
-</tr>
-<tr class="odd">
-<td><strong>Self-preference</strong></td>
-<td>Model favors outputs from its own family</td>
-<td>Zheng et al.: GPT-4 prefers GPT-4 outputs; Claude prefers Claude outputs</td>
-<td>Use a different model family for judging; don’t use same-model-as-judge</td>
-</tr>
-<tr class="even">
-<td><strong>Verbosity bias</strong></td>
-<td>Equates word count with quality</td>
-<td>Arena data: verbose responses win more often</td>
-<td>Require conciseness in rubric; count tokens as cost, not quality</td>
-</tr>
-<tr class="odd">
-<td><strong>Style bias</strong></td>
-<td>Prefers confident, assertive tone</td>
-<td>Chen et al.&nbsp;(2024): judges score confident wrong answers higher than hedged correct ones</td>
-<td>Include “appropriately hedged” in rubric; penalize overconfidence</td>
-</tr>
-<tr class="even">
-<td><strong>Recency bias</strong></td>
-<td>Remembers recent examples better</td>
-<td>Affects few-shot prompting patterns</td>
-<td>Randomize few-shot example order; use consistent sets</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="judge-biases-and-mitigations-1" class="slide level2">
-<h2>Judge Biases and Mitigations</h2>
-<p>Practical guidance:</p>
-<ul>
-<li><p>For <strong>self-evaluation</strong> (monitoring your own system): same model is acceptable but watch for inflated scores</p></li>
-<li><p>For <strong>comparative evaluation</strong> (A vs B testing): always use a third model or human judges</p></li>
-<li><p>Use a stronger model for judging than for generation</p></li>
-</ul>
-</section>
-<section id="calibration-measuring-judge-quality---cohens-kappa-κ" class="slide level2">
-<h2>Calibration: Measuring Judge Quality - Cohen’s Kappa (κ)</h2>
-<p>Measures inter-annotator agreement (<em>Judge and Human</em>) corrected for chance.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb7-1"><a></a></span>
-<span id="cb7-2"><a></a>Cohen's κ = (p_o - p_e) / (1 - p_e)</span>
-<span id="cb7-3"><a></a></span>
-<span id="cb7-4"><a></a>where:</span>
-<span id="cb7-5"><a></a>  p_o = observed agreement (both say pass, or both say fail)</span>
-<span id="cb7-6"><a></a>  p_e = expected agreement by chance</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<table class="caption-top">
-<colgroup>
-<col style="width: 15%">
-<col style="width: 37%">
-<col style="width: 46%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>κ Value</th>
-<th>Interpretation</th>
-<th>Usable as Judge?</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>&lt; 0.2</td>
-<td>Slight agreement</td>
-<td>No</td>
-</tr>
-<tr class="even">
-<td>0.2 – 0.4</td>
-<td>Fair agreement</td>
-<td>No</td>
-</tr>
-<tr class="odd">
-<td>0.4 – 0.6</td>
-<td>Moderate agreement</td>
-<td>Marginal,needs improvement</td>
-</tr>
-<tr class="even">
-<td>0.6 – 0.8</td>
-<td>Substantial agreement</td>
-<td>Yes, good enough for most uses</td>
-</tr>
-<tr class="odd">
-<td>0.8 – 1.0</td>
-<td>Almost perfect agreement</td>
-<td>Yes, excellent</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Target: κ &gt; 0.7</strong> for a production judge. Below 0.6, the judge’s signal is too noisy to be useful.</p>
-</section>
-<section id="true-positive-rate-and-true-negative-rate" class="slide level2">
-<h2>True Positive Rate and True Negative Rate</h2>
-<p>Beyond overall agreement, you need to know what kind of errors the judge makes:</p>
-<ul>
-<li><p><strong>TPR (Recall):</strong> Of all real failures, what fraction does the judge catch?<br>
-<code>TPR = True Positives / (True Positives + False Negatives)</code></p></li>
-<li><p><strong>TNR (Specificity):</strong> Of all good outputs, what fraction does the judge correctly pass?<br>
-<code>TNR = True Negatives / (True Negatives + False Positives)</code></p></li>
-</ul>
-<p>Both should be &gt; 80%. A judge with high TPR but low TNR fires false alarms constantly. A judge with high TNR but low TPR misses real problems.</p>
-</section>
-<section id="length-controlled-scoring" class="slide level2">
-<h2>Length-Controlled Scoring</h2>
-<ol type="1">
-<li><strong>Measure length correlation:</strong> Compute correlation between response length and judge score</li>
-<li><strong>If correlation &gt; 0.3:</strong> Length bias is significant</li>
-<li><strong>Mitigations:</strong>
-<ul>
-<li>Add explicit instruction: “Do not consider response length in your evaluation”</li>
-<li>Normalize: judge scores the <em>content</em> not the <em>volume</em></li>
-<li>Penalize verbosity: “A shorter response that fully answers the question is better than a longer one”</li>
-<li>Use pairwise comparison (length difference is less salient when comparing two responses)</li>
-</ul></li>
-</ol>
-</section>
-<section id="rubric-design" class="slide level2">
-<h2>Rubric Design</h2>
-<p><strong>Binary vs Likert vs Structured</strong></p>
-<div style="font-size: 0.72em;">
-<table class="caption-top">
-<colgroup>
-<col style="width: 21%">
-<col style="width: 21%">
-<col style="width: 21%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Format</th>
-<th>Pros</th>
-<th>Cons</th>
-<th>When to Use</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Binary (PASS/FAIL)</strong></td>
-<td>High agreement; actionable; easy to automate; clear threshold</td>
-<td>Loses granularity for “how bad?”</td>
-<td>Default for all evaluators</td>
-</tr>
-<tr class="even">
-<td><strong>Likert (1–5)</strong></td>
-<td>Granular; can detect gradual improvement</td>
-<td>Low inter-annotator agreement; score drift; ambiguous what “3” means</td>
-<td>Only when tracking gradual improvement on a stable rubric</td>
-</tr>
-<tr class="odd">
-<td><strong>Structured (per-dimension)</strong></td>
-<td>Pinpoints specific weaknesses; actionable debugging</td>
-<td>More annotation effort; complex to automate</td>
-<td>When you need to diagnose <em>which</em> aspect failed</td>
-</tr>
-</tbody>
-</table>
-</div>
-<blockquote>
-<p><em>“Start with binary labels to understand what ‘bad’ looks like. Numeric labels are advanced and usually not necessary.”</em></p>
-</blockquote>
-</section>
-<section id="rubric-design-1" class="slide level2">
-<h2>Rubric Design</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb8-1"><a></a>Instead of: "Rate factual accuracy 1–5"</span>
-<span id="cb8-2"><a></a>Use:       "Does the response contain any claims not supported by the retrieved context? [YES/NO]"</span>
-<span id="cb8-3"><a></a>           "Does the response correctly state the return policy? [YES/NO]"</span>
-<span id="cb8-4"><a></a>           "Does the response include all numerical claims from the source? [YES/NO]"</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>This preserves the actionability of binary labels while providing diagnostic granularity.</p>
-</section>
-<section id="writing-effective-rubrics" class="slide level2">
-<h2>Writing Effective Rubrics</h2>
-<div style="font-size: 0.72em;">
-<ol type="1">
-<li><strong>Make it task-specific, not generic</strong>
-<ul>
-<li>Bad: “Rate the quality of this response”</li>
-<li>Good: “The response must include the user’s dietary restriction. The response must not suggest foods containing the restricted ingredient.”</li>
-</ul></li>
-<li><strong>Include examples (few-shot)</strong>
-<ul>
-<li>Show 2–3 examples of passing responses with why they pass</li>
-<li>Show 2–3 examples of failing responses with why they fail</li>
-</ul></li>
-<li><strong>Define the decision boundary explicitly</strong>
-<ul>
-<li>What exactly constitutes a failure? Be precise enough that two people would agree.</li>
-</ul></li>
-<li><strong>Separate criteria into independent checks</strong>
-<ul>
-<li>Each criterion should be independently assessable</li>
-<li>Avoid compound criteria: “accurate and helpful and concise” → three separate checks</li>
-</ul></li>
-<li><strong>Iterate based on disagreement</strong>
-<ul>
-<li>When the judge disagrees with the human, the rubric is probably ambiguous</li>
-<li>Refine the rubric, not just the judge prompt</li>
-</ul></li>
-</ol>
-</div>
-</section>
-<section id="meta-evaluation" class="slide level2">
-<h2>Meta-Evaluation</h2>
-<ul>
-<li><p><strong>Ensembling Judges</strong>: When one judge isn’t enough, consider multiple:</p></li>
-<li><p><strong>Swap-and-Average (for pairwise)</strong> - Run each comparison twice with positions swapped. Average the results. Eliminates position bias at 2× cost.</p></li>
-<li><p><strong>Majority Voting (3 judges)</strong> - Run 3 different judges on the same output. Take the majority judgment. Reduces variance from any single judge’s biases.</p>
-<pre><code>  - Cost: 3× single judge
-  - Agreement improvement: typically 5–15% boost in κ
-  - Worth it when: stakes are high, judge quality is marginal, you need production monitoring</code></pre></li>
-</ul>
-</section>
-<section id="rag-metrics" class="slide level2">
-<h2>RAG Metrics</h2>
-<ul>
-<li>Recall@k: Do all relevant chunks for a query appear in your top K results? (<strong>most important</strong>)</li>
-<li>Precision@k: Is the top-k retrieved documents relevant?</li>
-<li>MRR (Mean Reciprocal Rank): How high is the best relevant document ranked?</li>
-<li>nDCG (normalized Discounted Cumulative Gain): Are relevant documents ranked higher than irrelevant</li>
-</ul>
-</section>
 <section id="what-not-to-do" class="slide level2">
 <h2>What NOT to Do</h2>
-<p>This section draws from Hamel’s FAQ and other blogs to cover common anti-patterns.</p>
+<p>Source : Hamel’s FAQ and other blogs to cover common anti-patterns.</p>
 </section>
 <section id="do-not-use-generic-ready-to-use-metrics" class="slide level2">
 <h2>Do Not Use Generic Ready-to-Use Metrics</h2>
@@ -1733,22 +2325,17 @@ CCE, IISc
 </ul>
 </div>
 </section>
-<section id="do-not-build-an-evaluator-for-every-failure-mode" class="slide level2">
+<section id="do-not-build-an-evaluator-for-every-failure-mode" class="slide level2 reference" data-visibility="uncounted">
 <h2>Do Not Build an Evaluator for Every Failure Mode</h2>
-<p><strong>The cost hierarchy matters.</strong> Many failures are:</p>
-<ul>
-<li>One-off bugs (fix and move on - no evaluator needed)</li>
-<li>Prompt issues (fix the prompt - evaluator becomes unnecessary)</li>
-<li>Obvious constraints (use an assertion, not an LLM judge)</li>
-</ul>
-<p>Build LLM-as-judge evaluators <strong>only</strong> for:</p>
-<ul>
-<li>Persistent generalization failures (survive prompt fixes)</li>
-<li>Subjective qualities that assertions can’t capture</li>
-<li>Failure modes you’ll iterate on repeatedly</li>
-</ul>
+<p><strong>Recall the cost hierarchy.</strong> An evaluator is software you now maintain - a prompt, a version, a dataset, and a drift problem.</p>
+<blockquote>
+<p>Most failures are one-off bugs, prompt issues, or objective constraints. Fix the bug, fix the prompt, or write the assertion.</p>
+</blockquote>
+<div class="fragment">
+<p>Reserve LLM-as-judge for <strong>persistent generalization failures</strong> - the ones that survive your prompt fixes and that you will keep iterating on.</p>
+</div>
 </section>
-<section id="do-not-outsource-core-annotation" class="slide level2">
+<section id="do-not-outsource-core-annotation" class="slide level2 reference" data-visibility="uncounted">
 <h2>Do Not Outsource Core Annotation</h2>
 <div style="font-size: 0.72em;">
 <p><strong>Why outsourcing fails:</strong></p>
@@ -1791,7 +2378,7 @@ CCE, IISc
 </blockquote>
 </div>
 </section>
-<section id="cicd-vs-production-evaluation" class="slide level2">
+<section id="cicd-vs-production-evaluation" class="slide level2 reference" data-visibility="uncounted">
 <h2>CI/CD vs Production Evaluation</h2>
 <table class="caption-top">
 <colgroup>
@@ -1840,7 +2427,7 @@ CCE, IISc
 </tbody>
 </table>
 </section>
-<section id="the-regression-gate" class="slide level2">
+<section id="the-regression-gate" class="slide level2 reference" data-visibility="uncounted">
 <h2>The Regression Gate</h2>
 <p><strong>Purpose:</strong> Prevent known failures from recurring. Block bad deployments.</p>
 <p><strong>Dataset characteristics:</strong></p>
@@ -1850,17 +2437,17 @@ CCE, IISc
 <li>Favors deterministic checks over LLM-as-judge (cost and speed)</li>
 </ul>
 <p><strong>Implementation:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a></a><span class="co"># Fast, deterministic CI checks</span></span>
-<span id="cb10-2"><a></a><span class="kw">def</span> ci_eval_suite(output, trace):</span>
-<span id="cb10-3"><a></a>    checks <span class="op">=</span> [</span>
-<span id="cb10-4"><a></a>        assert_json_schema(output, expected_schema),</span>
-<span id="cb10-5"><a></a>        assert_contains_required_facts(output, required_facts),</span>
-<span id="cb10-6"><a></a>        assert_no_disallowed_content(output, blocklist),</span>
-<span id="cb10-7"><a></a>        assert_response_time(trace.latency, max_ms<span class="op">=</span><span class="dv">2000</span>),</span>
-<span id="cb10-8"><a></a>    ]</span>
-<span id="cb10-9"><a></a>    <span class="cf">return</span> <span class="bu">all</span>(checks)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a></a><span class="co"># Fast, deterministic CI checks</span></span>
+<span id="cb9-2"><a></a><span class="kw">def</span> ci_eval_suite(output, trace):</span>
+<span id="cb9-3"><a></a>    checks <span class="op">=</span> [</span>
+<span id="cb9-4"><a></a>        assert_json_schema(output, expected_schema),</span>
+<span id="cb9-5"><a></a>        assert_contains_required_facts(output, required_facts),</span>
+<span id="cb9-6"><a></a>        assert_no_disallowed_content(output, blocklist),</span>
+<span id="cb9-7"><a></a>        assert_response_time(trace.latency, max_ms<span class="op">=</span><span class="dv">2000</span>),</span>
+<span id="cb9-8"><a></a>    ]</span>
+<span id="cb9-9"><a></a>    <span class="cf">return</span> <span class="bu">all</span>(checks)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="production-the-monitoring-layer" class="slide level2">
+<section id="production-the-monitoring-layer" class="slide level2 reference" data-visibility="uncounted">
 <h2>Production: The Monitoring Layer</h2>
 <p><strong>Purpose:</strong> Detect novel failures and drift. Feed learnings back into CI.</p>
 <p><strong>Dataset characteristics:</strong></p>
@@ -1870,25 +2457,25 @@ CCE, IISc
 <li>Large volume allows statistical significance</li>
 </ul>
 <p><strong>Implementation:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a></a><span class="co"># Async production evaluation</span></span>
-<span id="cb11-2"><a></a><span class="cf">async</span> <span class="kw">def</span> production_eval(trace_batch):</span>
-<span id="cb11-3"><a></a>    <span class="co"># Run LLM-as-judge on sampled traces</span></span>
-<span id="cb11-4"><a></a>    results <span class="op">=</span> <span class="cf">await</span> judge.evaluate_batch(trace_batch)</span>
-<span id="cb11-5"><a></a>    </span>
-<span id="cb11-6"><a></a>    <span class="co"># Track metrics over time</span></span>
-<span id="cb11-7"><a></a>    metrics.log(<span class="st">"failure_rate"</span>, results.failure_rate)</span>
-<span id="cb11-8"><a></a>    metrics.log(<span class="st">"avg_latency"</span>, results.latency)</span>
-<span id="cb11-9"><a></a>    metrics.log(<span class="st">"judge_confidence"</span>, results.confidence)</span>
-<span id="cb11-10"><a></a>    </span>
-<span id="cb11-11"><a></a>    <span class="co"># Alert on anomalies</span></span>
-<span id="cb11-12"><a></a>    <span class="cf">if</span> results.failure_rate <span class="op">&gt;</span> threshold:</span>
-<span id="cb11-13"><a></a>        alert(<span class="st">"Elevated failure rate detected"</span>)</span>
-<span id="cb11-14"><a></a>    </span>
-<span id="cb11-15"><a></a>    <span class="co"># Feed novel failures back to CI dataset</span></span>
-<span id="cb11-16"><a></a>    <span class="cf">for</span> failure <span class="kw">in</span> results.new_failures:</span>
-<span id="cb11-17"><a></a>        ci_dataset.add(failure.trace)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a></a><span class="co"># Async production evaluation</span></span>
+<span id="cb10-2"><a></a><span class="cf">async</span> <span class="kw">def</span> production_eval(trace_batch):</span>
+<span id="cb10-3"><a></a>    <span class="co"># Run LLM-as-judge on sampled traces</span></span>
+<span id="cb10-4"><a></a>    results <span class="op">=</span> <span class="cf">await</span> judge.evaluate_batch(trace_batch)</span>
+<span id="cb10-5"><a></a>    </span>
+<span id="cb10-6"><a></a>    <span class="co"># Track metrics over time</span></span>
+<span id="cb10-7"><a></a>    metrics.log(<span class="st">"failure_rate"</span>, results.failure_rate)</span>
+<span id="cb10-8"><a></a>    metrics.log(<span class="st">"avg_latency"</span>, results.latency)</span>
+<span id="cb10-9"><a></a>    metrics.log(<span class="st">"judge_confidence"</span>, results.confidence)</span>
+<span id="cb10-10"><a></a>    </span>
+<span id="cb10-11"><a></a>    <span class="co"># Alert on anomalies</span></span>
+<span id="cb10-12"><a></a>    <span class="cf">if</span> results.failure_rate <span class="op">&gt;</span> threshold:</span>
+<span id="cb10-13"><a></a>        alert(<span class="st">"Elevated failure rate detected"</span>)</span>
+<span id="cb10-14"><a></a>    </span>
+<span id="cb10-15"><a></a>    <span class="co"># Feed novel failures back to CI dataset</span></span>
+<span id="cb10-16"><a></a>    <span class="cf">for</span> failure <span class="kw">in</span> results.new_failures:</span>
+<span id="cb10-17"><a></a>        ci_dataset.add(failure.trace)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="guardrails-vs-evaluators" class="slide level2">
+<section id="guardrails-vs-evaluators" class="slide level2 reference" data-visibility="uncounted">
 <h2>Guardrails vs Evaluators</h2>
 <div style="font-size: 0.72em;">
 <table class="caption-top">
@@ -1946,7 +2533,7 @@ CCE, IISc
 </ul>
 </div>
 </section>
-<section id="prompt-versioning" class="slide level2">
+<section id="prompt-versioning" class="slide level2 reference" data-visibility="uncounted">
 <h2>Prompt Versioning</h2>
 <p><strong>Version prompts in Git.</strong></p>
 <ul>
@@ -1965,7 +2552,7 @@ CCE, IISc
 <li>If regression: iterate or revert</li>
 </ol>
 </section>
-<section id="cost-latency-and-reliability-as-co-equal-metrics" class="slide level2">
+<section id="cost-latency-and-reliability-as-co-equal-metrics" class="slide level2 reference" data-visibility="uncounted">
 <h2>Cost, Latency, and Reliability as Co-Equal Metrics</h2>
 <table class="caption-top">
 <colgroup>
@@ -2009,21 +2596,21 @@ CCE, IISc
 </tbody>
 </table>
 </section>
-<section id="improving-accuracy-quick-changes" class="slide level2">
+<section id="improving-accuracy-quick-changes" class="slide level2 reference" data-visibility="uncounted">
 <h2>Improving Accuracy: Quick Changes</h2>
 <p><strong>Prompt refinement</strong>:</p>
 <ul>
 <li><p>Clarify ambiguous wording. Add targeted few-shot examples for specific failures. Use role-based guidance.</p></li>
-<li><p>Use role based guidance (persona) (<em>You’re a expert lawyer…</em>) or audience role (<em>You’re explainign to highschool student</em>)</p></li>
+<li><p>Use role based guidance (persona) (<em>You’re an expert lawyer…</em>) or audience role (<em>You’re explaining to a high-school student</em>)</p></li>
 </ul>
 <p><strong>Induce Reasoning</strong></p>
 <ul>
 <li>For complex tasks (planning or logic), Induce CoT by prompting for non-reasoning models eg : ‘Think Step by Step’, ‘Break down your reasoning’, ‘First list the facts, then draw a conclusion’</li>
 </ul>
 </section>
-<section id="improving-accuracy-medium-effort-changes" class="slide level2">
+<section id="improving-accuracy-medium-effort-changes" class="slide level2 reference" data-visibility="uncounted">
 <h2>Improving Accuracy: Medium-Effort Changes</h2>
-<p><strong>Task Decomposition</strong>:</p>
+<p><strong>Pipeline Decomposition</strong>:</p>
 <ul>
 <li><p>Break complex tasks into smaller steps. Use a chain of calls to the model, with intermediate checks.</p></li>
 <li><p>Example : Instead of answering the user question directly, break down into three steps. 1. extract user intent 2. retrieve or call tools 3. Summarize the response</p></li>
@@ -2038,9 +2625,9 @@ CCE, IISc
 <li>Clear tool descriptions, parameters, and expected formats matter</li>
 </ul>
 </section>
-<section id="improving-accuracy-advanced-strategies" class="slide level2">
+<section id="improving-accuracy-advanced-strategies" class="slide level2 reference" data-visibility="uncounted">
 <h2>Improving Accuracy: Advanced Strategies</h2>
-<p><strong>Fientuning</strong></p>
+<p><strong>Fine-tuning</strong></p>
 <ul>
 <li>If prompting cannot fix, finetuning can help</li>
 <li>Create hundred or so examples for each failure mode</li>
@@ -2049,7 +2636,7 @@ CCE, IISc
 </ul>
 <p><strong>Systematic prompt optimisation</strong></p>
 <ul>
-<li>Automatic prompt optimiuzation tools like DSPy can help here</li>
+<li>Automatic prompt optimization tools like DSPy can help here</li>
 </ul>
 <p><strong>Human Review and Feedback Loops</strong></p>
 <ul>
@@ -2058,7 +2645,7 @@ CCE, IISc
 <li>Continuous feedback loops help maintain and improve model performance over time</li>
 </ul>
 </section>
-<section id="cost-reduction-strategies" class="slide level2">
+<section id="cost-reduction-strategies" class="slide level2 reference" data-visibility="uncounted">
 <h2>Cost Reduction Strategies</h2>
 <ul>
 <li><p>Use cheaper models for easy tasks, expensive for harder tasks</p></li>
@@ -2067,6 +2654,27 @@ CCE, IISc
 <li><p>Use prompt caching or prefix caching</p></li>
 <li><p>Model cascading: run a cheaper model first, only call the expensive model if the cheap one is uncertain (based on confidence or heuristics)</p></li>
 </ul>
+</section>
+<section id="key-takeaways" class="slide level2">
+<h2>Key Takeaways</h2>
+<div style="font-size: 0.9em;">
+<ol type="1">
+<li><strong>Look at your data.</strong> Everything else is an optimisation on top of error analysis.</li>
+<li><strong>Reference-based metrics fail</strong> on open-ended outputs - they ask “same words?”, you mean “same thing?”</li>
+<li><strong>You cannot anticipate failure modes.</strong> Observe them, then build evaluators for the ones that persist.</li>
+<li><strong>Start with the cheapest check</strong> that could catch it. An assertion beats a judge.</li>
+<li><strong>Binary pass/fail beats 1–5.</strong> Granularity comes from the pass <em>rate</em>, not the scale.</li>
+<li><strong>A judge is a system too</strong> - it has biases, needs a train/val/test split, and must be calibrated (κ &gt; 0.7).</li>
+<li><strong>The judge’s error rates bias your numbers.</strong> Correct for them before you trust a failure rate.</li>
+<li><strong>Evaluate sessions, not just turns</strong>, once your product is a conversation.</li>
+</ol>
+</div>
+<blockquote>
+<p><strong>read the traces.</strong> No automated system replaces the intuition that builds.</p>
+</blockquote>
+<div class="fragment">
+<p><strong>SupportBot, end to end:</strong> read 50 traces → name 5 failure modes → fix 2 with a prompt change → regex for <code>auth_bypass</code>, code check for <code>stale_policy</code> → judge for <code>intent_mismatch</code>, calibrated to κ = 0.74 → ship, monitor, feed new failures back.</p>
+</div>
 </section>
 <section id="further-reading" class="slide level2">
 <h2>Further Reading</h2>
@@ -2091,7 +2699,7 @@ CCE, IISc
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
-<p><a href="https://llm-engg.github.io/">Large Language Models : A Hands-on Approach</a></p>
+<p><a href="https://llm-engg.github.io/llms-may-26/slides">Large Language Models : A Hands-on Approach</a></p>
 </div>
 </div></div>
 
@@ -2153,7 +2761,7 @@ CCE, IISc
 
         // Add the current slide number to the URL hash so that reloading the
         // page/copying the URL will return you to the same slide
-        hash: true,
+        hash: false,
 
         // Start with 1 for the hash rather than 0
         hashOneBasedIndex: false,
@@ -2162,7 +2770,7 @@ CCE, IISc
         respondToHashChanges: true,
 
         // Push each slide change to the browser history
-        history: true,
+        history: false,
 
         // Enable keyboard shortcuts for navigation
         keyboard: true,
