@@ -2622,6 +2622,1280 @@
     "text": "Thank You\nQuestions?"
   },
   {
+    "objectID": "agents/08_multiagents/slides.html#multi-agent-systems",
+    "href": "agents/08_multiagents/slides.html#multi-agent-systems",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "MULTI-AGENT SYSTEMS",
+    "text": "MULTI-AGENT SYSTEMS"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#why-multi-agent",
+    "href": "agents/08_multiagents/slides.html#why-multi-agent",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Why Multi-Agent?",
+    "text": "Why Multi-Agent?\n\nSpecialized agents win, like specialized humans. A coder, a reviewer, a tester - clean division of labor"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#multi-agent-system-benefits",
+    "href": "agents/08_multiagents/slides.html#multi-agent-system-benefits",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Multi-agent System Benefits",
+    "text": "Multi-agent System Benefits\n\nSpecialization - different prompts AND different tools/models. (Expensive model for planning, cheap model for implementation)\nParallelism - independent subtasks that can run concurrently. (Fix 5 unrelated bugs in 5 PRs.)\nAdversarial dynamics - debate, red-teaming, solver–critic. The disagreement is the signal."
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#multi-agent-systems-drawbacks",
+    "href": "agents/08_multiagents/slides.html#multi-agent-systems-drawbacks",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Multi-Agent Systems Drawbacks",
+    "text": "Multi-Agent Systems Drawbacks\n\nCoordination cost - each handoff is a token tax + a latency tax.\nError compounding - a 90%-reliable agent chained 5 times is 0.9^5 ≈ 59% reliable.\nContext fragmentation - agent B doesn’t have what agent A knew.\nDebug nightmare - failures cross agent boundaries; root cause analysis is hard."
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#multi-agent-frameworks",
+    "href": "agents/08_multiagents/slides.html#multi-agent-frameworks",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Multi-Agent Frameworks",
+    "text": "Multi-Agent Frameworks\nThe current multi-agent framework landscape"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#orchestration-patterns",
+    "href": "agents/08_multiagents/slides.html#orchestration-patterns",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Orchestration Patterns",
+    "text": "Orchestration Patterns"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#pattern-1-supervisor-manager-hub-and-spoke",
+    "href": "agents/08_multiagents/slides.html#pattern-1-supervisor-manager-hub-and-spoke",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Pattern 1 : Supervisor / Manager (hub-and-spoke)",
+    "text": "Pattern 1 : Supervisor / Manager (hub-and-spoke)\n\nSupervisor decides who works next, aggregates results, maintains overview.\ndef supervisor(state):\n    \"\"\"LLM decides which worker to call next.\"\"\"\n    resp = supervisor_llm.generate(\n        system=\"You manage a team: researcher, coder, tester. \"\n               \"Decide who should work next. Reply with the name \"\n               \"or 'DONE' if complete.\",\n        user=f\"Current state: {state}\"\n    )\n    return {\"next_agent\": resp.text}\n\ngraph.add_conditional_edges(\"supervisor\", lambda s: s[\"next_agent\"])\nUsed by: CrewAI (hierarchical), LangGraph, AutoGen GroupChat."
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#pattern-2-sequential-pipeline",
+    "href": "agents/08_multiagents/slides.html#pattern-2-sequential-pipeline",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Pattern 2 : Sequential Pipeline",
+    "text": "Pattern 2 : Sequential Pipeline\n\nUsed by:\nMetaGPT (PM -&gt; Architect -&gt; PM -&gt; Engineer -&gt; QA), Aider (architect -&gt; editor)."
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#pattern-3-graph-with-conditional-edges",
+    "href": "agents/08_multiagents/slides.html#pattern-3-graph-with-conditional-edges",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Pattern 3 : Graph with Conditional Edges",
+    "text": "Pattern 3 : Graph with Conditional Edges\nExplicit DAG (or graph with cycles) where nodes are agents and edges encode transitions.\n\ngraph = StateGraph(State)\ngraph.add_node(\"planner\", planner_agent)\ngraph.add_node(\"coder\", coder_agent)\ngraph.add_node(\"reviewer\", reviewer_agent)\n\ngraph.set_entry_point(\"planner\")\ngraph.add_edge(\"planner\", \"coder\")\ngraph.add_edge(\"coder\", \"reviewer\")\ngraph.add_conditional_edges(\"reviewer\", {\n    \"approved\": END,\n    \"needs_changes\": \"coder\"\n})"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#pattern-4-parallel-fleet",
+    "href": "agents/08_multiagents/slides.html#pattern-4-parallel-fleet",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Pattern 4 : Parallel Fleet",
+    "text": "Pattern 4 : Parallel Fleet\n\nIndependent agents in isolated workspaces ( eg git worktrees!) work in parallel on parallelizable subtasks\nPros: massive parallelism, isolated workspaces (no merge conflicts mid-execution).\nCons: orchestration is complex, merge conflicts etc"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#multi-agent-system-checklist",
+    "href": "agents/08_multiagents/slides.html#multi-agent-system-checklist",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Multi-Agent System Checklist",
+    "text": "Multi-Agent System Checklist\n\nIdentity prompt - who this agent is.\nScope - what it does AND what it doesn’t.\nTools - its specific (narrow!) tool set.\nInputs - what shape of state it consumes.\nOutputs - what shape of artifact it produces.\nHandoff rules - when does it pass to another agent?\nFailure mode - what happens if it fails? Retry? Escalate?"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#demo-langgraph-supervisor-tiered-models",
+    "href": "agents/08_multiagents/slides.html#demo-langgraph-supervisor-tiered-models",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "[DEMO] LangGraph supervisor + tiered models",
+    "text": "[DEMO] LangGraph supervisor + tiered models\nTiered model strategy — Claude Opus 5 routes, Haiku 4.5 executes.\n# pip install langgraph langgraph-supervisor langchain-anthropic\nfrom langgraph_supervisor import create_supervisor\nfrom langgraph.prebuilt import create_react_agent\nfrom langchain_anthropic import ChatAnthropic\n\n# Tiered model strategy (cuts cost 60–70% vs. all-Opus):\nsupervisor_llm = ChatAnthropic(model=\"claude-opus-5\")     # reasoning for routing\nworker_llm     = ChatAnthropic(model=\"claude-haiku-4-5\")  # execution\n\nresearcher = create_react_agent(\n    worker_llm, tools=[web_search], name=\"researcher\",\n    prompt=\"You research topics. Return facts only.\"\n)\ncoder = create_react_agent(\n    worker_llm, tools=[run_python], name=\"coder\",\n    prompt=\"You write Python. Return code only.\"\n)\nreviewer = create_react_agent(\n    worker_llm, tools=[], name=\"reviewer\",\n    prompt=\"You review code for bugs. Return issues found or 'OK'.\"\n)\n\nsupervisor = create_supervisor(\n    [researcher, coder, reviewer],\n    model=supervisor_llm,\n    prompt=\"Route work between researcher, coder, reviewer. Reply 'DONE' when complete.\"\n).compile(checkpointer=MemorySaver())  # durable execution"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#demo-claude-agent-sdk-subagents",
+    "href": "agents/08_multiagents/slides.html#demo-claude-agent-sdk-subagents",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "[DEMO] Claude Agent SDK subagents",
+    "text": "[DEMO] Claude Agent SDK subagents\nNote the two levers: a read-only tool set so the reviewer cannot break anything, and a per-subagent model so high-stakes work gets the bigger model.\nfrom claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition\n\nasync for message in query(\n    prompt=\"Review the authentication module for security issues\",\n    options=ClaudeAgentOptions(\n        allowed_tools=[\"Read\", \"Grep\", \"Glob\", \"Agent\"],  # 'Agent' is required to spawn subagents\n        agents={\n            \"code-reviewer\": AgentDefinition(\n                description=\"Expert reviewer. Use for security/quality reviews.\",\n                prompt=\"Review code for security issues. Be concise.\",\n                tools=[\"Read\", \"Grep\", \"Glob\"],   # read-only — can't break things\n                model=\"opus\",                      # high-stakes → bigger model\n            ),\n            \"test-runner\": AgentDefinition(\n                description=\"Runs and analyzes test suites.\",\n                prompt=\"Run tests, summarize failures.\",\n                tools=[\"Bash\", \"Read\", \"Grep\"],\n                model=\"sonnet\",                    # cheap model, can execute\n            ),\n        },\n    ),\n):\n    if hasattr(message, \"result\"): print(message.result)"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#state-passing-communication",
+    "href": "agents/08_multiagents/slides.html#state-passing-communication",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "State Passing & Communication",
+    "text": "State Passing & Communication\n\nShared state object (LangGraph, CrewAI)\nArtifact passing (MetaGPT)\nMessage passing (AG2-style)"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#method-1-shared-state-object-langgraph-crewai",
+    "href": "agents/08_multiagents/slides.html#method-1-shared-state-object-langgraph-crewai",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Method 1 : Shared state object (LangGraph, CrewAI)",
+    "text": "Method 1 : Shared state object (LangGraph, CrewAI)\nclass SharedState(TypedDict):\n    messages: list\n    plan: str\n    code: str\n    test_results: str\n\ndef planner(state):\n    plan = llm(\"Plan for: \" + state[\"messages\"][-1])\n    return {\"plan\": plan}\n\ndef coder(state):\n    code = llm(\"Implement: \" + state[\"plan\"])\n    return {\"code\": code}\n\nAll agents read/write a single state object.\nSimple, debuggable.\nRisk: Corrupted state if scope is not enforced."
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#method-2-artifact-passing-metagpt",
+    "href": "agents/08_multiagents/slides.html#method-2-artifact-passing-metagpt",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Method 2 : Artifact passing (MetaGPT)",
+    "text": "Method 2 : Artifact passing (MetaGPT)\nclass PRD(BaseModel):\n    goals: list[str]\n    user_stories: list[str]\n    requirements: list[str]\n\nclass SystemDesign(BaseModel):\n    architecture: str\n    api_specs: list[APISpec]\n\nprd: PRD = product_manager.generate(requirement)\ndesign: SystemDesign = architect.generate(prd)\ncode: CodeOutput = engineer.generate(design)\n\nEach agent produces a typed artifact. Next agent consumes it. Pros: type-safe contracts between agents. Cons: rigid (changing the artifact format ripples)."
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#method-3-message-passing-ag2-style",
+    "href": "agents/08_multiagents/slides.html#method-3-message-passing-ag2-style",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Method 3 : Message passing (AG2-style)",
+    "text": "Method 3 : Message passing (AG2-style)\nclass Agent:\n    async def handle_message(self, msg: Message) -&gt; Message:\n        resp = await self.llm.generate(msg.content)\n        return Message(sender=self.name, recipient=msg.sender, content=resp)\n\nstream.subscribe(\"coder\", coder_agent.handle_message)\nstream.subscribe(\"reviewer\", reviewer_agent.handle_message)\nstream.emit(Message(sender=\"user\", content=\"Fix the auth bug\"))\n\nAgents communicate via discrete messages on a stream. Most flexible, hardest to debug"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#communication-protocols",
+    "href": "agents/08_multiagents/slides.html#communication-protocols",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Communication Protocols",
+    "text": "Communication Protocols"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#a2a-agent-to-agent-protocol",
+    "href": "agents/08_multiagents/slides.html#a2a-agent-to-agent-protocol",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "A2A (Agent-to-Agent Protocol)",
+    "text": "A2A (Agent-to-Agent Protocol)\n\nA2A developed by Google, contributed to the Linux Foundation\nIt’s becoming the agent-mesh standard.\nSupported by most of agent frameworks"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#a2a-agent-to-agent-protocol-1",
+    "href": "agents/08_multiagents/slides.html#a2a-agent-to-agent-protocol-1",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "A2A (Agent-to-Agent Protocol)",
+    "text": "A2A (Agent-to-Agent Protocol)\nVideo"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#a2a-agent-to-agent-protocol-2",
+    "href": "agents/08_multiagents/slides.html#a2a-agent-to-agent-protocol-2",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "A2A (Agent-to-Agent Protocol)",
+    "text": "A2A (Agent-to-Agent Protocol)\nArchitecture:\n\nTransport: HTTP + Server-Sent Events + JSON-RPC 2.0.\nAgent Cards: Eeach agent publishes what it can do, what it requires, auth scheme.\nTasks: The primary unit, long-running, with state transitions (submitted -&gt; working -&gt; completed / failed / canceled).\nModalities: Multimodal (text, audio, video streaming)\nSecurity: parity with OpenAPI auth schemes; enterprise SSO + RBAC"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#a2a-agent-to-agent-protocol-3",
+    "href": "agents/08_multiagents/slides.html#a2a-agent-to-agent-protocol-3",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "A2A (Agent-to-Agent Protocol)",
+    "text": "A2A (Agent-to-Agent Protocol)\nMinimal A2A message:\n{\n  \"jsonrpc\": \"2.0\",\n  \"id\": \"req-42\",\n  \"method\": \"tasks/send\",\n  \"params\": {\n    \"id\": \"task-abc\",\n    \"sessionId\": \"session-xyz\",\n    \"message\": {\n      \"role\": \"user\",\n      \"parts\": [{\"type\": \"text\", \"text\": \"Research the latest quantum chip benchmarks.\"}]\n    },\n    \"acceptedOutputModes\": [\"text\", \"application/json\"]\n  }\n}\n\n\nA research team’s stack might be custom for research and LangGraph for execution. A2A provides bridge between them"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#why-multi-agent-systems-win",
+    "href": "agents/08_multiagents/slides.html#why-multi-agent-systems-win",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Why Multi-Agent systems win",
+    "text": "Why Multi-Agent systems win\n\nMulti-agent systems usually win through context isolation, not through role specialization."
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#case-study-anthropics-multi-agent-research-system",
+    "href": "agents/08_multiagents/slides.html#case-study-anthropics-multi-agent-research-system",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Case study: Anthropic’s multi-agent research system",
+    "text": "Case study: Anthropic’s multi-agent research system\nHow we built our multi-agent research system\n\nArchitecture: Lead Researcher (Claude Opus 4) + parallel Sonnet 4 subagents + a Citation Agent that runs after the research loop closes.\nPerformance: +90.2% over single-agent Opus 4 on Anthropic’s internal research eval.\n\n\nModel names are as published — the result was measured on the Claude 4 generation. The architecture is what transfers, not the numbers.\n\n\nCost: approximately 15× the tokens of a chat interaction (vs. ~4× for a single agent). Multi-agent is economically viable only for high-value tasks."
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#anthropic-sizing-recommendations",
+    "href": "agents/08_multiagents/slides.html#anthropic-sizing-recommendations",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Anthropic sizing recommendations",
+    "text": "Anthropic sizing recommendations\n\n3–5 agents per team max. More Agents -&gt; coordination overhead.\n1–5 tools per agent. More tools -&gt; tool-selection failures.\nMax 10 tools across team. Total surface should be manageable.\nStart with 1 agent. Add more only with empirical evidence."
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#more-case-studies",
+    "href": "agents/08_multiagents/slides.html#more-case-studies",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "More Case Studies",
+    "text": "More Case Studies\n\n\n\n\n\n\n\n\n\nSystem\nMemory\nMulti-agent\nStance\n\n\n\n\nPi\nMinimal (in-prompt)\nNone\nMinimal\n\n\nClaude Code\nFile-based + user model\nSub-agents (Task)\nPolished baseline\n\n\nHermes\nEpisodic + observational + user model\nProvider/backend isolation\nSelf-improving\n\n\nOpenClaw\nFile-based + dated folders\nDelegates to sub-agents\nHeavy infra"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#appendix",
+    "href": "agents/08_multiagents/slides.html#appendix",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Appendix",
+    "text": "Appendix"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#enterprise-ai-agent-pattern",
+    "href": "agents/08_multiagents/slides.html#enterprise-ai-agent-pattern",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Enterprise AI Agent Pattern",
+    "text": "Enterprise AI Agent Pattern\nStandard Reference - AEGIS = Agentic AI Enterprise Guardrails for Information Security.\n\nGovernance- agent inventory, ownership, lifecycle, decommissioning.\nIdentity - every agent has its own identity, least-privilege scoped credentials; rotation policy.\nData security - what data the agent can see, classify, write; DLP at agent egress.\nApplication security - sandboxing, code-execution boundaries, MCP server allowlists.\nThreat operations - anomaly detection on tool-call patterns.\nZero Trust - every agent action is verified; no implicit trust between agents."
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#enterprise-ai-agent-pattern-2026",
+    "href": "agents/08_multiagents/slides.html#enterprise-ai-agent-pattern-2026",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Enterprise AI Agent Pattern : 2026",
+    "text": "Enterprise AI Agent Pattern : 2026"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#default-stack-for-a-new-custom-enterprise-agent",
+    "href": "agents/08_multiagents/slides.html#default-stack-for-a-new-custom-enterprise-agent",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Default stack for a new custom enterprise agent",
+    "text": "Default stack for a new custom enterprise agent\n\n\n\n\n\n\n\n\nLayer\nDefault pick\nWhen to deviate\n\n\n\n\nLLM provider\nClaude (Sonnet 5 default, Opus 5 for orchestrator) OR GPT-5/o-series\nCost-sensitive → Haiku 4.5 for workers; data-residency → on-prem via vLLM\n\n\nOrchestration\nLangGraph if you want graphs; Claude Agent SDK if Claude-native + want subagents primitive; Microsoft Agent Framework if Azure shop\nCrewAI for quick prototypes; OpenAI Agents SDK if OpenAI-native\n\n\nMemory\nMem0 (fastest path)\nZep if you need temporal audit; Cognee if you need graph over docs; Letta if you want explicit OS-style paging\n\n\nTools\nMCP servers behind an enterprise gateway\nInline tools only for in-process logic\n\n\nInter-agent\nA2A for cross-team / cross-vendor; in-process handoffs within one team\nMCP-wrapping if the other agent is logically a tool\n\n\nObservability\nLangSmith (if LangGraph) OR Langfuse (if framework-agnostic)\nArize Phoenix if eval rigor is the priority\n\n\nSandbox\nDocker containers + git worktrees per parallel agent\nfirejail / gVisor / E2B for stricter isolation\n\n\nGovernance\nAEGIS-aligned policy registry; per-agent identity; least-privilege\nIf the org has a CISO, they already have requirements — use theirs"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#build-order",
+    "href": "agents/08_multiagents/slides.html#build-order",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Build Order",
+    "text": "Build Order"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#build-order-1",
+    "href": "agents/08_multiagents/slides.html#build-order-1",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Build Order",
+    "text": "Build Order\n\nEval harness - golden outputs, LLM-as-judge with calibrated rubric (Class 1/2 work).\nSingle-agent prototype - one LLM, one prompt, two tools, no memory. Measure baseline cost/latency/quality.\nTrajectory logging via OpenTelemetry - Every tool call, every cost, every latency.\nMemory layer - (4-scope: tenant/user/agent/run). Re-run eval\nCompaction + structured note-taking - PROJECT_NOTES.md-style external scratchpad for any task &gt;10 turns.\nSub-agent for one noisy subtask - pick the highest-token sub-task (file exploration, web search, debugging) and isolate it. Re-run eval under equal budget.\nMCP gateway in front of tools - even if it’s just one tool. The gateway is the audit + RBAC point; never let agents talk to tools directly in prod.\nHITL approval gate for one high-stakes action - destructive writes, financial transactions, customer-visible outputs. Build the human-in-the-loop UI before you need it.\nEval in CI - small (20 prompt) eval suite runs on every PR. Alert on regression. Drift detection in production.\nFailure taxonomy + runbook - after 50 production traces, categorize failures (wrong tool, infinite loop, context overflow, hallucinated API, permission denial, memory miss). One mitigation per category."
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#questions-to-answer-about-an-enterprise-agent",
+    "href": "agents/08_multiagents/slides.html#questions-to-answer-about-an-enterprise-agent",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Questions to answer about an Enterprise Agent",
+    "text": "Questions to answer about an Enterprise Agent\n\nWhat does the agent actually do? - one user-visible workflow, end-to-end.\nHow do we know it works? - eval numbers on a documented golden set.\nWhat does it cost per user per month? - token cost + memory cost + observability cost.\nWhat gets affected if the agent goes wrong? - sandbox, permissions, HITL gates.\nVendor Portability? - abstractions over MCP/A2A so a memory provider swap is one config change."
+  },
+  {
+    "objectID": "agents/06_context/slides.html#context-engineering",
+    "href": "agents/06_context/slides.html#context-engineering",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Context Engineering",
+    "text": "Context Engineering"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#context-engineering-1",
+    "href": "agents/06_context/slides.html#context-engineering-1",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Context Engineering",
+    "text": "Context Engineering\n\nArt and science of filling the context window with just the right information at each step of an agent’s trajectory"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#context-engineering-vs-prompt-engineering",
+    "href": "agents/06_context/slides.html#context-engineering-vs-prompt-engineering",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Context Engineering vs Prompt Engineering",
+    "text": "Context Engineering vs Prompt Engineering"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#system-prompt",
+    "href": "agents/06_context/slides.html#system-prompt",
+    "title": "LLM Agents : Context Engineering",
+    "section": "System Prompt",
+    "text": "System Prompt\n\n┌─────────────────────────────────────────────┐\n│ Layer 1: IDENTITY                            │\n│ Who is the agent? What is its role?          │\n│ \"You are a senior software engineer...\"      │\n├─────────────────────────────────────────────┤\n│ Layer 2: CONSTRAINTS                         │\n│ What must the agent always/never do?         │\n│ \"Never execute destructive commands...\"      │\n├─────────────────────────────────────────────┤\n│ Layer 3: CAPABILITIES                        │\n│ What tools are available?                    │\n│ Tool descriptions, schemas, usage examples   │\n├─────────────────────────────────────────────┤\n│ Layer 4: CONTEXT                             │\n│ Environment, project, user info              │\n│ OS, working directory, git status            │\n├─────────────────────────────────────────────┤\n│ Layer 5: BEHAVIOR                            │\n│ How should the agent act?                    │\n│ Tone, verbosity, decision-making style       │\n├─────────────────────────────────────────────┤\n│ Layer 6: KNOWLEDGE                           │\n│ Domain-specific information                  │\n│ Skills, memory, retrieved context            │\n└─────────────────────────────────────────────┘"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#system-prompt---claude-code",
+    "href": "agents/06_context/slides.html#system-prompt---claude-code",
+    "title": "LLM Agents : Context Engineering",
+    "section": "System Prompt - Claude Code",
+    "text": "System Prompt - Claude Code\n\n1. Core identity and instructions (~2000 tokens)\n   - \"You are Claude Code, Anthropic's official CLI for Claude\"\n   - Core behavioral rules\n   - Output formatting guidelines\n\n2. Tool definitions (~3000 tokens)\n   - 18+ built-in tools (Read, Write, Edit, Bash, Grep, Glob, etc.)\n   - Each with JSON Schema and usage notes\n\n3. Environment section (~500 tokens)\n   - Working directory, platform, shell\n   - Git repository status\n   - Model info\n\n4. CLAUDE.md content (variable, re-injected every request)\n   - Project-specific instructions\n   - Coding conventions\n   - Persistent rules\n\n5. Sub-agent prompts (conditional)\n   - Plan agent instructions\n   - Explore agent instructions\n   - Task agent instructions\n\n6. Utility prompts (conditional)\n   - Commit guidelines\n   - PR creation guidelines\n   - Security review instructions\n\nClaude Code System Prompt"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#assembling-system-prompt",
+    "href": "agents/06_context/slides.html#assembling-system-prompt",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Assembling System Prompt",
+    "text": "Assembling System Prompt\nPattern A: Monolithic String (Legacy)\nsystem_prompt = \"\"\"You are a helpful AI assistant. You can search the web,\nwrite code, and analyze data. Always be polite. Never share personal info.\nWhen writing code, use Python. When searching, cite sources. ...\"\"\"\nPattern B: Template with Variables\nsystem_prompt = TEMPLATE.format(\n    role=agent_config.role,\n    tools=format_tools(available_tools),\n    constraints=agent_config.constraints,\n    context=get_current_context()\n)\nUsed by: CrewAI, basic LangChain\nParameterized, but still builds one blob."
+  },
+  {
+    "objectID": "agents/06_context/slides.html#assembling-system-prompt-1",
+    "href": "agents/06_context/slides.html#assembling-system-prompt-1",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Assembling System Prompt",
+    "text": "Assembling System Prompt\nPattern C: Section Assembly (Current Practice)\ndef assemble_system_prompt(agent, task, environment):\n    sections = []\n\n    # Layer 1: Identity (always present)\n    sections.append(agent.identity_prompt)\n\n    # Layer 2: Constraints (always present)\n    sections.append(agent.constraints_prompt)\n\n    # Layer 3: Tools (filtered for current task)\n    relevant_tools = select_tools(task, agent.available_tools)\n    sections.append(format_tool_descriptions(relevant_tools))\n\n    # Layer 4: Context (dynamic)\n    sections.append(format_environment(environment))\n\n    # Layer 5: Behavior (from config file)\n    if agent.soul_md:\n        sections.append(agent.soul_md)\n\n    # Layer 6: Knowledge (on-demand)\n    relevant_skills = find_relevant_skills(task, agent.skills)\n    for skill in relevant_skills:\n        sections.append(skill.instructions)\n\n    # Memory (semantic search)\n    memories = memory_store.search(task, top_k=5)\n    if memories:\n        sections.append(format_memories(memories))\n\n    return \"\\n\\n\".join(sections)\nUsed by: OpenClaw, Claude Code, Goose etc"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#assembling-system-prompt-2",
+    "href": "agents/06_context/slides.html#assembling-system-prompt-2",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Assembling System Prompt",
+    "text": "Assembling System Prompt\nPattern D: Catalog + On-Demand (Advanced)\n# System prompt includes a lightweight skill catalog\nskill_catalog = \"\"\"\nAvailable skills (ask to load full instructions when needed):\n- github-pr: Create and manage GitHub pull requests\n- code-review: Perform structured code reviews\n- deploy: Deploy applications to production\n- data-analysis: Analyze datasets and generate reports\n\"\"\"\n\n# When the agent decides to use a skill, it requests full instructions\n@tool\ndef load_skill(skill_name: str) -&gt; str:\n    \"\"\"Load detailed instructions for a specific skill.\"\"\"\n    return read_file(f\"skills/{skill_name}/SKILL.md\")\nUsed by: OpenClaw skills Keeps the system prompt small. Loads detail only when needed."
+  },
+  {
+    "objectID": "agents/06_context/slides.html#soul.md-agents.md-pattern",
+    "href": "agents/06_context/slides.html#soul.md-agents.md-pattern",
+    "title": "LLM Agents : Context Engineering",
+    "section": "SOUL.md / AGENTS.md Pattern",
+    "text": "SOUL.md / AGENTS.md Pattern\n\n\nAGENTS.md (What to Do)\n# AGENTS.md\n\n## Core Instructions\nYou are a personal AI assistant. You help users with tasks across\nmultiple platforms.\n\n## Constraints\n- Never share user data across conversations\n- ... (other constraints)\n\n## Tool Usage Rules\n- Use web_search for factual questions\n- ... (other tool rules)\n\n## Response Format\n- Keep responses concise\n- ... (other formatting rules)\n\nSOUL.md (How to Be)\n# SOUL.md\n\n## Personality\nYou are warm, direct, and slightly humorous. You speak like a\nknowledgeable friend, not a corporate assistant.\n\n## Communication Style\n- Lead with the answer, then explain\n- Use analogies for complex concepts\n- ...\n\n## Values\n- Accuracy over speed\n- ... \n\n## Tone Examples\nGOOD: \"That's a tricky edge case. Here's what I'd do...\"\nBAD: \"Certainly! I'd be delighted to assist you with that inquiry.\""
+  },
+  {
+    "objectID": "agents/06_context/slides.html#context-window-problems-failure-modes",
+    "href": "agents/06_context/slides.html#context-window-problems-failure-modes",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Context Window Problems / Failure Modes",
+    "text": "Context Window Problems / Failure Modes\n\nEvery LLM has a finite context window\nTool schemas, results, environment context, memory, and conversation history all compete for space\n\nEven with 200k+ token windows (eg Claude) or 1M+ (Gemini), long-running agents will fill it\n\nAgents need to manage this context carefully as they execute long-running tasks"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#compaction-strategies",
+    "href": "agents/06_context/slides.html#compaction-strategies",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Compaction Strategies",
+    "text": "Compaction Strategies\n\nNaive Truncation\n\nRemove oldest message\nCan lose important early decisions, what was already tried, original task description!\n\nSliding Window\n\nKeep only the most recent N messages\nStill loses long-term context and original instructions"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#compaction-strategies-1",
+    "href": "agents/06_context/slides.html#compaction-strategies-1",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Compaction Strategies",
+    "text": "Compaction Strategies\n\nSummary Replacement\n\ndef compact_with_summary(messages, summarizer_llm):\n    system = messages[0]\n    recent = messages[-10:]  # Keep last 10 turns\n    old = messages[1:-10]     # Everything else\n\n    summary = summarizer_llm.generate(\n        system=\"Summarize the following conversation history. Preserve:\\n\"\n               \"1. The original task/goal\\n\"\n               \"2. Key decisions made and their rationale\\n\"\n               \"3. Files/resources modified\\n\"\n               \"4. Current state of the work\\n\"\n               \"5. Any errors encountered and how they were resolved\\n\"\n               \"6. Open questions or pending items\",\n        user=format_messages(old)\n    )\n\n    summary_message = {\n        \"role\": \"system\",\n        \"content\": f\"[CONVERSATION SUMMARY]\\n{summary}\\n[END SUMMARY]\"\n    }\n\n    return [system, summary_message] + recent\n\nStructured Sectioned Summary\nAgent-Triggered (Self-Compaction)\nObservational Memory"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#triggering-compaction",
+    "href": "agents/06_context/slides.html#triggering-compaction",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Triggering Compaction",
+    "text": "Triggering Compaction\n\n\n\n\n\n\n\n\n\n\n\nStrategy\nTrigger Point\nUsed By\nPros\nCons\n\n\n\n\nThreshold\n% of context used\nClaude Code (92%)\nSimple, reliable\nCan’t predict output size\n\n\nToken Count\nAbsolute number\nLangGraph\nPredictable\nDoesn’t adapt to model\n\n\nTurn Count\nEvery N turns\nn8n\nVery simple\nDoesn’t account for turn size\n\n\nAgent-Initiated\nAgent calls tool\nLangGraph\nContext-aware\nAgent might forget\n\n\nPre-Task\nBefore new subtask\nComposio\nClean context for new work\nComplex to implement\n\n\nHybrid\nThreshold + agent option\nClaude Code\nBest of both\nMore code"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#what-survives-compaction",
+    "href": "agents/06_context/slides.html#what-survives-compaction",
+    "title": "LLM Agents : Context Engineering",
+    "section": "What Survives Compaction?",
+    "text": "What Survives Compaction?\nMust Survive (Always Re-Injected)\n\nSystem prompt, Persistent config(CLAUDE.md, AGENTS.md, SOUL.md)\nTool descriptions, Compaction summary\nRecent messages\n\nShould Survive (In Summary)\n\nOriginal task, Key decisions, Files modified, Errors + fixes, Open questions\n\nCan Be Lost (Safely Dropped)\n\nIntermediate reasoning, Verbose tool outputs, Retry attempts"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#context-rot",
+    "href": "agents/06_context/slides.html#context-rot",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Context Rot",
+    "text": "Context Rot\n\nDegradation in LLM output quality that occurs as input context length increases - even when the context window isn’t close to full\nA model with a 200K token window can start degrading at 50K tokens\nAll models exhibit context rot, it’s a fundamental property of transformer attention. Chroma Study"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#context-rot-vs-context-overflow",
+    "href": "agents/06_context/slides.html#context-rot-vs-context-overflow",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Context Rot vs Context Overflow",
+    "text": "Context Rot vs Context Overflow\n\n\n\n\n\n\n\n\n\nContext Overflow\nContext Rot\n\n\n\n\nWhat\nContext exceeds window limit\nQuality degrades within window\n\n\nWhen\nAt 100% capacity\nStarting at ~25-40% capacity\n\n\nSymptom\nError / crash\nSubtle quality degradation\n\n\nVisible?\nImmediately obvious\nOften invisible until critical\n\n\nFix\nCompaction (truncate/summarize)\nContext engineering (structural)"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#why-context-rot-happens",
+    "href": "agents/06_context/slides.html#why-context-rot-happens",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Why context rot happens?",
+    "text": "Why context rot happens?\n\nLost-in-the-Middle Effect\nAttention Dilution\nDistractor Tokens\n\nFailed search results, irrelevant file contents, superseded reasoning from earlier attempt\n\n\nContext rot severity = lost_in_middle_effect × attention_dilution × distractor_interference"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#defenses-against-context-rot",
+    "href": "agents/06_context/slides.html#defenses-against-context-rot",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Defenses Against Context Rot",
+    "text": "Defenses Against Context Rot\n\nAggressive Early Compaction\n\nDon’t wait for the context to fill up. Compact proactively\nKeep utilization in the 40-60% range at all times\n\nInstruction Re-Injection\n\nDefeat the lost-in-the-middle effect by placing instructions at the END of the context (recent position = high attention) rather than relying on the original system prompt at the start.\n\nStructured Context Sections\n\nPlace information in named sections with clear delimiters\n\nSub-Agent Delegation (Context Isolation)\n\nUse sub-agents with fresh context windows for tasks that would pollute the main context.\nThe main agent’s context stays clean. Search noise, exploration dead-ends, and verbose tool outputs stay in the sub-agent’s context and are discarded. Only the refined result enters the main agent’s context."
+  },
+  {
+    "objectID": "agents/06_context/slides.html#rule",
+    "href": "agents/06_context/slides.html#rule",
+    "title": "LLM Agents : Context Engineering",
+    "section": "40-60% Rule",
+    "text": "40-60% Rule\n\nKeep context utilization in the 40-60% range at all times\n\n\n\nCompact proactively when hitting 60% (don’t wait for 90%)\nUse sub-agents for search/exploration (their noise stays in their context)\nStrip reversible content (file contents can be re-read)\nPrune superseded information (failed attempts, old search results)\nPhase-based fresh starts (new context for each work phase)"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#tool-sprawl",
+    "href": "agents/06_context/slides.html#tool-sprawl",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Tool Sprawl",
+    "text": "Tool Sprawl\n\nA typical \"power user\" MCP setup:\n\nGitHub MCP server:     91 tools × ~300 tokens each = 27,300 tokens\nFilesystem MCP server: 15 tools × ~250 tokens each =  3,750 tokens\nDatabase MCP server:   20 tools × ~300 tokens each =  6,000 tokens\nBrowser MCP server:    12 tools × ~200 tokens each =  2,400 tokens\nSlack MCP server:      18 tools × ~250 tokens each =  4,500 tokens\nCustom API server:     25 tools × ~300 tokens each =  7,500 tokens\n─────────────────────────────────────────────────────\nTOTAL:                181 tools                     = 51,450 tokens\n\nOn a 200K context window:\nTool definitions:     51,450 tokens  (25.7%)\nSystem prompt:        10,000 tokens  ( 5.0%)\n─────────────────────────────────────────────\nCONSUMED BEFORE ANY WORK: 61,450 tokens (30.7%)\n\nAnd this is EVERY SINGLE API CALL — tools are re-sent each turn.\nOver 50 turns: 51,450 × 50 = 2,572,500 tokens just for tool definitions."
+  },
+  {
+    "objectID": "agents/06_context/slides.html#tool-sprawl-problems",
+    "href": "agents/06_context/slides.html#tool-sprawl-problems",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Tool Sprawl Problems",
+    "text": "Tool Sprawl Problems\n\nContext Pollution\nSelection Confusion\nHallucinated Parameters\nLatency"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#solving-tool-sprawl",
+    "href": "agents/06_context/slides.html#solving-tool-sprawl",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Solving Tool Sprawl",
+    "text": "Solving Tool Sprawl\n\nTool Search Tool (Used in Claude Code)\n\ngive the agent a single meta-tool that searches for the right tool on demand\n\nSemantic Tool Selection (Pre-LLM)\nToolkit Grouping (Phase-Based)\nTool Description Compression\nMCP Gateway / Optimizer\n\n\n\nIn practice, use a combination of the above approaches"
+  },
+  {
+    "objectID": "agents/06_context/slides.html#diagnostic-decision-framework",
+    "href": "agents/06_context/slides.html#diagnostic-decision-framework",
+    "title": "LLM Agents : Context Engineering",
+    "section": "Diagnostic Decision Framework",
+    "text": "Diagnostic Decision Framework\n\n\n\n\n\n\n\n\n\n\n#\nIssue\nDiagnosis\nCause\n\n\n\n\n1\nOutputs contain false claims, safety violations, or unexpected behavioral shifts\nContext Poisoning\nAdversarial or hallucinated content in the context\n\n\n2\nOutputs are inconsistent or flip-flop between contradictory answers\nContext Clash\nConflicting sources are both present and the model cannot resolve them\n\n\n3\nAnswers were correct previously but are now wrong, and the system has not changed\nContext Rot\nThe context has expired while the system stayed the same\n\n\n4\nModel calls wrong tools or responds to the wrong topic\nContext Confusion\nIrrelevant context is misdirecting the model’s attention\n\n\n5\nModel repeats the same actions in a loop instead of progressing\nContext Distraction\nThe model is pattern-matching on its own history instead of reasoning\n\n\n6\nResponses gradually go off-track over a long conversation\nContext Drift\nThe original goal has been pushed out of the model’s attention zone\n\n\n7\nToken usage is high and answers are vague or generic\nContext Bloat\nThe model is overwhelmed by volume, not misinformation\n\n\n8\nNo single segment is excessive but quality is still poor\nToken Budget Mismanagement\nContext segments are competing for limited space with no allocation policy"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#recap",
+    "href": "agents/04_tools/slides.html#recap",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "RECAP",
+    "text": "RECAP\n\nReasoning Models\nAgent Loop"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#anatomy-of-an-agent",
+    "href": "agents/04_tools/slides.html#anatomy-of-an-agent",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Anatomy of an Agent",
+    "text": "Anatomy of an Agent"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#the-model",
+    "href": "agents/04_tools/slides.html#the-model",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "1 - The Model",
+    "text": "1 - The Model\n\n\n\n\nKey choices for agents\n\nModel capability\nContext window\nTool-calling format\nReasoning vs. non-reasoning"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#tools-the-action-space",
+    "href": "agents/04_tools/slides.html#tools-the-action-space",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "2 - Tools / The Action Space",
+    "text": "2 - Tools / The Action Space\nThe set of actions the agent can perform. Every action has:\n\nA name (identifier)\nA schema (parameters, types, constraints)\nAn implementation (the actual function that runs)\nA description (natural language prompt the model sees)\n\nExample: A calculator tool\n{\n  \"name\": \"calculator\",\n  \"description\": \"Evaluate mathematical expressions. Use this for ALL arithmetic—do not compute in your head. Input must be a valid Python expression string. Returns the numeric result or an error message.\",\n  \"parameters\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"expression\": {\n        \"type\": \"string\",\n        \"description\": \"A valid Python math expression, e.g., '2 + 2' or 'math.sqrt(16)'\"\n      }\n    },\n    \"required\": [\"expression\"]\n  }\n}"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#tools-the-action-space-1",
+    "href": "agents/04_tools/slides.html#tools-the-action-space-1",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "2 - Tools / The Action Space",
+    "text": "2 - Tools / The Action Space\nExample: Repo tools\n[\n  {\n    \"name\": \"search_repo\",\n    \"description\": \"Search the repository for exact text or regex patterns. Use this before reading many files.\",\n    \"parameters\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"query\": {\"type\": \"string\"},\n        \"path\": {\"type\": \"string\", \"description\": \"Optional directory or file scope\"}\n      },\n      \"required\": [\"query\"]\n    }\n  },\n  {\n    \"name\": \"read_file\",\n    \"description\": \"Read a repository file by path. Use after search identifies a likely relevant file.\",\n    \"parameters\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"path\": {\"type\": \"string\"}\n      },\n      \"required\": [\"path\"]\n    }\n  }\n]"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#tools-the-action-space-2",
+    "href": "agents/04_tools/slides.html#tools-the-action-space-2",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "2 - Tools / The Action Space",
+    "text": "2 - Tools / The Action Space\n\nThe action space spectrum\n\n\n\n\n\n\n\n\n\n\nAction Space\nGrounding\nVerification\nFailure Modes\nUse Case\n\n\n\n\nJSON tool calls\nStrong (typed schema)\nEasy (validate against schema)\nHallucinated args, wrong tool choice\nAPI agents, coding agents\n\n\nCode execution\nMedium (interpreter catches syntax)\nMedium (tracebacks, output)\nInfinite loops, dangerous imports, sandbox escapes\nData science, complex computation\n\n\nGUI actions (click, type)\nWeak (pixels, DOM elements)\nHard (was the click registered?)\nClick misses, modal dialogs, visual changes\nBrowser automation, computer use\n\n\nVoice turns\nWeak (audio ambiguity)\nHard (user may interrupt)\nMisheard commands, latency gaps\nConversational agents"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#component-3-the-loop",
+    "href": "agents/04_tools/slides.html#component-3-the-loop",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Component 3: The Loop",
+    "text": "Component 3: The Loop\nThe control structure that repeatedly calls the model, executes actions, and feeds observations back."
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#component-3-the-loop-1",
+    "href": "agents/04_tools/slides.html#component-3-the-loop-1",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Component 3: The Loop",
+    "text": "Component 3: The Loop\nThe canonical ReAct loop (pseudo-code):\nclass ReActAgent:\n    def __init__(self, model, tools, max_steps=10):\n        self.model = model\n        self.tools = {t.name: t for t in tools}\n        self.max_steps = max_steps\n        self.state = []  # conversation history\n    \n    def run(self, task: str) -&gt; str:\n        self.state.append(user_message(task))\n        \n        while True:\n            # REASON: Model decides what to do\n            response = self.model.generate(self.state, available_tools=list(self.tools.values()))\n            \n            if response.has_tool_calls:\n                self.state.append(response)\n                # ACT: Execute each tool call\n                for tool_call in response.tool_calls:\n                    result = self.execute_tool(tool_call)\n                    # OBSERVE: Append result to state\n                    self.state.append(tool_result_message(tool_call.id, result))\n            else:\n                # FINISH: Model returns final answer\n                return response.content\n        \n    \n    def execute_tool(self, tool_call):\n        tool = self.tools[tool_call.name]\n        # Validate arguments against schema\n        validated_args = tool.schema.validate(tool_call.arguments)\n        # Execute\n        return tool.run(**validated_args)"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#component-4-state-context-memory",
+    "href": "agents/04_tools/slides.html#component-4-state-context-memory",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Component 4: State / Context Memory",
+    "text": "Component 4: State / Context Memory"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#component-4-state-context-memory-1",
+    "href": "agents/04_tools/slides.html#component-4-state-context-memory-1",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Component 4: State / Context Memory",
+    "text": "Component 4: State / Context Memory\nThe information the agent can access when making its next decision.\nIn the minimal ReAct agent, state is simply the conversation history: a list of messages:\n[system_prompt, user_task, assistant_thought_1, tool_call_1, tool_result_1, assistant_thought_2, ...]\nFor the repo-question example, state might contain:\nUser task: Where is authentication handled, and what tests cover it?\nTool call: search_repo(\"auth\")\nObservation: src/auth.py, src/middleware.py, tests/test_auth.py\nTool call: read_file(\"src/auth.py\")\nObservation: token validation and session helpers\n..."
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#component-5-stop-conditions",
+    "href": "agents/04_tools/slides.html#component-5-stop-conditions",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Component 5: Stop Conditions",
+    "text": "Component 5: Stop Conditions"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#component-5-stop-conditions-1",
+    "href": "agents/04_tools/slides.html#component-5-stop-conditions-1",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Component 5: Stop Conditions",
+    "text": "Component 5: Stop Conditions\nThe criteria that terminate the loop.\nAgents should not run forever. Termination can be triggered by:\n\n\n\n\n\n\n\n\n\nStop Condition\nType\nWhen It’s Used\n\n\n\n\nGoal achievement\nModel-driven\nAgent emits final answer instead of tool call\n\n\nStep budget\nSystem-enforced\nMax N iterations reached\n\n\nCost cap\nSystem-enforced\nMax dollars/tokens spent\n\n\nTime budget\nSystem-enforced\nWall-clock timeout\n\n\nError threshold\nSystem-enforced\nN consecutive tool failures\n\n\nDead-end detection\nHeuristic\nAgent repeating the same action\n\n\nHuman trigger\nExternal\nUser presses stop\n\n\n\n\n\nStopping Criteria for Repo-question stop condition ??"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#agent-loop-patterns",
+    "href": "agents/04_tools/slides.html#agent-loop-patterns",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Agent Loop Patterns",
+    "text": "Agent Loop Patterns"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#react-interleaving-reasoning-and-acting",
+    "href": "agents/04_tools/slides.html#react-interleaving-reasoning-and-acting",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "ReAct: Interleaving Reasoning and Acting",
+    "text": "ReAct: Interleaving Reasoning and Acting\n\nYao et al. 2022, “ReAct: Synergizing Reasoning and Acting in Language Models”\n\nThe Calculator Agent\n\n\nPure CoT fails on “What is the 47th Fibonacci number?” due to arithmetic errors in large-number addition.\nReAct solves this via tool-augmented reasoning:\n\nReAct Loop Pattern:\nThought: I need to calculate the 47th Fibonacci number. \nThis requires precise arithmetic. I should use the calculator tool.\n\nAction: calculator(fibonacci, n=47)\n\nObservation: 2971215073\n\nThought: The calculator returned 2971215073. \nLet me verify this is reasonable... F(47) should be approximately phi^47/sqrt(5) ≈ 2.9 billion. \nThis checks out.\n\nAnswer: 2971215073"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#react-pattern-reason-act",
+    "href": "agents/04_tools/slides.html#react-pattern-reason-act",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "ReAct Pattern (Reason + Act)",
+    "text": "ReAct Pattern (Reason + Act)\n\nThe agent alternates between Reasoning and Taking Actions (Act) in a loop to achieve its goals, often using tools, APIs, and memory\n\n\n\n\n\nExample:\n\nAn agent that performs a complex task like booking a flight, which requires multiple steps and interactions with external systems (searching for flights, comparing prices, making a reservation, etc.)"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#react-pattern-reason-act-1",
+    "href": "agents/04_tools/slides.html#react-pattern-reason-act-1",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "ReAct Pattern (Reason + Act)",
+    "text": "ReAct Pattern (Reason + Act)\nAdvantages:\n\nCombines the strengths of reasoning and acting, allowing for more complex and dynamic behavior\nSupports complex and multi-step tasks that require both planning and execution\nIntegration with real-world tools and APIs allows for practical applications\n\nLimitations:\n\nIncreased complexity in design and state management\nRequires robust error handling and recovery mechanisms\nMay be slower due to the need for multiple reasoning and action cycles"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#react-loop---deep-dive",
+    "href": "agents/04_tools/slides.html#react-loop---deep-dive",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "ReAct Loop - Deep Dive",
+    "text": "ReAct Loop - Deep Dive"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#the-react-pattern-in-detail",
+    "href": "agents/04_tools/slides.html#the-react-pattern-in-detail",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "The ReAct Pattern in Detail",
+    "text": "The ReAct Pattern in Detail\nThe three primitives:\n\nThought - The model’s reasoning about the current situation, what it knows, what it needs, and what to do next.\nAction - A structured invocation of a tool (or a special finish action).\nObservation - The result returned by the tool, added to the trace.\n\nTrace structure (what the model actually sees):\nSystem: You are a helpful assistant with access to tools. Answer the user's question.\n\nUser: In this repo, where is authentication handled, and what tests cover it?\n\nAssistant:\nThought: I need evidence from the repository, not a guess. I should search for authentication-related files.\nAction: search_repo\nAction Input: {\"query\": \"auth\"}\n\nObservation: Matches found in src/auth.py, src/middleware.py, tests/test_auth.py.\n\nThought: I should inspect the implementation and the tests before answering.\nAction: read_file\nAction Input: {\"path\": \"src/auth.py\"}\n\nObservation: src/auth.py defines login, token validation, and session helper functions.\n\nThought: Now I need the test coverage.\nAction: read_file\nAction Input: {\"path\": \"tests/test_auth.py\"}\n\nObservation: tests/test_auth.py covers login success, login failure, and expired-token behavior.\n\nThought: I have enough evidence to answer with file references.\nAction: finish\nAction Input: {\"answer\": \"Authentication is handled primarily in src/auth.py, with middleware references in src/middleware.py. The direct tests are in tests/test_auth.py, covering login success/failure and expired-token behavior.\"}"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#the-react-pattern-in-detail-1",
+    "href": "agents/04_tools/slides.html#the-react-pattern-in-detail-1",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "The ReAct Pattern in Detail",
+    "text": "The ReAct Pattern in Detail\nNative tool calling vs. ReAct prompting:\n\nEarly ReAct implementations parsed free text; modern implementations use structured APIs.\nModern APIs (Anthropic, OpenAI) use native tool calling: the model emits a structured tool_use block, not free-text Action:."
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#react---limitations",
+    "href": "agents/04_tools/slides.html#react---limitations",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "ReAct - Limitations",
+    "text": "ReAct - Limitations\n\nNo explicit lookahead: The model chooses the next action without a built-in tree search unless we add one\nNo built-in backtracking: The model can revise its plan, but it cannot undo side effects unless the system provides rollback tools\nContext drift: As the trace grows, early observations may be “forgotten”\nAction-space myopia: The agent can only do what tools permit. Tool design limits reasoning.\n\n\nRepo example: the agent may read too many files, miss synonyms like “session” or “token”, stop after one weak match, or cite a file it did not actually inspect."
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#react-planning-plan-then-execute",
+    "href": "agents/04_tools/slides.html#react-planning-plan-then-execute",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "ReAct + Planning (Plan-then-Execute)",
+    "text": "ReAct + Planning (Plan-then-Execute)\nUser -&gt; Planner LLM -&gt; Plan -&gt; Executor LLM -&gt; Tool -&gt; ... -&gt; Answer\nImplementation\nPlan Mode: AI analyzes requirements, reads codebase, builds a step-by-step plan. No modifications are made. The user reviews the plan.\nAct Mode: AI executes the plan, editing files and running commands. Human approval at each step.\n\ndef plan_and_execute(task: str):\n    # Phase 1: Plan (no tool execution)\n    plan = planner_llm.generate(\n        system=\"You are a planner. Analyze the task and create a step-by-step plan. \"\n               \"Do NOT execute anything.\",\n        user=task\n    )\n\n    # Phase 2: Execute (follow the plan)\n    for step in plan.steps:\n        result = executor_llm.generate(\n            system=\"You are an executor. Complete the given step using tools.\",\n            user=f\"Plan context: {plan}\\nCurrent step: {step}\"\n        )\n        # ... execute tools from result\nExamples : Cline (Plan/Act modes), Aider (Architect mode)"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#react-reflection",
+    "href": "agents/04_tools/slides.html#react-reflection",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "ReAct + Reflection",
+    "text": "ReAct + Reflection\nUser -&gt; LLM -&gt; Tool -&gt; ... -&gt; LLM -&gt; Draft Answer -&gt; Critic LLM -&gt;\n  [if good: return]\n  [if bad: feedback -&gt; LLM -&gt; retry]\nImplementation\ndef react_with_reflection(task: str, max_reflections: int = 3):\n    draft = basic_react_loop(task)\n\n    for attempt in range(max_reflections):\n        critique = critic_llm.generate(\n            system=\"Evaluate this output. Is it complete, correct, well-structured? \"\n                   \"If not, explain what needs improvement.\",\n            user=f\"Task: {task}\\nOutput: {draft}\"\n        )\n\n        if critique.is_satisfactory:\n            return draft\n\n        # Retry with feedback\n        draft = basic_react_loop(\n            f\"Original task: {task}\\n\"\n            f\"Previous attempt: {draft}\\n\"\n            f\"Feedback: {critique.feedback}\\n\"\n            f\"Please improve based on this feedback.\"\n        )\n\n    return draft  # Best effort after max reflections\nExamples : CrewAI, LangGraph"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#react-reflection-compaction",
+    "href": "agents/04_tools/slides.html#react-reflection-compaction",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "ReAct + Reflection + Compaction",
+    "text": "ReAct + Reflection + Compaction\nReAct + Compaction\n\nCompact the context window to avoid drift and forgetting\nThe model can summarize or extract key information from the trace to keep the most relevant context in focus.\n\nExamples - Claude Code, OpenClaw, Hermes etc"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#code-as-action",
+    "href": "agents/04_tools/slides.html#code-as-action",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Code-as-Action",
+    "text": "Code-as-Action\nUser -&gt; LLM -&gt; Generate Python Code -&gt; Execute in Sandbox -&gt; Output -&gt; LLM -&gt; ... -&gt; Answer\nImplementation\n# Instead of structured tool calls, the LLM writes code:\n\n# LLM generates:\n\"\"\"\nresults = web_search(\"latest AI frameworks 2026\")\nfiltered = [r for r in results if r.date &gt; \"2025-01-01\"]\nsummary = summarize(filtered)\nfinal_answer(f\"Found {len(filtered)} recent frameworks. Summary: {summary}\")\n\"\"\"\n\n# The runtime:\n# 1. Extracts the code block\n# 2. Runs it in a sandbox (E2B, Docker, Pyodide)\n# 3. Captures output and final_answer()\n# 4. Returns to user\nExample : SmolAgents\n\n\n\nAdvantages:\n\nCan compose multiple tools in one step (regular tool calling does them one at a time)\nCan use conditionals, loops, variables within one “action”\nMore natural for code-trained LLMs\nFewer round-trips to the API\n\n\nLimitations:\n\nArbitrary code execution requires robust sandboxing\nHarder to audit than structured tool calls\nError messages can be opaque"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#event-driven-stream-based-graph-based",
+    "href": "agents/04_tools/slides.html#event-driven-stream-based-graph-based",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Event-Driven / Stream-Based / Graph Based",
+    "text": "Event-Driven / Stream-Based / Graph Based\nEvent Driven\nEvent Stream -&gt; Agent subscribes -&gt; Processes events -&gt; Emits new events\nUsed By: AG2 (MemoryStream), CrewAI Flows\nGraph-Based State Machine\nNodes = agents/functions\nEdges = transitions (can be conditional)\nState = immutable, checkpointed after every node\nUsed by: LangGraph, Google ADK 2.0"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#heartbeat-proactive-loop",
+    "href": "agents/04_tools/slides.html#heartbeat-proactive-loop",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Heartbeat / Proactive Loop",
+    "text": "Heartbeat / Proactive Loop\nCron triggers agent \n  -&gt; Agent checks task list \n  -&gt; [nothing to do: HEARTBEAT_OK (suppressed)]\n  -&gt; [something to do: execute -&gt; notify user]\nExamples - OpenClaw, Hermes Agent\nImplementation:\n# Pseudo-code for OpenClaw's heartbeat\n@cron(\"*/30 * * * *\")  # Every 30 minutes\ndef heartbeat():\n    context = assemble_context(\n        agents_md=read(\"AGENTS.md\"),\n        soul_md=read(\"SOUL.md\"),\n        tasks=read(\"tasks.md\"),\n        memory=search_memory(\"pending tasks\")\n    )\n\n    response = llm.generate(\n        system=context,\n        user=\"Check your task list. If anything needs attention, \"\n             \"handle it and report. Otherwise reply HEARTBEAT_OK.\"\n    )\n\n    if \"HEARTBEAT_OK\" in response:\n        return  # Gateway suppresses, user sees nothing\n\n    gateway.send_to_user(response)  # User gets notified"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#human-in-the-loop-hitl-pattern",
+    "href": "agents/04_tools/slides.html#human-in-the-loop-hitl-pattern",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Human in the Loop (HITL) Pattern",
+    "text": "Human in the Loop (HITL) Pattern\nExtends another pattern (typically ReAct), but adds a validation step prior to taking an action, where the agent seeks human feedback or approval before proceeding with certain actions.\n\nExample: - An agent that performs sensitive actions, such as sending emails or making financial transactions"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#agent-orchestration-pattern",
+    "href": "agents/04_tools/slides.html#agent-orchestration-pattern",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Agent Orchestration Pattern",
+    "text": "Agent Orchestration Pattern\n\nMultiple agents with different capabilities are orchestrated together to achieve a common goal\n\n\nExample: - Software development agent that uses multiple specialized agents for code generation, testing, and deployment"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#agentic-patterns-summary",
+    "href": "agents/04_tools/slides.html#agentic-patterns-summary",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Agentic Patterns Summary",
+    "text": "Agentic Patterns Summary\n\n\n\n\n\n\n\n\n\nVariant\nComplexity\nBest For\nExample Framework\n\n\n\n\nBasic ReAct\nLow\nSimple tasks, prototypes\nmini-swe-agent\n\n\nPlan+Execute\nMedium\nComplex multi-step tasks\nCline, Aider\n\n\nReAct+Reflection\nMedium\nQuality-critical outputs\nCrewAI\n\n\nReAct+Compaction\nMedium\nLong-running tasks\nClaude Code\n\n\nCode-as-Action\nMedium\nData processing, multi-tool\nsmolagents\n\n\nEvent-Driven\nHigh\nReactive systems, pipelines\nAG2, CrewAI Flows\n\n\nGraph State Machine\nHigh\nProduction multi-agent\nLangGraph\n\n\nHeartbeat\nMedium\nProactive, background tasks\nOpenClaw"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#model-centric-to-system-centric-thinking",
+    "href": "agents/04_tools/slides.html#model-centric-to-system-centric-thinking",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Model-Centric to System-Centric Thinking",
+    "text": "Model-Centric to System-Centric Thinking\n\nPrevious classes: Architecture, GPUs, Inference and Evaluation - LLM was central\nCurrent focus: Overall system design, where LLM is a critical component but not the only one\n\nControl flow (the loop)\nState management (context, soon memory)\nI/O interfaces (tools)\nSafety properties (bounds, sandboxing)\nObservability (tracing, logging)"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#when-not-to-use-an-agent",
+    "href": "agents/04_tools/slides.html#when-not-to-use-an-agent",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "When not to use an Agent",
+    "text": "When not to use an Agent\n\nIs the task structure stable? If the steps are the same every time, it’s a pipeline.\nIs there a small fixed branch set? (≤5 known branches.) It’s a workflow with an LLM router.\nIs the search space large but the verifier cheap? It’s best-of-N over generations.\nDoes the LLM need to decide what to do based on what it just saw? Needs an Agent.\n\n\nRepo-question decision:\nA stable “find files -&gt; retrieve chunks -&gt; answer” system is a pipeline/RAG app. It becomes agentic when the model chooses follow-up searches, reads, tests, or stops based on observations."
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#concrete-examples",
+    "href": "agents/04_tools/slides.html#concrete-examples",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Concrete examples",
+    "text": "Concrete examples\n\n\n\n\n\n\n\n\nTask\nBest tool\nWhy\n\n\n\n\nExtract structured fields from invoices\nLLM call with JSON schema\nSingle call, no decision\n\n\nRAG QA over a fixed corpus\nPipeline (retrieve -&gt; rerank -&gt; answer)\nSteps are fixed\n\n\nCustomer support routing across 8 categories\nWorkflow (LLM router -&gt; category-specific handler)\nBounded branches\n\n\nMulti-step research across a changing web\nAgent\nThe next step depends on the last result\n\n\nCoding assistant on an unfamiliar repo\nAgent\nThe whole point is exploration"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#tool-use",
+    "href": "agents/04_tools/slides.html#tool-use",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Tool Use",
+    "text": "Tool Use\nThe mechanism that turns a text predictor into something that can act.\n\nHow a tool call actually works, end to end\nDesigning schemas the model uses correctly\nWhy tool selection fails, and how to measure it\nFailing usefully: typed errors and recovery"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#why-llms-need-tools",
+    "href": "agents/04_tools/slides.html#why-llms-need-tools",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Why LLMs need tools",
+    "text": "Why LLMs need tools\n\nLLMs are next-token predictiors, lack intefaces to interact with the world"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#why-llms-need-tools-1",
+    "href": "agents/04_tools/slides.html#why-llms-need-tools-1",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Why LLMs need tools",
+    "text": "Why LLMs need tools\n\nTools extend LLMs’ capabilities by providing access to external information, computation, and actions."
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#tool-calling-patterns",
+    "href": "agents/04_tools/slides.html#tool-calling-patterns",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Tool Calling Patterns",
+    "text": "Tool Calling Patterns\nGeneration 1: Text-Based Tool Calls (2023)\n\nLLM generates free-text instructions to call tools, which are parsed by the system.\n\nprompt = \"\"\"\nYou are an AI assistant that can call tools.\n\nAvailable tools:\n\n1. get_weather_data(c_lat: float, c_long: float)\n   - Get weather data for a given location\n\nFirst think step by step and write your reasoning inside &lt;thinking&gt;...&lt;/thinking&gt;.\n\nWhen you need to use a tool, output ONLY in the following format and also add your reasoning:\n\n&lt;tool_call&gt;\n{\n  \"name\": \"&lt;tool_name&gt;\",\n  \"arguments\": { ... }\n}\n&lt;/tool_call&gt;\n\nIf no tool is needed, respond normally.\n\n...\n\"\"\""
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#tool-calling-patterns-1",
+    "href": "agents/04_tools/slides.html#tool-calling-patterns-1",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Tool Calling Patterns",
+    "text": "Tool Calling Patterns\nGeneration 2: Structured Tool Calls (2024)\n\nLLM generates structured tool calls using native API support from the provider, eliminating the need for free-text parsing.\n\n{\n  \"tool_calls\": [{\n    \"id\": \"call_123\",\n    \"function\": {\n      \"name\": \"search\",\n      \"arguments\": \"{\\\"query\\\": \\\"AI agents\\\"}\"\n    }\n  }]\n}\nGeneration 3: MCP / Protocol-Based (2025-2026)\n\nLLMs interact with tools through a defined protocol (Model Context Protocol - MCP) - Standardized protocol. Any MCP server works with any MCP client. Language-agnostic\n\n{\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"search\",\n    \"arguments\": {\"query\": \"AI agents\"}\n  }\n}"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#tool-schema-example",
+    "href": "agents/04_tools/slides.html#tool-schema-example",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Tool Schema Example",
+    "text": "Tool Schema Example\n{\n  \"name\": \"search_products\",\n  \"description\": \"Search the product catalog from the e-commerce database. Returns top 50 matching items with price, availability, and category.\",\n  \"parameters\": {\n    \"type\"      : \"object\",\n    \"properties\": {\n      \"query\"      : {\n        \"type\": \"string\",\n        \"description\": \"Search keyword to match against\\nproduct name, description, or SKU\"\n      },\n      \"category\"   : {\n        \"type\"       : \"string\",\n        \"enum\"       : [\"electronics\", \"clothing\", \"home\", \"sports\", \"books\"],\n        \"description\": \"Product category to filter results\"\n      },\n      \"max_results\": {\n        \"type\"       : \"integer\",\n        \"description\": \"Maximum number of results to\\nreturn (default: 50)\"\n      }\n    },\n    \"required\"  : [\"query\"]\n  }\n}"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#tool-schema-best-practices",
+    "href": "agents/04_tools/slides.html#tool-schema-best-practices",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Tool Schema Best Practices",
+    "text": "Tool Schema Best Practices\n\n\n\n\n\n\n\n\n\nPrinciple\nDescription\nExample\n\n\n\n\nVerb-noun naming\nTool name follows action_entity format in snake_case\nsearch_missions, get_weather_forecast, calculate_fuel_estimate\n\n\nClear description\nExplain what the tool does, what it returns, and when to use it\nSearch the AstroLog mission database by keywords, status, etc. Returns matching missions with status, crew, and destination.\n\n\nEnumerate constraints\nSpecify required vs. optional parameters and use enums for categorical parameters\nenum: [planned, in_transit, completed, delayed, aborted]\n\n\nOnly mark truly required parameters\nAvoid marking everything as required to prevent the LLM from hallucinating values for unknown fields\nOnly mark essential parameters as required\n\n\nReturn descriptions\nDocument what the tool returns so the LLM can interpret results\nreturns: { “missions”: [ { “id”: “”, “name”: “”, “status”: “” } ] }\n\n\nLow parameter count\nKeep parameters under 5; combine related fields into objects\nMore parameters = more chances for the LLM to make errors"
+  },
+  {
+    "objectID": "agents/04_tools/slides.html#tool-lifecycle",
+    "href": "agents/04_tools/slides.html#tool-lifecycle",
+    "title": "LLM Agents : The Agent Loop, Patterns and Tool Use",
+    "section": "Tool Lifecycle",
+    "text": "Tool Lifecycle\n\nWho Runs the Tool?\n\nThe LLM does NOT execute tools. The LLM produces a structured JSON describing which tool to call and what arguments to pass.\nThe tool’s own logic executes the function. The structured output from the LLM is used to invoke the function programmatically.\nThe LLM produces two types of output during a tool interaction:\n\na structured tool call (hidden from user), specifying tool name and arguments\na natural language response (shown to user), the final answer after reasoning over tool results."
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#recap-reasoning",
+    "href": "agents/01_foundations/slides.html#recap-reasoning",
+    "title": "LLM Agents : Foundations",
+    "section": "RECAP : Reasoning",
+    "text": "RECAP : Reasoning\nFrom the previous module :\nThe reasoning primitives every agent pattern is built on:\n\nChain of Thought - externalise intermediate steps\nLimits of linear CoT - no backtracking, no exploration\nTree of Thoughts - search over reasoning paths\nFaithfulness - the stated reasoning is not always the actual computation\n\n\n\nFull treatment: Prompt Engineering and CoT Reasoning"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#chain-of-thought-prompting",
+    "href": "agents/01_foundations/slides.html#chain-of-thought-prompting",
+    "title": "LLM Agents : Foundations",
+    "section": "Chain of Thought Prompting",
+    "text": "Chain of Thought Prompting\nWei et al. (2022)\n\nEncourage the model to generate intermediate reasoning steps before giving the final answer.\nApproach: Provide examples in the prompt that include the reasoning process, or explicitly ask the model to “think step by step”.\nCoT with examples (few shot CoT)"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#limitations-of-linear-cot",
+    "href": "agents/01_foundations/slides.html#limitations-of-linear-cot",
+    "title": "LLM Agents : Foundations",
+    "section": "Limitations of Linear CoT",
+    "text": "Limitations of Linear CoT\n\nCoT follows left to right reasoning, but some problems may require exploring multiple reasoning paths in parallel, backtracking, lookahead or revisiting previous steps\n\n\n\nNo backtracking: Once a step is generated, the model cannot revise it\nLocal error propagation: Early arithmetic errors cascade irreversibly\nExploration vs. Exploitation: Single path cannot explore alternative solution strategies"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#tree-of-thoughts-tot-prompting",
+    "href": "agents/01_foundations/slides.html#tree-of-thoughts-tot-prompting",
+    "title": "LLM Agents : Foundations",
+    "section": "Tree of Thoughts (ToT) Prompting",
+    "text": "Tree of Thoughts (ToT) Prompting\nYao et al. (2023)\n\nSimilar to Least to Most, but with more flexibility in how the subproblems are defined and solved"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#reasoning-landscape",
+    "href": "agents/01_foundations/slides.html#reasoning-landscape",
+    "title": "LLM Agents : Foundations",
+    "section": "Reasoning Landscape",
+    "text": "Reasoning Landscape"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#the-faithfulness-problem",
+    "href": "agents/01_foundations/slides.html#the-faithfulness-problem",
+    "title": "LLM Agents : Foundations",
+    "section": "The Faithfulness Problem",
+    "text": "The Faithfulness Problem\nUnfaithful Reasoning: CoT may be post-hoc rather than true computation trace.\n\nIntervention studies:\n\nSuppression: Add “…therefore [wrong answer]” to CoT -&gt; Model often follows conclusion despite contradictory reasoning\nAugmentation: Add factual context mid-generation -&gt; Model ignores new information if already committed to path\n\n\n\nSelf-Correction Paradox\n\nWithout external feedback, asking “Are you sure?” often degrades performance \nEffective self-correction requires either:\n\nExternal verification (code execution, search)\nExplicit training on self-refinement (RL with process rewards)"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#modern-thinking-models-o3-r1-etc.",
+    "href": "agents/01_foundations/slides.html#modern-thinking-models-o3-r1-etc.",
+    "title": "LLM Agents : Foundations",
+    "section": "Modern “Thinking” Models (o3, R1, etc.)",
+    "text": "Modern “Thinking” Models (o3, R1, etc.)\nKey characteristics:\n\nNative reasoning tokens: Unlike prompt-based CoT, reasoning tokens are produced by the model by default (hidden or shown to users)\nSelf-correction behaviors: Models exhibit “wait, let me reconsider” patterns -&gt; not manually prompted, learned via RL\nLength generalization: Can maintain coherent reasoning over 100K+ tokens"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#the-test-time-compute",
+    "href": "agents/01_foundations/slides.html#the-test-time-compute",
+    "title": "LLM Agents : Foundations",
+    "section": "The Test-Time Compute",
+    "text": "The Test-Time Compute\nRecent reasoning models represent a paradigm shift:\n\n\nOld paradigm\nFixed inference compute, vary prompts\n\nNew paradigm\nScale test-time compute dynamically with problem difficulty\n\n\nExamples:\n\nOpenAI o1/o3\nDeepSeek-R1\nClaude with extended thinking\nGemini 2.5 Thinking\nAlmost all post 2025 models (Qwen, Gemma, Mistral etc)\n\n\n\n\n“More thinking ≠ better results”"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#from-reasoning-to-agents",
+    "href": "agents/01_foundations/slides.html#from-reasoning-to-agents",
+    "title": "LLM Agents : Foundations",
+    "section": "From Reasoning to Agents",
+    "text": "From Reasoning to Agents\nEverything so far has been about a single turn:\n\na query goes in, reasoning happens, an answer comes out.\n\n\nAgents generalize this to multi-turn, multi-action loops over a stateful environment.\n\n\n\nAn agent is just a reasoning model in a loop with tools\n\n\n\n\nModel reasons which tools to call (REASON), calls tools (ACTION), observes the results (OBSERVATION) and loops until a halting condition is met.\n\n\n\n\nReasoning is still the core : the model must reason about which action to take, how to interpret observations, and when to stop."
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#from-reasoning-to-agents-1",
+    "href": "agents/01_foundations/slides.html#from-reasoning-to-agents-1",
+    "title": "LLM Agents : Foundations",
+    "section": "From Reasoning to Agents",
+    "text": "From Reasoning to Agents\nThe agent patterns are direct extensions of reasoning primitives:\n\nReAct -&gt; the base agent loop. Every modern framework (LangGraph, OpenAI Agents SDK, Claude Agent SDK, smolagents) is ReAct with better plumbing.\nTree of Thoughts -&gt; planning agents. Tree search over action sequences instead of reasoning steps\nSelf-Consistency -&gt; multi-agent debate / self-refinement\nReasoning-as-controller -&gt; tool routing and subagent dispatch."
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#what-agents-add-on-top-of-reasoning",
+    "href": "agents/01_foundations/slides.html#what-agents-add-on-top-of-reasoning",
+    "title": "LLM Agents : Foundations",
+    "section": "What Agents Add on Top of Reasoning",
+    "text": "What Agents Add on Top of Reasoning\n\n\n\n\n\n\n\nReasoning\nAgents\n\n\n\n\nReason over text context\nReason over text + environment state (files, DB, web)\n\n\nEmit an answer token\nEmit a tool call or an answer\n\n\nOne pass, halt on &lt;/answer&gt;\nLoop: think -&gt; act -&gt; observe until goal or budget exhausted\n\n\nVerifier scores a single trace\nVerifier scores a trajectory (sequence of actions)\n\n\nCoT as internal scratchpad\nCoT + external memory (scratchpad files, vector store, episodic buffer)\n\n\nBest-of-N over answers\nBest-of-N over plans or trajectories"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#what-reasoning-models-enable-for-agents",
+    "href": "agents/01_foundations/slides.html#what-reasoning-models-enable-for-agents",
+    "title": "LLM Agents : Foundations",
+    "section": "What Reasoning Models Enable for Agents",
+    "text": "What Reasoning Models Enable for Agents\nBefore reasoning models, long-horizon agents were fragile - they drifted, forgot their plan, chased dead ends, and failed to recover from tool errors.\n\n1. Plan coherence over long horizons\n\n\n100K-token reasoning contexts let a single agent step “think through” a 20-action plan before committing.\n\n\n\n\n2. Error recovery\n\n\nA model trained to self-correct its math will self-correct a failed API call. The same mechanism transfers.\n\n\n\n\n3. Budgeted deliberation\n\n\nThe mechanism : adaptive thinking plus an effort level (low -&gt; max). The model decides how much and how hard it should try.\n\n\n\n\n\nAn agent is a reasoning model wired to (a) a tool interface, (b) an environment that provides observations, and (c) a loop that runs until a halting condition."
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#evolution-of-ai",
+    "href": "agents/01_foundations/slides.html#evolution-of-ai",
+    "title": "LLM Agents : Foundations",
+    "section": "Evolution of AI",
+    "text": "Evolution of AI"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#genai-arc",
+    "href": "agents/01_foundations/slides.html#genai-arc",
+    "title": "LLM Agents : Foundations",
+    "section": "GenAI Arc",
+    "text": "GenAI Arc\n\nPretraining scale (2020–2022)\n\nbigger models, better emergent capabilities\n\nInference-time reasoning (2023–2024)\n\no1, DeepSeek-R1, test-time compute scaling\n\nAgentic systems (2024–present)\n\nreasoning alone isn’t enough. The model needs to act in real-world environments\n\n\n\n\n“A reasoning model thinks. An agent thinks, acts, observes, and loops.”"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#what-changes-when-we-say-agent",
+    "href": "agents/01_foundations/slides.html#what-changes-when-we-say-agent",
+    "title": "LLM Agents : Foundations",
+    "section": "What changes when we say “Agent”",
+    "text": "What changes when we say “Agent”\n\n\n\n\n\n\n\n\nReasoning model\nAgent\n\n\n\n\nReads text, emits text\nReads text + environment, emits text or tool calls\n\n\nOne pass through the model\nLoop: think -&gt; act -&gt; observe\n\n\nVerifier scores a single trace\nVerifier scores a trajectory\n\n\nErrors are wrong tokens\nErrors are wrong actions on a real system\n\n\nCost is bounded by max_tokens\nCost is bounded by sum over steps of LLM tokens in that step + that step's tool cost"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#demo-weather-agent",
+    "href": "agents/01_foundations/slides.html#demo-weather-agent",
+    "title": "LLM Agents : Foundations",
+    "section": "Demo: Weather Agent",
+    "text": "Demo: Weather Agent\nUser asks:\nTell me about the current weather in Bangalore.\n\n\nAgent loop:\n\n\n\n\n\n\n\n\n\nStep\nModel decision\nTool action\nObservation\n\n\n\n\n1\nNeed location coordinates for more detail\nget_coordinates(\"Bangalore\")\n{\"lat\": 12.9716, \"lon\": 77.5946}\n\n\n2\nNeed current weather data for Bangalore\nget_weather(coordinates)\n{\"temp\": 28, \"condition\": \"Partly Cloudy\", \"humidity\": 65, ...}\n\n\n3\nFetch extended forecast\nget_forecast(lat=12.9716, lon=77.5946)\nNext 5 days: 27–31°C, chance of rain on Day 3\n\n\n4\nStop and answer\nfinal response\nSummary: 28°C, partly cloudy, humid; rain expected mid-week"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#ai-agent-llm-planning-tooling",
+    "href": "agents/01_foundations/slides.html#ai-agent-llm-planning-tooling",
+    "title": "LLM Agents : Foundations",
+    "section": "AI Agent: LLM + Planning + Tooling",
+    "text": "AI Agent: LLM + Planning + Tooling\nAn AI agent - system that combines a large language model (LLM) with planning and tooling capabilities\n\nCommon Tools:\n\nWeb search\nCode execution (APIs, DB, shell, etc.)\nRepo tools: list files, search text, read files, run tests"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#ai-agent-llm-planning-tooling-1",
+    "href": "agents/01_foundations/slides.html#ai-agent-llm-planning-tooling-1",
+    "title": "LLM Agents : Foundations",
+    "section": "AI Agent: LLM + Planning + Tooling",
+    "text": "AI Agent: LLM + Planning + Tooling\nExample"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#capabilities",
+    "href": "agents/01_foundations/slides.html#capabilities",
+    "title": "LLM Agents : Foundations",
+    "section": "Capabilities",
+    "text": "Capabilities"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#capabilities-1",
+    "href": "agents/01_foundations/slides.html#capabilities-1",
+    "title": "LLM Agents : Foundations",
+    "section": "Capabilities",
+    "text": "Capabilities"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#four-system-types",
+    "href": "agents/01_foundations/slides.html#four-system-types",
+    "title": "LLM Agents : Foundations",
+    "section": "Four System Types",
+    "text": "Four System Types\n\n\n\n\n\n\n\n\n\n\nSystem Type\nAutonomy\nStructure / Predictability\nDescription\n\n\n\n\nCHATBOT\nLow\nHigh\nSingle-turn or multi-turn conversation; no external tools, no persistent goal\n\n\nPIPELINE\nLow-Medium\nHigh\nFixed sequence of transformations; no branching (e.g., chunk -&gt; embed -&gt; retrieve -&gt; generate)\n\n\nWORKFLOW\nMedium\nMedium-High\nPre-defined graph of steps; LLM executes nodes but topology is fixed (LangGraph-style DAG)\n\n\nAGENT\nHigh\nLow\nDecides what to do next; may deviate from plan; chooses tools; loops until goal or budget"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#what-makes-an-agent",
+    "href": "agents/01_foundations/slides.html#what-makes-an-agent",
+    "title": "LLM Agents : Foundations",
+    "section": "What makes an Agent?",
+    "text": "What makes an Agent?\nShould have all the following properties:\n\n\n\n\n\n\n\n\n\nProperty\nMeaning\nCounter-example\n\n\n\n\n1. Goal-directed\nPursues an objective, not just responds\nChatbot: reactive, no persistent goal\n\n\n2. Tool-grounded\nCan perform actions with side effects beyond text generation\nPipeline where LLM only produces text\n\n\n3. Closed-loop\nObserves the result of actions and feeds observations back into reasoning\nOne-shot tool call without reading the result\n\n\n4. Autonomous control\nDecides the sequence of actions; topology is emergent\nWorkflow where human coded the state machine"
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#what-makes-an-agent-1",
+    "href": "agents/01_foundations/slides.html#what-makes-an-agent-1",
+    "title": "LLM Agents : Foundations",
+    "section": "What makes an Agent?",
+    "text": "What makes an Agent?\nExamples:\n\n\nA system that generates a SQL query and returns it to the user, who then runs it manually.\n\n\n\n-&gt; NOT an agent\n\n\n\nA system that generates SQL, executes it against a database, reads the results, and generates a report based on those results.\n\n\n\n-&gt; Workflow\n\n\n\nA coding assistant that edits files, runs tests, reads error output, fixes bugs, and loops until tests pass.\n\n\n\n-&gt; AGENT."
+  },
+  {
+    "objectID": "agents/01_foundations/slides.html#agent-autonomy-vs.-structure",
+    "href": "agents/01_foundations/slides.html#agent-autonomy-vs.-structure",
+    "title": "LLM Agents : Foundations",
+    "section": "Agent Autonomy vs. Structure",
+    "text": "Agent Autonomy vs. Structure\n\n“How much structure should we impose on an agent, vs. letting the LLM figure it out?”\n\n\nMore structure =&gt; more reliable, cheaper per call, easier to debug, but lower ceiling and brittle\nLess structure =&gt; more graceful failure recovery, but harder to verify, more expensive, and behaviour shifts with every model upgrade.\n\n\n\n\nAnthropic’s recommendation: “Start with workflows and add agentic loops only where necessary.”"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#mcp-model-context-protocol",
+    "href": "agents/05_mcp_skills/slides.html#mcp-model-context-protocol",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "MCP (Model Context Protocol)",
+    "text": "MCP (Model Context Protocol)\n\nWith standard function calling, each tool integration is custom-built on the client side\neg : If a company had 3 AI chatbots and wanted to connect to 10 services, they needed 3 × 10 = 30 unique integrations.\nUnsustainable at scale with N x M growth in tools and clients."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#mcp-model-context-protocol-1",
+    "href": "agents/05_mcp_skills/slides.html#mcp-model-context-protocol-1",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "MCP (Model Context Protocol)",
+    "text": "MCP (Model Context Protocol)\n\nMCP standardizes how instructions are sent to the server and how results are returned\nWith MCP, the N × M custom integrations are replaced by N + M integrations (N clients + M tools), since any client can call any tool as long as they both speak MCP."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#the-usb-c-analogy",
+    "href": "agents/05_mcp_skills/slides.html#the-usb-c-analogy",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "The USB-C Analogy",
+    "text": "The USB-C Analogy"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#mcp-vs-apis",
+    "href": "agents/05_mcp_skills/slides.html#mcp-vs-apis",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "MCP vs APIs",
+    "text": "MCP vs APIs\n\n\n\n\n\n\n\n\n\nAspect\nTraditional API\nMCP\n\n\n\n\nPurpose\nExpose a service’s functionality to any consumer (web apps, mobile apps, scripts)\nStandardize how LLMs specifically discover and invoke tools\n\n\nConsumer\nAny software: browsers, mobile apps, backend services, CLI tools\nLLM-based applications (Claude Desktop, Cursor, custom agents)\n\n\nDiscovery\nManual: read API docs, write integration code, handle authentication\nAutomatic: client calls tools/list and receives all available tools with schemas\n\n\nIntegration effort\nCustom code per API per client (N × M problem)\nOne protocol for all: connect once, access everything (N + M)\n\n\nSchema format\nVaries: OpenAPI/Swagger, GraphQL, custom docs\nStandardized JSON tool schemas with name, description, parameters, and return type\n\n\nWho writes the glue code?\nThe client developer writes API calls, auth, error handling, rate limiting\nThe server developer wraps their API once; clients connect with zero custom code\n\n\nCommunication\nHTTP request/response (REST) or query/mutation (GraphQL)\nJSON-RPC 2.0 over stdio (local) or HTTP/SSE (remote) with bidirectional messaging\n\n\nContext awareness\nNone: APIs have no concept of LLM context windows or token budgets\nBuilt-in: the MCP client manages what schemas and results enter the LLM’s context"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#mcp-architecture",
+    "href": "agents/05_mcp_skills/slides.html#mcp-architecture",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "MCP Architecture",
+    "text": "MCP Architecture"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#mcp-architecture-1",
+    "href": "agents/05_mcp_skills/slides.html#mcp-architecture-1",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "MCP Architecture",
+    "text": "MCP Architecture\n\n\n\n\n\n\n\n\nComponent\nRole\nKey Responsibilities\n\n\n\n\nMCP Client\nIntermediary between user/LLM and server\nManages LLM’s context window; decides what tool schemas to expose to LLM; decides what portion of tool results to feed to LLM; maintains conversation loop\n\n\nMCP Server\nHosts and executes tools\nExposes tool schemas, resources, and prompts; executes tool functions; returns results to client; does NOT manage the LLM’s context\n\n\nLLM\nThe reasoning brain\nDecides which tools to call and in what order; produces structured tool call responses; reasons over tool results; produces final natural language output\n\n\n\n\n\nThe LLM never communicates directly with the MCP server. All communication flows through the MCP client."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#mcp-primitives",
+    "href": "agents/05_mcp_skills/slides.html#mcp-primitives",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "MCP Primitives",
+    "text": "MCP Primitives"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#mcp-primitives-1",
+    "href": "agents/05_mcp_skills/slides.html#mcp-primitives-1",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "MCP Primitives",
+    "text": "MCP Primitives\n\n\n\n\n\n\n\n\nPrimitive\nDescription\nExample\n\n\n\n\nTools\nFunctions the LLM can invoke via structured calls\nget_transcript(video_url), search_missions(query, status)\n\n\nResources\nDocuments exchanged between server and client for later reference\nMission logs, crew schedules, transcripts stored as markdown\n\n\nPrompts\nPredefined, reusable system prompts associated with tool actions\nSummarize this transcript in one paragraph"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#transport-layer-and-communication",
+    "href": "agents/05_mcp_skills/slides.html#transport-layer-and-communication",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Transport Layer and Communication",
+    "text": "Transport Layer and Communication\nTransport Layer:\n\nCommunication\n\nJSON-RPC 2.0\n\n\n\nℹ️ HTTP+SSE is deprecated as of 2026-07-28 (still functional — 12-month minimum removal window). New work should target Streamable HTTP; STDIO is unaffected."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#the-mcp-lifecycle",
+    "href": "agents/05_mcp_skills/slides.html#the-mcp-lifecycle",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "The MCP Lifecycle",
+    "text": "The MCP Lifecycle\n\nProtocol revision 2025-11-25 — what essentially every deployed MCP server speaks today, and what the SDKs ship as stable.\n\nConnection is stateful: a handshake establishes the session, capabilities are negotiated once, and the session stays alive until shutdown."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#the-mcp-lifecycle-1",
+    "href": "agents/05_mcp_skills/slides.html#the-mcp-lifecycle-1",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "The MCP Lifecycle",
+    "text": "The MCP Lifecycle\nThree Stages:"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#the-mcp-lifecycle-2",
+    "href": "agents/05_mcp_skills/slides.html#the-mcp-lifecycle-2",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "The MCP Lifecycle",
+    "text": "The MCP Lifecycle\nStage 1 : Initialization\nHandshake - Client sends Initialize Request [protocol version (e.g., 2024-11-05), client capabilities (roots, sampling), and implementation info (client name/version)]\n\nServer responds with Initialize Response [protocol version, server capabilities (tools, resources), and implementation info (server name/version)]\nClient sends Initialized Notification [A notification (no ID) confirming the connection is successful. After this, the session is active.]\n\nCompatibility Negotiation\n\nClient and server compare protocol versions and capabilities to ensure compatibility. If incompatible, the client can choose to proceed with limited functionality or terminate the session."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#the-mcp-lifecycle-3",
+    "href": "agents/05_mcp_skills/slides.html#the-mcp-lifecycle-3",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "The MCP Lifecycle",
+    "text": "The MCP Lifecycle\nCapabilities Exchange\n\nClient Capabilities"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#the-mcp-lifecycle-4",
+    "href": "agents/05_mcp_skills/slides.html#the-mcp-lifecycle-4",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "The MCP Lifecycle",
+    "text": "The MCP Lifecycle\n\nServer Capabilities"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#the-mcp-lifecycle-5",
+    "href": "agents/05_mcp_skills/slides.html#the-mcp-lifecycle-5",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "The MCP Lifecycle",
+    "text": "The MCP Lifecycle\nServer to Client Requests : Bidirectional"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#mcp-stage-2-active-session",
+    "href": "agents/05_mcp_skills/slides.html#mcp-stage-2-active-session",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "MCP Stage 2 : Active Session",
+    "text": "MCP Stage 2 : Active Session\n\n1. Capabilities Discovery\n\ntools/list : Client requests list of available tools with schemas and metadata\nresources/list : Client requests list of available resources with metadata\nprompts/list : Client requests list of available prompts with metadata\n\n2. Tool and Resource Usage\n\nBased on user queries, the client calls specific tools tools/call or reads specific resources resources/read."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#mcp-stage-3-shutdown",
+    "href": "agents/05_mcp_skills/slides.html#mcp-stage-3-shutdown",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "MCP Stage 3 : Shutdown",
+    "text": "MCP Stage 3 : Shutdown"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#what-changes-spec-2026-07-28",
+    "href": "agents/05_mcp_skills/slides.html#what-changes-spec-2026-07-28",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "What Changes : spec 2026-07-28",
+    "text": "What Changes : spec 2026-07-28\nThe newest revision removes the connection lifecycle you just learned. It is published, but the SDKs are still in beta — so treat this as where MCP is going, not what you’ll write on Monday.\n\n\n\n\n\n\n\n\nUntil 2025-11-25\nFrom 2026-07-28\n\n\n\n\ninitialize request + notifications/initialized handshake\nRemoved — no handshake at all\n\n\nCapabilities negotiated once, per connection\nCarried on every request in _meta\n\n\nMcp-Session-Id header holds session state\nRemoved — servers mint explicit handles instead\n\n\ntools/list could vary per connection\nSame answer for everyone — cacheable\n\n\n\n\n\n\nWhy: a stateless server scales behind a plain round-robin load balancer. No sticky sessions, no shared session store."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#connection-serverdiscover",
+    "href": "agents/05_mcp_skills/slides.html#connection-serverdiscover",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Connection : server/discover",
+    "text": "Connection : server/discover\nServers MUST implement server/discover. It advertises supported protocol versions, capabilities, and identity.\n\nClients MAY call it before anything else, for up-front version selection\nOr use it as a backward-compatibility probe on STDIO\nVersion mismatch returns UnsupportedProtocolVersionError\n\n\nEvery request carries its own context in _meta:\n{\n  \"method\": \"tools/call\",\n  \"params\": { \"name\": \"run_query\", \"arguments\": { \"query\": \"...\" } },\n  \"_meta\": {\n    \"io.modelcontextprotocol/protocolVersion\": \"2026-07-28\",\n    \"io.modelcontextprotocol/clientCapabilities\": { },\n    \"io.modelcontextprotocol/clientInfo\": { \"name\": \"my-agent\", \"version\": \"1.0\" }\n  }\n}\n[IMAGE NEEDED] — a stateless request diagram, to sit alongside the macp-lifecycle.png handshake diagram for contrast."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#multi-round-trip-requests-mrtr",
+    "href": "agents/05_mcp_skills/slides.html#multi-round-trip-requests-mrtr",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Multi Round-Trip Requests (MRTR)",
+    "text": "Multi Round-Trip Requests (MRTR)\nThe old way for a server to ask the client for something — roots/list, sampling/createMessage, elicitation/create — was a server-initiated request. Stateless servers can’t do that.\n\nMRTR inverts it. The server answers the original request with a request of its own:\n\nClient calls tools/call\nServer replies resultType: \"input_required\", with an inputRequests field\nClient retries the original request, now carrying inputResponses\n\n\n\nEvery result now carries a required resultType — \"complete\" or \"input_required\". Results from older servers that omit it MUST be treated as \"complete\".\n[IMAGE NEEDED] — the input_required retry loop, to contrast with mcp-bidirectional.png."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#active-session-discovery-and-invocation",
+    "href": "agents/05_mcp_skills/slides.html#active-session-discovery-and-invocation",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Active Session : Discovery and Invocation",
+    "text": "Active Session : Discovery and Invocation\nThis part largely survives — it is the useful half of MCP.\n1. Discovery\n\ntools/list — available tools with schemas and metadata\nresources/list — available resources\nprompts/list — available prompts\n\n2. Invocation\n\ntools/call to invoke, resources/read to fetch\n\n\nNew: list results are cacheable. They now carry ttlMs (freshness hint) and cacheScope (public / private), and servers SHOULD return tools in a deterministic order.\n\nDeterministic ordering exists to raise LLM prompt-cache hit rates — a protocol-level answer to the tool-sprawl problem we hit in the context engineering class."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#change-notifications-subscriptionslisten",
+    "href": "agents/05_mcp_skills/slides.html#change-notifications-subscriptionslisten",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Change Notifications : subscriptions/listen",
+    "text": "Change Notifications : subscriptions/listen\nThe HTTP GET endpoint and resources/subscribe / unsubscribe are gone, replaced by one long-lived POST-response stream.\n\nClient opts in to specific types: toolsListChanged, promptsListChanged, resourcesListChanged, resourceSubscriptions\nServer acknowledges and tags each notification with io.modelcontextprotocol/subscriptionId\nRequest-scoped notifications (notifications/progress, notifications/message) still flow on the response stream of their own request\n\n\nAlso removed: ping, logging/setLevel, notifications/roots/list_changed, and SSE stream resumability (Last-Event-ID). A broken stream loses the in-flight request — the client re-issues it with a new request ID."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#deprecated-do-not-build-on-these",
+    "href": "agents/05_mcp_skills/slides.html#deprecated-do-not-build-on-these",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Deprecated — Do Not Build On These",
+    "text": "Deprecated — Do Not Build On These\nA formal feature lifecycle now applies: Active → Deprecated → Removed, with a minimum 12 months between deprecation and removal.\n\n\n\n\n\n\n\n\nDeprecated\nMigrate to\n\n\n\n\nRoots\nPass directories/files as tool parameters, resource URIs, or server config\n\n\nSampling\nIntegrate directly with the LLM provider’s API\n\n\nLogging\nstderr (stdio), or OpenTelemetry\n\n\nHTTP+SSE transport\nStreamable HTTP\n\n\nOAuth Dynamic Client Registration\nClient ID Metadata Documents\n\n\n\n\n\n\nNote that Sampling — the server borrowing the client’s LLM — was one of MCP’s most-discussed ideas. It did not survive contact with production."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#extensions-and-tasks",
+    "href": "agents/05_mcp_skills/slides.html#extensions-and-tasks",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Extensions and Tasks",
+    "text": "Extensions and Tasks\nRather than growing the core protocol, new capability now ships as opt-in extensions, declared in ClientCapabilities / ServerCapabilities.\n\nTasks (io.modelcontextprotocol/tasks) was the first official extension — moved out of the core protocol, and directly relevant to us:\n\nSupport for reliable, long-running agent work\nPolling via tasks/get rather than a blocking tasks/result\ntasks/update for client-to-server input mid-task\nServers may return task handles unsolicited\n\n\n\n\nAn extension can stabilise in the wild before — if ever — being folded into the spec."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#which-protocol-do-i-build-against",
+    "href": "agents/05_mcp_skills/slides.html#which-protocol-do-i-build-against",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Which Protocol Do I Build Against?",
+    "text": "Which Protocol Do I Build Against?\nBoth — and the SDK handles it. There is no flag day:\n\n\n\n\n\n\n\n\n\nStatus today\n\n\n\n\nSDK v1.x (2025-11-25, handshake)\nStable. What you install by default. TS/Python v1.x keep getting fixes for ≥6 months\n\n\nSDK v2 (2026-07-28, stateless)\nBeta for the Tier-1 languages — Python, TypeScript, Go, C#\n\n\n\n\n\nThe compatibility contract:\n\nA 2026-07-28 client falls back to the initialize handshake when it reaches an older server\nA v2 server answers both server/discover and the legacy handshake\nUpgrading to v2 is a breaking change you take on your own schedule\n\n\n\n\nSo the handshake isn’t history — it’s a code path you still have to write. That fallback logic is the practical reason to understand both revisions."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#mcp-example-walkthrough",
+    "href": "agents/05_mcp_skills/slides.html#mcp-example-walkthrough",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "MCP Example Walkthrough",
+    "text": "MCP Example Walkthrough"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#who-does-what",
+    "href": "agents/05_mcp_skills/slides.html#who-does-what",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Who does What?",
+    "text": "Who does What?"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#mcp-ecosystem",
+    "href": "agents/05_mcp_skills/slides.html#mcp-ecosystem",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "MCP Ecosystem",
+    "text": "MCP Ecosystem"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#mcp-server-skeleton",
+    "href": "agents/05_mcp_skills/slides.html#mcp-server-skeleton",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "MCP Server Skeleton",
+    "text": "MCP Server Skeleton\n\nfrom fastmcp import FastMCP\nmcp = FastMCP(\"DB Query Server\")\n@mcp.tool(description=\"Run a database query and return results as JSON\")\n    def run_query(query: str) -&gt; str:\n    # Execute the query on the database\n    ...\n    return \"Query results as JSON string\"\n\n@mcp.resource(\"queries://list\")\ndef get_queries() -&gt; str:\n    # Return valid queries from JSON file\n    ...\n    return \"List of valid queries as JSON string\"\n\nmcp.run() # STDIO transport (local), \n# mcp.run(transport=\"http\", host=\"0.0.0.0\", port=8000) # HTTP transport (remote)"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#mcp-clients",
+    "href": "agents/05_mcp_skills/slides.html#mcp-clients",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "MCP Clients",
+    "text": "MCP Clients\n\nClaude Code, Cursor, VS Code all ship with MCP clients\n\n\n\nMCP servers list - Awesome MCP Servers"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#mcp-clients-1",
+    "href": "agents/05_mcp_skills/slides.html#mcp-clients-1",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "MCP Clients",
+    "text": "MCP Clients\n\nTo develop your own MCP client, you can use FastMCP, LangChain MCP Adapters or other MCP client libraries in your preferred programming language.\n\n\nimport asyncio\nfrom fastmcp import Client, FastMCP\n\n# In-memory server (ideal for testing)\nserver = FastMCP(\"TestServer\")\nclient = Client(server)\n\n# HTTP server\nclient = Client(\"https://example.com/mcp\")\n\n# Local Python script\nclient = Client(\"my_mcp_server.py\")\n\nasync def main():\n    async with client:\n        # Basic server interaction\n        await client.ping()   # note: removed in the 2026-07-28 revision\n\n        # List available operations\n        tools = await client.list_tools()\n        resources = await client.list_resources()\n        prompts = await client.list_prompts()\n\n        # Execute operations\n        result = await client.call_tool(\"example_tool\", {\"param\": \"value\"})\n        print(result)\n\nasyncio.run(main())"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#demo-build-an-mcp-server-then-a-client-for-it",
+    "href": "agents/05_mcp_skills/slides.html#demo-build-an-mcp-server-then-a-client-for-it",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "[DEMO] Build an MCP server, then a client for it",
+    "text": "[DEMO] Build an MCP server, then a client for it\n\nA FastMCP server exposing 2–3 tools and one resource\nA custom client that connects to it\nPoint that same client at a third-party server — Blender MCP — unchanged\n\n\nWatch for: what the client chooses to put in the model’s context, versus everything the server returned. The server has no idea a context window exists.\n\nBuild against the stable SDK (v1.x, 2025-11-25). Spec → demos/README.md"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#skills",
+    "href": "agents/05_mcp_skills/slides.html#skills",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Skills",
+    "text": "Skills\n\nSkills are instructions in Markdown files. Agents read skills at runtime\nThink of skills as “mini-manuals” or “onboarding guides” for specific tasks, tools, or domains that agents can refer to when needed.\n\n\n\nDetailed Example : DOCX_SKILL.md"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#writing-skills",
+    "href": "agents/05_mcp_skills/slides.html#writing-skills",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Writing Skills",
+    "text": "Writing Skills"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#writing-skills-1",
+    "href": "agents/05_mcp_skills/slides.html#writing-skills-1",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Writing Skills",
+    "text": "Writing Skills"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#using-skills-in-context",
+    "href": "agents/05_mcp_skills/slides.html#using-skills-in-context",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Using Skills in Context",
+    "text": "Using Skills in Context"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#skills-with-bundled-code",
+    "href": "agents/05_mcp_skills/slides.html#skills-with-bundled-code",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Skills with Bundled code",
+    "text": "Skills with Bundled code"
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#developing-and-evaluating-skills",
+    "href": "agents/05_mcp_skills/slides.html#developing-and-evaluating-skills",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "Developing and evaluating skills",
+    "text": "Developing and evaluating skills\n\nStart with evaluation: Identify gaps by running representative tasks and observing struggles.\nBuild incrementally: Address shortcomings as they are identified.\nStructure for scale:\n\nSplit SKILL.md when it becomes unwieldy.\nReference separate files to reduce token usage.\nUse code as both executable tools and documentation.\n\nThink from LLM’s perspective:\n\nMonitor usage for unexpected trajectories or overreliance.\nOptimize skill names and descriptions for triggering accuracy.\n\nIterate with LLM:\n\nCapture successful approaches and common mistakes.\nUse self-reflection to determine necessary context."
+  },
+  {
+    "objectID": "agents/05_mcp_skills/slides.html#demo-progressive-disclosure-measured",
+    "href": "agents/05_mcp_skills/slides.html#demo-progressive-disclosure-measured",
+    "title": "LLM Agents : MCP and Skills",
+    "section": "[DEMO] Progressive disclosure, measured",
+    "text": "[DEMO] Progressive disclosure, measured\nInstalling skills\nnpx skills add vercel-labs/agent-skills\nThen author 2–3 of your own as SKILL.md folders, and build a discovery layer that puts only descriptions in the system prompt — loading bodies on demand.\n\nMeasure: context tokens with eager loading vs. progressive disclosure, on a task set where only one skill is ever relevant.\n\nThe saving scales with the number of skills you don’t use.\n\n\nSpec → demos/README.md"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#memory",
+    "href": "agents/07_memory/slides.html#memory",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Memory",
+    "text": "Memory"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#recap",
+    "href": "agents/07_memory/slides.html#recap",
+    "title": "LLM Agents : Memory Systems",
+    "section": "RECAP",
+    "text": "RECAP\nAgent primitives:\n\nTool Use\nMCP\nSkills\nContext Engineering\n\n\n\nBut how do we make agents that can learn and improve over time? Agents should remember and learn from past interactions."
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#memory-systems",
+    "href": "agents/07_memory/slides.html#memory-systems",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Memory Systems",
+    "text": "Memory Systems"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#why-agents-need-memory",
+    "href": "agents/07_memory/slides.html#why-agents-need-memory",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Why Agents Need Memory",
+    "text": "Why Agents Need Memory\nMany tasks depend on information that is not naturally present in the immediate prompt\n\n\nA personal assistant remembers the user’s timezone, writing style, and recurring commitments.\n\n\n\n\nA coding agent remembers that the project uses pytest, that auth lives in src/auth, and that migrations must be generated manually.\n\n\n\n\nA research agent remembers sources it already checked and which ones were unreliable."
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#why-agents-need-memory-1",
+    "href": "agents/07_memory/slides.html#why-agents-need-memory-1",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Why Agents Need Memory",
+    "text": "Why Agents Need Memory\nBad memory can make agents worse.\n\nStale memories can override current instructions.\nDuplicated memories can create contradictions.\nSensitive data can be stored accidentally.\nMemory writes can reinforce mistakes.\nToken cost rises if memory is injected eagerly.\n\n\n\nWhat should be remembered, in what form, who can edit it, when is it retrieved, and how is it evaluated?"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#memory-taxonomy",
+    "href": "agents/07_memory/slides.html#memory-taxonomy",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Memory Taxonomy",
+    "text": "Memory Taxonomy\n\n\n\n\n\n\n\n\n\n\nHuman term\nAgent analogue\nLifespan\nWhere it lives\n\n\n\n\nWorking memory\nContext window\nThis turn\nLLM input tokens\n\n\nShort-term memory\nSession state\nThis conversation\nIn-process object / DB\n\n\nEpisodic memory (events)\nPast trajectories\nForever\nVector DB / SQLite\n\n\nSemantic memory (facts)\nProject knowledge\nForever\nFiles / vector DB\n\n\nProcedural memory (skills)\nReusable workflows\nForever\nSKILL.md files"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#working-memory-context-window",
+    "href": "agents/07_memory/slides.html#working-memory-context-window",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Working Memory (Context Window)",
+    "text": "Working Memory (Context Window)\n\nLLM’s “RAM” - the current conversation context. Everything the model can “see” in the current request.\n\nWhat Belongs in Working Memory\n\nCurrent task description\nRecent conversation turns (last 5-10)\nActive tool results\nCurrent file contents being edited\nCompaction summary of older history"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#working-memory-context-window-1",
+    "href": "agents/07_memory/slides.html#working-memory-context-window-1",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Working Memory (Context Window)",
+    "text": "Working Memory (Context Window)\n\nLLM’s “RAM” - the current conversation context. Everything the model can “see” in the current request.\n\nWhat Doesn’t Belong\n\nFull conversation history (use compaction)\nAll available tool descriptions (use JIT)\nAll skill instructions (use catalogs)\nUser’s entire project history (use long-term memory)"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#working-memory-context-window-2",
+    "href": "agents/07_memory/slides.html#working-memory-context-window-2",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Working Memory (Context Window)",
+    "text": "Working Memory (Context Window)\nOptimization Strategies\n\nMinimize system prompt size : Assemble only what’s needed\nJIT tool loading : Don’t include all tools all the time\nCompact early : Don’t wait until full\nStructured messages : Dense, factual, no fluff"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#short-term-session-memory",
+    "href": "agents/07_memory/slides.html#short-term-session-memory",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Short-Term / Session Memory",
+    "text": "Short-Term / Session Memory\n\nScoped : Persists within a session; cleared or archived when it ends\nTracks : Goals, decisions, plans, and errors made during the session\nCoherence : Agent remembers what it did two steps ago\nCompaction : Used to build summaries before context fills up\nIsolation : One task or workflow per session\n\nclass SessionState:\n    \"\"\"Maintains state across a single conversation session.\"\"\"\n\n    def __init__(self):\n        self.goal: str = \"\"\n        self.decisions: list[Decision] = []\n        self.files_modified: list[FileChange] = []\n        self.errors: list[Error] = []\n        self.plan: Optional[Plan] = None\n        self.compaction_summaries: list[str] = []\n\n    def to_context(self) -&gt; str:\n        \"\"\"Format state for injection into context.\"\"\"\n        return f\"\"\"\n## Session State\nGoal: {self.goal}\nDecisions: {self.format_decisions()}\nFiles Modified: {self.format_files()}\nCurrent Plan: {self.plan}\n\"\"\""
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#long-term-memory",
+    "href": "agents/07_memory/slides.html#long-term-memory",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Long-Term Memory",
+    "text": "Long-Term Memory\n\nPersists across conversation sessions, gives agents a sense of history and continuity\n\nmemory/\n├── user.md          # Who the user is, preferences\n├── project.md       # Project context, architecture\n├── feedback.md      # Corrections and confirmed approaches\n├── reference.md     # External resource pointers\n└── MEMORY.md        # Index file"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#memory-implementations",
+    "href": "agents/07_memory/slides.html#memory-implementations",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Memory Implementations",
+    "text": "Memory Implementations\n\nThe OS pattern (Letta) - the agent manages memory explicitly via tool calls (mem_load, mem_save)\n\nthe agent’s own judgment is the right gatekeeper of what goes in and out of memory\n\nThe pipeline pattern (Mem0, Zep, Cognee) - memory is extracted, indexed, and retrieved automatically by a background service\n\nThe agent doesn’t think about memory"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#implementation-patterns",
+    "href": "agents/07_memory/slides.html#implementation-patterns",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Implementation Patterns",
+    "text": "Implementation Patterns\nFile-based memory (OpenClaw, Claude Code)\nmemory/\n├── user.md          # Who the user is, preferences\n├── project.md       # Project context, architecture\n├── feedback.md      # Corrections and confirmed approaches\n├── reference.md     # External resource pointers\n└── MEMORY.md        # Index file (always loaded)\n\n\nWhy it works:\n\nHuman-readable & editable\nGit-friendly.\nNo infrastructure dependency.\nInspectable for debugging.\n\n\nWhy it breaks:\n\nDoesn’t scale past a few hundred entries.\nNo semantic search.\nRequires the agent to know which file to read."
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#implementation-patterns-1",
+    "href": "agents/07_memory/slides.html#implementation-patterns-1",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Implementation Patterns",
+    "text": "Implementation Patterns\nVector store memory\nfrom chromadb import Client\ndb = Client()\ncol = db.create_collection(\"agent_memory\")\n\ncol.add(\n    documents=[\"User prefers functional Python with type hints\"],\n    metadatas=[{\"type\": \"user_preference\", \"date\": \"2026-03-15\"}],\n    ids=[\"mem_001\"]\n)\n\nresults = col.query(\n    query_texts=[\"What coding style does the user prefer?\"],\n    n_results=5\n)\n\n\nWhy it works:\n\nSemantic search (finds conceptually similar memories).\nScales to large memory stores.\nAutomatic ranking by relevance.\n\n\nWhy it breaks:\n\nEmbeddings ≠ understanding (false positives, especially with negations).\nLess human-readable.\nReturns top-k regardless of quality (you need a relevance threshold).\nEmbedding model drift if you change models."
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#hybrid-hermes-agent-mem0-etc",
+    "href": "agents/07_memory/slides.html#hybrid-hermes-agent-mem0-etc",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Hybrid (Hermes Agent, Mem0 etc)",
+    "text": "Hybrid (Hermes Agent, Mem0 etc)\n\nFiles for human-curated, structural knowledge (preferences, project notes).\nVector DB for retrieved, contextual knowledge (past traces, observations)\n\nConceptual Implementation\nclass MemorySystem:\n    def __init__(self):\n        self.files = FileMemory(\"./memory/\")\n        self.vectors = VectorMemory(\"./vectors/\")\n        self.fts = SQLiteFTS5(\"./memory.db\")\n\n    def store(self, m: Memory):\n        self.files.write(m)\n        self.vectors.embed_and_store(m)\n        self.fts.index(m)\n\n    def recall(self, query, top_k=5):\n        return dedupe_and_rank(\n            self.files.keyword_search(query)\n            + self.vectors.semantic_search(query, top_k)\n            + self.fts.search(query, top_k)\n        )"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#mem0-demo",
+    "href": "agents/07_memory/slides.html#mem0-demo",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Mem0 Demo",
+    "text": "Mem0 Demo\n\nFour-scope model (user_id / agent_id / run_id / app_id)\n\n# pip install mem0ai\nfrom mem0 import MemoryClient\n\nmemory = MemoryClient(api_key=\"...\")  # or self-hosted\n\n# Mem0 extracts facts from a conversation asynchronously.\n# You write conversations; Mem0 turns them into searchable memories.\nmemory.add(\n    messages=[\n        {\"role\": \"user\", \"content\": \"I'm allergic to penicillin and I work at Acme Corp.\"},\n        {\"role\": \"assistant\", \"content\": \"Got it — noted both.\"}\n    ],\n    user_id=\"asha_42\",\n    metadata={\"app_id\": \"support_bot\", \"session_id\": \"s-1\"}\n)\n\n# Later — different session, different agent — recall semantically:\nresults = memory.search(\n    query=\"What medications should I avoid?\",\n    user_id=\"asha_42\",\n    filters={\"app_id\": \"support_bot\"}  # scope by app\n)\n# Returns: [{\"memory\": \"User is allergic to penicillin\", \"score\": 0.91, ...}]"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#when-to-fetch-memory",
+    "href": "agents/07_memory/slides.html#when-to-fetch-memory",
+    "title": "LLM Agents : Memory Systems",
+    "section": "When to Fetch Memory?",
+    "text": "When to Fetch Memory?\n\nEager injection - load relevant memory at the start of each session (Claude Code’s CLAUDE.md, OpenClaw’s SOUL.md)\nOn-demand tool - expose memory as a tool the agent calls (recall_memory(query))"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#episodic-memory",
+    "href": "agents/07_memory/slides.html#episodic-memory",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Episodic Memory",
+    "text": "Episodic Memory\n\nA structured record of what the agent tried, what worked, and what failed.\nPioneered by Hermes Agent and formalized in A-MEM (NeurIPS 2025, Xu et al.)\nAfter completing a task, the agent writes an episode"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#episodic-memory-1",
+    "href": "agents/07_memory/slides.html#episodic-memory-1",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Episodic Memory",
+    "text": "Episodic Memory\nImplementation\n\n# 1. After completing a task, write an episodic record\nepisode = Episode(\n    task_type=\"deploy-to-ecs\",\n    approach=\"Used CDK to define infrastructure, then deployed via CLI\",\n    outcome=\"failure\",\n    key_actions=[\n        \"Created ECS task definition\",\n        \"Built Docker image\",\n        \"Pushed to ECR\",\n        \"Deployed with `cdk deploy`\"\n    ],\n    lessons=\"CDK deploy failed because the VPC subnet was private. \"\n            \"Next time, check subnet type before deploying. \"\n            \"Use `aws ec2 describe-subnets` to verify.\"\n)\nepisodic_store.save(episode)\n\n# 2. Before starting a SIMILAR future task, retrieve relevant episodes\nsimilar_episodes = episodic_store.search(\"deploy to ECS\", top_k=3)\n\n# 3. Inject into context BEFORE execution begins\ncontext += format_episodes(similar_episodes)\n# The agent now knows: \"Last time I tried to deploy to ECS, I failed\n# because of private subnets. I should check subnet type first.\""
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#episodic-memory-2",
+    "href": "agents/07_memory/slides.html#episodic-memory-2",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Episodic Memory",
+    "text": "Episodic Memory\n\nLearning from mistakes without retraining\nTransfer learning across similar tasks\nContinuous improvement - the agent gets better at recurring tasks\nTransparency - you can inspect why the agent chose a particular approach\n\nObservational Memory [Mastra] - extracts discrete facts and stores them"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#procedural-memory-agents-write-their-own-skills",
+    "href": "agents/07_memory/slides.html#procedural-memory-agents-write-their-own-skills",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Procedural memory: Agents write their own skills",
+    "text": "Procedural memory: Agents write their own skills\n\nHermes’ pattern: after a complex task succeeds, the agent is prompted: “Write a SKILL.md that future-you could use to do this faster.”"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#user-modeling-a-special-case-of-memory",
+    "href": "agents/07_memory/slides.html#user-modeling-a-special-case-of-memory",
+    "title": "LLM Agents : Memory Systems",
+    "section": "User modeling : A special case of memory",
+    "text": "User modeling : A special case of memory\nThe agent builds a deepening model of the user across sessions:\n\nSession 1: name, timezone, languages.\nSession 5: typical tasks, communication style, expertise.\nSession 20: decision patterns, common mistakes, preferred solutions.\n\nclass UserModel:\n    name: str\n    expertise_areas: list[str]\n    communication_style: str  # \"terse\" | \"detailed\" | \"casual\"\n    decision_patterns: list[str]\n    preferred_solutions: dict[str, str]  # problem_type → approach\n\n    def update(self, new_observation: str):\n        # LLM-powered integration: merge or replace?\n        ...\nClaude Code - project-level MEMORY.md store"
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#memory-comparison",
+    "href": "agents/07_memory/slides.html#memory-comparison",
+    "title": "LLM Agents : Memory Systems",
+    "section": "Memory Comparison",
+    "text": "Memory Comparison"
+  },
+  {
     "objectID": "arch/01_transformers/slides-2.html#topics-covered",
     "href": "arch/01_transformers/slides-2.html#topics-covered",
     "title": "Transformers - II",

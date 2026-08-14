@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-73db7b5a953198da8f17fc5313e632aa.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.9.34">
+
+  <meta name="author" content="CCE, IISc">
+  <title>Large Language Models : A Hands-On Approach - May, 2026 – LLM Agents : The Agent Loop, Patterns and Tool Use</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+  <link rel="stylesheet" href="../../styles.css">
+  <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-state="title-slide" class="quarto-title-block center">
+  <h1 class="title">LLM Agents : The Agent Loop, Patterns and Tool Use</h1>
+  <p class="subtitle">Large Language Models : A Hands-on Approach</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+CCE, IISc 
+</div>
+</div>
+</div>
+
+</section>
+<section id="recap" class="slide level2">
+<h2>RECAP</h2>
+<ul>
+<li>Reasoning Models</li>
+<li>Agent Loop</li>
+</ul>
+</section>
+<section id="anatomy-of-an-agent" class="slide level2">
+<h2>Anatomy of an Agent</h2>
+</section>
+<section id="the-model" class="slide level2">
+<h2>1 - The Model</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><img data-src="images/model-component.png"></p>
+</div><div class="column" style="width:40%;">
+<p><strong>Key choices for agents</strong></p>
+<ol type="1">
+<li><p><strong>Model capability</strong></p></li>
+<li><p><strong>Context window</strong></p></li>
+<li><p><strong>Tool-calling format</strong></p></li>
+<li><p><strong>Reasoning vs.&nbsp;non-reasoning</strong></p></li>
+</ol>
+</div></div>
+</section>
+<section id="tools-the-action-space" class="slide level2">
+<h2>2 - Tools / The Action Space</h2>
+<p>The set of actions the agent can perform. Every action has:</p>
+<ul>
+<li>A <strong>name</strong> (identifier)</li>
+<li>A <strong>schema</strong> (parameters, types, constraints)</li>
+<li>An <strong>implementation</strong> (the actual function that runs)</li>
+<li>A <strong>description</strong> (natural language prompt the model sees)</li>
+</ul>
+<p><strong>Example: A <code>calculator</code> tool</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource json number-lines code-with-copy"><code class="sourceCode json"><span id="cb1-1"><a></a><span class="fu">{</span></span>
+<span id="cb1-2"><a></a>  <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"calculator"</span><span class="fu">,</span></span>
+<span id="cb1-3"><a></a>  <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Evaluate mathematical expressions. Use this for ALL arithmetic—do not compute in your head. Input must be a valid Python expression string. Returns the numeric result or an error message."</span><span class="fu">,</span></span>
+<span id="cb1-4"><a></a>  <span class="dt">"parameters"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb1-5"><a></a>    <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"object"</span><span class="fu">,</span></span>
+<span id="cb1-6"><a></a>    <span class="dt">"properties"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb1-7"><a></a>      <span class="dt">"expression"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb1-8"><a></a>        <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"string"</span><span class="fu">,</span></span>
+<span id="cb1-9"><a></a>        <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"A valid Python math expression, e.g., '2 + 2' or 'math.sqrt(16)'"</span></span>
+<span id="cb1-10"><a></a>      <span class="fu">}</span></span>
+<span id="cb1-11"><a></a>    <span class="fu">},</span></span>
+<span id="cb1-12"><a></a>    <span class="dt">"required"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"expression"</span><span class="ot">]</span></span>
+<span id="cb1-13"><a></a>  <span class="fu">}</span></span>
+<span id="cb1-14"><a></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="tools-the-action-space-1" class="slide level2">
+<h2>2 - Tools / The Action Space</h2>
+<p><strong>Example: Repo tools</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource json number-lines code-with-copy"><code class="sourceCode json"><span id="cb2-1"><a></a><span class="ot">[</span></span>
+<span id="cb2-2"><a></a>  <span class="fu">{</span></span>
+<span id="cb2-3"><a></a>    <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"search_repo"</span><span class="fu">,</span></span>
+<span id="cb2-4"><a></a>    <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Search the repository for exact text or regex patterns. Use this before reading many files."</span><span class="fu">,</span></span>
+<span id="cb2-5"><a></a>    <span class="dt">"parameters"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-6"><a></a>      <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"object"</span><span class="fu">,</span></span>
+<span id="cb2-7"><a></a>      <span class="dt">"properties"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-8"><a></a>        <span class="dt">"query"</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">"type"</span><span class="fu">:</span> <span class="st">"string"</span><span class="fu">},</span></span>
+<span id="cb2-9"><a></a>        <span class="dt">"path"</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">"type"</span><span class="fu">:</span> <span class="st">"string"</span><span class="fu">,</span> <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Optional directory or file scope"</span><span class="fu">}</span></span>
+<span id="cb2-10"><a></a>      <span class="fu">},</span></span>
+<span id="cb2-11"><a></a>      <span class="dt">"required"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"query"</span><span class="ot">]</span></span>
+<span id="cb2-12"><a></a>    <span class="fu">}</span></span>
+<span id="cb2-13"><a></a>  <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb2-14"><a></a>  <span class="fu">{</span></span>
+<span id="cb2-15"><a></a>    <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"read_file"</span><span class="fu">,</span></span>
+<span id="cb2-16"><a></a>    <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Read a repository file by path. Use after search identifies a likely relevant file."</span><span class="fu">,</span></span>
+<span id="cb2-17"><a></a>    <span class="dt">"parameters"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-18"><a></a>      <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"object"</span><span class="fu">,</span></span>
+<span id="cb2-19"><a></a>      <span class="dt">"properties"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-20"><a></a>        <span class="dt">"path"</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">"type"</span><span class="fu">:</span> <span class="st">"string"</span><span class="fu">}</span></span>
+<span id="cb2-21"><a></a>      <span class="fu">},</span></span>
+<span id="cb2-22"><a></a>      <span class="dt">"required"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"path"</span><span class="ot">]</span></span>
+<span id="cb2-23"><a></a>    <span class="fu">}</span></span>
+<span id="cb2-24"><a></a>  <span class="fu">}</span></span>
+<span id="cb2-25"><a></a><span class="ot">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="tools-the-action-space-2" class="slide level2">
+<h2>2 - Tools / The Action Space</h2>
+<div style="font-size: 0.8em; margin-top: 1.5em;">
+<p><strong>The action space spectrum</strong></p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Action Space</th>
+<th>Grounding</th>
+<th>Verification</th>
+<th>Failure Modes</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>JSON tool calls</td>
+<td>Strong (typed schema)</td>
+<td>Easy (validate against schema)</td>
+<td>Hallucinated args, wrong tool choice</td>
+<td>API agents, coding agents</td>
+</tr>
+<tr class="even">
+<td>Code execution</td>
+<td>Medium (interpreter catches syntax)</td>
+<td>Medium (tracebacks, output)</td>
+<td>Infinite loops, dangerous imports, sandbox escapes</td>
+<td>Data science, complex computation</td>
+</tr>
+<tr class="odd">
+<td>GUI actions (click, type)</td>
+<td>Weak (pixels, DOM elements)</td>
+<td>Hard (was the click registered?)</td>
+<td>Click misses, modal dialogs, visual changes</td>
+<td>Browser automation, computer use</td>
+</tr>
+<tr class="even">
+<td>Voice turns</td>
+<td>Weak (audio ambiguity)</td>
+<td>Hard (user may interrupt)</td>
+<td>Misheard commands, latency gaps</td>
+<td>Conversational agents</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="component-3-the-loop" class="slide level2">
+<h2>Component 3: The Loop</h2>
+<p>The control structure that repeatedly calls the model, executes actions, and feeds observations back.</p>
+
+<img data-src="images/agent-loop.png" class="r-stretch"></section>
+<section id="component-3-the-loop-1" class="slide level2">
+<h2>Component 3: The Loop</h2>
+<p><strong>The canonical ReAct loop (pseudo-code):</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a><span class="kw">class</span> ReActAgent:</span>
+<span id="cb3-2"><a></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, model, tools, max_steps<span class="op">=</span><span class="dv">10</span>):</span>
+<span id="cb3-3"><a></a>        <span class="va">self</span>.model <span class="op">=</span> model</span>
+<span id="cb3-4"><a></a>        <span class="va">self</span>.tools <span class="op">=</span> {t.name: t <span class="cf">for</span> t <span class="kw">in</span> tools}</span>
+<span id="cb3-5"><a></a>        <span class="va">self</span>.max_steps <span class="op">=</span> max_steps</span>
+<span id="cb3-6"><a></a>        <span class="va">self</span>.state <span class="op">=</span> []  <span class="co"># conversation history</span></span>
+<span id="cb3-7"><a></a>    </span>
+<span id="cb3-8"><a></a>    <span class="kw">def</span> run(<span class="va">self</span>, task: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb3-9"><a></a>        <span class="va">self</span>.state.append(user_message(task))</span>
+<span id="cb3-10"><a></a>        </span>
+<span id="cb3-11"><a></a>        <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb3-12"><a></a>            <span class="co"># REASON: Model decides what to do</span></span>
+<span id="cb3-13"><a></a>            response <span class="op">=</span> <span class="va">self</span>.model.generate(<span class="va">self</span>.state, available_tools<span class="op">=</span><span class="bu">list</span>(<span class="va">self</span>.tools.values()))</span>
+<span id="cb3-14"><a></a>            </span>
+<span id="cb3-15"><a></a>            <span class="cf">if</span> response.has_tool_calls:</span>
+<span id="cb3-16"><a></a>                <span class="va">self</span>.state.append(response)</span>
+<span id="cb3-17"><a></a>                <span class="co"># ACT: Execute each tool call</span></span>
+<span id="cb3-18"><a></a>                <span class="cf">for</span> tool_call <span class="kw">in</span> response.tool_calls:</span>
+<span id="cb3-19"><a></a>                    result <span class="op">=</span> <span class="va">self</span>.execute_tool(tool_call)</span>
+<span id="cb3-20"><a></a>                    <span class="co"># OBSERVE: Append result to state</span></span>
+<span id="cb3-21"><a></a>                    <span class="va">self</span>.state.append(tool_result_message(tool_call.<span class="bu">id</span>, result))</span>
+<span id="cb3-22"><a></a>            <span class="cf">else</span>:</span>
+<span id="cb3-23"><a></a>                <span class="co"># FINISH: Model returns final answer</span></span>
+<span id="cb3-24"><a></a>                <span class="cf">return</span> response.content</span>
+<span id="cb3-25"><a></a>        </span>
+<span id="cb3-26"><a></a>    </span>
+<span id="cb3-27"><a></a>    <span class="kw">def</span> execute_tool(<span class="va">self</span>, tool_call):</span>
+<span id="cb3-28"><a></a>        tool <span class="op">=</span> <span class="va">self</span>.tools[tool_call.name]</span>
+<span id="cb3-29"><a></a>        <span class="co"># Validate arguments against schema</span></span>
+<span id="cb3-30"><a></a>        validated_args <span class="op">=</span> tool.schema.validate(tool_call.arguments)</span>
+<span id="cb3-31"><a></a>        <span class="co"># Execute</span></span>
+<span id="cb3-32"><a></a>        <span class="cf">return</span> tool.run(<span class="op">**</span>validated_args)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="component-4-state-context-memory" class="slide level2">
+<h2>Component 4: State / Context Memory</h2>
+
+<img data-src="images/agent-context.png" class="r-stretch"></section>
+<section id="component-4-state-context-memory-1" class="slide level2">
+<h2>Component 4: State / Context Memory</h2>
+<p>The information the agent can access when making its next decision.</p>
+<p>In the minimal ReAct agent, state is simply the conversation history: a list of messages:</p>
+<pre><code>[system_prompt, user_task, assistant_thought_1, tool_call_1, tool_result_1, assistant_thought_2, ...]</code></pre>
+<p>For the repo-question example, state might contain:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb5-1"><a></a>User task: Where is authentication handled, and what tests cover it?</span>
+<span id="cb5-2"><a></a>Tool call: search_repo("auth")</span>
+<span id="cb5-3"><a></a>Observation: src/auth.py, src/middleware.py, tests/test_auth.py</span>
+<span id="cb5-4"><a></a>Tool call: read_file("src/auth.py")</span>
+<span id="cb5-5"><a></a>Observation: token validation and session helpers</span>
+<span id="cb5-6"><a></a>...</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="component-5-stop-conditions" class="slide level2">
+<h2>Component 5: Stop Conditions</h2>
+
+<img data-src="images/stop-loop.png" class="r-stretch"></section>
+<section id="component-5-stop-conditions-1" class="slide level2">
+<h2>Component 5: Stop Conditions</h2>
+<p>The criteria that terminate the loop.</p>
+<p>Agents should not run forever. Termination can be triggered by:</p>
+<div style="font-size: 0.8em; margin-top: 1.5em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 26%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Stop Condition</th>
+<th>Type</th>
+<th>When It’s Used</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Goal achievement</strong></td>
+<td>Model-driven</td>
+<td>Agent emits final answer instead of tool call</td>
+</tr>
+<tr class="even">
+<td><strong>Step budget</strong></td>
+<td>System-enforced</td>
+<td>Max N iterations reached</td>
+</tr>
+<tr class="odd">
+<td><strong>Cost cap</strong></td>
+<td>System-enforced</td>
+<td>Max dollars/tokens spent</td>
+</tr>
+<tr class="even">
+<td><strong>Time budget</strong></td>
+<td>System-enforced</td>
+<td>Wall-clock timeout</td>
+</tr>
+<tr class="odd">
+<td><strong>Error threshold</strong></td>
+<td>System-enforced</td>
+<td>N consecutive tool failures</td>
+</tr>
+<tr class="even">
+<td><strong>Dead-end detection</strong></td>
+<td>Heuristic</td>
+<td>Agent repeating the same action</td>
+</tr>
+<tr class="odd">
+<td><strong>Human trigger</strong></td>
+<td>External</td>
+<td>User presses stop</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fragment">
+<p><strong>Stopping Criteria</strong> for Repo-question stop condition ??</p>
+</div>
+</section>
+<section id="agent-loop-patterns" class="slide level2">
+<h2>Agent Loop Patterns</h2>
+</section>
+<section id="react-interleaving-reasoning-and-acting" class="slide level2">
+<h2>ReAct: Interleaving Reasoning and Acting</h2>
+<div style="font-size: 0.4em; margin-top: 1.5em;">
+<p>Yao et al.&nbsp;2022, “ReAct: Synergizing Reasoning and Acting in Language Models”</p>
+</div>
+<p>The Calculator Agent</p>
+<div class="fragment">
+<ul>
+<li>Pure CoT fails on “What is the 47th Fibonacci number?” due to arithmetic errors in large-number addition.</li>
+<li>ReAct solves this via tool-augmented reasoning:</li>
+</ul>
+<p><strong>ReAct Loop Pattern:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb6-1"><a></a>Thought: I need to calculate the 47th Fibonacci number. </span>
+<span id="cb6-2"><a></a>This requires precise arithmetic. I should use the calculator tool.</span>
+<span id="cb6-3"><a></a></span>
+<span id="cb6-4"><a></a>Action: calculator(fibonacci, n=47)</span>
+<span id="cb6-5"><a></a></span>
+<span id="cb6-6"><a></a>Observation: 2971215073</span>
+<span id="cb6-7"><a></a></span>
+<span id="cb6-8"><a></a>Thought: The calculator returned 2971215073. </span>
+<span id="cb6-9"><a></a>Let me verify this is reasonable... F(47) should be approximately phi^47/sqrt(5) ≈ 2.9 billion. </span>
+<span id="cb6-10"><a></a>This checks out.</span>
+<span id="cb6-11"><a></a></span>
+<span id="cb6-12"><a></a>Answer: 2971215073</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="react-pattern-reason-act" class="slide level2">
+<h2>ReAct Pattern (Reason + Act)</h2>
+<ul>
+<li>The agent alternates between Reasoning and Taking Actions (Act) in a loop to achieve its goals, often using tools, APIs, and memory</li>
+</ul>
+<div class="columns">
+<div class="column">
+<p><img data-src="images/react-agent.png" width="332"></p>
+</div><div class="column">
+<p>Example:</p>
+<ul>
+<li>An agent that performs a complex task like booking a flight, which requires multiple steps and interactions with external systems (searching for flights, comparing prices, making a reservation, etc.)</li>
+</ul>
+</div></div>
+</section>
+<section id="react-pattern-reason-act-1" class="slide level2">
+<h2>ReAct Pattern (Reason + Act)</h2>
+<p><strong>Advantages</strong>:</p>
+<ul>
+<li>Combines the strengths of reasoning and acting, allowing for more complex and dynamic behavior</li>
+<li>Supports complex and multi-step tasks that require both planning and execution</li>
+<li>Integration with real-world tools and APIs allows for practical applications</li>
+</ul>
+<p><strong>Limitations</strong>:</p>
+<ul>
+<li>Increased complexity in design and state management</li>
+<li>Requires robust error handling and recovery mechanisms</li>
+<li>May be slower due to the need for multiple reasoning and action cycles</li>
+</ul>
+</section>
+<section id="react-loop---deep-dive" class="slide level2">
+<h2>ReAct Loop - Deep Dive</h2>
+</section>
+<section id="the-react-pattern-in-detail" class="slide level2">
+<h2>The ReAct Pattern in Detail</h2>
+<p><strong>The three primitives:</strong></p>
+<ol type="1">
+<li><strong>Thought</strong> - The model’s reasoning about the current situation, what it knows, what it needs, and what to do next.</li>
+<li><strong>Action</strong> - A structured invocation of a tool (or a special finish action).</li>
+<li><strong>Observation</strong> - The result returned by the tool, added to the trace.</li>
+</ol>
+<p><strong>Trace structure (what the model actually sees):</strong></p>
+<pre><code>System: You are a helpful assistant with access to tools. Answer the user's question.
+
+User: In this repo, where is authentication handled, and what tests cover it?
+
+Assistant:
+Thought: I need evidence from the repository, not a guess. I should search for authentication-related files.
+Action: search_repo
+Action Input: {"query": "auth"}
+
+Observation: Matches found in src/auth.py, src/middleware.py, tests/test_auth.py.
+
+Thought: I should inspect the implementation and the tests before answering.
+Action: read_file
+Action Input: {"path": "src/auth.py"}
+
+Observation: src/auth.py defines login, token validation, and session helper functions.
+
+Thought: Now I need the test coverage.
+Action: read_file
+Action Input: {"path": "tests/test_auth.py"}
+
+Observation: tests/test_auth.py covers login success, login failure, and expired-token behavior.
+
+Thought: I have enough evidence to answer with file references.
+Action: finish
+Action Input: {"answer": "Authentication is handled primarily in src/auth.py, with middleware references in src/middleware.py. The direct tests are in tests/test_auth.py, covering login success/failure and expired-token behavior."}</code></pre>
+</section>
+<section id="the-react-pattern-in-detail-1" class="slide level2">
+<h2>The ReAct Pattern in Detail</h2>
+<p><strong>Native tool calling vs.&nbsp;ReAct prompting:</strong></p>
+<ul>
+<li><p>Early ReAct implementations parsed free text; modern implementations use structured APIs.</p></li>
+<li><p>Modern APIs (Anthropic, OpenAI) use native tool calling: the model emits a structured <code>tool_use</code> block, not free-text <code>Action:</code>.</p></li>
+</ul>
+</section>
+<section id="react---limitations" class="slide level2">
+<h2>ReAct - Limitations</h2>
+<ul>
+<li><strong>No explicit lookahead:</strong> The model chooses the next action without a built-in tree search unless we add one</li>
+<li><strong>No built-in backtracking:</strong> The model can revise its plan, but it cannot undo side effects unless the system provides rollback tools</li>
+<li><strong>Context drift:</strong> As the trace grows, early observations may be “forgotten”</li>
+<li><strong>Action-space myopia:</strong> The agent can only do what tools permit. Tool design limits reasoning.</li>
+</ul>
+<div class="fragment">
+<p><strong>Repo example:</strong> the agent may read too many files, miss synonyms like “session” or “token”, stop after one weak match, or cite a file it did not actually inspect.</p>
+</div>
+</section>
+<section id="react-planning-plan-then-execute" class="slide level2">
+<h2>ReAct + Planning (Plan-then-Execute)</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb8-1"><a></a>User -&gt; Planner LLM -&gt; Plan -&gt; Executor LLM -&gt; Tool -&gt; ... -&gt; Answer</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Implementation</strong></p>
+<p><em>Plan Mode</em>: AI analyzes requirements, reads codebase, builds a step-by-step plan. No modifications are made. The user reviews the plan.</p>
+<p><em>Act Mode</em>: AI executes the plan, editing files and running commands. Human approval at each step.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a></a></span>
+<span id="cb9-2"><a></a><span class="kw">def</span> plan_and_execute(task: <span class="bu">str</span>):</span>
+<span id="cb9-3"><a></a>    <span class="co"># Phase 1: Plan (no tool execution)</span></span>
+<span id="cb9-4"><a></a>    plan <span class="op">=</span> planner_llm.generate(</span>
+<span id="cb9-5"><a></a>        system<span class="op">=</span><span class="st">"You are a planner. Analyze the task and create a step-by-step plan. "</span></span>
+<span id="cb9-6"><a></a>               <span class="st">"Do NOT execute anything."</span>,</span>
+<span id="cb9-7"><a></a>        user<span class="op">=</span>task</span>
+<span id="cb9-8"><a></a>    )</span>
+<span id="cb9-9"><a></a></span>
+<span id="cb9-10"><a></a>    <span class="co"># Phase 2: Execute (follow the plan)</span></span>
+<span id="cb9-11"><a></a>    <span class="cf">for</span> step <span class="kw">in</span> plan.steps:</span>
+<span id="cb9-12"><a></a>        result <span class="op">=</span> executor_llm.generate(</span>
+<span id="cb9-13"><a></a>            system<span class="op">=</span><span class="st">"You are an executor. Complete the given step using tools."</span>,</span>
+<span id="cb9-14"><a></a>            user<span class="op">=</span><span class="ss">f"Plan context: </span><span class="sc">{</span>plan<span class="sc">}</span><span class="ch">\n</span><span class="ss">Current step: </span><span class="sc">{</span>step<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb9-15"><a></a>        )</span>
+<span id="cb9-16"><a></a>        <span class="co"># ... execute tools from result</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Examples</strong> : Cline (Plan/Act modes), Aider (Architect mode)</p>
+</section>
+<section id="react-reflection" class="slide level2">
+<h2>ReAct + Reflection</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb10-1"><a></a>User -&gt; LLM -&gt; Tool -&gt; ... -&gt; LLM -&gt; Draft Answer -&gt; Critic LLM -&gt;</span>
+<span id="cb10-2"><a></a>  [if good: return]</span>
+<span id="cb10-3"><a></a>  [if bad: feedback -&gt; LLM -&gt; retry]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Implementation</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a></a><span class="kw">def</span> react_with_reflection(task: <span class="bu">str</span>, max_reflections: <span class="bu">int</span> <span class="op">=</span> <span class="dv">3</span>):</span>
+<span id="cb11-2"><a></a>    draft <span class="op">=</span> basic_react_loop(task)</span>
+<span id="cb11-3"><a></a></span>
+<span id="cb11-4"><a></a>    <span class="cf">for</span> attempt <span class="kw">in</span> <span class="bu">range</span>(max_reflections):</span>
+<span id="cb11-5"><a></a>        critique <span class="op">=</span> critic_llm.generate(</span>
+<span id="cb11-6"><a></a>            system<span class="op">=</span><span class="st">"Evaluate this output. Is it complete, correct, well-structured? "</span></span>
+<span id="cb11-7"><a></a>                   <span class="st">"If not, explain what needs improvement."</span>,</span>
+<span id="cb11-8"><a></a>            user<span class="op">=</span><span class="ss">f"Task: </span><span class="sc">{</span>task<span class="sc">}</span><span class="ch">\n</span><span class="ss">Output: </span><span class="sc">{</span>draft<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb11-9"><a></a>        )</span>
+<span id="cb11-10"><a></a></span>
+<span id="cb11-11"><a></a>        <span class="cf">if</span> critique.is_satisfactory:</span>
+<span id="cb11-12"><a></a>            <span class="cf">return</span> draft</span>
+<span id="cb11-13"><a></a></span>
+<span id="cb11-14"><a></a>        <span class="co"># Retry with feedback</span></span>
+<span id="cb11-15"><a></a>        draft <span class="op">=</span> basic_react_loop(</span>
+<span id="cb11-16"><a></a>            <span class="ss">f"Original task: </span><span class="sc">{</span>task<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb11-17"><a></a>            <span class="ss">f"Previous attempt: </span><span class="sc">{</span>draft<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb11-18"><a></a>            <span class="ss">f"Feedback: </span><span class="sc">{</span>critique<span class="sc">.</span>feedback<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb11-19"><a></a>            <span class="ss">f"Please improve based on this feedback."</span></span>
+<span id="cb11-20"><a></a>        )</span>
+<span id="cb11-21"><a></a></span>
+<span id="cb11-22"><a></a>    <span class="cf">return</span> draft  <span class="co"># Best effort after max reflections</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Examples</strong> : CrewAI, LangGraph</p>
+<!-- ## Planning : How Do You Decompose?
+
+The planner slide above assumes a plan exists. Producing one is its own design decision.
+
+::: {style="font-size: 0.85em;"}
+
+| Axis | Option A | Option B |
+|---|---|---|
+| **When** | *Top-down* — full plan before acting | *Opportunistic* — plan the next step or two, re-plan as you learn |
+| **Shape** | *Linear* — ordered list of steps | *DAG* — explicit dependencies, parallelisable branches |
+| **Ownership** | Plan is fixed; failures retry a step | Plan is mutable; failures re-plan |
+
+:::
+
+. . .
+
+**Plan-and-Solve** (Wang et al., 2023) is the cheapest version of this: no separate planner
+model, no orchestration — just prompt the model to *"devise a plan, then carry out the
+subtasks"* before answering.
+
+> A useful reference point: much of what a planner buys you, a better prompt buys you for free.
+
+## Reflexion — learning *across* attempts
+
+Shinn et al. (2023) — *Reflexion: Language Agents with Verbal Reinforcement Learning*
+
+The retry loop we just saw throws away what it learned. Reflexion keeps it.
+
+``` text
+attempt 1 → fail → write a verbal self-reflection → store in memory
+attempt 2 → read reflections → fail differently → reflect again → store
+attempt 3 → read reflections → succeed
+```
+
+. . .
+
+- The reflection is **natural language**, not a gradient — hence *"verbal"* reinforcement
+- It persists in an **episodic buffer across episodes**, not just within one retry
+- No weights change. The learning lives entirely in the context
+
+> This is where reflection stops being error-handling and starts being **memory** — which is
+> exactly the thread deck 07 picks up.
+
+## Self-Refine — critique with no external signal
+
+Madaan et al. (2023) — *Self-Refine: Iterative Refinement with Self-Feedback*
+
+**One model, three roles:** generate → critique its own output → revise. No test suite, no
+verifier, no second model.
+
+. . .
+
+**When this works:** the task has qualities the model can *recognise* better than it can
+*produce* in one pass — tone, completeness, structure, readability.
+
+**When it fails:** anything the model cannot check. It will happily "refine" a wrong answer
+into a differently wrong answer, with confidence.
+
+## Reflexion vs Self-Refine
+
+::: {style="font-size: 0.85em;"}
+
+| | Self-Refine | Reflexion |
+|---|---|---|
+| Signal | The model's own judgement | An **outcome** — test failed, task unsolved |
+| Scope | Within one attempt | **Across attempts** |
+| Persists? | No | Yes — episodic memory buffer |
+| Fails when | The model can't judge the task | No usable outcome signal exists |
+
+:::
+
+. . .
+
+> The distinction that matters: **is there a ground-truth signal?** With one, use Reflexion.
+> Without one, self-critique is the model marking its own homework.
+
+## Verification — who actually checks the work?
+
+Ranked by how much you should trust them:
+
+1. **Tool-grounded** — tests pass, the code compiles, the API returned 200. *Ground truth.*
+2. **Deterministic checks** — schema validation, linters, invariants. Cheap and reliable.
+3. **Model-based verifier** — a second model scores the output. Useful, fallible.
+4. **Self-critique** — the same model judges itself. Weakest, and the default people reach for.
+
+. . .
+
+> Push verification **down** this list wherever you can. A failing `pytest` is worth more than
+> any amount of critique prose — and it costs one tool call instead of a model round trip.
+
+## Search-Based Planning — when greedy isn't enough
+
+ReAct is a **greedy** planner: it commits to each action as it goes, and cannot un-commit.
+
+. . .
+
+- **Tree of Thoughts** (Yao et al.) — branch over *reasoning* steps, evaluate, prune
+- **LATS** (Zhou et al.) — MCTS over *action* sequences; combines search, reflection and value estimation
+
+. . .
+
+**Search buys** recovery from bad early commitments — which is exactly what greedy loops
+cannot do.
+
+**Search costs** a multiple of the token spend, since most explored branches are discarded.
+
+> Worth it when early decisions constrain everything downstream (planning, puzzles, irreversible
+> actions) and the task is hard enough to justify it. Rarely worth it otherwise.
+
+## The Planning Paradox
+
+More structure is not free, and it is not monotonic:
+
+- Every planner call is tokens and latency the greedy loop didn't spend
+- A plan written before acting is a plan written with the **least** information you will ever have
+- Rigid plans resist the thing agents are good at — noticing mid-task that the approach is wrong
+
+. . .
+
+> **The through-line question, made concrete:** on an easy task the planner is *worse* than
+> ReAct. There is a crossover point where difficulty makes structure pay. Nobody can tell you
+> where it is for your workload — you have to measure it.
+
+## `[DEMO]` Same task, three control flows
+
+Run one fixed task through **ReAct**, **Plan-then-Execute**, and **ReAct + Reflection**.
+
+| | Steps | Tokens | Cost | Success |
+|---|---|---|---|---|
+| ReAct | | | | |
+| Plan-then-Execute | | | | |
+| ReAct + Reflection | | | | |
+
+. . .
+
+**Find the crossover.** Pick a task set spanning easy → hard, and identify where the extra
+structure starts paying for itself.
+
+::: {style="font-size: 0.75em;"}
+Spec → `demos/README.md`
+:::
+
+ -->
+</section>
+<section id="react-reflection-compaction" class="slide level2">
+<h2>ReAct + Reflection + Compaction</h2>
+<p><strong>ReAct + Compaction</strong></p>
+<ul>
+<li>Compact the context window to avoid drift and forgetting</li>
+<li>The model can summarize or extract key information from the trace to keep the most relevant context in focus.</li>
+</ul>
+<p><strong>Examples</strong> - Claude Code, OpenClaw, Hermes etc</p>
+</section>
+<section id="code-as-action" class="slide level2">
+<h2>Code-as-Action</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb12-1"><a></a>User -&gt; LLM -&gt; Generate Python Code -&gt; Execute in Sandbox -&gt; Output -&gt; LLM -&gt; ... -&gt; Answer</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Implementation</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a></a><span class="co"># Instead of structured tool calls, the LLM writes code:</span></span>
+<span id="cb13-2"><a></a></span>
+<span id="cb13-3"><a></a><span class="co"># LLM generates:</span></span>
+<span id="cb13-4"><a></a><span class="co">"""</span></span>
+<span id="cb13-5"><a></a><span class="co">results = web_search("latest AI frameworks 2026")</span></span>
+<span id="cb13-6"><a></a><span class="co">filtered = [r for r in results if r.date &gt; "2025-01-01"]</span></span>
+<span id="cb13-7"><a></a><span class="co">summary = summarize(filtered)</span></span>
+<span id="cb13-8"><a></a><span class="co">final_answer(f"Found {len(filtered)} recent frameworks. Summary: {summary}")</span></span>
+<span id="cb13-9"><a></a><span class="co">"""</span></span>
+<span id="cb13-10"><a></a></span>
+<span id="cb13-11"><a></a><span class="co"># The runtime:</span></span>
+<span id="cb13-12"><a></a><span class="co"># 1. Extracts the code block</span></span>
+<span id="cb13-13"><a></a><span class="co"># 2. Runs it in a sandbox (E2B, Docker, Pyodide)</span></span>
+<span id="cb13-14"><a></a><span class="co"># 3. Captures output and final_answer()</span></span>
+<span id="cb13-15"><a></a><span class="co"># 4. Returns to user</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Example</strong> : SmolAgents</p>
+<div style="font-size: 0.8em; margin-top: 1.5em;">
+<div class="columns">
+<div class="column">
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Can compose multiple tools in one step (regular tool calling does them one at a time)</li>
+<li>Can use conditionals, loops, variables within one “action”</li>
+<li>More natural for code-trained LLMs</li>
+<li>Fewer round-trips to the API</li>
+</ul>
+</div><div class="column">
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>Arbitrary code execution requires robust sandboxing</li>
+<li>Harder to audit than structured tool calls</li>
+<li>Error messages can be opaque</li>
+</ul>
+</div></div>
+</div>
+</section>
+<section id="event-driven-stream-based-graph-based" class="slide level2">
+<h2>Event-Driven / Stream-Based / Graph Based</h2>
+<p><strong>Event Driven</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb14-1"><a></a>Event Stream -&gt; Agent subscribes -&gt; Processes events -&gt; Emits new events</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Used By</em>: AG2 (MemoryStream), CrewAI Flows</p>
+<p><strong>Graph-Based State Machine</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb15-1"><a></a>Nodes = agents/functions</span>
+<span id="cb15-2"><a></a>Edges = transitions (can be conditional)</span>
+<span id="cb15-3"><a></a>State = immutable, checkpointed after every node</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Used by</em>: LangGraph, Google ADK 2.0</p>
+</section>
+<section id="heartbeat-proactive-loop" class="slide level2">
+<h2>Heartbeat / Proactive Loop</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb16-1"><a></a>Cron triggers agent </span>
+<span id="cb16-2"><a></a>  -&gt; Agent checks task list </span>
+<span id="cb16-3"><a></a>  -&gt; [nothing to do: HEARTBEAT_OK (suppressed)]</span>
+<span id="cb16-4"><a></a>  -&gt; [something to do: execute -&gt; notify user]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Examples</strong> - OpenClaw, Hermes Agent</p>
+<p><strong>Implementation</strong>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a></a><span class="co"># Pseudo-code for OpenClaw's heartbeat</span></span>
+<span id="cb17-2"><a></a><span class="at">@cron</span>(<span class="st">"*/30 * * * *"</span>)  <span class="co"># Every 30 minutes</span></span>
+<span id="cb17-3"><a></a><span class="kw">def</span> heartbeat():</span>
+<span id="cb17-4"><a></a>    context <span class="op">=</span> assemble_context(</span>
+<span id="cb17-5"><a></a>        agents_md<span class="op">=</span>read(<span class="st">"AGENTS.md"</span>),</span>
+<span id="cb17-6"><a></a>        soul_md<span class="op">=</span>read(<span class="st">"SOUL.md"</span>),</span>
+<span id="cb17-7"><a></a>        tasks<span class="op">=</span>read(<span class="st">"tasks.md"</span>),</span>
+<span id="cb17-8"><a></a>        memory<span class="op">=</span>search_memory(<span class="st">"pending tasks"</span>)</span>
+<span id="cb17-9"><a></a>    )</span>
+<span id="cb17-10"><a></a></span>
+<span id="cb17-11"><a></a>    response <span class="op">=</span> llm.generate(</span>
+<span id="cb17-12"><a></a>        system<span class="op">=</span>context,</span>
+<span id="cb17-13"><a></a>        user<span class="op">=</span><span class="st">"Check your task list. If anything needs attention, "</span></span>
+<span id="cb17-14"><a></a>             <span class="st">"handle it and report. Otherwise reply HEARTBEAT_OK."</span></span>
+<span id="cb17-15"><a></a>    )</span>
+<span id="cb17-16"><a></a></span>
+<span id="cb17-17"><a></a>    <span class="cf">if</span> <span class="st">"HEARTBEAT_OK"</span> <span class="kw">in</span> response:</span>
+<span id="cb17-18"><a></a>        <span class="cf">return</span>  <span class="co"># Gateway suppresses, user sees nothing</span></span>
+<span id="cb17-19"><a></a></span>
+<span id="cb17-20"><a></a>    gateway.send_to_user(response)  <span class="co"># User gets notified</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="human-in-the-loop-hitl-pattern" class="slide level2">
+<h2>Human in the Loop (HITL) Pattern</h2>
+<p>Extends another pattern (typically ReAct), but adds a validation step prior to taking an action, where the agent seeks human feedback or approval before proceeding with certain actions.</p>
+
+<img data-src="images/hitl-agent.png" class="r-stretch"><p><strong>Example</strong>: - An agent that performs sensitive actions, such as sending emails or making financial transactions</p>
+</section>
+<section id="agent-orchestration-pattern" class="slide level2">
+<h2>Agent Orchestration Pattern</h2>
+<ul>
+<li>Multiple agents with different capabilities are orchestrated together to achieve a common goal</li>
+</ul>
+
+<img data-src="images/orchestrator-agent.png" class="r-stretch"><p><strong>Example</strong>: - Software development agent that uses multiple specialized agents for code generation, testing, and deployment</p>
+</section>
+<section id="agentic-patterns-summary" class="slide level2">
+<h2>Agentic Patterns Summary</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 24%">
+<col style="width: 19%">
+<col style="width: 28%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variant</th>
+<th>Complexity</th>
+<th>Best For</th>
+<th>Example Framework</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Basic ReAct</td>
+<td>Low</td>
+<td>Simple tasks, prototypes</td>
+<td>mini-swe-agent</td>
+</tr>
+<tr class="even">
+<td>Plan+Execute</td>
+<td>Medium</td>
+<td>Complex multi-step tasks</td>
+<td>Cline, Aider</td>
+</tr>
+<tr class="odd">
+<td>ReAct+Reflection</td>
+<td>Medium</td>
+<td>Quality-critical outputs</td>
+<td>CrewAI</td>
+</tr>
+<tr class="even">
+<td>ReAct+Compaction</td>
+<td>Medium</td>
+<td>Long-running tasks</td>
+<td>Claude Code</td>
+</tr>
+<tr class="odd">
+<td>Code-as-Action</td>
+<td>Medium</td>
+<td>Data processing, multi-tool</td>
+<td>smolagents</td>
+</tr>
+<tr class="even">
+<td>Event-Driven</td>
+<td>High</td>
+<td>Reactive systems, pipelines</td>
+<td>AG2, CrewAI Flows</td>
+</tr>
+<tr class="odd">
+<td>Graph State Machine</td>
+<td>High</td>
+<td>Production multi-agent</td>
+<td>LangGraph</td>
+</tr>
+<tr class="even">
+<td>Heartbeat</td>
+<td>Medium</td>
+<td>Proactive, background tasks</td>
+<td>OpenClaw</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="model-centric-to-system-centric-thinking" class="slide level2">
+<h2>Model-Centric to System-Centric Thinking</h2>
+<ul>
+<li>Previous classes: Architecture, GPUs, Inference and Evaluation - <em>LLM was central</em></li>
+<li>Current focus: Overall system design, where LLM is a critical component but not the only one
+<ul>
+<li>Control flow (the loop)</li>
+<li>State management (context, soon memory)</li>
+<li>I/O interfaces (tools)</li>
+<li>Safety properties (bounds, sandboxing)</li>
+<li>Observability (tracing, logging)</li>
+</ul></li>
+</ul>
+</section>
+<section id="when-not-to-use-an-agent" class="slide level2">
+<h2>When <em>not</em> to use an Agent</h2>
+<ol type="1">
+<li><strong>Is the task structure stable?</strong> If the steps are the same every time, it’s a pipeline.</li>
+<li><strong>Is there a small fixed branch set?</strong> (≤5 known branches.) It’s a workflow with an LLM router.</li>
+<li><strong>Is the search space large but the verifier cheap?</strong> It’s best-of-N over generations.</li>
+<li><strong>Does the LLM need to decide what to do based on what it just saw?</strong> Needs an Agent.</li>
+</ol>
+<div class="fragment">
+<p><strong>Repo-question decision:</strong></p>
+<p>A stable “find files -&gt; retrieve chunks -&gt; answer” system is a pipeline/RAG app. It becomes agentic when the model chooses follow-up searches, reads, tests, or stops based on observations.</p>
+</div>
+</section>
+<section id="concrete-examples" class="slide level2">
+<h2>Concrete examples</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Task</th>
+<th>Best tool</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Extract structured fields from invoices</td>
+<td>LLM call with JSON schema</td>
+<td>Single call, no decision</td>
+</tr>
+<tr class="even">
+<td>RAG QA over a fixed corpus</td>
+<td>Pipeline (retrieve -&gt; rerank -&gt; answer)</td>
+<td>Steps are fixed</td>
+</tr>
+<tr class="odd">
+<td>Customer support routing across 8 categories</td>
+<td>Workflow (LLM router -&gt; category-specific handler)</td>
+<td>Bounded branches</td>
+</tr>
+<tr class="even">
+<td>Multi-step research across a changing web</td>
+<td>Agent</td>
+<td>The next step depends on the last result</td>
+</tr>
+<tr class="odd">
+<td>Coding assistant on an unfamiliar repo</td>
+<td>Agent</td>
+<td>The whole point is exploration</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="tool-use" class="slide level2">
+<h2>Tool Use</h2>
+<p>The mechanism that turns a text predictor into something that can <strong>act</strong>.</p>
+<ul>
+<li>How a tool call actually works, end to end</li>
+<li>Designing schemas the model uses <em>correctly</em></li>
+<li>Why tool selection fails, and how to measure it</li>
+<li>Failing usefully: typed errors and recovery</li>
+</ul>
+<!-- . . .
+
+> MCP and Skills — how tool use *scales across a boundary* — are the next deck. -->
+</section>
+<section id="why-llms-need-tools" class="slide level2">
+<h2>Why LLMs need tools</h2>
+<ul>
+<li>LLMs are next-token predictiors, lack intefaces to interact with the world</li>
+</ul>
+
+<img data-src="images/llm-limitations.png" class="r-stretch"></section>
+<section id="why-llms-need-tools-1" class="slide level2">
+<h2>Why LLMs need tools</h2>
+<ul>
+<li>Tools extend LLMs’ capabilities by providing access to external information, computation, and actions.</li>
+</ul>
+
+<img data-src="images/llm-tools.png" class="r-stretch"></section>
+<section id="tool-calling-patterns" class="slide level2">
+<h2>Tool Calling Patterns</h2>
+<p><strong>Generation 1: Text-Based Tool Calls (2023)</strong></p>
+<ul>
+<li>LLM generates free-text instructions to call tools, which are parsed by the system.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a></a>prompt <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb18-2"><a></a><span class="st">You are an AI assistant that can call tools.</span></span>
+<span id="cb18-3"><a></a></span>
+<span id="cb18-4"><a></a><span class="st">Available tools:</span></span>
+<span id="cb18-5"><a></a></span>
+<span id="cb18-6"><a></a><span class="st">1. get_weather_data(c_lat: float, c_long: float)</span></span>
+<span id="cb18-7"><a></a><span class="st">   - Get weather data for a given location</span></span>
+<span id="cb18-8"><a></a></span>
+<span id="cb18-9"><a></a><span class="st">First think step by step and write your reasoning inside &lt;thinking&gt;...&lt;/thinking&gt;.</span></span>
+<span id="cb18-10"><a></a></span>
+<span id="cb18-11"><a></a><span class="st">When you need to use a tool, output ONLY in the following format and also add your reasoning:</span></span>
+<span id="cb18-12"><a></a></span>
+<span id="cb18-13"><a></a><span class="st">&lt;tool_call&gt;</span></span>
+<span id="cb18-14"><a></a><span class="st">{</span></span>
+<span id="cb18-15"><a></a><span class="st">  "name": "&lt;tool_name&gt;",</span></span>
+<span id="cb18-16"><a></a><span class="st">  "arguments": { ... }</span></span>
+<span id="cb18-17"><a></a><span class="st">}</span></span>
+<span id="cb18-18"><a></a><span class="st">&lt;/tool_call&gt;</span></span>
+<span id="cb18-19"><a></a></span>
+<span id="cb18-20"><a></a><span class="st">If no tool is needed, respond normally.</span></span>
+<span id="cb18-21"><a></a></span>
+<span id="cb18-22"><a></a><span class="st">...</span></span>
+<span id="cb18-23"><a></a><span class="st">"""</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="tool-calling-patterns-1" class="slide level2">
+<h2>Tool Calling Patterns</h2>
+<p><strong>Generation 2: Structured Tool Calls (2024)</strong></p>
+<ul>
+<li>LLM generates structured tool calls using native API support from the provider, eliminating the need for free-text parsing.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a></a>{</span>
+<span id="cb19-2"><a></a>  <span class="st">"tool_calls"</span>: [{</span>
+<span id="cb19-3"><a></a>    <span class="st">"id"</span>: <span class="st">"call_123"</span>,</span>
+<span id="cb19-4"><a></a>    <span class="st">"function"</span>: {</span>
+<span id="cb19-5"><a></a>      <span class="st">"name"</span>: <span class="st">"search"</span>,</span>
+<span id="cb19-6"><a></a>      <span class="st">"arguments"</span>: <span class="st">"{</span><span class="ch">\"</span><span class="st">query</span><span class="ch">\"</span><span class="st">: </span><span class="ch">\"</span><span class="st">AI agents</span><span class="ch">\"</span><span class="st">}"</span></span>
+<span id="cb19-7"><a></a>    }</span>
+<span id="cb19-8"><a></a>  }]</span>
+<span id="cb19-9"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Generation 3: MCP / Protocol-Based (2025-2026)</strong></p>
+<ul>
+<li>LLMs interact with tools through a defined protocol (Model Context Protocol - MCP) - Standardized protocol. Any MCP server works with any MCP client. Language-agnostic</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a></a>{</span>
+<span id="cb20-2"><a></a>  <span class="st">"method"</span>: <span class="st">"tools/call"</span>,</span>
+<span id="cb20-3"><a></a>  <span class="st">"params"</span>: {</span>
+<span id="cb20-4"><a></a>    <span class="st">"name"</span>: <span class="st">"search"</span>,</span>
+<span id="cb20-5"><a></a>    <span class="st">"arguments"</span>: {<span class="st">"query"</span>: <span class="st">"AI agents"</span>}</span>
+<span id="cb20-6"><a></a>  }</span>
+<span id="cb20-7"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="tool-schema-example" class="slide level2">
+<h2>Tool Schema Example</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a></a>{</span>
+<span id="cb21-2"><a></a>  <span class="st">"name"</span>: <span class="st">"search_products"</span>,</span>
+<span id="cb21-3"><a></a>  <span class="st">"description"</span>: <span class="st">"Search the product catalog from the e-commerce database. Returns top 50 matching items with price, availability, and category."</span>,</span>
+<span id="cb21-4"><a></a>  <span class="st">"parameters"</span>: {</span>
+<span id="cb21-5"><a></a>    <span class="st">"type"</span>      : <span class="st">"object"</span>,</span>
+<span id="cb21-6"><a></a>    <span class="st">"properties"</span>: {</span>
+<span id="cb21-7"><a></a>      <span class="st">"query"</span>      : {</span>
+<span id="cb21-8"><a></a>        <span class="st">"type"</span>: <span class="st">"string"</span>,</span>
+<span id="cb21-9"><a></a>        <span class="st">"description"</span>: <span class="st">"Search keyword to match against</span><span class="ch">\n</span><span class="st">product name, description, or SKU"</span></span>
+<span id="cb21-10"><a></a>      },</span>
+<span id="cb21-11"><a></a>      <span class="st">"category"</span>   : {</span>
+<span id="cb21-12"><a></a>        <span class="st">"type"</span>       : <span class="st">"string"</span>,</span>
+<span id="cb21-13"><a></a>        <span class="st">"enum"</span>       : [<span class="st">"electronics"</span>, <span class="st">"clothing"</span>, <span class="st">"home"</span>, <span class="st">"sports"</span>, <span class="st">"books"</span>],</span>
+<span id="cb21-14"><a></a>        <span class="st">"description"</span>: <span class="st">"Product category to filter results"</span></span>
+<span id="cb21-15"><a></a>      },</span>
+<span id="cb21-16"><a></a>      <span class="st">"max_results"</span>: {</span>
+<span id="cb21-17"><a></a>        <span class="st">"type"</span>       : <span class="st">"integer"</span>,</span>
+<span id="cb21-18"><a></a>        <span class="st">"description"</span>: <span class="st">"Maximum number of results to</span><span class="ch">\n</span><span class="st">return (default: 50)"</span></span>
+<span id="cb21-19"><a></a>      }</span>
+<span id="cb21-20"><a></a>    },</span>
+<span id="cb21-21"><a></a>    <span class="st">"required"</span>  : [<span class="st">"query"</span>]</span>
+<span id="cb21-22"><a></a>  }</span>
+<span id="cb21-23"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="tool-schema-best-practices" class="slide level2">
+<h2>Tool Schema Best Practices</h2>
+<div style="font-size: 0.8em; margin-top: 1.5em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 24%">
+<col style="width: 45%">
+<col style="width: 29%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Principle</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Verb-noun naming</td>
+<td>Tool name follows action_entity format in snake_case</td>
+<td>search_missions, get_weather_forecast, calculate_fuel_estimate</td>
+</tr>
+<tr class="even">
+<td>Clear description</td>
+<td>Explain what the tool does, what it returns, and when to use it</td>
+<td>Search the AstroLog mission database by keywords, status, etc. Returns matching missions with status, crew, and destination.</td>
+</tr>
+<tr class="odd">
+<td>Enumerate constraints</td>
+<td>Specify required vs.&nbsp;optional parameters and use enums for categorical parameters</td>
+<td>enum: [planned, in_transit, completed, delayed, aborted]</td>
+</tr>
+<tr class="even">
+<td>Only mark truly required parameters</td>
+<td>Avoid marking everything as required to prevent the LLM from hallucinating values for unknown fields</td>
+<td>Only mark essential parameters as required</td>
+</tr>
+<tr class="odd">
+<td>Return descriptions</td>
+<td>Document what the tool returns so the LLM can interpret results</td>
+<td>returns: { “missions”: [ { “id”: “”, “name”: “”, “status”: “” } ] }</td>
+</tr>
+<tr class="even">
+<td>Low parameter count</td>
+<td>Keep parameters under 5; combine related fields into objects</td>
+<td>More parameters = more chances for the LLM to make errors</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="tool-lifecycle" class="slide level2">
+<h2>Tool Lifecycle</h2>
+
+<img data-src="images/tool-lifecycle.png" class="r-stretch"><p><strong>Who Runs the Tool?</strong></p>
+<ul>
+<li><strong>The LLM does NOT execute tools</strong>. The LLM produces a structured JSON describing which tool to call and what arguments to pass.</li>
+<li><strong>The tool’s own logic executes the function</strong>. The structured output from the LLM is used to invoke the function programmatically.</li>
+<li><strong>The LLM produces two types of output during a tool interaction</strong>:
+<ul>
+<li>a structured tool call (hidden from user), specifying tool name and arguments</li>
+<li>a natural language response (shown to user), the final answer after reasoning over tool results.</li>
+</ul></li>
+</ul>
+<!-- ## Tool Choice — forcing the model's hand
+
+`tool_choice` controls *whether* the model may call a tool at all:
+
+::: {style="font-size: 0.85em;"}
+
+| Value | Behaviour |
+|---|---|
+| `{"type": "auto"}` | Model decides (default) |
+| `{"type": "any"}` | Model **must** call some tool |
+| `{"type": "tool", "name": "..."}` | Model must call **this** tool |
+| `{"type": "none"}` | Model may not call tools |
+
+:::
+
+. . .
+
+`any` and `tool` are how you build a **workflow** out of an agent's parts — you have taken
+the choice back. Reach for them when the step is deterministic and you only want the model
+to fill in arguments. -->
+<!-- ## Parallel Tool Calls
+
+One assistant message may contain **several** `tool_use` blocks. Execute them concurrently.
+
+. . .
+
+**The gotcha that bites everyone:** return *all* `tool_result` blocks in a **single** user
+message.
+
+``` python
+# ✗ WRONG — splitting results across messages silently teaches
+#   the model to stop making parallel calls
+messages.append({"role": "user", "content": [result_1]})
+messages.append({"role": "user", "content": [result_2]})
+
+# ✓ RIGHT — one user turn, all results
+messages.append({"role": "user", "content": [result_1, result_2]})
+```
+
+. . .
+
+And if one tool fails, still return its result with `is_error: true` — **do not drop it**.
+A missing `tool_use_id` is a malformed conversation.
+
+## Why Tool Selection Fails
+
+Four causes, in rough order of how often you'll hit them:
+
+1. **Vague descriptions** — the description *is* the routing prompt. "Searches things" routes badly.
+2. **Overloaded schemas** — more than ~5 parameters and argument errors climb sharply.
+3. **Missing examples** — the schema says *shape*, not *convention*.
+4. **Tool count explosion** — past a few dozen tools, selection degrades regardless of quality.
+
+. . .
+
+> Note what is *not* on this list: model capability. Most selection failures are fixed by
+> editing prose, not by changing models.
+
+## Making Schemas Unambiguous
+
+**Strict tool use** — guarantee the arguments validate:
+
+``` python
+{
+  "name": "book_flight",
+  "strict": True,                      # arguments are schema-validated
+  "input_schema": {
+    "type": "object",
+    "properties": {...},
+    "required": ["destination", "date"],
+    "additionalProperties": False       # required for strict
+  }
+}
+```
+
+. . .
+
+**Tool use examples** — show a sample call *inside* the tool definition. This is what
+communicates nested structure, optional-field correlations, and parameter conventions that a
+JSON Schema cannot express.
+
+> Reported effect on complex parameter handling: **72% → 90%** accuracy.
+
+<!-- ## `[DEMO]` Measuring Tool-Selection Accuracy
+
+You cannot tune what you do not measure. Selection accuracy is an eval, not a vibe.
+
+1. Build a registry of 10+ tools
+2. Write 30 user requests with a known-correct tool for each
+3. Run, score, and inspect the failures
+4. **Rewrite the three worst descriptions** — then re-measure
+
+. . .
+
+**Expect:** most of your gain comes from step 4, and it is prose editing.
+
+::: {style="font-size: 0.75em;"}
+Spec → `demos/README.md`
+::: -->
+<!-- ## Failing Usefully — Typed Errors
+
+A tool that fails is normal. A tool that fails *opaquely* sends the agent into a retry loop.
+
+``` python
+# ✗ the agent has nothing to act on
+{"type": "tool_result", "tool_use_id": id,
+ "content": "Error", "is_error": True}
+
+# ✓ names the problem AND the correction
+{"type": "tool_result", "tool_use_id": id,
+ "content": "Error: category 'gadgets' is not valid. "
+            "Valid categories: electronics, clothing, home, sports, books.",
+ "is_error": True}
+```
+
+. . .
+
+**The rule:** an error message is a prompt. Write it for the model that has to recover from it —
+say what was wrong *and* what to do instead.
+
+## `[DEMO]` The Recovery Loop
+
+Same task, two harnesses — bare string errors vs. typed errors with a suggested correction.
+
+**Measure:** recovery rate, and turns-until-recovery.
+
+. . .
+
+**Should surprise you:** a good error message often recovers in **one** turn. A vague one
+produces the same failed call three times, because nothing in the context told the model to
+change anything.
+
+::: {style="font-size: 0.75em;"}
+Spec → `demos/README.md`
+:::
+
+## Design Decision — `bash` or a Dedicated Tool?
+
+A `bash` tool gives the model enormous reach. It gives *your harness* an opaque command string —
+the same shape for every action.
+
+. . .
+
+**Promote an action to its own tool when the harness needs a hook:**
+
+| Reason | Example |
+|---|---|
+| **Gating** | `send_email` is easy to confirm; `bash -c "curl -X POST…"` is not |
+| **Staleness checks** | An `edit` tool can reject a write if the file changed since it was read |
+| **Rendering** | Asking the user a question deserves a modal, not stdout |
+| **Parallel safety** | The harness can mark `grep` parallel-safe; it cannot tell `grep` from `git push` inside bash |
+
+. . .
+
+> Rule of thumb: **start with bash for reach; promote when you need to gate, render, audit or
+> parallelise.** Reversibility is the useful test — hard-to-undo actions want their own tool.
+
+## Composing Calls — Programmatic Tool Calling
+
+Standard tool use is one round trip per call: call → result enters context → model reasons →
+next call. Three chained lookups means three round trips, and every intermediate result stays
+in context forever.
+
+. . .
+
+**Instead, let the model write code that calls the tools.** The script runs in a sandbox;
+tool results return *to the running code*, not to the context. Only the final output comes back.
+
+``` python
+{"type": "code_execution_20260120", "name": "code_execution"},
+{"name": "get_orders", ..., "allowed_callers": ["code_execution_20260120"]}
+```
+
+. . .
+
+> Reported: **43,588 → 27,297 tokens** (−37%) on chained tasks, with accuracy *up*.
+> Use it when calls chain, or when intermediate results are large and you want them filtered
+> before they ever reach the context window. -->
+<!-- ## Scaling the Tool Set
+
+Everything above is about making *one* tool call correct. The other failure mode is having
+**too many** tools — schemas are re-sent on every single request.
+
+- Tool definitions are part of the prompt, every turn
+- ~180 tools ≈ 50K tokens consumed before any work begins
+
+. . .
+
+**Deferred loading + tool search** fixes this: mark tools `defer_loading: true` and give the
+model a search tool that surfaces only what the current task needs.
+
+> Reported: **~85% context reduction**, with accuracy *increasing* — 79.5% → 88.1% on one
+> model pair. Students expect a quality trade here and there isn't one.
+
+. . .
+
+> We take this apart properly in **Context Engineering** — including the arithmetic. -->
+
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p><a href="https://llm-engg.github.io/">Large Language Models : A Hands-on Approach</a></p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="../../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': false,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
