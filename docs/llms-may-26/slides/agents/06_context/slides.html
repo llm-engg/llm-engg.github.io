@@ -213,6 +213,173 @@ CCE, IISc
 </section>
 <section id="context-engineering" class="slide level2">
 <h2>Context Engineering</h2>
+<!-- NOTES-BLOCK :: DECK REVIEW SUMMARY
+[CORRECTNESS] (must-fix) The deck defines "Context Rot" two incompatible ways
+  and both are on screen. The prose slides use the Chroma definition, which is
+  correct: performance degrades as INPUT LENGTH grows, even on simple tasks,
+  even when the window is nowhere near full. But images/context-failures.png
+  defines Context Rot as "Once-accurate context has gone STALE over time", and
+  the closing Diagnostic table repeats that as "the context has EXPIRED while
+  the system stayed the same". Staleness and length-induced attention decay are
+  two different failure modes that happen to share a fashionable name. As it
+  stands the deck teaches one and diagnoses the other. Pick the Chroma meaning
+  (it is the cited source), and rename the staleness row to "Stale Context".
+[CORRECTNESS] (must-fix) The Tool Sprawl arithmetic is internally correct (I
+  checked every row and the totals) but it is measured against a 200K window,
+  and current Claude models are 1M. Recomputed at 1M, 51,450 tokens is 5.1% of
+  the window, not 25.7%, and the punchline "CONSUMED BEFORE ANY WORK: 30.7%"
+  becomes 6.1%. The slide's own framing collapses on a current model. Fix by
+  reframing around the argument that actually survives, which is the stronger
+  one anyway: tool bloat wrecks ACCURACY, not just budget. See that slide.
+[CORRECTNESS] (must-fix) Prompt caching is never mentioned anywhere in a deck
+  about the economics of the context window, and its absence makes one headline
+  number wrong. "Over 50 turns: 51,450 x 50 = 2,572,500 tokens just for tool
+  definitions" assumes every turn pays full freight. Tool definitions are
+  rendered FIRST in the prompt (order is tools -> system -> messages), which
+  makes them the most cacheable bytes you have; on a cache hit they bill at a
+  small fraction of input price. The real lesson is better than the slide's:
+  tool definitions are cheap IF they are stable, and any churn in the tool list
+  invalidates the whole prefix behind it. That is a context-engineering
+  decision, and it belongs in this deck.
+[FLOW] (should-fix) Compaction is taught entirely as something students
+  hand-roll, which was true a year ago. Two first-class API features now cover
+  most of this slide run and neither is mentioned: server-side compaction, and
+  context editing that CLEARS old tool results rather than summarising them.
+  Worth one slide contrasting the three, because the choice is real: clearing
+  is lossless-but-blunt, summarising is lossy-but-selective, and hand-rolling
+  is the only one that lets you decide what survives. Detail on the Compaction
+  Strategies slide.
+[FLOW] (should-fix) The deck opens with three slides of definition and then
+  jumps straight into six-layer system prompt anatomy, with no slide stating
+  the PROBLEM that makes any of this necessary. The failure-mode material
+  (context-failures.png, the window filling up) sits ~230 lines later. For a
+  mixed audience consider hoisting one "why this is hard" slide to the front:
+  every turn re-sends the whole context, it only grows, and quality falls
+  before the window fills. Then the six layers read as a response to something.
+[TERM] (should-fix) Terms used before definition: "compaction" appears in the
+  failure-modes slide before it is defined; "sub-agent" is offered as a defence
+  against context rot two decks before multi-agent systems; "distractor tokens"
+  is used without gloss. One-line glosses suggested at each site.
+[INTUITION] (deck-wide) Three framings worth stating explicitly:
+    1. The context window is not storage, it is a BUDGET that is re-spent from
+       zero on every single turn. Nothing accumulates for free. This is the
+       fact every other slide follows from, and it is never quite said.
+    2. Compaction answers "what do I do when it does not fit". Context
+       engineering answers "what should have been in there in the first
+       place". The deck teaches both and does not name the distinction.
+    3. Attention is a finite resource being divided among tokens. Add
+       irrelevant tokens and every relevant token gets a thinner slice. That is
+       the whole intuition behind rot, sprawl, and sub-agent isolation, and one
+       sentence buys all three.
+[READING] The spine for this class:
+    - Anthropic Engineering, "Effective context engineering for AI agents"
+      (2025). Source of images/context-vs-prompt.png; cite it on that slide.
+    - Chroma, "Context Rot: How Increasing Input Tokens Impacts LLM
+      Performance" (2025), already linked. Worth reading the method, because
+      the finding is subtler than the deck's summary of it.
+    - Liu et al., "Lost in the Middle: How Language Models Use Long Contexts"
+      (TACL 2024). The deck names the effect on a bullet; this is the paper.
+    - Anthropic Engineering, "Code execution with MCP: building more efficient
+      agents" (Nov 2025), the other half of the tool-sprawl answer.
+    - Anthropic docs on prompt caching and on tool search / deferred tool
+      loading, for the two production mechanisms this deck is missing.
+-->
+<!-- NOTES-BLOCK :: DECK REVIEW SUMMARY (PASS 2 — 2026 CURRENCY / DEMOS / FIGURES)
+Second review pass. Pass 1 above covers correctness and flow. This pass covers
+(a) material that exists in 2026 and is missing from the deck, and (b) where a
+demo or a figure would carry an idea better than a bullet.
+
+[CORRECTNESS] (must-fix) MISSING 2026 CONTENT. The deck teaches context
+  management as entirely hand-rolled, which was true a year ago. Three of these
+  are now first-class API features, and a student who builds the slide's code by
+  hand is reimplementing shipped functionality:
+    1. CONTEXT EDITING — beta `context-management-2025-06-27`, passed as
+       `context_management={"edits":[{"type":"clear_tool_uses_20250919"}]}`.
+       It CLEARS old tool results (optionally `clear_tool_inputs: true`) or
+       thinking blocks (`clear_thinking_20251015`). It does not summarise.
+    2. SERVER-SIDE COMPACTION — beta `compact-2026-01-12`, default trigger
+       around 150K tokens. The API summarises earlier context itself. One trap
+       worth teaching: you must append the whole `response.content` back into
+       messages, not just the extracted text, or the compaction block is
+       silently dropped and the state is lost.
+    3. MEMORY TOOL — `{"type": "memory_20250818", "name": "memory"}`. Claude
+       reads and writes a memory directory you back. That is the 07_memory
+       deck's subject; name it here only so the taxonomy is complete.
+  The taxonomy to put on a slide: EDIT (clear; lossless for what remains, but
+  blunt) / COMPACT (summarise; lossy, in-session) / MEMORY (externalise;
+  survives the session). Slide sketch is on the Compaction Strategies slide.
+[CORRECTNESS] (must-fix) PROMPT CACHING is still absent. Pass 1 raised it; it is
+  worth restating because it now bears on three slides, not one. Facts the deck
+  needs: render order is `tools` then `system` then `messages`; the cache is a
+  PREFIX match, so the first changed byte invalidates everything after it; max 4
+  breakpoints; roughly a 1024-token minimum cacheable prefix; and you verify it
+  with `usage.cache_read_input_tokens`. This one mechanism explains the
+  six-layer ordering (stable first), the real cost of a churning tool list, and
+  why instruction re-injection at the END of the context is cheap.
+[CORRECTNESS] (should-fix) Two further 2026 mechanisms the deck's own arguments
+  now depend on:
+    - MID-CONVERSATION SYSTEM MESSAGES: append `{"role":"system", ...}` to
+      `messages[]` to add an operator instruction without touching the cached
+      top-level `system`. No beta header. Supported on Claude Opus 5, Opus 4.8
+      and Fable 5; NOT on Sonnet 5. This is the correct 2026 implementation of
+      the deck's own "Instruction Re-Injection" defence, and it settles the
+      portability question flagged on the summary-compaction code slide.
+    - TASK BUDGETS: beta `task-budgets-2026-03-13`, set as
+      `output_config.task_budget`, minimum 20,000 tokens. The server injects a
+      countdown the model can SEE, so the agent paces itself instead of being
+      cut off mid-task. Every budget in this deck is one the ENGINEER manages;
+      this is one the MODEL manages, and it is a genuinely new idea for students.
+[FLOW] (should-fix) The deck's answer to tool sprawl stops at "search over
+  tools". The other half of the 2026 answer is to stop routing tool RESULTS
+  through the context at all: with programmatic tool calling / code execution,
+  Claude writes a script, the script calls the tools, intermediate results stay
+  in the container, and only the final value returns to the window. That is
+  structurally different from every defence on the Defenses slide, because it is
+  the only one that removes tokens that were never going to be read again. One
+  slide, placed after "Solving Tool Sprawl".
+[FLOW] (must-fix) The "Recursive Language Models (RLM)" slide is EMPTY — a title
+  with no body — and an RLM blog link sits unused in Further Reading. Either
+  write it or cut it; a blank titled slide mid-deck reads as a mistake. Body
+  sketch is on that slide.
+[DEMO] (deck-wide) The deck source currently contains no demo callouts, and
+  demos/README.md holds two placeholder specs that the deck never references.
+  Six placements are annotated in this pass, ranked by teaching value per minute:
+    1. Token-budget X-ray (System Prompt - Claude Code) — `count_tokens` on a
+       real request, broken down by section. Two minutes, and it makes every
+       later percentage concrete.
+    2. Cache hit/miss live (Assembling System Prompt, Pattern C) — same request
+       twice, then change one byte early and watch cache_read collapse to zero.
+       The single best demo in the deck.
+    3. Rot curve (Context Rot) — one needle question at 5K / 50K / 200K of
+       padding, with SIMILAR versus UNRELATED filler. Reproduces Chroma's
+       headline finding live.
+    4. Tool sprawl before/after (Tool Sprawl) — demos/README.md demo 1.
+    5. Compaction bake-off (Compaction Strategies) — demos/README.md demo 2.
+    6. Context editing one-liner (new taxonomy slide) — add one parameter,
+       re-run, watch tool results replaced by a cleared marker.
+[IMAGE] (deck-wide) Figure coverage is thin and front-loaded: three images, all
+  in the first third, and nothing after line 474. Everything from Compaction
+  onward is bullets, code and tables — nine consecutive text-only slides. Five
+  figures are proposed inline. The two that pay for themselves fastest are the
+  context-budget stacked bar (what actually occupies the window, drawn twice:
+  turn 1 versus turn 40) and the compaction sawtooth (utilisation versus turn,
+  with compaction events marked), because both make an invisible process visible
+  and both get reused on three or four later slides.
+[READING] 2026 additions to the pass-1 spine:
+    - Anthropic docs, "Context management" — context editing and compaction,
+      the two features this deck currently teaches students to hand-roll.
+    - Anthropic docs, "Prompt caching" and "Tool search / defer_loading" — the
+      two production mechanisms the deck's cost arguments depend on.
+    - Anthropic Engineering, "Code execution with MCP" (Nov 2025) — the
+      tool-results half of the tool-sprawl answer.
+-->
+<!-- NOTES-BLOCK
+[FLOW] (nice) Two consecutive slides titled "Context Engineering", the first
+  with no content at all. If it is meant as a section divider that is fine, but
+  it currently renders as a blank titled slide that looks like a mistake mid
+  presentation. Either give it a subtitle/agenda (the three questions this
+  class answers) or drop it and let the second slide open the deck.
+-->
 </section>
 <section id="context-engineering-1" class="slide level2">
 <h2>Context Engineering</h2>
@@ -221,8 +388,8 @@ CCE, IISc
 </ul>
 
 <img data-src="images/context-enng.png" class="r-stretch"></section>
-<section id="context-engineering-vs-prompt-engineering" class="slide level2">
-<h2>Context Engineering vs Prompt Engineering</h2>
+<section id="how-different-from-prompt-engineering" class="slide level2">
+<h2>How Different from Prompt Engineering</h2>
 
 <img data-src="images/context-vs-prompt.png" class="r-stretch"></section>
 <section id="system-prompt" class="slide level2">
@@ -404,8 +571,8 @@ CCE, IISc
 <span id="cb8-18"><a></a>BAD: "Certainly! I'd be delighted to assist you with that inquiry."</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div></div>
 </section>
-<section id="context-window-problems-failure-modes" class="slide level2">
-<h2>Context Window Problems / Failure Modes</h2>
+<section id="context-window-problems" class="slide level2">
+<h2>Context Window Problems</h2>
 <ul>
 <li><p>Every LLM has a finite context window</p></li>
 <li><p>Tool schemas, results, environment context, memory, and conversation history all compete for space</p></li>
@@ -414,6 +581,24 @@ CCE, IISc
 </ul></li>
 <li><p>Agents need to manage this context carefully as they execute long-running tasks</p></li>
 </ul>
+
+<img data-src="images/context-0.png" class="r-stretch"></section>
+<section id="common-context-failures" class="slide level2">
+<h2>Common Context Failures</h2>
+<ul>
+<li><p>Bigger context windows don’t solve this problem. Longer contexts (hundreds of thousands or even ~1M tokens) actually introduces new failure modes.</p></li>
+<li><p>Performance often begins to degrade far before the model reaches Context maximum token capacity</p></li>
+<li><p>Agents will become confused, have Contradictory information or simply stop performing</p></li>
+</ul>
+<div class="columns">
+<div class="column">
+<p><img data-src="images/context-fail-0.png"></p>
+</div><div class="column">
+<p><img data-src="images/context-fail-1.png"></p>
+</div></div>
+</section>
+<section id="context-window-failure-modes" class="slide level2">
+<h2>Context Window Failure Modes</h2>
 
 <img data-src="images/context-failures.png" class="r-stretch"></section>
 <section id="compaction-strategies" class="slide level2">
@@ -459,9 +644,9 @@ CCE, IISc
 <span id="cb9-21"><a></a></span>
 <span id="cb9-22"><a></a>    <span class="cf">return</span> [system, summary_message] <span class="op">+</span> recent</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol start="4" type="1">
-<li>Structured Sectioned Summary</li>
-<li>Agent-Triggered (Self-Compaction)</li>
-<li>Observational Memory</li>
+<li>Structured Sectioned Summary - Summarise into FIXED named sections(Goal / Decisions / Artifacts / Errors / Open) etc</li>
+<li>Agent-Triggered (Self-Compaction) : Expose compaction as a tool and let the agent call it when it decides a phase is finished</li>
+<li>Observational Memory : write durable facts OUT to a memory store</li>
 </ol>
 </section>
 <section id="triggering-compaction" class="slide level2">
@@ -610,7 +795,7 @@ CCE, IISc
 <li>Failed search results, irrelevant file contents, superseded reasoning from earlier attempt</li>
 </ul></li>
 </ul>
-<p><code>Context rot severity = lost_in_middle_effect × attention_dilution × distractor_interference</code></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb10-1"><a></a>Context rot severity = lost_in_middle_effect × attention_dilution × distractor_interference</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="defenses-against-context-rot" class="slide level2">
 <h2>Defenses Against Context Rot</h2>
@@ -652,27 +837,27 @@ CCE, IISc
 </section>
 <section id="tool-sprawl" class="slide level2">
 <h2>Tool Sprawl</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb10-1"><a></a></span>
-<span id="cb10-2"><a></a>A typical "power user" MCP setup:</span>
-<span id="cb10-3"><a></a></span>
-<span id="cb10-4"><a></a>GitHub MCP server:     91 tools × ~300 tokens each = 27,300 tokens</span>
-<span id="cb10-5"><a></a>Filesystem MCP server: 15 tools × ~250 tokens each =  3,750 tokens</span>
-<span id="cb10-6"><a></a>Database MCP server:   20 tools × ~300 tokens each =  6,000 tokens</span>
-<span id="cb10-7"><a></a>Browser MCP server:    12 tools × ~200 tokens each =  2,400 tokens</span>
-<span id="cb10-8"><a></a>Slack MCP server:      18 tools × ~250 tokens each =  4,500 tokens</span>
-<span id="cb10-9"><a></a>Custom API server:     25 tools × ~300 tokens each =  7,500 tokens</span>
-<span id="cb10-10"><a></a>─────────────────────────────────────────────────────</span>
-<span id="cb10-11"><a></a>TOTAL:                181 tools                     = 51,450 tokens</span>
-<span id="cb10-12"><a></a></span>
-<span id="cb10-13"><a></a>On a 200K context window:</span>
-<span id="cb10-14"><a></a>Tool definitions:     51,450 tokens  (25.7%)</span>
-<span id="cb10-15"><a></a>System prompt:        10,000 tokens  ( 5.0%)</span>
-<span id="cb10-16"><a></a>─────────────────────────────────────────────</span>
-<span id="cb10-17"><a></a>CONSUMED BEFORE ANY WORK: 61,450 tokens (30.7%)</span>
-<span id="cb10-18"><a></a></span>
-<span id="cb10-19"><a></a>And this is EVERY SINGLE API CALL — tools are re-sent each turn.</span>
-<span id="cb10-20"><a></a>Over 50 turns: 51,450 × 50 = 2,572,500 tokens just for tool definitions.</span>
-<span id="cb10-21"><a></a> </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb11-1"><a></a></span>
+<span id="cb11-2"><a></a>A typical "power user" MCP setup:</span>
+<span id="cb11-3"><a></a></span>
+<span id="cb11-4"><a></a>GitHub MCP server:     91 tools × ~300 tokens each = 27,300 tokens</span>
+<span id="cb11-5"><a></a>Filesystem MCP server: 15 tools × ~250 tokens each =  3,750 tokens</span>
+<span id="cb11-6"><a></a>Database MCP server:   20 tools × ~300 tokens each =  6,000 tokens</span>
+<span id="cb11-7"><a></a>Browser MCP server:    12 tools × ~200 tokens each =  2,400 tokens</span>
+<span id="cb11-8"><a></a>Slack MCP server:      18 tools × ~250 tokens each =  4,500 tokens</span>
+<span id="cb11-9"><a></a>Custom API server:     25 tools × ~300 tokens each =  7,500 tokens</span>
+<span id="cb11-10"><a></a>─────────────────────────────────────────────────────</span>
+<span id="cb11-11"><a></a>TOTAL:                181 tools                     = 51,450 tokens</span>
+<span id="cb11-12"><a></a></span>
+<span id="cb11-13"><a></a>On a 200K context window:</span>
+<span id="cb11-14"><a></a>Tool definitions:     51,450 tokens  (25.7%)</span>
+<span id="cb11-15"><a></a>System prompt:        10,000 tokens  ( 5.0%)</span>
+<span id="cb11-16"><a></a>─────────────────────────────────────────────</span>
+<span id="cb11-17"><a></a>CONSUMED BEFORE ANY WORK: 61,450 tokens (30.7%)</span>
+<span id="cb11-18"><a></a></span>
+<span id="cb11-19"><a></a>And this is EVERY SINGLE API CALL — tools are re-sent each turn.</span>
+<span id="cb11-20"><a></a>Over 50 turns: 51,450 × 50 = 2,572,500 tokens just for tool definitions.</span>
+<span id="cb11-21"><a></a> </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="tool-sprawl-problems" class="slide level2">
 <h2>Tool Sprawl Problems</h2>
@@ -700,6 +885,15 @@ CCE, IISc
 <p>In practice, use a combination of the above approaches</p>
 </blockquote>
 </div>
+</section>
+<section id="recursive-language-models-rlm" class="slide level2">
+<h2>Recursive Language Models (RLM)</h2>
+<ul>
+<li>A context window is a hard limit; a variable in a REPL is not.</li>
+<li>The root model never reads the whole input. It writes code that chunks the input and recursively calls itself on the chunks.</li>
+<li>Every recursive call starts from a FRESH window, so no single call ever accumulates enough input to rot.</li>
+<li>Only the returned values re-enter the root context.</li>
+</ul>
 </section>
 <section id="diagnostic-decision-framework" class="slide level2">
 <h2>Diagnostic Decision Framework</h2>
@@ -770,6 +964,21 @@ CCE, IISc
 </tr>
 </tbody>
 </table>
+</div>
+</section>
+<section id="further-reading" class="slide level2">
+<h2>Further Reading</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li>Anthropic Engineering - <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Effective context engineering for AI agents</a></li>
+<li>Chroma - <a href="https://research.trychroma.com/context-rot">Context Rot: How Increasing Input Tokens Impacts LLM Performance</a></li>
+<li>Liu et al.&nbsp;- <a href="https://arxiv.org/abs/2307.03172">Lost in the Middle: How Language Models Use Long Contexts</a></li>
+<li>Anthropic Docs - <a href="https://docs.claude.com/en/docs/build-with-claude/context-editing">Context editing and compaction</a></li>
+<li>Anthropic Docs - <a href="https://docs.claude.com/en/docs/build-with-claude/prompt-caching">Prompt caching</a></li>
+<li>Anthropic Docs - <a href="https://docs.claude.com/en/docs/agents-and-tools/tool-use/tool-search-tool">Tool search tool</a></li>
+<li>Anthropic Engineering - <a href="https://www.anthropic.com/engineering/code-execution-with-mcp">Code execution with MCP</a></li>
+<li>Zhang &amp; Khattab - <a href="https://alexzhang13.github.io/blog/2025/rlm/">Recursive Language Models</a></li>
+</ul>
 </div>
 
 
