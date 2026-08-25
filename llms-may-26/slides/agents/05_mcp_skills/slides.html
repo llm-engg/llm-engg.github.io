@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.9.34">
 
   <meta name="author" content="CCE, IISc">
-  <title>Large Language Models : A Hands-On Approach - May, 2026 – LLM Agents : MCP and Skills</title>
+  <title>Large Language Models : A Hands-On Approach - May, 2026 – LLM Agents : MCP, Skills</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -199,7 +199,7 @@
     <div class="slides">
 
 <section id="title-slide" data-state="title-slide" class="quarto-title-block center">
-  <h1 class="title">LLM Agents : MCP and Skills</h1>
+  <h1 class="title">LLM Agents : MCP, Skills</h1>
   <p class="subtitle">Large Language Models : A Hands-on Approach</p>
 
 <div class="quarto-title-authors">
@@ -211,8 +211,100 @@ CCE, IISc
 </div>
 
 </section>
+<section id="recap" class="slide level2">
+<h2>RECAP</h2>
+<ul>
+<li>AI Agent: LLM + Planning + Tooling</li>
+<li>Anatomy of an Agent</li>
+<li>Agent Loop Patterns</li>
+<li>Tool Use</li>
+</ul>
+</section>
 <section id="mcp-model-context-protocol" class="slide level2">
 <h2>MCP (Model Context Protocol)</h2>
+<!-- NOTES-BLOCK :: DECK REVIEW SUMMARY
+[CORRECTNESS] (must-fix) images/mcp-transport.png is wrong about the thing the
+  slide exists to teach. It lists FOUR transports (stdio, HTTP/HTTPS, SSE,
+  WebSocket). The spec defines exactly TWO: stdio and Streamable HTTP.
+  WebSocket has never been an MCP transport; SSE is not a transport at all but
+  an optional response mode inside Streamable HTTP. Worse, the image never
+  names Streamable HTTP, which the slide's own caption tells students to
+  target. Full detail and the fix on the Transport slide.
+[CORRECTNESS] (must-fix) "Which Protocol Do I Build Against?" inverted about
+  three weeks before this class. The deck says v2 is beta and tells students to
+  build on v1.x. In fact the Python SDK v2.0.0 shipped STABLE on 2026-07-28
+  alongside the spec, and v1.x went to maintenance (security/critical fixes
+  only). The deck currently routes the whole lab onto a maintenance branch.
+  Same stale claim is duplicated in demos/README.md, fix both.
+[CORRECTNESS] (must-fix) The MCP Server Skeleton does not parse. The decorated
+  `def run_query` is indented under its decorator -> IndentationError. It is the
+  first MCP code students copy. See that slide for the corrected block.
+[CORRECTNESS] (must-fix) Two literal `[IMAGE NEEDED]` TODO markers (on the
+  `server/discover` and MRTR slides) are plain markdown, not comments, so they
+  RENDER as visible text on the published deck. Either produce the figures or
+  wrap the markers in HTML comments before publishing.
+[TERM] (must-fix) "MCP Host" is never defined in any prose, yet it is a labelled
+  box in images/mcp-usbc.png and the entire top layer of images/mcp-arch2.png.
+  The Architecture table lists only Client / Server / LLM. Worse, the images
+  disagree with each other: mcp-arch2.png draws Host as a container holding
+  several Clients (1 Client : 1 Server), while mcp-bidirectional.png labels a
+  single box "MCP Client (Host + LLM)". Add one line to the Architecture table:
+  "Host — the application the user actually runs (Claude Desktop, Cursor, your
+  script). It holds one MCP Client per connected server, and owns the LLM."
+[FLOW] (must-fix) The deck is titled "MCP and Skills" and never once contrasts
+  the two. Students get ~30 slides of MCP, then ~8 of Skills, and no slide
+  answering the obvious question: when do I reach for which? The syllabus
+  promises exactly this ("Skills vs. MCP: MCP is a protocol for exposing tools
+  across a boundary; skills are a format for packaging instructions. They
+  compose"). images/ant-skills.png already draws the answer (Equipped Skills
+  and Equipped MCP servers as two separate lists feeding one agent) but it is
+  used as generic decoration on the Skills intro slide. Add a closing
+  comparison slide, suggested content in the note on the Skills intro slide.
+[FLOW] (should-fix) The deck teaches the 2025-11-25 lifecycle in six slides,
+  then spends nine slides explaining that 2026-07-28 deletes most of it. That
+  is roughly half the running time on protocol churn, in a course whose real
+  subject is agents. For a mixed/beginner audience consider compressing the
+  "what changed" run to two slides (one table of removals, one on the
+  compatibility contract) and moving the detail (server/discover, MRTR,
+  subscriptions/listen, Extensions) to an appendix the strong students can
+  read. Keep the two conceptual payoffs inline: statelessness buys horizontal
+  scaling, and cacheable/deterministic tool lists buy prompt-cache hits.
+[FLOW] (should-fix) The Active Session slide cites "the tool-sprawl problem we
+  hit in the context engineering class" in the past tense, but Tool Sprawl is
+  taught in 06_context (the NEXT deck, see 06_context/slides.qmd:383). Either
+  reword to a forward pointer, or move a one-slide preview of the token cost
+  here. Detail on that slide.
+[INTUITION] (deck-wide) Three sentences are worth hammering, because everything
+  else hangs off them:
+    1. MCP is a spec, not a service. Nothing routes through a central MCP
+       server. Each client opens its own direct connection to each server, and
+       they agree on a message format. (The after-mcp.png hub picture actively
+       fights this, see the note there.)
+    2. The client is the context manager. The server executes tools and has no
+       idea a context window exists. This is the one idea that survives every
+       spec revision, and it is what the demo measures.
+    3. A Skill is a file the agent reads with tools it already has. There is no
+       new protocol, no new API primitive. Progressive disclosure is just "put
+       the description in the prompt, let the model `cat` the body if it needs
+       it". images/skills-in-context.png shows this literally as
+       `Bash("cat /mnt/skills/pdf/SKILL.md")` and the prose never says it.
+[READING] The spine for this class:
+    - MCP spec, 2025-11-25, "Lifecycle" and "Transports" sections. Short, and
+      the only authority for the transport question above:
+      modelcontextprotocol.io/specification/2025-11-25/basic/transports
+    - "The 2026-07-28 Specification", blog.modelcontextprotocol.io/posts/2026-07-28/
+      for the stateless rewrite and the deprecation policy.
+    - Anthropic, "Introducing the Model Context Protocol" (Nov 2024) for the
+      N x M framing the deck opens with.
+    - Anthropic Engineering, "Code execution with MCP: building more efficient
+      agents" (Nov 2025). This is the strongest reading for this deck: it is
+      Anthropic conceding that loading every MCP tool definition up front is a
+      context-budget disaster, and proposing the code-execution alternative.
+      Pairs directly with the Skills half and with 06_context's Tool Sprawl.
+    - Anthropic Engineering, "Equipping agents for the real world with Agent
+      Skills" (Oct 2025). Source of ant-skills.png / skills-in-context.png.
+    - JSON-RPC 2.0 spec (it is two pages, and demystifies the whole wire format).
+-->
 <ul>
 <li>With standard function calling, each tool integration is custom-built on the client side</li>
 <li>eg : If a company had 3 AI chatbots and wanted to connect to 10 services, they needed 3 × 10 = 30 unique integrations.</li>
@@ -223,7 +315,7 @@ CCE, IISc
 <section id="mcp-model-context-protocol-1" class="slide level2">
 <h2>MCP (Model Context Protocol)</h2>
 <ul>
-<li>MCP standardizes how instructions are sent to the server and how results are returned</li>
+<li>MCP Spec standardizes how instructions are sent to the server and how results are returned</li>
 <li>With MCP, the N × M custom integrations are replaced by N + M integrations (N clients + M tools), since any client can call any tool as long as they both speak MCP.</li>
 </ul>
 
@@ -299,11 +391,12 @@ CCE, IISc
 <img data-src="images/mcp-arch.png" class="r-stretch"></section>
 <section id="mcp-architecture-1" class="slide level2">
 <h2>MCP Architecture</h2>
+<div style="font-size: 0.8em; margin-top: 1.5em;">
 <table class="caption-top">
 <colgroup>
-<col style="width: 28%">
-<col style="width: 15%">
-<col style="width: 55%">
+<col style="width: 19%">
+<col style="width: 22%">
+<col style="width: 58%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -319,17 +412,23 @@ CCE, IISc
 <td>Manages LLM’s context window; decides what tool schemas to expose to LLM; decides what portion of tool results to feed to LLM; maintains conversation loop</td>
 </tr>
 <tr class="even">
+<td>MCP Host</td>
+<td>The application the user runs (Claude Desktop, Cursor, your script)</td>
+<td>Owns the LLM and the UI; spawns one MCP Client per connected server; holds the credentials and the user-approval prompts</td>
+</tr>
+<tr class="odd">
 <td>MCP Server</td>
 <td>Hosts and executes tools</td>
 <td>Exposes tool schemas, resources, and prompts; executes tool functions; returns results to client; does NOT manage the LLM’s context</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>LLM</td>
 <td>The reasoning brain</td>
 <td>Decides which tools to call and in what order; produces structured tool call responses; reasons over tool results; produces final natural language output</td>
 </tr>
 </tbody>
 </table>
+</div>
 <div class="fragment">
 <blockquote>
 <p>The LLM never communicates directly with the MCP server. All communication flows through the MCP client.</p>
@@ -342,37 +441,49 @@ CCE, IISc
 <img data-src="images/mcp-arch2.png" class="r-stretch"></section>
 <section id="mcp-primitives-1" class="slide level2">
 <h2>MCP Primitives</h2>
+<div style="font-size: 0.8em;">
 <table class="caption-top">
 <colgroup>
-<col style="width: 21%">
-<col style="width: 31%">
-<col style="width: 47%">
+<col style="width: 15%">
+<col style="width: 30%">
+<col style="width: 40%">
+<col style="width: 13%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Primitive</th>
 <th>Description</th>
-<th>Example</th>
+<th>Example (GitHub MCP)</th>
+<th>Who Controls Usage</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>Tools</td>
 <td>Functions the LLM can invoke via structured calls</td>
-<td>get_transcript(video_url), search_missions(query, status)</td>
+<td><code>issue_write</code> (open/update an issue), <code>issue_read</code>, <code>search_code(query)</code>, <code>get_file_contents(owner, repo, path)</code></td>
+<td>Model at runtime</td>
 </tr>
 <tr class="even">
 <td>Resources</td>
-<td>Documents exchanged between server and client for later reference</td>
-<td>Mission logs, crew schedules, transcripts stored as markdown</td>
+<td>Read-only data the client pulls into context by URI, without spending a tool call</td>
+<td>Repository file contents, PR diffs</td>
+<td>Client/application</td>
 </tr>
 <tr class="odd">
 <td>Prompts</td>
-<td>Predefined, reusable system prompts associated with tool actions</td>
-<td>Summarize this transcript in one paragraph</td>
+<td>Reusable prompt templates the user invokes, usually from a menu</td>
+<td>A “review this PR” template that pre-fills the diff and the team’s checklist</td>
+<td>User</td>
 </tr>
 </tbody>
 </table>
+</div>
+<div class="fragment">
+<blockquote>
+<p><strong>Tools is the primitive that actually got adopted.</strong>. <a href="https://github.com/github/github-mcp-server">The GitHub server</a> ships ~90 tools across toolsets (<code>repos</code>, <code>issues</code>, <code>pull_requests</code>, <code>actions</code>, <code>code_security</code>), and documents almost nothing under Resources or Prompts.</p>
+</blockquote>
+</div>
 </section>
 <section id="transport-layer-and-communication" class="slide level2">
 <h2>Transport Layer and Communication</h2>
@@ -382,24 +493,12 @@ CCE, IISc
 <ul>
 <li>JSON-RPC 2.0</li>
 </ul>
-<div class="fragment">
-<div style="font-size: 0.8em;">
-<p>ℹ️ <strong>HTTP+SSE</strong> is deprecated as of <code>2026-07-28</code> (still functional — 12-month minimum removal window). New work should target <strong>Streamable HTTP</strong>; <strong>STDIO</strong> is unaffected.</p>
-</div>
-</div>
 </section>
-<section id="the-mcp-lifecycle" class="slide level2" data-background-color="#f0f4f8">
+<section id="the-mcp-lifecycle" class="slide level2">
 <h2>The MCP Lifecycle</h2>
-<div style="font-size: 0.9em;">
-<p><strong>Protocol revision <code>2025-11-25</code></strong> — what essentially every deployed MCP server speaks today, and what the SDKs ship as stable.</p>
-</div>
-<p>Connection is <strong>stateful</strong>: a handshake establishes the session, capabilities are negotiated once, and the session stays alive until shutdown.</p>
+<p><strong>Three Stages</strong>: <img data-src="images/mcp-lifecycle.png" width="579"></p>
 </section>
 <section id="the-mcp-lifecycle-1" class="slide level2">
-<h2>The MCP Lifecycle</h2>
-<p><strong>Three Stages</strong>: <img data-src="images/macp-lifecycle.png" width="579"></p>
-</section>
-<section id="the-mcp-lifecycle-2" class="slide level2">
 <h2>The MCP Lifecycle</h2>
 <p><strong>Stage 1 : Initialization</strong></p>
 <p><em>Handshake</em> - Client sends Initialize Request [protocol version (e.g., 2024-11-05), client capabilities (roots, sampling), and implementation info (client name/version)]</p>
@@ -412,7 +511,7 @@ CCE, IISc
 <li>Client and server compare protocol versions and capabilities to ensure compatibility. If incompatible, the client can choose to proceed with limited functionality or terminate the session.</li>
 </ul>
 </section>
-<section id="the-mcp-lifecycle-3" class="slide level2">
+<section id="the-mcp-lifecycle-2" class="slide level2">
 <h2>The MCP Lifecycle</h2>
 <p><em>Capabilities Exchange</em></p>
 <ul>
@@ -420,14 +519,14 @@ CCE, IISc
 </ul>
 
 <img data-src="images/mcp-client-capabilities.png" class="r-stretch"></section>
-<section id="the-mcp-lifecycle-4" class="slide level2">
+<section id="the-mcp-lifecycle-3" class="slide level2">
 <h2>The MCP Lifecycle</h2>
 <ul>
 <li>Server Capabilities</li>
 </ul>
 
 <img data-src="images/mcp-server-capabilities.png" class="r-stretch"></section>
-<section id="the-mcp-lifecycle-5" class="slide level2">
+<section id="the-mcp-lifecycle-4" class="slide level2">
 <h2>The MCP Lifecycle</h2>
 <p><em>Server to Client Requests : Bidirectional</em></p>
 
@@ -452,7 +551,7 @@ CCE, IISc
 <img data-src="images/mcp-shutdown.png" class="r-stretch"></section>
 <section id="what-changes-spec-2026-07-28" class="slide level2" data-background-color="#fff8f0">
 <h2>What Changes : spec <code>2026-07-28</code></h2>
-<p>The newest revision <strong>removes the connection lifecycle</strong> you just learned. It is published, but the SDKs are still in <strong>beta</strong> — so treat this as <em>where MCP is going</em>, not what you’ll write on Monday.</p>
+<p><a href="https://modelcontextprotocol.io/specification/2026-07-28">MCP SPec Version 2026-07-28</a></p>
 <div style="font-size: 0.85em;">
 <table class="caption-top">
 <colgroup>
@@ -468,7 +567,7 @@ CCE, IISc
 <tbody>
 <tr class="odd">
 <td><code>initialize</code> request + <code>notifications/initialized</code> handshake</td>
-<td><strong>Removed</strong> — no handshake at all</td>
+<td><strong>Removed</strong>- no handshake at all</td>
 </tr>
 <tr class="even">
 <td>Capabilities negotiated once, per connection</td>
@@ -476,18 +575,18 @@ CCE, IISc
 </tr>
 <tr class="odd">
 <td><code>Mcp-Session-Id</code> header holds session state</td>
-<td><strong>Removed</strong> — servers mint explicit handles instead</td>
+<td><strong>Removed</strong> - servers mint explicit handles instead</td>
 </tr>
 <tr class="even">
 <td><code>tools/list</code> could vary per connection</td>
-<td>Same answer for everyone — cacheable</td>
+<td>Same answer for everyone - cacheable</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="fragment">
 <blockquote>
-<p><strong>Why:</strong> a stateless server scales behind a plain round-robin load balancer. No sticky sessions, no shared session store.</p>
+<p><strong>Why:</strong> a stateless server is easy to deploy and scale horizontally. No sticky sessions, no shared session store.</p>
 </blockquote>
 </div>
 </section>
@@ -510,12 +609,11 @@ CCE, IISc
 <span id="cb1-7"><a></a>    <span class="dt">"io.modelcontextprotocol/clientInfo"</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"my-agent"</span><span class="fu">,</span> <span class="dt">"version"</span><span class="fu">:</span> <span class="st">"1.0"</span> <span class="fu">}</span></span>
 <span id="cb1-8"><a></a>  <span class="fu">}</span></span>
 <span id="cb1-9"><a></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>[IMAGE NEEDED]</code> — a stateless request diagram, to sit alongside the <code>macp-lifecycle.png</code> handshake diagram for contrast.</p>
 </div>
 </section>
 <section id="multi-round-trip-requests-mrtr" class="slide level2">
 <h2>Multi Round-Trip Requests (MRTR)</h2>
-<p>The old way for a server to ask the <em>client</em> for something — <code>roots/list</code>, <code>sampling/createMessage</code>, <code>elicitation/create</code> — was a <strong>server-initiated request</strong>. Stateless servers can’t do that.</p>
+<p>The old way for a server to ask the <em>client</em> for something - <code>roots/list</code>, <code>sampling/createMessage</code>, <code>elicitation/create</code> - was a <strong>server-initiated request</strong>. Stateless servers can’t do that.</p>
 <div class="fragment">
 <p><strong>MRTR inverts it.</strong> The server answers the original request with a request of its own:</p>
 <ol type="1">
@@ -524,19 +622,15 @@ CCE, IISc
 <li>Client <strong>retries the original request</strong>, now carrying <code>inputResponses</code></li>
 </ol>
 </div>
-<div class="fragment">
-<p>Every result now carries a required <code>resultType</code> — <code>"complete"</code> or <code>"input_required"</code>. Results from older servers that omit it <strong>MUST</strong> be treated as <code>"complete"</code>.</p>
-<p><code>[IMAGE NEEDED]</code> — the <code>input_required</code> retry loop, to contrast with <code>mcp-bidirectional.png</code>.</p>
-</div>
 </section>
 <section id="active-session-discovery-and-invocation" class="slide level2">
 <h2>Active Session : Discovery and Invocation</h2>
-<p>This part largely survives — it is the useful half of MCP.</p>
+<p>This part largely remains same</p>
 <p><strong>1. Discovery</strong></p>
 <ul>
-<li><code>tools/list</code> — available tools with schemas and metadata</li>
-<li><code>resources/list</code> — available resources</li>
-<li><code>prompts/list</code> — available prompts</li>
+<li><code>tools/list</code> - available tools with schemas and metadata</li>
+<li><code>resources/list</code> - available resources</li>
+<li><code>prompts/list</code> - available prompts</li>
 </ul>
 <p><strong>2. Invocation</strong></p>
 <ul>
@@ -545,7 +639,7 @@ CCE, IISc
 <div class="fragment">
 <p><strong>New: list results are cacheable.</strong> They now carry <code>ttlMs</code> (freshness hint) and <code>cacheScope</code> (<code>public</code> / <code>private</code>), and servers <strong>SHOULD</strong> return tools in a <em>deterministic order</em>.</p>
 <blockquote>
-<p>Deterministic ordering exists to raise <strong>LLM prompt-cache hit rates</strong> — a protocol-level answer to the tool-sprawl problem we hit in the context engineering class.</p>
+<p>Deterministic ordering exists to raise <strong>LLM prompt-cache hit rates</strong></p>
 </blockquote>
 </div>
 </section>
@@ -561,14 +655,14 @@ CCE, IISc
 <p><strong>Also removed:</strong> <code>ping</code>, <code>logging/setLevel</code>, <code>notifications/roots/list_changed</code>, and SSE stream resumability (<code>Last-Event-ID</code>). A broken stream loses the in-flight request — the client re-issues it with a new request ID.</p>
 </div>
 </section>
-<section id="deprecated-do-not-build-on-these" class="slide level2">
-<h2>Deprecated — Do Not Build On These</h2>
+<section id="deprecated" class="slide level2">
+<h2>Deprecated</h2>
 <p>A formal <strong>feature lifecycle</strong> now applies: <em>Active → Deprecated → Removed</em>, with a minimum <strong>12 months</strong> between deprecation and removal.</p>
 <div style="font-size: 0.85em;">
 <table class="caption-top">
 <colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
+<col style="width: 26%">
+<col style="width: 73%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -600,11 +694,6 @@ CCE, IISc
 </tbody>
 </table>
 </div>
-<div class="fragment">
-<blockquote>
-<p>Note that <strong>Sampling</strong> — the server borrowing the client’s LLM — was one of MCP’s most-discussed ideas. It did not survive contact with production.</p>
-</blockquote>
-</div>
 </section>
 <section id="extensions-and-tasks" class="slide level2">
 <h2>Extensions and Tasks</h2>
@@ -618,15 +707,9 @@ CCE, IISc
 <li>Servers may return task handles unsolicited</li>
 </ul>
 </div>
-<div class="fragment">
-<blockquote>
-<p>An extension can stabilise in the wild before — <em>if ever</em> — being folded into the spec.</p>
-</blockquote>
-</div>
 </section>
-<section id="which-protocol-do-i-build-against" class="slide level2" data-background-color="#f0f4f8">
-<h2>Which Protocol Do I Build Against?</h2>
-<p><strong>Both — and the SDK handles it.</strong> There is no flag day:</p>
+<section id="which-protocol-to-build-against" class="slide level2" data-background-color="#f0f4f8">
+<h2>Which Protocol to Build Against?</h2>
 <div style="font-size: 0.85em;">
 <table class="caption-top">
 <colgroup>
@@ -646,7 +729,7 @@ CCE, IISc
 </tr>
 <tr class="even">
 <td>SDK v2 (<code>2026-07-28</code>, stateless)</td>
-<td><strong>Beta</strong> for the Tier-1 languages — Python, TypeScript, Go, C#</td>
+<td><strong>Beta</strong> for the Tier-1 languages - Python, TypeScript, Go, C#</td>
 </tr>
 </tbody>
 </table>
@@ -659,20 +742,11 @@ CCE, IISc
 <li>Upgrading to v2 is a breaking change you take <em>on your own schedule</em></li>
 </ul>
 </div>
-<div class="fragment">
-<blockquote>
-<p>So the handshake isn’t history — it’s a code path you still have to write. That fallback logic is the practical reason to understand both revisions.</p>
-</blockquote>
-</div>
 </section>
 <section id="mcp-example-walkthrough" class="slide level2">
 <h2>MCP Example Walkthrough</h2>
 
-<img data-src="images/mcp-dataflow.png" class="r-stretch"></section>
-<section id="who-does-what" class="slide level2">
-<h2>Who does What?</h2>
-
-<img data-src="images/mcp-control-plane.png" class="r-stretch"></section>
+<img data-src="images/mcp-github-example.png" class="r-stretch"></section>
 <section id="mcp-ecosystem" class="slide level2">
 <h2>MCP Ecosystem</h2>
 
@@ -717,7 +791,7 @@ CCE, IISc
 <span id="cb3-3"><a></a><span class="im">from</span> fastmcp <span class="im">import</span> Client, FastMCP</span>
 <span id="cb3-4"><a></a></span>
 <span id="cb3-5"><a></a><span class="co"># In-memory server (ideal for testing)</span></span>
-<span id="cb3-6"><a></a>server <span class="op">=</span> FastMCP(<span class="st">"TestServer"</span>)</span>
+<span id="cb3-6"><a></a>server <span class="op">=</span> FastMCP(<span class="st">"TestServer"</span>)  </span>
 <span id="cb3-7"><a></a>client <span class="op">=</span> Client(server)</span>
 <span id="cb3-8"><a></a></span>
 <span id="cb3-9"><a></a><span class="co"># HTTP server</span></span>
@@ -742,19 +816,17 @@ CCE, IISc
 <span id="cb3-28"><a></a></span>
 <span id="cb3-29"><a></a>asyncio.run(main())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
+<section id="who-does-what" class="slide level2">
+<h2>Who does What?</h2>
+
+<img data-src="images/mcp-control-plane.png" class="r-stretch"></section>
 <section id="demo-build-an-mcp-server-then-a-client-for-it" class="slide level2">
 <h2><code>[DEMO]</code> Build an MCP server, then a client for it</h2>
 <ol type="1">
 <li>A <strong>FastMCP server</strong> exposing 2–3 tools and one resource</li>
-<li>A <strong>custom client</strong> that connects to it</li>
-<li>Point that same client at a third-party server — <strong>Blender MCP</strong> — unchanged</li>
+<li>A <strong>custom client</strong> that connects to it (our agent from prev class)</li>
+<li>Point that same client at a third-party server <strong>Blender MCP</strong></li>
 </ol>
-<div class="fragment">
-<p><strong>Watch for:</strong> what the <em>client</em> chooses to put in the model’s context, versus everything the server returned. The server has no idea a context window exists.</p>
-<div style="font-size: 0.75em;">
-<p>Build against the stable SDK (v1.x, <code>2025-11-25</code>). Spec → <code>demos/README.md</code></p>
-</div>
-</div>
 </section>
 <section id="skills" class="slide level2">
 <h2>Skills</h2>
@@ -806,22 +878,34 @@ CCE, IISc
 </ul></li>
 </ul>
 </section>
-<section id="demo-progressive-disclosure-measured" class="slide level2">
-<h2><code>[DEMO]</code> Progressive disclosure, measured</h2>
-<p><strong>Installing skills</strong></p>
+<section id="demo" class="slide level2">
+<h2><code>[DEMO]</code></h2>
+<ul>
+<li><strong>Installing skills</strong></li>
+</ul>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a></a><span class="ex">npx</span> skills add vercel-labs/agent-skills</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>Then author 2–3 of your own</strong> as <code>SKILL.md</code> folders, and build a discovery layer that puts only <em>descriptions</em> in the system prompt — loading bodies on demand.</p>
-<div class="fragment">
-<p><strong>Measure:</strong> context tokens with eager loading vs.&nbsp;progressive disclosure, on a task set where only one skill is ever relevant.</p>
-<blockquote>
-<p>The saving scales with the number of skills you <strong>don’t</strong> use.</p>
-</blockquote>
-<div style="font-size: 0.75em;">
-<p>Spec → <code>demos/README.md</code></p>
+<ul>
+<li>Ask your agent to read the skills or load them by restarting</li>
+</ul>
+</section>
+<section id="further-reading" class="slide level2">
+<h2>Further Reading</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li>MCP spec <code>2025-11-25</code> - <a href="https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle">Lifecycle</a>, <a href="https://modelcontextprotocol.io/specification/2025-11-25/basic/transports">Transports</a></li>
+<li>MCP spec <a href="https://modelcontextprotocol.io/specification/2026-07-28"><code>2026-07-28</code></a></li>
+<li><a href="https://blog.modelcontextprotocol.io/posts/2026-07-28/">The 2026-07-28 Specification</a></li>
+<li><a href="https://www.jsonrpc.org/specification">JSON-RPC 2.0 Specification</a></li>
+<li>Anthropic - <a href="https://www.anthropic.com/news/model-context-protocol">Introducing the Model Context Protocol</a></li>
+<li>Anthropic Engineering - <a href="https://www.anthropic.com/engineering/code-execution-with-mcp">Code execution with MCP: building more efficient agents</a></li>
+<li>Anthropic Engineering - <a href="https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills">Equipping agents for the real world with Agent Skills</a></li>
+<li><a href="https://github.com/anthropics/skills">anthropics/skills</a></li>
+<li><a href="https://github.com/punkpeye/awesome-mcp-servers">Awesome MCP Servers</a></li>
+<li><a href="https://gofastmcp.com">FastMCP Documentation</a></li>
+</ul>
 </div>
 
 
-</div>
 </section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
