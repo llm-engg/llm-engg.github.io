@@ -3095,7 +3095,7 @@
     "href": "agents/08_multiagents/slides.html#further-reading",
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "Further Reading",
-    "text": "Further Reading\n\n\nAnthropic Engineering - How we built our multi-agent research system\nCognition / Walden Yan - Don’t Build Multi-Agents\nA2A Protocol"
+    "text": "Further Reading\n\n\nAnthropic Engineering - How we built our multi-agent research system\nCognition / Walden Yan - Don’t Build Multi-Agents\nA2A Protocol."
   },
   {
     "objectID": "agents/06_context/slides.html#context-engineering",
@@ -4201,7 +4201,7 @@
     "href": "agents/07_memory/slides.html#further-reading---systems-and-docs",
     "title": "LLM Agents : Memory Systems",
     "section": "Further Reading - Systems and Docs",
-    "text": "Further Reading - Systems and Docs\n\n\nMem0 documentation\nZep concepts\nLetta - Memory, Memory blocks, Archival memory\nLangGraph - Persistence, Add memory\nHermes Agent\nOpenClaw"
+    "text": "Further Reading - Systems and Docs\n\n\nMem0 documentation\nZep concepts\nLetta - Memory, Memory blocks, Archival memory\nLangGraph - Persistence, Add memory\nHermes Agent\nOpenClaw."
   },
   {
     "objectID": "agents/09_agent_eval/slides.html#agent-evaluation",
@@ -4341,7 +4341,7 @@
     "href": "agents/09_agent_eval/slides.html#further-reading",
     "title": "LLM Agents : Agent Evaluation",
     "section": "Further Reading",
-    "text": "Further Reading\n\n\nAnthropic - Demystifying evals for AI agents\nSWE-bench Verified\nYao et al. - τ-bench - V1, τ²-bench\nTerminal-Bench"
+    "text": "Further Reading\n\n\nAnthropic - Demystifying evals for AI agents\nSWE-bench Verified\nYao et al. - τ-bench - V1, τ²-bench\nTerminal-Bench."
   },
   {
     "objectID": "agents/09_agent_eval/slides.html#agents-module---reading-list",
