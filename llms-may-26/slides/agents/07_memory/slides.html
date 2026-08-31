@@ -211,8 +211,8 @@ CCE, IISc
 </div>
 
 </section>
-<section id="memory" class="slide level2">
-<h2>Memory</h2>
+<section id="recap" class="slide level2">
+<h2>RECAP</h2>
 <!-- NOTES-BLOCK :: DECK REVIEW SUMMARY
 [FLOW] (must-fix) The deck teaches memory as a *catalogue of storage types* but never as a
        *lifecycle*. Sections 2.4 and 2.5 of the source notes
@@ -279,8 +279,8 @@ CCE, IISc
          the just-in-time / file-system-as-memory argument.
 -->
 </section>
-<section id="recap" class="slide level2">
-<h2>RECAP</h2>
+<section id="memory" class="slide level2">
+<h2>Memory</h2>
 <p><strong>Agent primitives:</strong></p>
 <ul>
 <li>Tool Use</li>
@@ -289,58 +289,19 @@ CCE, IISc
 <li>Context Engineering</li>
 </ul>
 <div class="fragment">
+<ul>
+<li>All of them disappear after session ends or context is cleared</li>
+</ul>
+</div>
+<div class="fragment">
 <blockquote>
 <p>But how do we make agents that can learn and improve over time? Agents should remember and learn from past interactions.</p>
 </blockquote>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] Sharpen the hinge. Every primitive so far is *stateless across sessions*: a tool
-     call, an MCP connection, a skill invocation and a context window all evaporate when the
-     session ends. Ask the class directly: "Close your coding agent, reopen it tomorrow. What
-     does it still know about your repo, and how?" The honest answer for most of them is "a
-     CLAUDE.md I wrote by hand" — which is exactly the crudest point on the spectrum this deck
-     is about to lay out.
-[FLOW] (nice) The RECAP lists four primitives but not the constraint they all share. Add a
-     fragment: "All four live and die inside one context window." That single line is what
-     makes memory the necessary next topic rather than just the next topic.
-[Q-ADVANCED] "Isn't long-term memory just fine-tuning done badly?" — Good question, answer it
-     head-on: fine-tuning changes weights, is slow, costly, hard to undo, and cannot store a
-     fact you learned thirty seconds ago. Memory is editable, inspectable, attributable and
-     instantly revocable. The rule of thumb: fine-tune to change *behaviour and format*, use
-     memory to change *facts*. If a user says "actually I moved to Berlin", you want a one-row
-     update, not a training run.
--->
 </div>
 </section>
-<section id="memory-systems" class="slide level2">
-<h2>Memory Systems</h2>
+<section id="llm-operating-system" class="slide level2">
+<h2>LLM Operating System</h2>
 
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) This figure is uncredited. It is Andrej Karpathy's "LLM OS" slide
-     from "Intro to Large Language Models" (Nov 2023). Add the attribution on-slide — students
-     will meet it again elsewhere and should know where it came from.
-[INSTRUCTOR] Do not just show the figure — read the two boxes that matter for today and ignore
-     the rest. In Karpathy's analogy the LLM is the CPU, the context window is *RAM*, and the
-     "File system (+embeddings)" box is *disk*. This deck is entirely about the arrow between
-     those two boxes: what gets paged in, when, and what gets written back. Point at that arrow
-     literally. Everything else on the slide (video, audio, browser, other LLMs) is a different
-     lecture.
-[INTUITION] (should-fix) Land the analogy's payload, not just the picture: RAM is fast, small
-     and volatile; disk is slow, large and durable. An LLM has no equivalent of virtual memory
-     built in — nothing automatically pages a fact back in when it is needed. That machinery is
-     what an agent framework has to supply by hand, and that is what "a memory system" means.
-[TERM] (should-fix) "RAM", "disk" and "paging" are being used as analogies to a class that may
-     include non-CS backgrounds. One line: "Paging = the OS moving data between fast small
-     memory and slow large storage, automatically. Agents have to do this manually."
-[READING] Karpathy, "Intro to Large Language Models" (2023), the LLM-OS section — 5 minutes of
-     video, worth assigning. Then Packer et al., MemGPT (arXiv 2310.08560) §3, which turns this
-     cartoon into an actual paging algorithm with an interrupt-driven context manager.
-[Q-ADVANCED] "If context windows are now 1M+ tokens, hasn't this whole problem gone away?" —
-     No, for three separate reasons worth naming: (1) cost and latency scale with tokens sent
-     *every turn*, and memory is re-sent constantly; (2) retrieval accuracy degrades well
-     before the window fills — deck 06's context-rot material; (3) a context window is still
-     erased at session end, so it can never provide continuity. Bigger RAM does not remove the
-     need for a disk.
--->
 <img data-src="images/llm-os.png" class="r-stretch"></section>
 <section id="why-agents-need-memory" class="slide level2">
 <h2>Why Agents Need Memory</h2>
@@ -359,32 +320,15 @@ CCE, IISc
 <ul>
 <li>A research agent remembers sources it already checked and which ones were unreliable.</li>
 </ul>
-<!-- NOTES-BLOCK
-[FLOW] (nice) Three examples, three domains, but no unifying statement. Close the slide with
-     the generalisation so the examples become a category rather than a list: "In every case
-     the missing information was *discovered in a previous session and thrown away*. Memory is
-     the refusal to throw it away."
-[INSTRUCTOR] The coding-agent example is the one to dwell on, because it is the students' own
-     lab. Make it concrete and painful: without memory, session 2 re-greps for the test
-     command, re-discovers the fixture layout, re-learns that migrations are manual — burning
-     maybe 15 tool calls before doing any actual work. That number is the thing the Episode-4
-     lab measures.
-[INTUITION] (should-fix) Give them the "would a new hire need to be told this twice?" test.
-     If a competent new colleague would only need to be told a fact once, and your agent needs
-     telling every session, that fact belongs in memory. It is a surprisingly reliable filter
-     and it also predicts the failures: a new hire would *not* want to be told last quarter's
-     stale deploy process at all.
-[Q-ADVANCED] "Why not just put all of this in the system prompt and be done?" — That IS a
-     memory system: eager injection, the crudest one, and it is genuinely correct for small
-     stable sets (this is what CLAUDE.md is). It fails on three axes: it does not scale past a
-     few thousand tokens, it cannot be selective per task, and it has no write path — the agent
-     cannot add to it mid-session. Everything later in this deck is an attempt to keep the
-     inspectability of that file while fixing one of the three.
--->
+</div>
+<div class="fragment">
+<blockquote>
+<p>In every case the missing information was <em>discovered in a previous session and thrown away</em>. Memory is the mechansism to store and re-use</p>
+</blockquote>
 </div>
 </section>
-<section id="why-agents-need-memory-1" class="slide level2">
-<h2>Why Agents Need Memory</h2>
+<section id="why-agents-need-good-memory" class="slide level2">
+<h2>Why Agents Need Good Memory</h2>
 <p>Bad memory can make agents worse.</p>
 <ul>
 <li><p>Stale memories can override current instructions.</p></li>
@@ -397,44 +341,6 @@ CCE, IISc
 <blockquote>
 <p>What should be remembered, in what form, who can edit it, when is it retrieved, and how is it evaluated?</p>
 </blockquote>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] This is the most important slide in the deck and it is currently a bullet list read
-     at normal speed. Slow down and attach a war story to each failure, because these are the
-     five ways the students' labs will break:
-     - Stale: agent memory says "project uses Flask"; repo migrated to FastAPI six months ago.
-       The agent now confidently writes Flask code and *argues with the user about it*, because
-       memory is in the system prompt and the repo is merely in a tool result.
-     - Duplicated: "user prefers concise answers" written on four occasions with slightly
-       different wording; retrieval returns all four; three slots of the budget are gone.
-     - Sensitive: user pastes an API key mid-conversation to debug; a naive extraction step
-       stores it as a "fact about the user", forever, in a vector DB, in plaintext.
-     - Reinforcing mistakes: agent fails, writes an episode describing its *failed* approach
-       neutrally, retrieves it next time as if it were guidance.
-[INTUITION] (must-fix) Name the asymmetry, it is the thesis of the deck: a *missing* memory
-     costs you some rediscovery work. A *wrong* memory costs you a confidently wrong answer,
-     and it outranks the evidence in front of the agent. Failing to remember degrades
-     gracefully; remembering wrongly does not.
-[FLOW] (should-fix) The stale-memory bullet needs its own beat because it is the root of the
-     precedence question nobody thinks about until it bites: when memory says one thing and the
-     repo/tool result says another, which wins? State the rule explicitly — freshly observed
-     evidence always outranks stored memory, and memory that contradicts observation should be
-     *flagged for update*, not silently followed. Ask the class how they would implement that
-     check. That is the design conversation the whole slide exists to start.
-[Q-ADVANCED] "How do you even detect a stale memory without re-verifying everything?" — Three
-     practical answers worth having ready: (1) provenance — store the source file/line, and
-     cheaply re-check the source on read; (2) validity intervals — Zep's bitemporal model marks
-     a fact invalid from time T rather than deleting it, so you keep the audit trail;
-     (3) contradiction-on-write — when a new fact conflicts with an existing one, that is the
-     cheapest moment to resolve it, because you have both in hand. Mem0's add() pipeline does
-     exactly this with an explicit ADD/UPDATE/DELETE decision per candidate fact.
-[READING] Rasmussen et al., "Zep: A Temporal Knowledge Graph Architecture for Agent Memory"
-     (arXiv 2501.13956) §3 — the bitemporal edge-invalidation model, i.e. the principled
-     version of "the stale memory problem".
-[DEMO] (should-fix) This slide is the natural home for demos/README.md Demo 1 ("memory can help
-     or hurt"). A visible slide for it is stubbed in later in the deck, after "When to Fetch
-     Memory?" — consider moving it here instead if you want the falsification to land before
-     students get attached to the idea.
--->
 </div>
 </section>
 <section id="memory-taxonomy" class="slide level2">
@@ -484,54 +390,12 @@ CCE, IISc
 <td>Procedural memory (skills)</td>
 <td>Reusable workflows</td>
 <td>Forever</td>
-<td><code>SKILL.md</code> files</td>
+<td>Params / <code>SKILL.md</code> files</td>
 </tr>
 </tbody>
 </table>
 </div>
 
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) The "Lifespan" column says "Forever" for episodic, semantic and
-     procedural memory. That is wrong on the deck's own terms — it directly contradicts the
-     stale-memory failure mode on the previous slide, and it teaches exactly the wrong instinct
-     going into the lab. Nothing in a memory store should be forever.
-[FIX] Replace "Forever" with the real answer: "Until superseded" for semantic, "Decays / until
-     it stops being retrieved" for episodic, "Until the procedure breaks" for procedural. Then
-     the column tells a story: the further down the table, the longer-lived AND the more
-     dangerous when wrong. Consider renaming the column "Lifespan (and who kills it)".
-[CORRECTNESS] (should-fix) The table and the figure disagree. The table has five rows; the
-     pyramid has four and omits session memory entirely — which is a shame, because session
-     memory is the row students actually implement first. Either add a session band to the
-     figure or add a caption saying the figure covers the classical four types and session
-     memory is the engineering addition.
-[CORRECTNESS] (nice) The pyramid shape implies a volume or hierarchy relationship (more working
-     memory than procedural?) that is not meaningful — these are kinds, not quantities. If you
-     keep it, say out loud "the shape means nothing, only the four labels do", or replace it
-     with the four-quadrant figure suggested below.
-[IMAGE] (should-fix) Missing: a semantic-vs-episodic side-by-side, the single most confused
-     distinction in this deck (source notes §7, figure 3). Depict the SAME incident twice:
-     semantic = "Auth uses JWKS"; episodic = "Last time auth tests failed it was a stale JWKS
-     cache, not token parsing — clear the cache before touching validation logic." Same event,
-     one stored as a fact, one stored as a lesson. Save as images/semantic-vs-episodic.png.
-     A visible placeholder is inserted on the Episodic Memory slide below.
-[TERM] (must-fix) "Working memory", "episodic" and "semantic" are borrowed from cognitive
-     psychology, where they mean something narrower. Do not let the borrowed authority do
-     unearned work — one line: "These names come from human memory research. They are useful
-     labels, not a claim that the agent works like a brain."
-[INTUITION] (should-fix) The table lists five rows but the actual decision is two questions,
-     and students should leave with those rather than the taxonomy: (1) Does this outlive the
-     session? -> long-term, else session. (2) Is it a fact, a thing that happened, or a way of
-     doing something? -> semantic / episodic / procedural. Everything else is storage
-     engineering.
-[INSTRUCTOR] Note the last column is doing quiet work: procedural memory lives in `SKILL.md`
-     files, which the class already built in deck 05. Call that back explicitly — students
-     have already written procedural memory by hand; the new idea in this deck is that the
-     agent writes it itself.
-[READING] Tulving's episodic/semantic distinction is the original source (Tulving, "Episodic
-     and Semantic Memory", 1972) if anyone asks where the names come from. For the agent-side
-     mapping, Park et al., "Generative Agents" (arXiv 2304.03442) §4 is the cleanest worked
-     example of an episodic store with reflection on top.
--->
 <img data-src="images/memory-taxonomy.png" class="r-stretch"></section>
 <section id="working-memory-context-window" class="slide level2">
 <h2>Working Memory (Context Window)</h2>
@@ -546,26 +410,6 @@ CCE, IISc
 <li>Current file contents being edited</li>
 <li>Compaction summary of older history</li>
 </ul>
-<!-- NOTES-BLOCK
-[FLOW] (should-fix) This and the next two slides substantially re-teach deck 06 (compaction,
-     JIT tool loading, system-prompt assembly). Rather than repeat it, frame this as a
-     deliberate one-slide callback and move on: "You already know how to manage this layer —
-     that was last class. Today's question is what happens to everything that *cannot* fit."
-     Three slides here is roughly the budget the missing lifecycle/evaluation material needs.
-[TERM] (should-fix) "Compaction" and "JIT" appear here and on the next two slides; both are
-     deck-06 vocabulary and worth a one-line refresher for anyone who missed it.
-     Compaction = replacing old turns with an LLM-written summary of them.
-     JIT (just-in-time) loading = sending a tool/skill's full definition only at the moment it
-     is needed, instead of all of them every turn.
-[INTUITION] (should-fix) The desk analogy from source notes §2.2 is the best line available for
-     this slide and it is not on it: "Working memory is the desk, not the filing cabinet. If
-     the desk is covered with everything, the worker slows down and starts grabbing the wrong
-     paper." That last clause matters — a cluttered context does not just cost tokens, it
-     changes which information the model attends to.
-[CORRECTNESS] (nice) "Recent conversation turns (last 5-10)" reads as a rule; it is a heuristic
-     that depends entirely on turn size. Say "recent turns, budgeted by tokens not by count" —
-     ten turns of tool output can be larger than a hundred turns of chat.
--->
 </section>
 <section id="working-memory-context-window-1" class="slide level2">
 <h2>Working Memory (Context Window)</h2>
@@ -579,20 +423,6 @@ CCE, IISc
 <li>All skill instructions (use catalogs)</li>
 <li>User’s entire project history (use long-term memory)</li>
 </ul>
-<!-- NOTES-BLOCK
-[INSTRUCTOR] This is the slide that earns the deck's existence: every "doesn't belong" bullet
-     names a thing that must live *somewhere else*, and the four somewhere-elses are exactly
-     the rest of this lecture. Read it that way — right column is a table of contents.
-[FLOW] (nice) Slides 1 and 2 here are the same title with belongs/doesn't-belong split across
-     them, so students see one half at a time. A two-column layout on one slide lets them see
-     the contrast, which is the whole point, and buys back a slide.
-[Q-ADVANCED] "How do I know the agent is actually re-reading the file instead of using its
-     stale in-context copy?" — Real and underappreciated. If a file was read at turn 3 and
-     edited at turn 40, both versions are in context and the model may attend to the wrong one.
-     Practical defences: strip superseded file reads during compaction, make edits return the
-     new content, or force a re-read before any write. This is a genuinely open failure mode
-     worth admitting as such.
--->
 </section>
 <section id="working-memory-context-window-2" class="slide level2">
 <h2>Working Memory (Context Window)</h2>
@@ -603,22 +433,6 @@ CCE, IISc
 <li>Compact early : Don’t wait until full</li>
 <li>Structured messages : Dense, factual, no fluff</li>
 </ul>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) "Compact early : Don't wait until full" is stated without the reason,
-     which makes it sound like superstition. The reason is that compaction is itself an LLM
-     call over the transcript — if you wait until the window is full there is no room to do it
-     well, and quality collapses exactly when you need it most. Deck 06's "Triggering
-     Compaction" slide has the threshold discussion; cite it rather than restating.
-[READING] Anthropic engineering blog, "Effective context engineering for AI agents" (2025) —
-     the just-in-time loading and file-system-as-context sections are the direct source for
-     three of these four bullets, and it is a good assigned reading between decks 06 and 07.
-[Q-ADVANCED] "Doesn't JIT loading just move the cost — now the agent needs a turn to discover
-     the tool it needs?" — Yes, that is a real latency trade and worth conceding. It pays off
-     because tool definitions are re-sent *every* turn while discovery happens once; the
-     break-even is very early. Deck 06's tool-sprawl arithmetic quantifies it. It also has a
-     second-order benefit students miss: fewer visible tools measurably improves selection
-     accuracy, so the trade is not purely cost-for-latency.
--->
 </section>
 <section id="short-term-session-memory" class="slide level2">
 <h2>Short-Term / Session Memory</h2>
@@ -649,35 +463,6 @@ CCE, IISc
 <span id="cb1-18"><a></a><span class="ss">Files Modified: </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>format_files()<span class="sc">}</span></span>
 <span id="cb1-19"><a></a><span class="ss">Current Plan: </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>plan<span class="sc">}</span></span>
 <span id="cb1-20"><a></a><span class="ss">"""</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) The snippet will not run as printed: `Decision`, `FileChange`,
-     `Error` and `Plan` are never defined, `Optional` is never imported, and the three
-     `format_*` helpers do not exist. Students copy slide code verbatim — either add
-     `from typing import Optional` plus a comment `# Decision/FileChange/... are your own
-     dataclasses`, or drop the annotations to `list[str]` so it is genuinely runnable. The
-     simpler `list[str]` version in source notes §2.2 is the better slide.
-[CORRECTNESS] (nice) `Error` shadows nothing dangerous but is a confusing name next to
-     `Exception`; `FailedAttempt` reads better and matches what the field is for.
-[INTUITION] (must-fix) The slide never says *why* an explicit state object exists when the
-     transcript already contains all of this. The answer is the one thing students need:
-     the transcript is what the agent *did*; session state is what the agent *concluded*, in a
-     form that survives compaction. When old turns get summarised away, the transcript loses
-     "I already tried X and it failed" — the state object does not. Session state is the part
-     of the conversation you promise never to compact.
-[INSTRUCTOR] `failed_attempts` is the highest-value field and the one everyone omits. Without
-     it, a compacted agent cheerfully re-runs the same failing command it ran twenty turns ago
-     — the single most recognisable agent pathology, and every student has seen it. Ask for a
-     show of hands; you will get one.
-[DEMO] (should-fix) Source notes §2.2 specify a small demo that fits here perfectly: show a
-     real transcript where the agent repeats an identical failed command after compaction, then
-     re-run with a session-state block injected and show the next step change. Ten lines of
-     diff, very high impact — this is the cheapest demo in the deck.
-[Q-ADVANCED] "Who writes to this — the model or the framework?" — Worth being explicit: both
-     are used in practice. Framework-written state (files touched, commands run, exit codes) is
-     reliable but shallow; model-written state (decisions, assumptions, next step) is rich but
-     can hallucinate. Production systems do framework-written facts plus a model-written
-     narrative, kept in separate fields so you can tell which is which.
--->
 </section>
 <section id="long-term-memory" class="slide level2">
 <h2>Long-Term Memory</h2>
@@ -690,32 +475,6 @@ CCE, IISc
 <span id="cb2-4"><a></a>├── feedback.md      # Corrections and confirmed approaches</span>
 <span id="cb2-5"><a></a>├── reference.md     # External resource pointers</span>
 <span id="cb2-6"><a></a>└── MEMORY.md        # Index file</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) This exact file tree is repeated verbatim two slides later, under
-     "Implementation Patterns / File-based memory". One of the two must go. Recommendation:
-     cut it here and let this slide carry the *definition* of long-term memory, since the later
-     slide has the pros/cons columns that make the tree worth showing.
-[FLOW] (must-fix) This slide is a one-line definition plus a directory listing, and it is
-     silently doing the job of the missing "Semantic Memory" slide. Give the four taxonomy rows
-     their due: this tree shows semantic memory (user.md, project.md) and nothing else — there
-     is no episodic or procedural file in it, even though the deck covers both later. Either
-     say that out loud or extend the tree with `episodes/` and `skills/` so the taxonomy and
-     the directory layout agree.
-[INTUITION] (should-fix) Explain why an index file exists at all, because it is the one
-     non-obvious thing on the slide: MEMORY.md is always loaded; the rest are loaded on demand.
-     It is a table of contents whose job is to be small enough to always afford, and specific
-     enough that the agent knows which file is worth opening. That is the eager/on-demand
-     hybrid from later in the deck, already visible here in miniature.
-[INSTRUCTOR] Worth stating plainly: this is not a toy. It is roughly what Claude Code does, and
-     the reason it works is that markdown files are simultaneously the storage format, the
-     diff format, the review format and the debugging view. No vector DB gives you `git log`
-     on your agent's beliefs.
-[Q-ADVANCED] "What stops the memory files from growing without bound?" — Nothing, by default,
-     and that is precisely the lifecycle gap this deck should address. Real answers: a size
-     budget per file enforced at write time, periodic LLM consolidation passes that merge and
-     supersede, and a promotion rule where only facts retrieved-and-used more than once graduate
-     to the always-loaded index.
--->
 </section>
 <section id="memory-implementations" class="slide level2">
 <h2>Memory Implementations</h2>
@@ -730,39 +489,6 @@ CCE, IISc
 </ul></li>
 </ol>
 
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) `mem_load` / `mem_save` are not Letta's tool names — they are generic
-     pseudocode. Students who go looking for them in the Letta docs will find nothing.
-[FIX] Use the real ones, which are also more instructive because they encode the core/archival
-     split the OS pattern is built on: `core_memory_append`, `core_memory_replace`,
-     `archival_memory_insert`, `archival_memory_search`, `conversation_search`. Note the
-     asymmetry worth pointing at — core memory has *replace*, archival has *search*. Core is
-     small and edited in place; archival is large and queried.
-[TERM] (must-fix) "Core memory" and "archival memory" are the two terms that make Letta
-     legible, and neither is on the slide. Core memory = a small always-in-context block the
-     agent can rewrite (its persona, the user block). Archival memory = unbounded external
-     store reachable only by an explicit search tool. That is the MemGPT paging idea made
-     concrete.
-[INTUITION] (should-fix) Give them the one-sentence trade between the two patterns, because it
-     is the actual decision they will face: the OS pattern asks the agent to *spend tokens and
-     turns* deciding what to remember, and gets judgment in return. The pipeline pattern spends
-     no agent attention at all, and gets whatever a background extractor happened to think was
-     important. Agent judgment is better and more expensive; there is no third option that is
-     both.
-[CORRECTNESS] (nice) The figure is a marketing listicle graphic ("Best AI Agent Memory Systems,
-     8 Frameworks Compared") and shows eight logos, of which the slide text discusses four. If
-     you keep it, use it as a landscape orientation slide only, and say explicitly that logo
-     count is not evidence of anything. The comparison table at the end of the deck is the one
-     doing real work.
-[READING] Packer et al., MemGPT (arXiv 2310.08560) §3-4 for the OS pattern; Chhikara et al.,
-     "Mem0" (arXiv 2504.19413) §3 for the pipeline pattern's extract/update loop — it is a good
-     paired reading because the two papers make opposite bets about where judgment lives.
-[Q-ADVANCED] "Which one actually wins in production?" — Neither, and the honest answer is a
-     split by data type. Pipeline extraction is good at high-volume, low-stakes user facts
-     (preferences, entities) where a missed fact is cheap. Agent-managed memory is better for
-     low-volume, high-stakes state (project conventions, hard-won lessons) where a *wrong* fact
-     is expensive. Most serious systems run both and keep them in separate namespaces.
--->
 <img data-src="images/memeory-landscape.png" class="r-stretch"></section>
 <section id="implementation-patterns" class="slide level2">
 <h2>Implementation Patterns</h2>
@@ -790,32 +516,6 @@ CCE, IISc
 <li>Requires the agent to <em>know</em> which file to read.</li>
 </ul>
 </div></div>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) The file tree here duplicates the one on the "Long-Term Memory" slide
-     exactly (modulo the "(always loaded)" comment). Keep this instance, cut the earlier one.
-[CORRECTNESS] (should-fix) "OpenClaw, Claude Code" — pair the label with the actual filenames so
-     students can go look: Claude Code uses `CLAUDE.md` (plus imported memory files), OpenClaw
-     uses `SOUL.md`, and the emerging cross-vendor convention is `AGENTS.md`. Deck 06 already
-     covers the SOUL.md / AGENTS.md pattern — cite that slide rather than re-explaining.
-[FLOW] (should-fix) "Requires the agent to *know* which file to read" is listed as a weakness,
-     but it is the exact problem the MEMORY.md index solves — and the index is on the previous
-     slide. Connect them explicitly: the index is what converts "know which file" from a
-     guessing problem into a lookup. Then the honest residual weakness is narrower: the index
-     itself grows, and eventually needs the same treatment.
-[INTUITION] (should-fix) The reason files win more often than students expect: memory is only
-     as good as your ability to *audit* it, and a markdown file is the only format where the
-     debugging tool is `cat`. When an agent behaves strangely, "read the four files it loaded"
-     is a five-second investigation. The equivalent in a vector store is a research project.
-[INSTRUCTOR] Put a number on "doesn't scale": a few hundred entries is roughly where an
-     always-loaded file stops being affordable, and where "which file?" stops being obvious.
-     Below that threshold — which covers most single-project coding agents — files are not a
-     compromise, they are the correct answer.
-[Q-ADVANCED] "Isn't `git` already an episodic memory store for a coding agent?" — Excellent
-     question, and largely yes: commit messages are episodes with timestamps, provenance and
-     diffs attached. The gaps are that git records what *succeeded* and was committed, not what
-     was tried and abandoned, and it has no retrieval by semantic similarity. A genuinely good
-     design exercise: what would you add to git log to make it a usable episodic store?
--->
 </section>
 <section id="implementation-patterns-1" class="slide level2">
 <h2>Implementation Patterns</h2>
@@ -851,48 +551,6 @@ CCE, IISc
 <li>Embedding model drift if you change models.</li>
 </ul>
 </div></div>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) `chromadb.Client()` is the **ephemeral, in-memory** client — the store
-     is destroyed when the process exits. This is a slide about *long-term* memory whose code
-     demonstrably cannot remember anything across sessions. If a student runs it as their
-     memory backend they will get a silent, total data loss and a very confusing debugging
-     session.
-[FIX] Use `chromadb.PersistentClient(path="./chroma")`. Verify in one line:
-     `python -c "import chromadb; c=chromadb.PersistentClient(path='/tmp/cm');
-      c.get_or_create_collection('m').add(documents=['x'], ids=['1']); print('ok')"`
-     then re-run the same command and confirm the count persists.
-[CORRECTNESS] (should-fix) `create_collection("agent_memory")` raises on the second run because
-     the collection already exists. Use `get_or_create_collection` — this bites every student
-     who re-runs a notebook cell, which is all of them.
-[CORRECTNESS] (nice) `col.query()` returns a dict of parallel lists
-     (`{"ids": [[...]], "documents": [[...]], "distances": [[...]]}`), double-nested because
-     the API accepts multiple queries at once. Worth showing the actual shape, or students will
-     write `results[0]` and get a `KeyError`. Also note Chroma returns *distances*, not
-     similarity scores — smaller is better, which is the opposite of the intuition the deck's
-     Mem0 slide sets up with `score: 0.91`.
-[INSTRUCTOR] Chroma silently downloads all-MiniLM-L6-v2 (~80MB, via ONNX) on first `add()`.
-     If you are demoing live on conference wifi, warm the cache beforehand or you will be
-     standing in front of a progress bar.
-[INTUITION] (must-fix) The "why it breaks" column says "Embeddings != understanding" and then
-     stops, which is the least convincing possible version of the most important point. Give
-     the negation example out loud, it lands every time: "The user prefers TypeScript" and
-     "The user does NOT prefer TypeScript" embed almost identically — cosine similarity is
-     near 1.0. A memory system that stores corrections and retracted preferences by embedding
-     alone will confidently hand the agent the exact fact the user just overturned.
-[INTUITION] (should-fix) "Returns top-k regardless of quality" deserves the blunt phrasing:
-     vector search always returns k results. If nothing relevant exists it returns the k least
-     irrelevant things with a straight face. Without a distance threshold, an empty memory store
-     and a full one both produce five confident-looking memories.
-[Q-ADVANCED] "Embedding model drift is listed as a weakness — what actually happens?" — Vectors
-     from two different models are not comparable, so upgrading your embedding model silently
-     poisons retrieval: old memories score meaninglessly against new queries. The fix is
-     unglamorous and worth stating: store the raw text plus a model-version tag, and re-embed
-     the whole corpus on upgrade. This is the real hidden cost of vector memory, and it is why
-     the text-of-record should always live in files.
-[READING] Anthropic engineering blog, "Contextual Retrieval" (2024) — the case that raw chunk
-     embeddings lose the context needed to retrieve them correctly, plus the BM25 hybrid result.
-     It is the empirical backing for the next slide's hybrid argument.
--->
 </section>
 <section id="hybrid-hermes-agent-mem0-etc" class="slide level2">
 <h2>Hybrid (Hermes Agent, Mem0 etc)</h2>
@@ -918,42 +576,8 @@ CCE, IISc
 <span id="cb5-15"><a></a>            <span class="op">+</span> <span class="va">self</span>.vectors.semantic_search(query, top_k)</span>
 <span id="cb5-16"><a></a>            <span class="op">+</span> <span class="va">self</span>.fts.search(query, top_k)</span>
 <span id="cb5-17"><a></a>        )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div style="border:2px dashed #b3b3b3; border-radius:8px; padding:0.5em 1em; margin-top:0.6em; color:#777; font-size:0.62em; text-align:left;">
-<p><strong>FIGURE TO ADD</strong> — <code>images/hybrid-memory-architecture.png</code> (source notes §7, figure 5)</p>
-<p><em>Write path:</em> observation → extract → <strong>fan-out</strong> to all three stores (markdown file = text of record; vector index = embedding; FTS5 = keywords). <em>Read path:</em> query → three retrievers in parallel → merge/dedupe → rank → top-k into context. Show the file store as the <strong>source of truth</strong> and the two indexes as <em>derived and rebuildable</em> — that asymmetry is the point of the whole slide.</p>
-</div>
-<!-- NOTES-BLOCK
-[INTUITION] (must-fix) The slide shows the code but never says why three stores beat one, and
-     the reason is a clean one-liner: the three retrievers fail in *uncorrelated* ways. Keyword
-     search nails exact identifiers (`JWKS`, `conftest.py`) and misses paraphrase. Vector search
-     nails paraphrase and misses exact identifiers. Files give you human curation and audit.
-     Union them and the failure modes cancel instead of compounding.
-[INSTRUCTOR] The most important architectural claim on this slide is invisible in the code:
-     the markdown files are the *source of truth* and the vector/FTS indexes are *derived*. That
-     means you can delete and rebuild both indexes from the files at any time, which is what
-     makes an embedding-model upgrade survivable. Say this explicitly — it is the design
-     decision that makes the previous slide's drift problem tractable.
-[CORRECTNESS] (should-fix) `dedupe_and_rank` on a concatenated list is hand-waving over the one
-     genuinely hard part, and the naive implementation is wrong: the three retrievers return
-     scores on incomparable scales (cosine similarity, BM25, keyword hit count), so you cannot
-     sort the merged list. Name the standard fix — Reciprocal Rank Fusion, score = Σ 1/(k+rank)
-     with k≈60 — which uses only ranks and is therefore scale-free. It is four lines of code and
-     it is what every hybrid retrieval system actually uses.
-[TERM] (must-fix) "FTS5" appears with no gloss. One line: "SQLite's built-in full-text search
-     extension — keyword/BM25 search with zero extra infrastructure, since you already have
-     SQLite." That last clause is why Hermes uses it.
-[FLOW] (nice) This slide is the natural end of the storage-engine sequence, so close the arc
-     out loud: files → vectors → both. Then state the decision rule students should leave with:
-     start with files; add an index only when you can point at retrievals that files missed.
-[Q-ADVANCED] "Three writes per memory — what happens when one fails?" — Good systems question.
-     Because the files are the source of truth, the correct design is: write the file
-     synchronously, index asynchronously, and make indexing idempotent and replayable from the
-     files. A failed index write should degrade retrieval quality, never lose a memory.
-[READING] Cormack et al., "Reciprocal Rank Fusion outperforms Condorcet and individual rank
-     learning methods" (SIGIR 2009) — three pages, and it is the actual algorithm behind the
-     `dedupe_and_rank` handwave.
--->
-</section>
+
+<img data-src="images/hermes-memory.png" class="r-stretch"></section>
 <section id="mem0-demo" class="slide level2">
 <h2>Mem0 Demo</h2>
 <ul>
@@ -982,54 +606,6 @@ CCE, IISc
 <span id="cb6-21"><a></a>    filters<span class="op">=</span>{<span class="st">"app_id"</span>: <span class="st">"support_bot"</span>}  <span class="co"># scope by app</span></span>
 <span id="cb6-22"><a></a>)</span>
 <span id="cb6-23"><a></a><span class="co"># Returns: [{"memory": "User is allergic to penicillin", "score": 0.91, ...}]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) The slide is internally inconsistent. It announces a "four-scope model
-     (`user_id` / `agent_id` / `run_id` / `app_id`)" and then passes only `user_id` as a scope,
-     demoting `app_id` into `metadata` and inventing a fifth key, `session_id`, that is not one
-     of the four. In the Mem0 SDK the scope IDs are top-level parameters of `add()`, and
-     `run_id` *is* the session scope — that is what it is for.
-[FIX] Pass the scopes as scopes:
-     `memory.add(messages=..., user_id="asha_42", agent_id="support_bot", run_id="s-1")`
-     and drop the metadata dict, or keep metadata only for genuinely non-scope fields.
-     Then the filtered search actually matches the model the slide is teaching.
-[CORRECTNESS] (must-fix) `score: 0.91` in the commented-out return value is fabricated. Do not
-     put invented numbers on a slide a student will compare their own output against — they
-     will assume a mismatch is their bug. Either run it once and paste the real output, or
-     replace the number with `...`.
-[FIX] Verify the whole snippet against the installed SDK before class — the `filters=` argument
-     and the search API version have both changed across releases:
-     `pip install -U mem0ai && python -c "import mem0, inspect;
-      print(mem0.__version__); print(inspect.signature(mem0.MemoryClient.search))"`
-     Note that `filters=` requires the v2 search API in current versions.
-[CORRECTNESS] (should-fix) Slide title says "Demo" but nothing is demonstrated — it is a code
-     read. Either retitle to "Mem0: memory as a service" and keep it as an API walkthrough, or
-     make it a real demo by adding the second half: a *new* session with no shared context that
-     answers the penicillin question correctly. The whole point of Mem0 is the cross-session
-     part, and that is exactly what the slide stops short of showing.
-[INTUITION] (should-fix) Name what Mem0 is really selling, because it is not storage — storage
-     is trivial. It is the *extraction* step: the user said "I'm allergic to penicillin and I
-     work at Acme Corp" and something had to decide that this is two durable facts rather than
-     one, that both are worth keeping, and that the assistant's "Got it — noted both" is worth
-     nothing. That decision is the product. Ask the class what it should do with "I think I
-     might be allergic to penicillin" — the confidence question has no good default.
-[INSTRUCTOR] The penicillin example is doing quiet ethical work and is worth thirty seconds of
-     honesty: this is a medical fact, extracted automatically, stored indefinitely, retrieved by
-     semantic similarity, and acted on by an agent — with no confirmation step anywhere. Every
-     one of those five steps is a place a regulated deployment needs a human. It is the cleanest
-     available motivation for memory governance.
-[FLOW] (should-fix) `add()` is asynchronous — the comment says so in passing. Students will
-     write add-then-immediately-search in a notebook, get an empty result, and conclude the
-     library is broken. Make the eventual-consistency point loud rather than parenthetical.
-[Q-ADVANCED] "What happens when the user says 'actually I'm not allergic to penicillin'?" — The
-     question that separates a memory store from a memory *system*. Mem0's pipeline runs an
-     explicit ADD / UPDATE / DELETE / NOOP decision per candidate fact against the existing
-     memories, so contradictions are resolved at write time rather than accumulating. Contrast
-     with a naive vector store, which happily holds both statements and returns whichever embeds
-     closer to the query. This is the single best argument for the pipeline pattern.
-[READING] Chhikara et al., "Mem0: Building Production-Ready AI Agents with Scalable Long-Term
-     Memory" (arXiv 2504.19413) §3 for the extract/update pipeline, and their LOCOMO results
-     for the latency/token argument against full-context baselines.
--->
 </section>
 <section id="when-to-fetch-memory" class="slide level2">
 <h2>When to Fetch Memory?</h2>
@@ -1037,75 +613,6 @@ CCE, IISc
 <li><p><strong>Eager injection</strong> - load relevant memory at the start of each session (Claude Code’s <code>CLAUDE.md</code>, OpenClaw’s <code>SOUL.md</code>)</p></li>
 <li><p><strong>On-demand tool</strong> - expose memory as a tool the agent calls (<code>recall_memory(query)</code>)</p></li>
 </ol>
-<div style="border:2px dashed #b3b3b3; border-radius:8px; padding:0.5em 1em; margin-top:0.6em; color:#777; font-size:0.62em; text-align:left;">
-<p><strong>FIGURE TO ADD</strong> — <code>images/eager-vs-ondemand.png</code></p>
-<p>Two timelines side by side. <em>Eager:</em> memory block sits in the context of turn 1, 2, 3 … (shade it in every turn — the cost is recurring, and most of it is unused). <em>On-demand:</em> turns 1-2 have no memory; turn 3 issues a <code>recall</code> tool call and only the retrieved slice enters turn 4. Caption the trade: <strong>eager pays tokens every turn; on-demand pays a round-trip when it is wrong about needing nothing.</strong></p>
-</div>
-<!-- NOTES-BLOCK
-[FLOW] (must-fix) This is one of the two or three most consequential design decisions in the
-     deck and it gets four lines and two options. Source notes §2.3 give four patterns — add
-     the missing two, because they are the ones real systems use:
-     (C) **Retrieval-augmented**: a retriever runs automatically each turn on the user message,
-         no agent decision, results prepended. Between eager and on-demand.
-     (D) **Hybrid index + fetch**: a small always-loaded index (MEMORY.md) plus on-demand reads
-         of the files it names. This is what Claude Code does and what the earlier Long-Term
-         Memory slide already showed — connect them.
-[INTUITION] (must-fix) Give the decision rule, not the menu: **inject eagerly what is needed
-     almost every turn; fetch on demand what is needed occasionally.** A fact needed 90% of the
-     time costs a round-trip 90% of the time if you make it on-demand. A fact needed 5% of the
-     time costs tokens 100% of the time if you inject it. The crossover, not the ideology, is
-     the answer.
-[CORRECTNESS] (should-fix) The two examples deserve their real names on-slide: eager = Claude
-     Code's `CLAUDE.md` and OpenClaw's `SOUL.md`; on-demand = Letta's `archival_memory_search`,
-     Mem0's `search()`, or any `recall_memory` tool. Right now only the eager side gets named.
-[INSTRUCTOR] Flag the failure mode unique to the on-demand pattern, because it is silent and
-     therefore nasty: **the agent has to know it does not know.** If memory is only reachable by
-     a tool call, the agent will confidently answer from parametric knowledge and never call it.
-     Eager injection cannot fail this way. This is a genuine argument for keeping a small eager
-     core even in an on-demand system — the eager block's real job is to *tell the agent what is
-     retrievable*.
-[Q-ADVANCED] "Doesn't eager injection wreck prompt caching?" — Actually the reverse, and it is
-     a good subtlety: a stable eager memory block sits at a fixed prefix position and caches
-     well, so its marginal cost is far below its token count. An on-demand result injected
-     mid-conversation invalidates the cache from that point on. Cache economics push toward
-     eager for stable memory — which is one reason CLAUDE.md-style systems remain competitive.
-[DEMO] (must-fix) demos/README.md Demo 1 belongs immediately after this slide — the "help or
-     hurt" result is meaningless until students know retrieval is a choice with settings. A
-     visible slide for it follows.
-[READING] Park et al., "Generative Agents" (arXiv 2304.03442) §4.2 — retrieval scored as
-     recency + importance + relevance rather than similarity alone. It is the best available
-     answer to "how do I rank what to fetch", and it is missing from this deck entirely.
--->
-</section>
-<section id="demo-memory-that-helps-vs.-memory-that-hurts" class="slide level2">
-<h2>Demo — Memory that helps vs.&nbsp;memory that hurts</h2>
-<div style="border:2px dashed #b3b3b3; border-radius:8px; padding:0.5em 1em; margin-top:0.6em; color:#777; font-size:0.62em; text-align:left;">
-<p><strong>DEMO TO BUILD</strong> — spec in <code>demos/README.md</code> (Demo 1); notebook not yet written.</p>
-<p><strong>Setup.</strong> One task, five memory entries: 3 relevant, 1 stale (was true, now false), 1 semantically near but wrong. <strong>Three runs.</strong> (a) all five injected, (b) top-relevant only, (c) no memory. <strong>Measure.</strong> Correctness, tool calls, tokens. <strong>The result to protect:</strong> run (a) is <em>worse than run (c)</em>. The stale and near-miss entries do not merely waste tokens — they change the answer. More memory is not better memory.</p>
-</div>
-<!-- NOTES-BLOCK
-[DEMO] (must-fix) This is the falsification demo for the deck — demos/README.md explicitly says
-     "protect it when slotting exercises in". Everything before this slide argues memory is
-     valuable; this is where students find out it is conditionally valuable, and the condition
-     is retrieval precision.
-[INSTRUCTOR] Poll before revealing: "which run wins?" Nearly everyone predicts (a), because more
-     information intuitively cannot hurt. Getting that prediction on record out loud is what
-     makes the result stick. Then land it: the agent has no way to know which of the five
-     memories is stale — they arrive in context with identical authority, and stored text
-     outranks the agent's own uncertainty.
-[FLOW] (should-fix) Make the ordering deliberate: run (c) no-memory first as the baseline,
-     then (a) all-five, then (b) filtered. Baseline-first means the class sees the degradation
-     rather than just an ordering of two good runs.
-[INTUITION] The takeaway to write on the board: "Your memory system's quality is set by its
-     *worst retrieved entry*, not its best." One bad memory in five is not 80% quality — it can
-     be a wrong answer.
-[Q-ADVANCED] "Couldn't you just tell the agent in the prompt that memories might be stale?" —
-     Try it live if there is time; it helps a little and much less than students expect. The
-     model has no independent way to adjudicate, so it tends either to ignore the warning or to
-     become uselessly hedgy about *all* memories including the correct ones. The fix has to be
-     in retrieval and in write-time metadata (dates, provenance, confidence), not in a
-     disclaimer.
--->
 </section>
 <section id="episodic-memory" class="slide level2">
 <h2>Episodic Memory</h2>
@@ -1114,40 +621,6 @@ CCE, IISc
 <li><p>Pioneered by <strong>Hermes Agent</strong> and formalized in <strong>A-MEM (NeurIPS 2025, Xu et al.)</strong></p></li>
 <li><p>After completing a task, the agent writes an episode</p></li>
 </ul>
-<div style="border:2px dashed #b3b3b3; border-radius:8px; padding:0.5em 1em; margin-top:0.6em; color:#777; font-size:0.62em; text-align:left;">
-<p><strong>FIGURE TO ADD</strong> — <code>images/semantic-vs-episodic.png</code> (source notes §7, figure 3)</p>
-<p>Same incident, two rows. <strong>Semantic:</strong> “Auth uses JWKS.” <strong>Episodic:</strong> “Last time auth tests failed it was a <em>stale JWKS cache</em>, not token parsing — clear the cache before touching validation logic.” Caption: <em>a fact tells you what is true; an episode tells you what fooled you last time.</em></p>
-</div>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) "Pioneered by Hermes Agent" is not right and it skips the field's
-     founding result. Park et al.'s **Generative Agents** (UIST 2023, arXiv 2304.03442) already
-     had the full pattern two years earlier: a memory stream of timestamped observations, a
-     retrieval score, and periodic *reflection* that synthesises higher-level beliefs. Hermes
-     and A-MEM are refinements of that, not its origin.
-[FIX] Reword to "Introduced by Generative Agents (Park et al., UIST 2023); refined in practice
-     by Hermes Agent and formalised in A-MEM (Xu et al., arXiv 2502.12110)." Also verify the
-     "NeurIPS 2025" venue claim before it goes on a slide — cite the arXiv id, which is stable.
-[FLOW] (must-fix) Losing Generative Agents costs the deck its best idea, not just a citation.
-     Their retrieval score is **relevance + recency + importance**, not similarity alone —
-     which is precisely the answer to the ranking question raised on the "When to Fetch" slide
-     and never answered. Add one line: episodes should be scored on how *similar*, how *recent*
-     and how *important* they were, because a highly similar episode from a year-old codebase
-     is worse than a roughly similar one from last week.
-[TERM] (should-fix) "Trajectory" appears in the taxonomy table and "episode" here without either
-     being defined, and students reasonably assume they are different things. One line: "A
-     trajectory is the raw step-by-step record of a run. An episode is the *distilled* version
-     you keep — what was tried, what happened, what to do differently."
-[INTUITION] (must-fix) The distinction beginners will not get from the word "episodic": a
-     semantic memory is a *fact*, an episodic memory is a *lesson with a scar on it*. Semantic
-     memory answers "what is true here?"; episodic answers "what went wrong last time I
-     assumed that?" The teaching phrase from the source notes is worth reading verbatim:
-     **"Episodic memory is not a diary. It is a library of transferable lessons."**
-[INSTRUCTOR] The word "transferable" is doing the load-bearing work. An episode that only
-     describes what happened is a log line and has no value at retrieval time. An episode is
-     only worth storing if it changes what a future agent would *do*. Good test to give the
-     class: if the `lessons` field were deleted, would this record still be worth keeping? If
-     yes, it was really a semantic fact and belongs in the other store.
--->
 </section>
 <section id="episodic-memory-1" class="slide level2">
 <h2>Episodic Memory</h2>
@@ -1177,43 +650,6 @@ CCE, IISc
 <span id="cb7-23"><a></a>context <span class="op">+=</span> format_episodes(similar_episodes)</span>
 <span id="cb7-24"><a></a><span class="co"># The agent now knows: "Last time I tried to deploy to ECS, I failed</span></span>
 <span id="cb7-25"><a></a><span class="co"># because of private subnets. I should check subnet type first."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) The `Episode` dataclass is used but never shown, and its fields differ
-     from the schema in source notes §2.2 (which adds `task`, `context`, `artifacts` and
-     `timestamp`). `timestamp` is the important omission: without it you cannot decay old
-     episodes, cannot detect that an episode predates a migration, and cannot implement the
-     recency term in the retrieval score. Add it to the slide.
-[CORRECTNESS] (nice) `episodic_store.search("deploy to ECS", top_k=3)` retrieves unconditionally.
-     Show the guard that makes it safe: a similarity threshold, so a task with no genuinely
-     similar history injects *nothing* rather than the three least-irrelevant episodes. This is
-     the same top-k trap flagged on the vector-store slide, now with higher stakes because
-     episodes carry instructions.
-[INSTRUCTOR] Walk the three numbered steps as a loop, not a list, and stress the ordering in
-     step 3: retrieval happens *before execution begins*, not after the agent gets stuck. An
-     episode retrieved after failure is a post-mortem; retrieved before, it is a plan change.
-     That timing is the entire mechanism.
-[INTUITION] (should-fix) The example is well chosen — say why. The lesson is not "CDK deploy
-     failed", it is "check subnet type first", plus the exact command to check it. A good
-     episode is *actionable at the top of the next run*: a diagnosis and a next action, not a
-     narration. Have the class rewrite a bad episode ("the deploy didn't work, we tried some
-     things") into a good one — two minutes, and it is the skill the lab needs.
-[Q-ADVANCED] "What if the agent writes an episode after a run that succeeded by luck?" — This
-     is the real failure mode and the deck should not let it pass. The agent enshrines a bad
-     approach that happened to work once, retrieves it forever, and the mistake compounds
-     silently because nothing ever contradicts it. Mitigations worth naming: gate episode
-     writes on *verified* outcomes (tests passed, deploy healthy) rather than the agent's own
-     judgement; store failures and successes with equal weight; and track whether a retrieved
-     episode actually helped, demoting the ones that did not.
-[READING] Xu et al., "A-MEM: Agentic Memory for LLM Agents" (arXiv 2502.12110) — the three
-     Zettelkasten primitives (structured notes, automatic linking, memory *evolution*, where a
-     new memory updates the attributes of older related ones). The lesson to quote: memory
-     should be a living graph, not an append-only log. Cognee and Mem0's graph mode both follow
-     this design.
-[IMAGE] (should-fix) Missing: the self-improvement loop as a cycle (source notes §7, figure 12
-     family) — Task -> Execute -> Write Episode -> (later, similar task) -> Recall -> Inject ->
-     Adjust -> Execute better -> Write Episode, with the arrow closing back. Save as
-     `images/episodic-loop.png`. A visible placeholder is on the next slide.
--->
 </section>
 <section id="episodic-memory-2" class="slide level2">
 <h2>Episodic Memory</h2>
@@ -1224,10 +660,6 @@ CCE, IISc
 <li>Transparency - you can inspect why the agent chose a particular approach</li>
 </ul>
 <p><strong>Observational Memory</strong> [Mastra] - extracts discrete facts and stores them</p>
-<div style="border:2px dashed #b3b3b3; border-radius:8px; padding:0.5em 1em; margin-top:0.6em; color:#777; font-size:0.62em; text-align:left;">
-<p><strong>FIGURE TO ADD</strong> — <code>images/episodic-loop.png</code></p>
-<p>A closed cycle: Task → Execute → <strong>Write episode</strong> → <em>(later, similar task)</em> → Recall top-k → Inject before execution → Adjust approach → Execute better → Write episode. Draw the loop closing on itself and label the closing arrow <strong>“improvement without retraining”</strong> — that arrow is the claim of this slide.</p>
-</div>
 <!-- NOTES-BLOCK
 [FLOW] (must-fix) Four benefits, zero caveats — directly after a code example whose stored
      episode is a *failure*. The deck has consistently paired each mechanism with its failure
@@ -1265,10 +697,6 @@ CCE, IISc
 <ul>
 <li>Hermes’ pattern: after a <em>complex</em> task succeeds, the agent is prompted: <em>“Write a <code>SKILL.md</code> that future-you could use to do this faster.”</em></li>
 </ul>
-<div style="border:2px dashed #b3b3b3; border-radius:8px; padding:0.5em 1em; margin-top:0.6em; color:#777; font-size:0.62em; text-align:left;">
-<p><strong>FIGURE TO ADD</strong> — <code>images/procedural-memory-loop.png</code></p>
-<p>Successful <em>complex</em> task → gate: <strong>“could this become a skill?”</strong> → if yes, agent writes <code>SKILL.md</code> → skill lands in the catalog from deck 05 → surfaces on future runs → catalog grows. Draw the gate as a diamond and label the reject path <strong>“most tasks stop here”</strong> — the gate is what keeps the catalog from filling with junk.</p>
-</div>
 <!-- NOTES-BLOCK
 [FLOW] (must-fix) This is the deck's most striking idea — an agent that writes its own tools —
      and it gets two lines. It also has the strongest callback available: the class *hand-wrote*
@@ -1305,60 +733,6 @@ CCE, IISc
      this deck and the comparison table and never introduced.
 -->
 </section>
-<section id="memory-lifecycle" class="slide level2">
-<h2>Memory Lifecycle</h2>
-<div style="border:2px dashed #b3b3b3; border-radius:8px; padding:0.5em 1em; margin-top:0.6em; color:#777; font-size:0.62em; text-align:left;">
-<p><strong>SLIDE TO WRITE</strong> — source notes §2.4. The deck’s largest content gap: it teaches storage without a lifecycle, so nothing ever gets corrected or removed.</p>
-<p><strong>Loop figure to add</strong> (<code>images/memory-lifecycle.png</code>, source notes §7, figure 4): Observe → Extract → Store → Retrieve → Apply → Update → <strong>Consolidate</strong> → <strong>Forget/Archive</strong>, drawn as a cycle with the last two highlighted as the steps everyone omits.</p>
-<p><strong>Consolidation</strong> — raw trace <em>(ran pytest → InvalidSignature → read jwks.py → cleared cache → passed)</em> becomes one durable line: <em>“Auth tests fail on stale JWKS cache; clear before touching validation.”</em> Session-end reflection prompt is in source notes §2.4.</p>
-<p><strong>Forgetting is not just deletion:</strong> archive · lower retrieval priority · mark stale · merge duplicates · replace with a summary. Policies: time decay, usefulness score, contradiction detection, scope restriction, human review.</p>
-</div>
-<!-- NOTES-BLOCK
-[FLOW] (must-fix) Everything before this slide adds to the store; nothing removes from it. Left
-     as is, the deck teaches a system that necessarily degrades — every failure mode listed on
-     the "bad memory" slide is a lifecycle failure, and the deck raises them and then never
-     supplies the machinery that addresses them. This slide (or a cut acknowledgement that it is
-     out of scope) closes that loop.
-[INTUITION] (must-fix) The line to leave them with: **forgetting is a safety feature, not
-     housekeeping.** An agent that never forgets becomes monotonically more wrong, because the
-     world changes and the store does not. Deletion is the only operation that makes a memory
-     system *more* correct.
-[INSTRUCTOR] The point students resist hardest: consolidation is lossy on purpose. They will
-     want to keep the raw trace "just in case". Answer with retrieval economics — every retained
-     low-value record is a competitor in the top-k for every future query. Keeping everything is
-     not free storage; it is a permanent tax on precision.
-[Q-ADVANCED] "Who decides what to forget — and isn't an LLM deciding to delete its own memory
-     alarming?" — It should be. Practical answer: never hard-delete automatically. Demote,
-     archive and mark stale automatically; require human review only for hard deletion and for
-     anything scoped as sensitive. That gives you reversibility and an audit trail, which is
-     what a regulated deployment needs anyway.
-[READING] Park et al., "Generative Agents" (arXiv 2304.03442) §4.3 on reflection — the original
-     consolidation mechanism, where many observations become fewer higher-level beliefs. Pair
-     with Zep (arXiv 2501.13956) for the invalidate-don't-delete alternative.
--->
-</section>
-<section id="demo-what-should-the-agent-have-remembered" class="slide level2">
-<h2>Demo — What should the agent have remembered?</h2>
-<div style="border:2px dashed #b3b3b3; border-radius:8px; padding:0.5em 1em; margin-top:0.6em; color:#777; font-size:0.62em; text-align:left;">
-<p><strong>DEMO TO BUILD</strong> — spec in <code>demos/README.md</code> (Demo 2); notebook not yet written.</p>
-<p>Hand out a short raw agent trace. In pairs, students sort it into four buckets: <strong>semantic</strong> (durable facts) · <strong>episodic</strong> (lessons with a scar) · <strong>procedural</strong> (a candidate <code>SKILL.md</code>) · <strong>nothing-to-store</strong> (most of it). Then run an actual reflection pass over the same trace and diff the two.</p>
-<p><em>Expected disagreement:</em> students over-store. The reflection prompt from source notes §2.4 is the answer key.</p>
-</div>
-<!-- NOTES-BLOCK
-[DEMO] (should-fix) Best run as five minutes of paper-and-pen before any code — it forces the
-     taxonomy to become a decision rather than a table, and it surfaces the "nothing-to-store"
-     bucket, which is the one nobody writes down and the one that matters most.
-[INSTRUCTOR] Seed the trace deliberately with three traps: a fact that is true only for this
-     one task (scope trap — should not become a global memory); an inference the agent stated
-     confidently but never verified (confidence trap — should not be stored at all); and a
-     secret pasted mid-run (safety trap — must never be stored). Most pairs catch the secret
-     and miss the other two.
-[INTUITION] The rule to hand them: store a memory only if you can answer three questions about
-     it — what is its **scope** (task / repo / user), what is its **source**, and how
-     **confident** are you? If any answer is missing, it is not ready to be stored. That maps
-     directly onto the memory-record frontmatter in source notes §2.2.
--->
-</section>
 <section id="user-modeling-a-special-case-of-memory" class="slide level2">
 <h2>User modeling : A special case of memory</h2>
 <p>The agent builds a <strong>deepening model of the user</strong> across sessions:</p>
@@ -1378,40 +752,6 @@ CCE, IISc
 <span id="cb8-9"><a></a>        <span class="co"># LLM-powered integration: merge or replace?</span></span>
 <span id="cb8-10"><a></a>        ...</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Claude Code - project-level <code>MEMORY.md</code> store</p>
-<!-- NOTES-BLOCK
-[CORRECTNESS] (should-fix) Two different files are being conflated. `CLAUDE.md` is the
-     human-authored project instruction file that is always loaded (that is what the comparison
-     table at the end of the deck means by "CLAUDE.md"). A `MEMORY.md` under a memory directory
-     is the *index* of agent-written memory files — different author, different lifecycle,
-     different trust level. The distinction is the point: one is instructions you wrote, the
-     other is beliefs the agent formed. Name both.
-[CORRECTNESS] (should-fix) The `UserModel` class is a schema with no storage or update
-     semantics, and `update()` is an ellipsis with the hardest question in the deck written as
-     a comment: "merge or replace?". Do not skip past it — answer it. Rule of thumb: *replace*
-     scalar fields where a new observation supersedes the old (`communication_style`), *append*
-     to evidence lists, and *never* silently drop a contradicted value without recording that it
-     changed. This is the same ADD/UPDATE/DELETE decision Mem0 makes; connect the two.
-[CORRECTNESS] (nice) `communication_style: str  # "terse" | "detailed" | "casual"` should be a
-     `Literal` if it is really an enum — it is a slide about structure, so let the type carry it.
-[INTUITION] (should-fix) Explain why the session-1/5/20 progression is not just "more facts". It
-     is a shift in *kind*: session 1 stores things the user **told** you; session 20 stores
-     things the user **never said** and you inferred from behaviour. Inferred beliefs are more
-     valuable and far more dangerous — they have no source to check, no moment of consent, and
-     the user cannot easily discover the agent holds them.
-[INSTRUCTOR] Land the governance point here, it is the natural place: a user model is the memory
-     type most likely to be wrong in a way the user finds *offensive* rather than merely
-     unhelpful ("common mistakes", "expertise areas"). Ask the class: should the user be able to
-     read their own model? Edit it? Should the agent disclose it is maintaining one? There is no
-     technical answer, and that is exactly why it belongs on a slide.
-[Q-ADVANCED] "How do you stop a user model from becoming a self-fulfilling stereotype?" — Sharp
-     and worth engaging: if session 5 records "user is a beginner", the agent simplifies, the
-     user never demonstrates expertise, and the belief is never contradicted. Mitigations: store
-     evidence with beliefs so they can be re-examined, decay unreinforced traits rather than
-     holding them indefinitely, and periodically test the belief instead of just applying it.
-     This is the memory-system version of a feedback loop in a recommender.
-[FLOW] (nice) This slide has no failure-mode counterweight, unlike the rest of the deck. The
-     stereotype question above is the natural one to put on it.
--->
 </section>
 <section id="memory-comparison" class="slide level2">
 <h2>Memory Comparison</h2>
@@ -1449,67 +789,9 @@ CCE, IISc
      What happens on contradiction? Is there any forgetting mechanism? Can I rebuild the indexes
      from a source of truth? Those five outlive any specific product.
 -->
+
+
 <img data-src="images/memory-implmentations.png" class="r-stretch"></section>
-<section id="does-the-memory-actually-help" class="slide level2">
-<h2>Does the memory actually help?</h2>
-<div style="border:2px dashed #b3b3b3; border-radius:8px; padding:0.5em 1em; margin-top:0.6em; color:#777; font-size:0.62em; text-align:left;">
-<p><strong>SLIDE TO WRITE</strong> — source notes §2.5. The deck currently ships a memory system with no way to tell whether it works.</p>
-<p><strong>Six axes:</strong> recall (found it) · precision (avoided junk) · <strong>application</strong> (used it correctly) · freshness (preferred current over stale) · safety (stored nothing it shouldn’t) · efficiency (fewer steps/tokens/failures).</p>
-<p><strong>Benchmark shape — the two-session test.</strong> Session 1 creates the knowledge. Session 2 needs it. Compare against a no-memory baseline on: success rate, steps, tool calls, tokens, repeated failed actions, correct vs.&nbsp;incorrect memory writes.</p>
-<p><strong>Negative tests (the part everyone skips):</strong> change a convention <em>after</em> memory was written · plant a misleading old memory · give a task where memory is irrelevant — and check the agent does not force-fit it.</p>
-</div>
-<!-- NOTES-BLOCK
-[FLOW] (must-fix) Without this slide the deck's central claim — memory makes agents better — is
-     asserted and never tested, three slides after a demo showing memory can make agents worse.
-     The two-session benchmark is also the measurement the Episode-4 lab depends on, so this
-     slide is load-bearing for the assignment, not optional enrichment.
-[INTUITION] (must-fix) Why memory evaluation is harder than answer evaluation, in one line:
-     you are not scoring an output, you are scoring a *decision about what to retrieve*, and the
-     same store can be right for one task and actively harmful for the next. Precision and
-     recall have to be measured per-task, not per-store.
-[INSTRUCTOR] End on the honest discussion question from source notes §2.5, and do not resolve it
-     for them: *if the memory-enabled agent succeeds faster but occasionally follows a stale
-     memory, is it better than the no-memory baseline?* The answer is domain-dependent — yes for
-     a coding agent where errors are cheap and visible, no for anything where a confidently
-     wrong answer is expensive. That is the note to end the lecture on.
-[Q-ADVANCED] "How do you measure whether a *write* was correct, at write time?" — You largely
-     cannot, and that asymmetry is worth admitting: writes are cheap and unverifiable, reads are
-     where errors surface. The practical approach is retrospective — track which memories get
-     retrieved, whether the run that retrieved them succeeded, and demote memories that
-     correlate with failure. Memory quality is measured downstream, in outcomes, not at the
-     moment of writing.
--->
-</section>
-<section id="lab-episode-4-persistent-project-memory" class="slide level2">
-<h2>Lab — Episode 4: persistent project memory</h2>
-<div style="border:2px dashed #b3b3b3; border-radius:8px; padding:0.5em 1em; margin-top:0.6em; color:#777; font-size:0.62em; text-align:left;">
-<p><strong>LAB TO BUILD</strong> — spec in <code>demos/README.md</code>; full framing in source notes §9 “Memory Lab”. Chains from Episode 3 (deck 03); chains to Episode 5 (deck 08).</p>
-<p>Give the coding agent all three memory types on one repo: <strong>semantic</strong> → <code>PROJECT_NOTES.md</code> (conventions, architecture, where things live) · <strong>episodic</strong> → append-only log of what was tried and why · <strong>procedural</strong> → the agent writes its own <code>SKILL.md</code>.</p>
-<p>Add a session-end reflection step, a retrieval step, and a memory budget. <strong>Two sessions, same repo</strong> — session 2 is designed so session-1 knowledge accelerates it. <strong>Measure:</strong> session-2 step count <em>with vs.&nbsp;without memory</em>, against a no-memory baseline.</p>
-</div>
-<!-- NOTES-BLOCK
-[DEMO] (must-fix) This is the deck's assessed deliverable and it currently appears nowhere in
-     the slides — students meet the taxonomy and never build it. Even if the lab is handed out
-     separately, put the slide in so the lecture visibly lands somewhere.
-[INSTRUCTOR] Insist on the no-memory baseline being run *first*. Students who build the memory
-     system first will rationalise whatever number they get; a baseline recorded before the
-     system exists is the only honest comparison, and it is a research-hygiene habit worth
-     enforcing here.
-[FLOW] (should-fix) Make the spine explicit on the slide — Episode 3 built the agent loop,
-     Episode 4 gives it memory, Episode 5 splits it into multiple agents. Students should see
-     that decks 03/07/08 are one artefact, not three assignments.
-[Q-ADVANCED] "What if memory makes session 2 *slower*?" — A real and reportable outcome, and it
-     should be graded as a success. Retrieval costs a round-trip; injection costs tokens; if the
-     two sessions were not genuinely related, the overhead does not pay for itself. A student
-     who measures this and explains it has learned the lesson of the deck better than one whose
-     numbers happened to come out favourable.
-[READING] Anthropic engineering blog, "Effective context engineering for AI agents" (2025) —
-     the file-system-as-memory and note-taking sections map almost directly onto this lab's
-     `PROJECT_NOTES.md` design.
--->
-
-
-</section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">

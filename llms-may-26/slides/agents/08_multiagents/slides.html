@@ -6,7 +6,9 @@
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-73db7b5a953198da8f17fc5313e632aa.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-73db7b5a953198da8f17fc5313e632aa.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/quarto-contrib/videojs/video.min.js"></script>
+<link href="../../site_libs/quarto-contrib/videojs/video-js.css" rel="stylesheet"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.34">
 
   <meta name="author" content="CCE, IISc">
@@ -211,16 +213,19 @@ CCE, IISc
 </div>
 
 </section>
-<section id="multi-agent-systems" class="slide level2">
-<h2>MULTI-AGENT SYSTEMS</h2>
-</section>
 <section id="why-multi-agent" class="slide level2">
 <h2>Why Multi-Agent?</h2>
-<ul>
-<li>Specialized agents win, like specialized humans. A coder, a reviewer, a tester - clean division of labor</li>
-</ul>
 
-<img data-src="images/multi-agent.png" class="r-stretch"></section>
+<img data-src="images/one-vs-many.png" class="r-stretch"></section>
+<section id="why-multi-agent-1" class="slide level2">
+<h2>Why Multi-Agent?</h2>
+<ul>
+<li><p>Some work is genuinely parallel - five bugs, five agents</p></li>
+<li><p>Some work is noisy to READ but cheap to REPORT - let a subagent run its own context and hand back a paragraph</p></li>
+<li><p>Some work is better judged than produced - a critic that never saw the author’s reasoning catches what the author cannot</p></li>
+<li><p>Specialized agents win, like specialized humans. A coder, a reviewer, a tester - clean division of labor</p></li>
+</ul>
+</section>
 <section id="multi-agent-system-benefits" class="slide level2">
 <h2>Multi-agent System Benefits</h2>
 <ol type="1">
@@ -237,15 +242,40 @@ CCE, IISc
 <li><strong>Context fragmentation</strong> - agent B doesn’t have what agent A knew.</li>
 <li><strong>Debug nightmare</strong> - failures cross agent boundaries; root cause analysis is hard.</li>
 </ol>
+<div class="fragment">
+<blockquote>
+<p>So: do not add an agent unless it buys isolation, parallelism, or disagreement.</p>
+</blockquote>
+</div>
 </section>
 <section id="multi-agent-frameworks" class="slide level2">
 <h2>Multi-Agent Frameworks</h2>
 <p>The current multi-agent framework landscape</p>
 
 <img data-src="images/multi-agent-framework.png" class="r-stretch"></section>
+<section id="multi-agent-system-checklist" class="slide level2">
+<h2>Multi-Agent System Checklist</h2>
+<ol type="1">
+<li><strong>Identity prompt</strong> - who this agent <em>is</em>.</li>
+<li><strong>Scope</strong> - what it does AND what it doesn’t.</li>
+<li><strong>Tools</strong> - its specific (narrow!) tool set.</li>
+<li><strong>Inputs</strong> - what shape of state it consumes.</li>
+<li><strong>Outputs</strong> - what shape of artifact it produces.</li>
+<li><strong>Handoff rules</strong> - when does it pass to another agent?</li>
+<li><strong>Failure mode</strong> - what happens if it fails? Retry? Escalate?</li>
+<li><strong>Termination</strong>- a step cap, a token budget, and what happens when it is hit (return partial work, escalate, or fail loudly)</li>
+</ol>
+</section>
 <section id="orchestration-patterns" class="slide level2">
 <h2>Orchestration Patterns</h2>
-</section>
+<ul>
+<li>who decides what is next? (supervisor)</li>
+<li>what if the order is fixed?(pipeline)</li>
+<li>what if it loops? (graph)</li>
+<li>what if nothing depends on anything? (fleet).</li>
+</ul>
+
+<img data-src="images/orch-patterns.png" class="r-stretch"></section>
 <section id="pattern-1-supervisor-manager-hub-and-spoke" class="slide level2">
 <h2>Pattern 1 : Supervisor / Manager (hub-and-spoke)</h2>
 
@@ -268,6 +298,12 @@ CCE, IISc
 
 <img data-src="images/multi-sequential.png" class="r-stretch"><p><strong>Used by:</strong></p>
 <p>MetaGPT (PM -&gt; Architect -&gt; PM -&gt; Engineer -&gt; QA), Aider (architect -&gt; editor).</p>
+<div class="fragment">
+<ul>
+<li>Pros - deterministic, debuggable, no routing failures, easy to eval stage by stage.</li>
+<li>Cons - cannot react, a bad stage-1 output poisons everything downstream, no recovery.</li>
+</ul>
+</div>
 </section>
 <section id="pattern-3-graph-with-conditional-edges" class="slide level2">
 <h2>Pattern 3 : Graph with Conditional Edges</h2>
@@ -293,51 +329,40 @@ CCE, IISc
 <p><strong>Pros:</strong> massive parallelism, isolated workspaces (no merge conflicts mid-execution).</p>
 <p><strong>Cons:</strong> orchestration is complex, merge conflicts etc</p>
 </section>
-<section id="multi-agent-system-checklist" class="slide level2">
-<h2>Multi-Agent System Checklist</h2>
-<ol type="1">
-<li><strong>Identity prompt</strong> - who this agent <em>is</em>.</li>
-<li><strong>Scope</strong> - what it does AND what it doesn’t.</li>
-<li><strong>Tools</strong> - its specific (narrow!) tool set.</li>
-<li><strong>Inputs</strong> - what shape of state it consumes.</li>
-<li><strong>Outputs</strong> - what shape of artifact it produces.</li>
-<li><strong>Handoff rules</strong> - when does it pass to another agent?</li>
-<li><strong>Failure mode</strong> - what happens if it fails? Retry? Escalate?</li>
-</ol>
-</section>
-<section id="demo-langgraph-supervisor-tiered-models" class="slide level2">
-<h2><code>[DEMO]</code> LangGraph supervisor + tiered models</h2>
-<p>Tiered model strategy — Claude Opus 5 routes, Haiku 4.5 executes.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a><span class="co"># pip install langgraph langgraph-supervisor langchain-anthropic</span></span>
+<section id="langgraph-supervisor-tiered-models" class="slide level2">
+<h2>LangGraph supervisor + tiered models</h2>
+<p>Tiered model strategy - Gemini Flash routes, Flash-Lite executes.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a><span class="co"># pip install langgraph langgraph-supervisor langchain-google-genai</span></span>
 <span id="cb3-2"><a></a><span class="im">from</span> langgraph_supervisor <span class="im">import</span> create_supervisor</span>
 <span id="cb3-3"><a></a><span class="im">from</span> langgraph.prebuilt <span class="im">import</span> create_react_agent</span>
-<span id="cb3-4"><a></a><span class="im">from</span> langchain_anthropic <span class="im">import</span> ChatAnthropic</span>
+<span id="cb3-4"><a></a><span class="im">from</span> langchain_google_genai <span class="im">import</span> ChatGoogleGenerativeAI</span>
 <span id="cb3-5"><a></a></span>
-<span id="cb3-6"><a></a><span class="co"># Tiered model strategy (cuts cost 60–70% vs. all-Opus):</span></span>
-<span id="cb3-7"><a></a>supervisor_llm <span class="op">=</span> ChatAnthropic(model<span class="op">=</span><span class="st">"claude-opus-5"</span>)     <span class="co"># reasoning for routing</span></span>
-<span id="cb3-8"><a></a>worker_llm     <span class="op">=</span> ChatAnthropic(model<span class="op">=</span><span class="st">"claude-haiku-4-5"</span>)  <span class="co"># execution</span></span>
-<span id="cb3-9"><a></a></span>
-<span id="cb3-10"><a></a>researcher <span class="op">=</span> create_react_agent(</span>
-<span id="cb3-11"><a></a>    worker_llm, tools<span class="op">=</span>[web_search], name<span class="op">=</span><span class="st">"researcher"</span>,</span>
-<span id="cb3-12"><a></a>    prompt<span class="op">=</span><span class="st">"You research topics. Return facts only."</span></span>
-<span id="cb3-13"><a></a>)</span>
-<span id="cb3-14"><a></a>coder <span class="op">=</span> create_react_agent(</span>
-<span id="cb3-15"><a></a>    worker_llm, tools<span class="op">=</span>[run_python], name<span class="op">=</span><span class="st">"coder"</span>,</span>
-<span id="cb3-16"><a></a>    prompt<span class="op">=</span><span class="st">"You write Python. Return code only."</span></span>
-<span id="cb3-17"><a></a>)</span>
-<span id="cb3-18"><a></a>reviewer <span class="op">=</span> create_react_agent(</span>
-<span id="cb3-19"><a></a>    worker_llm, tools<span class="op">=</span>[], name<span class="op">=</span><span class="st">"reviewer"</span>,</span>
-<span id="cb3-20"><a></a>    prompt<span class="op">=</span><span class="st">"You review code for bugs. Return issues found or 'OK'."</span></span>
-<span id="cb3-21"><a></a>)</span>
-<span id="cb3-22"><a></a></span>
-<span id="cb3-23"><a></a>supervisor <span class="op">=</span> create_supervisor(</span>
-<span id="cb3-24"><a></a>    [researcher, coder, reviewer],</span>
-<span id="cb3-25"><a></a>    model<span class="op">=</span>supervisor_llm,</span>
-<span id="cb3-26"><a></a>    prompt<span class="op">=</span><span class="st">"Route work between researcher, coder, reviewer. Reply 'DONE' when complete."</span></span>
-<span id="cb3-27"><a></a>).<span class="bu">compile</span>(checkpointer<span class="op">=</span>MemorySaver())  <span class="co"># durable execution</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-6"><a></a><span class="co"># Tiered strategy: pay for judgment (routing), not for volume (execution).</span></span>
+<span id="cb3-7"><a></a><span class="co"># `-latest` tracks the current Flash; pin a dated version for reproducible evals.</span></span>
+<span id="cb3-8"><a></a>supervisor_llm <span class="op">=</span> ChatGoogleGenerativeAI(model<span class="op">=</span><span class="st">"gemini-flash-latest"</span>)       <span class="co"># routing</span></span>
+<span id="cb3-9"><a></a>worker_llm     <span class="op">=</span> ChatGoogleGenerativeAI(model<span class="op">=</span><span class="st">"gemini-flash-lite-latest"</span>)  <span class="co"># execution</span></span>
+<span id="cb3-10"><a></a></span>
+<span id="cb3-11"><a></a>researcher <span class="op">=</span> create_react_agent(</span>
+<span id="cb3-12"><a></a>    worker_llm, tools<span class="op">=</span>[web_search], name<span class="op">=</span><span class="st">"researcher"</span>,</span>
+<span id="cb3-13"><a></a>    prompt<span class="op">=</span><span class="st">"You research topics. Return facts only."</span></span>
+<span id="cb3-14"><a></a>)</span>
+<span id="cb3-15"><a></a>coder <span class="op">=</span> create_react_agent(</span>
+<span id="cb3-16"><a></a>    worker_llm, tools<span class="op">=</span>[run_python], name<span class="op">=</span><span class="st">"coder"</span>,</span>
+<span id="cb3-17"><a></a>    prompt<span class="op">=</span><span class="st">"You write Python. Return code only."</span></span>
+<span id="cb3-18"><a></a>)</span>
+<span id="cb3-19"><a></a>reviewer <span class="op">=</span> create_react_agent(</span>
+<span id="cb3-20"><a></a>    worker_llm, tools<span class="op">=</span>[], name<span class="op">=</span><span class="st">"reviewer"</span>,</span>
+<span id="cb3-21"><a></a>    prompt<span class="op">=</span><span class="st">"You review code for bugs. Return issues found or 'OK'."</span></span>
+<span id="cb3-22"><a></a>)</span>
+<span id="cb3-23"><a></a></span>
+<span id="cb3-24"><a></a>supervisor <span class="op">=</span> create_supervisor(</span>
+<span id="cb3-25"><a></a>    [researcher, coder, reviewer],</span>
+<span id="cb3-26"><a></a>    model<span class="op">=</span>supervisor_llm,</span>
+<span id="cb3-27"><a></a>    prompt<span class="op">=</span><span class="st">"Route work between researcher, coder, reviewer. Reply 'DONE' when complete."</span></span>
+<span id="cb3-28"><a></a>).<span class="bu">compile</span>(checkpointer<span class="op">=</span>MemorySaver())  <span class="co"># durable execution</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="demo-claude-agent-sdk-subagents" class="slide level2">
-<h2><code>[DEMO]</code> Claude Agent SDK subagents</h2>
+<section id="claude-agent-sdk-subagents" class="slide level2">
+<h2>Claude Agent SDK subagents</h2>
 <p>Note the two levers: a <strong>read-only tool set</strong> so the reviewer cannot break anything, and a <strong>per-subagent model</strong> so high-stakes work gets the bigger model.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a><span class="im">from</span> claude_agent_sdk <span class="im">import</span> query, ClaudeAgentOptions, AgentDefinition</span>
 <span id="cb4-2"><a></a></span>
@@ -408,7 +433,9 @@ CCE, IISc
 <span id="cb6-11"><a></a>design: SystemDesign <span class="op">=</span> architect.generate(prd)</span>
 <span id="cb6-12"><a></a>code: CodeOutput <span class="op">=</span> engineer.generate(design)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
-<li>Each agent produces a <strong>typed artifact</strong>. Next agent consumes it. Pros: type-safe contracts between agents. Cons: rigid (changing the artifact format ripples).</li>
+<li>Each agent produces a <strong>typed artifact</strong>. Next agent consumes it.</li>
+<li>Pros: type-safe contracts between agents.</li>
+<li>Cons: rigid (changing the artifact format ripples).</li>
 </ul>
 </section>
 <section id="method-3-message-passing-ag2-style" class="slide level2">
@@ -433,25 +460,26 @@ CCE, IISc
 <ul>
 <li>A2A developed by Google, contributed to the <strong>Linux Foundation</strong></li>
 <li>It’s becoming the agent-mesh standard.</li>
-<li>Supported by most of agent frameworks</li>
+<li>Supported by most of agent frameworks (a2a-protocol.org)</li>
 </ul>
 
 <img data-src="images/a2a.png" class="r-stretch"></section>
 <section id="a2a-agent-to-agent-protocol-1" class="slide level2">
 <h2>A2A (Agent-to-Agent Protocol)</h2>
-<p><video data-src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/original_videos/A2A_demo_v4.mp4" controls=""><a href="https://storage.googleapis.com/gweb-developer-goog-blog-assets/original_videos/A2A_demo_v4.mp4">Video</a></video></p>
+<video id="video_shortcode_videojs_video1" class="video-js vjs-default-skin vjs-big-play-centered vjs-fluid" controls="" preload="auto" data-setup="{}" title=""><source src="https://storage.googleapis.com/gweb-developer-goog-blog-assets/original_videos/A2A_demo_v4.mp4"></video>
 </section>
 <section id="a2a-agent-to-agent-protocol-2" class="slide level2">
 <h2>A2A (Agent-to-Agent Protocol)</h2>
 <p><strong>Architecture:</strong></p>
 <ul>
 <li><p><strong>Transport:</strong> HTTP + Server-Sent Events + JSON-RPC 2.0.</p></li>
-<li><p><strong>Agent Cards:</strong> Eeach agent publishes what it can do, what it requires, auth scheme.</p></li>
+<li><p><strong>Agent Cards:</strong> Each agent publishes what it can do, what it requires, auth scheme.</p></li>
 <li><p><strong>Tasks:</strong> The primary unit, long-running, with state transitions (<code>submitted</code> -&gt; <code>working</code> -&gt; <code>completed</code> / <code>failed</code> / <code>canceled</code>).</p></li>
 <li><p><strong>Modalities:</strong> Multimodal (text, audio, video streaming)</p></li>
 <li><p><strong>Security:</strong> parity with OpenAPI auth schemes; enterprise SSO + RBAC</p></li>
 </ul>
-</section>
+
+<img data-src="images/a2a-cycle.png" class="r-stretch"></section>
 <section id="a2a-agent-to-agent-protocol-3" class="slide level2">
 <h2>A2A (Agent-to-Agent Protocol)</h2>
 <p><strong>Minimal A2A message:</strong></p>
@@ -477,28 +505,29 @@ CCE, IISc
 </section>
 <section id="why-multi-agent-systems-win" class="slide level2">
 <h2>Why Multi-Agent systems win</h2>
+
+<img data-src="images/multi-agent-vs-isolation.png" class="r-stretch"><div class="fragment">
 <blockquote>
 <p>Multi-agent systems usually win through context isolation, not through role specialization.</p>
 </blockquote>
-<div class="fragment">
-<p><img data-src="images/multi-agent-vs-isolation.png"></p>
 </div>
 </section>
 <section id="case-study-anthropics-multi-agent-research-system" class="slide level2">
 <h2>Case study: Anthropic’s multi-agent research system</h2>
 <p><a href="https://www.anthropic.com/engineering/multi-agent-research-system">How we built our multi-agent research system</a></p>
+<div class="columns">
+<div class="column">
+<div style="font-size:0.7em">
 <ul>
 <li><p><strong>Architecture:</strong> <code>Lead Researcher</code> (Claude Opus 4) + parallel Sonnet 4 <code>subagents</code> + a <code>Citation Agent</code> that runs after the research loop closes.</p></li>
 <li><p><strong>Performance:</strong> <strong>+90.2%</strong> over single-agent Opus 4 on Anthropic’s internal research eval.</p></li>
+<li><p><strong>Cost:</strong> approximately <strong>15× the tokens of a chat interaction</strong> (vs.&nbsp;~<strong>4×</strong> for a single agent). <em>Multi-agent is economically viable only for high-value tasks.</em></p></li>
 </ul>
-<div style="font-size: 0.75em;">
-<p><em>Model names are as published — the result was measured on the Claude 4 generation. The architecture is what transfers, not the numbers.</em></p>
 </div>
-<ul>
-<li><strong>Cost:</strong> approximately <strong>15× the tokens of a chat interaction</strong> (vs.&nbsp;~<strong>4×</strong> for a single agent). <em>Multi-agent is economically viable only for high-value tasks.</em></li>
-</ul>
-
-<img data-src="images/ant-research.png" class="r-stretch"></section>
+</div><div class="column">
+<p><img data-src="images/ant-research.png"></p>
+</div></div>
+</section>
 <section id="anthropic-sizing-recommendations" class="slide level2">
 <h2>Anthropic sizing recommendations</h2>
 <ul>
@@ -510,19 +539,17 @@ CCE, IISc
 </section>
 <section id="more-case-studies" class="slide level2">
 <h2>More Case Studies</h2>
-<table class="caption-top">
+<table class="caption-top" style="width:100%;">
 <colgroup>
-<col style="width: 20%">
-<col style="width: 29%">
-<col style="width: 29%">
-<col style="width: 20%">
+<col style="width: 25%">
+<col style="width: 37%">
+<col style="width: 37%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>System</th>
 <th>Memory</th>
 <th>Multi-agent</th>
-<th>Stance</th>
 </tr>
 </thead>
 <tbody>
@@ -530,25 +557,21 @@ CCE, IISc
 <td>Pi</td>
 <td>Minimal (in-prompt)</td>
 <td>None</td>
-<td>Minimal</td>
 </tr>
 <tr class="even">
 <td>Claude Code</td>
 <td>File-based + user model</td>
 <td>Sub-agents (Task)</td>
-<td>Polished baseline</td>
 </tr>
 <tr class="odd">
 <td>Hermes</td>
 <td>Episodic + observational + user model</td>
-<td>Provider/backend isolation</td>
 <td>Self-improving</td>
 </tr>
 <tr class="even">
 <td>OpenClaw</td>
 <td>File-based + dated folders</td>
 <td>Delegates to sub-agents</td>
-<td>Heavy infra</td>
 </tr>
 </tbody>
 </table>
@@ -575,6 +598,7 @@ CCE, IISc
 <img data-src="images/ent-apttern-2026.png" class="r-stretch"></section>
 <section id="default-stack-for-a-new-custom-enterprise-agent" class="slide level2">
 <h2>Default stack for a new custom enterprise agent</h2>
+<div style="font-size:0.7em">
 <table class="caption-top">
 <colgroup>
 <col style="width: 17%">
@@ -631,6 +655,7 @@ CCE, IISc
 </tr>
 </tbody>
 </table>
+</div>
 </section>
 <section id="build-order" class="slide level2">
 <h2>Build Order</h2>
@@ -638,6 +663,7 @@ CCE, IISc
 <img data-src="images/demo-to-prod.png" class="r-stretch"></section>
 <section id="build-order-1" class="slide level2">
 <h2>Build Order</h2>
+<div style="font-size:0.8em">
 <ol type="1">
 <li><strong>Eval harness</strong> - golden outputs, LLM-as-judge with calibrated rubric (Class 1/2 work).</li>
 <li><strong>Single-agent prototype</strong> - one LLM, one prompt, two tools, no memory. Measure baseline cost/latency/quality.</li>
@@ -650,6 +676,7 @@ CCE, IISc
 <li><strong>Eval in CI</strong> - small (20 prompt) eval suite runs on every PR. Alert on regression. Drift detection in production.</li>
 <li><strong>Failure taxonomy + runbook</strong> - after 50 production traces, categorize failures (wrong tool, infinite loop, context overflow, hallucinated API, permission denial, memory miss). One mitigation per category.</li>
 </ol>
+</div>
 </section>
 <section id="questions-to-answer-about-an-enterprise-agent" class="slide level2">
 <h2>Questions to answer about an Enterprise Agent</h2>
@@ -1048,6 +1075,7 @@ CCE, IISc
         }
       });
       </script>
+    <script>videojs(video_shortcode_videojs_video1);</script>
     
 
 </body></html>

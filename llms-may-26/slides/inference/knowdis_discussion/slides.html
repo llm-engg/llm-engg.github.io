@@ -1136,144 +1136,80 @@ Source: Illustrated GPT-2
 </div>
 </div>
 </div>
-</div>
-</section>
-<section id="which-cost-center-does-it-attack" class="slide level2">
-<h2>Which Cost Center Does It Attack?</h2>
-<p>Every variant so far shrinks <em>something</em>. The useful question is <strong>which bill it reduces</strong> - and that follows from the two regimes.</p>
-<div class="columns">
-<div class="column" style="width:50%;">
-<h3 id="training-prefill">Training &amp; Prefill</h3>
-<ul>
-<li>Parallel over the sequence</li>
-<li><strong>Compute-bound</strong> (high AI)</li>
-<li>What hurts: the <span class="math inline">\(O(S^2)\)</span> term</li>
-</ul>
-</div><div class="column" style="width:50%;">
-<h3 id="decode">Decode</h3>
-<ul>
-<li>Serial, one token at a time</li>
-<li><strong>Bandwidth-bound</strong> (AI &lt; 1)</li>
-<li>What hurts: bytes read per token</li>
-</ul>
-</div></div>
-<div class="fragment">
-<div class="callout callout-important callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Important</strong></p>
-</div>
-<div class="callout-content">
-<p>Shrink the <strong>cache</strong> <span class="math inline">\(\rightarrow\)</span> helps decode <em>only</em>. Training never reads a KV cache - it recomputes in parallel.</p>
-<p>Shrink the <strong>interaction pattern</strong> <span class="math inline">\(\rightarrow\)</span> attacks <span class="math inline">\(S^2\)</span>, which appears in training, prefill <em>and</em> decode.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="fragment">
-<p><strong>Two sentences that partition the entire taxonomy.</strong></p>
-</div>
-</section>
-<section id="which-cost-center-does-it-attack-1" class="slide level2">
-<h2>Which Cost Center Does It Attack?</h2>
-<div style="font-size: 0.6em;">
-<table class="caption-top">
-<colgroup>
-<col style="width: 22%">
-<col style="width: 22%">
-<col style="width: 25%">
-<col style="width: 28%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Method</th>
-<th>Training / Prefill</th>
-<th>Decode</th>
-<th>Motivated by</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>MQA</td>
-<td>—</td>
-<td>large</td>
-<td><strong>inference only</strong></td>
-</tr>
-<tr class="even">
-<td>GQA</td>
-<td>—</td>
-<td>large</td>
-<td><strong>inference only</strong></td>
-</tr>
-<tr class="odd">
-<td>MLA</td>
-<td>neutral / worse</td>
-<td>large</td>
-<td><strong>inference only</strong></td>
-</tr>
-<tr class="even">
-<td>Sliding window</td>
-<td>reduces <span class="math inline">\(S^2\)</span></td>
-<td>bounds cache</td>
-<td>both</td>
-</tr>
-<tr class="odd">
-<td>DSA (V3.2)</td>
-<td>reduces <span class="math inline">\(S^2\)</span></td>
-<td>reads fewer entries</td>
-<td>both</td>
-</tr>
-<tr class="even">
-<td>CSA / HCA (V4)</td>
-<td>reduces <span class="math inline">\(S^2\)</span></td>
-<td>fewer stored entries</td>
-<td>both</td>
-</tr>
-<tr class="odd">
-<td>Linear / GDN / KDA</td>
-<td><span class="math inline">\(O(S)\)</span> training</td>
-<td>constant state</td>
-<td>both, sold on inference</td>
-</tr>
-<tr class="even">
-<td>FlashAttention</td>
-<td>large</td>
-<td>modest</td>
-<td><strong>training first</strong></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="fragment">
-<div style="font-size: 0.55em;">
-<ul>
-<li><strong>MQA/GQA change nothing at training</strong> : with <span class="math inline">\(N\)</span> query heads you compute <span class="math inline">\(N\)</span> heads’ worth of scores no matter how many KV heads feed them</li>
-<li><strong>MLA is not fewer FLOPs at decode</strong> : it attends in the 512-dim latent for <em>all</em> heads. It trades <strong>FLOPs for bandwidth</strong> - deliberately moving <em>right</em> on the roofline, into headroom that was idle anyway</li>
-<li><strong>Linear attention’s pitch migrated</strong> : 2020 sold <span class="math inline">\(O(S)\)</span> <em>training</em>; 2025 sells constant-state <em>decode</em></li>
-</ul>
-</div>
-</div>
-<div class="fragment">
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Tip</strong></p>
-</div>
-<div class="callout-content">
-<p>Training is <strong>capex</strong> the lab pays once. Inference is <strong>opex</strong> that scales with every user, forever. That asymmetry is why architecture changes have drifted toward decode - and why inference is <strong>80-90%</strong> of compute spend.</p>
-</div>
-</div>
-</div>
-<p>Everything so far made each <em>remembered token</em> cheaper. At 1M context that is no longer enough <span class="math inline">\(\rightarrow\)</span> <strong>stop remembering most of them.</strong></p>
+<!-- ## Which Cost Center Does It Attack?
+
+Every variant so far shrinks *something*. The useful question is **which bill it reduces** - and that follows from the two regimes.
+
+::::: columns
+::: {.column width="50%"}
+### Training & Prefill
+
+- Parallel over the sequence
+- **Compute-bound** (high AI)
+- What hurts: the $O(S^2)$ term
+:::
+
+::: {.column width="50%"}
+### Decode
+
+- Serial, one token at a time
+- **Bandwidth-bound** (AI \< 1)
+- What hurts: bytes read per token
+:::
+:::::
+
+. . .
+
+::: callout-important
+Shrink the **cache** $\rightarrow$ helps decode *only*. Training never reads a KV cache - it recomputes in parallel.
+
+Shrink the **interaction pattern** $\rightarrow$ attacks $S^2$, which appears in training, prefill *and* decode.
+:::
+
+. . .
+
+**Two sentences that partition the entire taxonomy.**
+
+## Which Cost Center Does It Attack?
+
+::: {style="font-size: 0.6em;"}
+| Method             | Training / Prefill | Decode               | Motivated by            |
+|--------------------|--------------------|----------------------|-------------------------|
+| MQA                | —                  | large                | **inference only**      |
+| GQA                | —                  | large                | **inference only**      |
+| MLA                | neutral / worse    | large                | **inference only**      |
+| Sliding window     | reduces $S^2$      | bounds cache         | both                    |
+| DSA (V3.2)         | reduces $S^2$      | reads fewer entries  | both                    |
+| CSA / HCA (V4)     | reduces $S^2$      | fewer stored entries | both                    |
+| Linear / GDN / KDA | $O(S)$ training    | constant state       | both, sold on inference |
+| FlashAttention     | large              | modest               | **training first**      |
+:::
+
+. . .
+
+::: {style="font-size: 0.55em;"}
+- **MQA/GQA change nothing at training** : with $N$ query heads you compute $N$ heads' worth of scores no matter how many KV heads feed them
+- **MLA is not fewer FLOPs at decode** : it attends in the 512-dim latent for *all* heads. It trades **FLOPs for bandwidth** - deliberately moving *right* on the roofline, into headroom that was idle anyway
+- **Linear attention's pitch migrated** : 2020 sold $O(S)$ *training*; 2025 sells constant-state *decode*
+:::
+
+. . .
+
+::: callout-tip
+Training is **capex** the lab pays once. Inference is **opex** that scales with every user, forever. That asymmetry is why architecture changes have drifted toward decode - and why inference is **80-90%** of compute spend.
+:::
+
+Everything so far made each *remembered token* cheaper. At 1M context that is no longer enough $\rightarrow$ **stop remembering most of them.** -->
 </div>
 </section>
 <section id="deepseek-sparse-attention-v3.2-glm5" class="slide level2">
+<h2>DeepSeek Sparse Attention (v3.2, GLM5)</h2>
+<p><strong>Idea:</strong> at long context a query doesn’t need <em>every</em> past token - attend only to the most relevant ones.</p>
+<div class="fragment">
+<p><img data-src="images/dsa-vllm.png"></p>
+</div>
+</section>
+<section id="deepseek-sparse-attention-v3.2-glm5-1" class="slide level2">
 <h2>DeepSeek Sparse Attention (v3.2, GLM5)</h2>
 <p><strong>Idea:</strong> at long context a query doesn’t need <em>every</em> past token - attend only to the most relevant ones.</p>
 <div class="fragment">
@@ -1285,26 +1221,233 @@ Source: Illustrated GPT-2
 </div></div>
 </div>
 </section>
+<section id="dsa-top-k-2048-in-practice" class="slide level2">
+<h2>DSA : top-k = 2048 in Practice</h2>
+<div class="columns">
+<div class="column" style="width:42%;">
+<div style="font-size: 0.7em;">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Context</th>
+<th>Attended</th>
+<th>Fraction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>4K</td>
+<td>2,048</td>
+<td>50%</td>
+</tr>
+<tr class="even">
+<td>32K</td>
+<td>2,048</td>
+<td>6.3%</td>
+</tr>
+<tr class="odd">
+<td>128K</td>
+<td>2,048</td>
+<td><strong>1.6%</strong></td>
+</tr>
+<tr class="even">
+<td>1M</td>
+<td>2,048</td>
+<td><strong>0.2%</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div><div class="column" style="width:58%;">
+<div style="font-size: 0.62em;">
+<p><strong>DeepSeek-V3.2-Exp</strong> <code>config.json</code> :</p>
+<p><code>index_topk</code> = <strong>2048</strong> · <code>index_n_heads</code> = 64 · <code>index_head_dim</code> = 128</p>
+<ul>
+<li>Core attention : <span class="math inline">\(O(S^2) \rightarrow O(S \cdot k)\)</span>, with <span class="math inline">\(k\)</span> <strong>fixed</strong></li>
+<li>Indexer key cache : <strong>128</strong>/token on top of MLA’s <strong>576</strong> - a ~22% increase, <em>not</em> a doubling</li>
+<li>Indexer runs in <strong>FP8</strong>, no value projection, no output path</li>
+<li>MLA fields unchanged from V3 - DSA sits <strong>on top of</strong> MLA, it does not replace it</li>
+</ul>
+</div>
+</div></div>
+</section>
+<section id="deepseek-v4" class="slide level2">
+<h2>DeepSeek V4</h2>
+
+<img data-src="images/dsv4.png" class="r-stretch"></section>
 <section id="deepseek-v4-csa-and-hca" class="slide level2">
 <h2>DeepSeek V4: CSA and HCA</h2>
 <div style="font-size: 0.6em;">
 <div class="columns">
 <div class="column">
 <ul>
-<li><strong>CSA</strong> - Compressed Sparse Attention (V4-Pro)</li>
+<li><strong>CSA</strong> - Compressed Sparse Attention (<span class="math inline">\(m\)</span> = 4)</li>
 <li><strong>DSA</strong> (V3.2): store all S, attend to top-k -&gt; read less</li>
-<li><strong>CSA</strong> (V4-Pro): compress S -&gt; S/m, THEN top-k over that -&gt; store less AND read less</li>
+<li><strong>CSA</strong>: compress S -&gt; S/m, THEN top-k over that -&gt; store less AND read less</li>
+</ul>
+</div><div class="column">
+<ul>
+<li><strong>HCA</strong> : Heavily Compressed Attention (<span class="math inline">\(m'\)</span> = 128)</li>
+<li>TOKEN-LEVEL COMPRESSOR - it merges the KV entries of m consecutive tokens into a single compressed KV entry</li>
+<li>compress much harder (m’ &gt;&gt; m), no top-k -&gt; store far less</li>
+</ul>
+</div></div>
+<p><img data-src="images/csa-hca-0.png"></p>
+</div>
+</section>
+<section id="deepseek-v4-csa-and-hca-1" class="slide level2">
+<h2>DeepSeek V4: CSA and HCA</h2>
+<div style="font-size: 0.6em;">
+<div class="columns">
+<div class="column">
+<ul>
+<li><strong>CSA</strong> - Compressed Sparse Attention (<span class="math inline">\(m\)</span> = 4)</li>
+<li><strong>DSA</strong> (V3.2): store all S, attend to top-k -&gt; read less</li>
+<li><strong>CSA</strong>: compress S -&gt; S/m, THEN top-k over that -&gt; store less AND read less</li>
 </ul>
 <p><img data-src="images/ds-csa.png"></p>
 </div><div class="column">
 <ul>
-<li><strong>HCA</strong> : Heavily Compressed Attention (V4-Flash)</li>
+<li><strong>HCA</strong> : Heavily Compressed Attention (<span class="math inline">\(m'\)</span> = 128)</li>
 <li>TOKEN-LEVEL COMPRESSOR - it merges the KV entries of m consecutive tokens into a single compressed KV entry</li>
 <li>compress much harder (m’ &gt;&gt; m), no top-k -&gt; store far less</li>
 </ul>
 <p><img data-src="images/ds-hca.png"></p>
 </div></div>
+<p><strong>Both</strong> V4-Pro and V4-Flash use <strong>both</strong> mechanisms, interleaved ~1:1 layer by layer.</p>
 </div>
+</section>
+<section id="deepseek-v4-pro-and-flash" class="slide level2">
+<h2>DeepSeek V4 : Pro and Flash</h2>
+<div class="columns">
+<div class="column" style="width:52%;">
+<div style="font-size: 0.62em;">
+<p><code>compress_ratios</code>, per layer, from <code>config.json</code> :</p>
+<p><code>[128, 128, 4, 128, 4, 128, 4, … , 4, 0]</code></p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th></th>
+<th>V4-Pro</th>
+<th>V4-Flash</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Layers</td>
+<td>61</td>
+<td>43</td>
+</tr>
+<tr class="even">
+<td>CSA layers (<span class="math inline">\(m\)</span>=4)</td>
+<td>30</td>
+<td>21</td>
+</tr>
+<tr class="odd">
+<td>HCA layers (<span class="math inline">\(m'\)</span>=128)</td>
+<td>31</td>
+<td>20</td>
+</tr>
+<tr class="even">
+<td><code>index_topk</code></td>
+<td>1024</td>
+<td>512</td>
+</tr>
+<tr class="odd">
+<td><code>sliding_window</code></td>
+<td>128</td>
+<td>128</td>
+</tr>
+<tr class="even">
+<td>Params (active)</td>
+<td>1.6T (49B)</td>
+<td>284B (13B)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div><div class="column" style="width:48%;">
+<div style="font-size: 0.62em;">
+<p><strong>At 1M context, per layer:</strong></p>
+<ul>
+<li><strong>CSA</strong> - compress 4:1 → 262,144 entries, <strong>read 1,024</strong> <em>(sparse read, fine resolution)</em></li>
+<li><strong>HCA</strong> - compress 128:1 → 8,192 entries, <strong>read all of them</strong> <em>(dense read, coarse resolution)</em></li>
+</ul>
+<p>Plus a 128-token <strong>uncompressed sliding window</strong> in both.</p>
+</div>
+</div></div>
+</section>
+<section id="deepseek-v3-and-v4-kv-cache" class="slide level2">
+<h2>DeepSeek V3 and V4 KV Cache</h2>
+<div class="columns">
+<div class="column" style="width:44%;">
+<div style="font-size: 0.68em;">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>KV / token</th>
+<th>@ 1M ctx</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>V3.2</td>
+<td>83.9 KiB</td>
+<td>83.9 GiB</td>
+</tr>
+<tr class="even">
+<td>V4-Pro</td>
+<td><strong>9.6 KiB</strong></td>
+<td><strong>9.6 GiB</strong></td>
+</tr>
+<tr class="odd">
+<td>V4-Flash</td>
+<td><strong>6.7 KiB</strong></td>
+<td>6.7 GiB</td>
+</tr>
+</tbody>
+</table>
+<p><em>(B/token ÷ 1024 = GiB per 1M-token sequence)</em></p>
+<ul>
+<li>V3.2 entry = 576 (MLA) + 128 (indexer) = <strong>704</strong></li>
+<li>V4 entry = <strong>512</strong>; CSA layers add extra <strong>128</strong> (indexer)</li>
+<li>Why 512, not 1024? V4 shares <strong>K and V as one vector</strong> - the output is then un-rotated by <span class="math inline">\(R(-i)\)</span> (<strong>inverse RoPE</strong>) to restore <em>relative</em> position</li>
+</ul>
+<p><strong>8.7×</strong> smaller (Pro), <strong>12.5×</strong> (Flash). Paper: ~<strong>2%</strong> of a BF16 GQA-8 baseline at 1M.</p>
+</div>
+</div><div class="column" style="width:56%;">
+<div style="font-size: 0.62em;">
+<p><img data-src="images/v3-vs-v4.png"></p>
+</div>
+</div></div>
+<!-- NOTES-BLOCK
+[CORRECTNESS] (must-fix when this figure is on screen) images/v3-vs-v4.png labels
+V4's cache "Main MLA" in its legend. That label is LOOSE and contradicts your
+bullets. The same vLLM post's arithmetic section says "MLA cache" for V3.2 but
+"shared-KV cached entry" for V4, and DeepSeek's own Figs. 3-4 say "Shared
+Key-Value Multi-Query Attention". vLLM reuses its FlashMLA kernels for V4 (block
+sizes are multiples of FlashMLA's 576 B alignment), so "MLA" there is a
+cache-spec / kernel name, not an architecture claim. Say this out loud when the
+figure goes up — otherwise a sharp attendee catches the mismatch between the slide
+and the picture beside it.
+[INTUITION] "Shared key-value" does NOT mean KV shared across heads (that is MQA).
+It means K and V are the SAME VECTOR — a 2x saving, which is exactly why the entry
+is 512 and not 1024. Consequence: with v = k, RoPE on the key leaves the output
+carrying ABSOLUTE position R(j_p), breaking translation invariance. Fix: multiply
+the attention output by R(-i) — the "inverse RoPE" step. vLLM fuses it with the
+o_lora projection for a ~2-3x kernel speedup.
+[Q-ADVANCED] "Doesn't sharing K and V lose expressivity?" -> Yes, it ties the
+retrieval key to the retrieved content: a token can no longer be addressed by one
+representation and return a different one. DeepSeek evidently judged the 2x cache
+saving worth it at 1M context. Flag it as a real representational constraint
+rather than glossing over it.
+[FIX] Be precise about the compressor if asked: c4a is a weighted sum of 8
+uncompressed tokens with STRIDE 4 (overlapping windows); c128a is a weighted sum of
+128 with stride 128 (non-overlapping). The compression ratio is set by the stride,
+not the window width. Source: vLLM blog 2026-04-24, which also confirms the
+30 c4a / 31 c128a layer split used on the previous slide.
+-->
 </section>
 <section id="ds4-inference-economics" class="slide level2">
 <h2>DS4 : Inference Economics</h2>
@@ -1821,7 +1964,7 @@ report for the interleaving ratio and its KV-cache motivation.
 <li>Determines <strong>TTFT</strong></li>
 </ul>
 </div><div class="column" style="width:50%;">
-<h3 id="decode-1">Decode</h3>
+<h3 id="decode">Decode</h3>
 <ul>
 <li>Generate tokens <strong>one at a time</strong></li>
 <li>T = 1</li>

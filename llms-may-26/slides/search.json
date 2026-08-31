@@ -3731,46 +3731,179 @@
     "text": "What We Didn’t Cover\n\nPositional Encodings: How does attention know word order?\nFeed-Forward Networks: The other half of each transformer block\nLayer Normalization: Stabilizing training\nResidual Connections: Enabling deep networks\n\n\nThese will be covered in the next session where we implement a full transformer block and a LLM from scratch!"
   },
   {
-    "objectID": "agents/07_memory/slides.html#memory",
-    "href": "agents/07_memory/slides.html#memory",
-    "title": "LLM Agents : Memory Systems",
-    "section": "Memory",
-    "text": "Memory"
+    "objectID": "agents/09_agent_eval/slides.html#agent-evaluation",
+    "href": "agents/09_agent_eval/slides.html#agent-evaluation",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "AGENT EVALUATION",
+    "text": "AGENT EVALUATION\nPrevious classes built the agent:\n\nTools, MCP, skills\nContext engineering\nMemory\nMulti-agent systems\n\n\n\nHow do we know any of it works?"
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#evaluating-agents",
+    "href": "agents/09_agent_eval/slides.html#evaluating-agents",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Evaluating Agents",
+    "text": "Evaluating Agents\n\n\nEarlier eval classes (eval module) covered single LLM calls\nAgents break that assumption:\n\nOne task in, a sequence of steps out\n\n\n\n\nLLM eval scores an answer. Agent eval must score a path.\n\n\nWhen we evaluate an agent, we are evaluating the ability of the model and scaffold to work together to solve a task."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#outcome-vs-trajectory-evaluation",
+    "href": "agents/09_agent_eval/slides.html#outcome-vs-trajectory-evaluation",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Outcome vs Trajectory Evaluation",
+    "text": "Outcome vs Trajectory Evaluation\n\n\n\n\n\n\n\n\n\n\n\n\nOutcome eval\nTrajectory eval\n\n\n\n\nWhat is scored\nFinal answer / final environment state\nEvery intermediate step\n\n\nQuestion asked\n“Did it succeed?”\n“Did it succeed the right way?”\n\n\nCost\nCheap, often automatable\nExpensive; needs traces + judges\n\n\nBlind spot\nLucky wrong paths\nOver-penalizes valid detours\n\n\nTypical use\nBenchmarks (SWE-bench)\nDebugging, safety, policy checks"
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#agent-evaluation-harness",
+    "href": "agents/09_agent_eval/slides.html#agent-evaluation-harness",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Agent Evaluation Harness",
+    "text": "Agent Evaluation Harness\n\n\n\nEvaluation : Set of tests that provide inputs to our agent system, collect outputs, and apply grading logic to determine whether the agent was successful\nAgent evaluations are different : mutlitple chat turns, involve interacting with tools and the external environment\nEvaluation harness : Similar to agent harness, manages the entire end-to-end process of evaluation."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#evaluation-components",
+    "href": "agents/09_agent_eval/slides.html#evaluation-components",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Evaluation Components",
+    "text": "Evaluation Components\n\n\n\n\n\n\nTasks - Individual test cases for the agent with predefined input and output criteria.\nTrials - Each attempt at solving a task, we often run several trials for each task to ensure consistent results.\nTrace / Trajectory - Complete transcript that includes outputs, tool calls, reasoning steps, intermediate outputs, or any other interactions from the agent during the trial.\nOutcome - The final state of the external environment after a trial completes\nGrader - Verifies the agent’s transcript or outcome by applying checks.\nMetrics - what you record on every trial whether or not it passed, because “it worked” and “it worked in 4 turns for $0.02” are different results.\n\n\n\n\n\nThere may be multiple graders, compute performance metrics by aggregating across tasks and trials. Consider the outcome not just model outputs."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#do-we-need-evals",
+    "href": "agents/09_agent_eval/slides.html#do-we-need-evals",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Do we need Evals",
+    "text": "Do we need Evals\n\nYou can get surprisingly far without them - manual testing, dogfooding and intuition carry a prototype a long way. Early on, rigorous evals genuinely do feel like overhead that slows shipping.\nThe breaking point is production + scale - users report the agent “feels worse” after a change, and the team has no way to check but guess-and-check.\nWithout evals, debugging is reactive - wait for complaints, reproduce by hand, fix, hope nothing else regressed.\n\n\n\nWhat you cannot do without them - tell a real regression from noise, test a change against hundreds of scenarios before shipping, or prove an improvement actually improved something."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#why-build-evals-beyond-catching-regressions",
+    "href": "agents/09_agent_eval/slides.html#why-build-evals-beyond-catching-regressions",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Why Build Evals : Beyond Catching Regressions",
+    "text": "Why Build Evals : Beyond Catching Regressions\n\nThey force you to define success - two engineers read the same spec and handle edge cases differently. The eval suite is where that ambiguity gets resolved, in writing.\nThey set your speed of model adoption - when a stronger model ships, teams without evals spend weeks testing; teams with evals tune prompts and upgrade in days.\nBaselines come free - latency, token usage, cost per task and error rate, all tracked on a static bank of tasks.\nHighest-bandwidth channel between product and research - an eval turns “make it better” into a metric someone can optimize against.\n\n\n\nUseful at every stage: early they encode what the agent is supposed to do; later they hold the quality bar while it changes."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#example-eval-setups",
+    "href": "agents/09_agent_eval/slides.html#example-eval-setups",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Example Eval Setups",
+    "text": "Example Eval Setups\n\nClaude Code - shipped first on employee and user feedback, then added evals for narrow behaviours (concision, file edits), then for hard ones (over-engineering). Evals sit alongside production monitoring, A/B tests and user research - not instead of them.\nDescript (video editing) - three dimensions of a good edit: don’t break things, do what I asked, do it well. Evolved manual grading -&gt; LLM graders with product-written criteria + periodic human calibration. Runs two suites: quality benchmarking and regression.\nBolt - started late, on an agent already widely used. Three months to build a system that runs the agent, grades with static analysis, drives the app with browser agents, and uses LLM judges for instruction following.\n\n\n\nSome teams start with evals; others add them once the absence becomes the bottleneck. Both paths work - the mistake is assuming you will never need them.\n\n\nExamples from Anthropic, “Demystifying evals for AI agents” (see Further Reading)."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#human-graders",
+    "href": "agents/09_agent_eval/slides.html#human-graders",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Human Graders",
+    "text": "Human Graders\n\n\nBEST source of truth for measuring quality.\nStart with manual inspections performed by developers, researchers or by internal users\nCreate detailed rubric to define the key quality dimensions and how these criteria should be evaluated\nClaude Code mention that their evaluation process began with human evaluation trials with internal Anthropic employees"
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#human-grading-calibration",
+    "href": "agents/09_agent_eval/slides.html#human-grading-calibration",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Human Grading Calibration",
+    "text": "Human Grading Calibration"
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#code-based-graders",
+    "href": "agents/09_agent_eval/slides.html#code-based-graders",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Code-based Graders",
+    "text": "Code-based Graders\n\nHeuristic checks that can be captured in code\nReference-based (i.e. require ground truth), inflexible and can lack nuance, making them somewhat limited."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#model-based-graders",
+    "href": "agents/09_agent_eval/slides.html#model-based-graders",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Model-based Graders",
+    "text": "Model-based Graders\n\nPrompt an LLM to evaluate some aspect of quality for us using LLM-as-a-Judge"
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#holistic-approach-to-evaluation",
+    "href": "agents/09_agent_eval/slides.html#holistic-approach-to-evaluation",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Holistic Approach to Evaluation",
+    "text": "Holistic Approach to Evaluation\n\nCombine methods: automated evals for fast iteration, production monitoring for ground truth, and periodic human review for calibration"
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#case-study---the-τ-bench-series",
+    "href": "agents/09_agent_eval/slides.html#case-study---the-τ-bench-series",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Case Study - The τ-bench Series",
+    "text": "Case Study - The τ-bench Series\n\nτ -bench (V1, V3), a benchmark emulating dynamic conversations between a user (simulated by language models) and a language agent provided with domain-specific API tools and policy guidelines\nAgents are expected to do the following:\n\nInteract with the user and resolve intent.\nAdhere to a set of written policies or rules for each domain.\nUse tools to retrieve data and modify the external environment."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#the-τ-bench---agent-interaction",
+    "href": "agents/09_agent_eval/slides.html#the-τ-bench---agent-interaction",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "The τ-bench - Agent Interaction",
+    "text": "The τ-bench - Agent Interaction"
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#handling-non-determinism",
+    "href": "agents/09_agent_eval/slides.html#handling-non-determinism",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Handling Non-Determinism",
+    "text": "Handling Non-Determinism\n\n\n\npass @ K\n\n\n\n\npass ^ K"
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#terminal-bench",
+    "href": "agents/09_agent_eval/slides.html#terminal-bench",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Terminal Bench",
+    "text": "Terminal Bench"
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#roadmap-for-agent-evaluation---i",
+    "href": "agents/09_agent_eval/slides.html#roadmap-for-agent-evaluation---i",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Roadmap for Agent Evaluation - I",
+    "text": "Roadmap for Agent Evaluation - I\nStep by step process for evals:\n\n\nDefine success : Deatiled criteria on what it means for the agent to succeed\n\n\nOutcome goals that verify aspects of the outcome (e.g., whether the expected database entries for the task were created).\nProcess goals that verify components of the transcript (e.g., whether certain tools were called).\n\n\nCollect a small task set -manually curate 10 to 20 initial tasks by considering realistic use cases\n\n\nCreate useful tasks - create high-quality tasks that test important aspects of agent behavior\n\n\nProvide ground truth and reference - reference solution or known-good trajectory that proves the task is solvable and verifies that the grader is checking the right behavior\n\n\n\n&lt;"
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides.html#roadmap-for-agent-evaluation---ii",
+    "href": "agents/09_agent_eval/slides.html#roadmap-for-agent-evaluation---ii",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Roadmap for Agent Evaluation - II",
+    "text": "Roadmap for Agent Evaluation - II\nStep by step process for evals …:\n\n\nConfigure graders\n\n\nBuild the evaluation harness -\n\n\nRuns the agent in a realistic (but controlled) setup.\nCollects the transcript, including tool calls and intermediate outputs.\nCaptures the final outcome.\n\n\nInspect, iterate, and maintain the benchmark"
   },
   {
     "objectID": "agents/07_memory/slides.html#recap",
     "href": "agents/07_memory/slides.html#recap",
     "title": "LLM Agents : Memory Systems",
     "section": "RECAP",
-    "text": "RECAP\nAgent primitives:\n\nTool Use\nMCP\nSkills\nContext Engineering\n\n\n\nBut how do we make agents that can learn and improve over time? Agents should remember and learn from past interactions."
+    "text": "RECAP"
   },
   {
-    "objectID": "agents/07_memory/slides.html#memory-systems",
-    "href": "agents/07_memory/slides.html#memory-systems",
+    "objectID": "agents/07_memory/slides.html#memory",
+    "href": "agents/07_memory/slides.html#memory",
     "title": "LLM Agents : Memory Systems",
-    "section": "Memory Systems",
-    "text": "Memory Systems"
+    "section": "Memory",
+    "text": "Memory\nAgent primitives:\n\nTool Use\nMCP\nSkills\nContext Engineering\n\n\n\nAll of them disappear after session ends or context is cleared\n\n\n\n\nBut how do we make agents that can learn and improve over time? Agents should remember and learn from past interactions."
+  },
+  {
+    "objectID": "agents/07_memory/slides.html#llm-operating-system",
+    "href": "agents/07_memory/slides.html#llm-operating-system",
+    "title": "LLM Agents : Memory Systems",
+    "section": "LLM Operating System",
+    "text": "LLM Operating System"
   },
   {
     "objectID": "agents/07_memory/slides.html#why-agents-need-memory",
     "href": "agents/07_memory/slides.html#why-agents-need-memory",
     "title": "LLM Agents : Memory Systems",
     "section": "Why Agents Need Memory",
-    "text": "Why Agents Need Memory\nMany tasks depend on information that is not naturally present in the immediate prompt\n\n\nA personal assistant remembers the user’s timezone, writing style, and recurring commitments.\n\n\n\n\nA coding agent remembers that the project uses pytest, that auth lives in src/auth, and that migrations must be generated manually.\n\n\n\n\nA research agent remembers sources it already checked and which ones were unreliable."
+    "text": "Why Agents Need Memory\nMany tasks depend on information that is not naturally present in the immediate prompt\n\n\nA personal assistant remembers the user’s timezone, writing style, and recurring commitments.\n\n\n\n\nA coding agent remembers that the project uses pytest, that auth lives in src/auth, and that migrations must be generated manually.\n\n\n\n\nA research agent remembers sources it already checked and which ones were unreliable.\n\n\n\n\nIn every case the missing information was discovered in a previous session and thrown away. Memory is the mechansism to store and re-use"
   },
   {
-    "objectID": "agents/07_memory/slides.html#why-agents-need-memory-1",
-    "href": "agents/07_memory/slides.html#why-agents-need-memory-1",
+    "objectID": "agents/07_memory/slides.html#why-agents-need-good-memory",
+    "href": "agents/07_memory/slides.html#why-agents-need-good-memory",
     "title": "LLM Agents : Memory Systems",
-    "section": "Why Agents Need Memory",
-    "text": "Why Agents Need Memory\nBad memory can make agents worse.\n\nStale memories can override current instructions.\nDuplicated memories can create contradictions.\nSensitive data can be stored accidentally.\nMemory writes can reinforce mistakes.\nToken cost rises if memory is injected eagerly.\n\n\n\nWhat should be remembered, in what form, who can edit it, when is it retrieved, and how is it evaluated?"
+    "section": "Why Agents Need Good Memory",
+    "text": "Why Agents Need Good Memory\nBad memory can make agents worse.\n\nStale memories can override current instructions.\nDuplicated memories can create contradictions.\nSensitive data can be stored accidentally.\nMemory writes can reinforce mistakes.\nToken cost rises if memory is injected eagerly.\n\n\n\nWhat should be remembered, in what form, who can edit it, when is it retrieved, and how is it evaluated?"
   },
   {
     "objectID": "agents/07_memory/slides.html#memory-taxonomy",
     "href": "agents/07_memory/slides.html#memory-taxonomy",
     "title": "LLM Agents : Memory Systems",
     "section": "Memory Taxonomy",
-    "text": "Memory Taxonomy\n\n\n\n\n\n\n\n\n\n\nHuman term\nAgent analogue\nLifespan\nWhere it lives\n\n\n\n\nWorking memory\nContext window\nThis turn\nLLM input tokens\n\n\nShort-term memory\nSession state\nThis conversation\nIn-process object / DB\n\n\nEpisodic memory (events)\nPast trajectories\nForever\nVector DB / SQLite\n\n\nSemantic memory (facts)\nProject knowledge\nForever\nFiles / vector DB\n\n\nProcedural memory (skills)\nReusable workflows\nForever\nSKILL.md files"
+    "text": "Memory Taxonomy\n\n\n\n\n\n\n\n\n\n\nHuman term\nAgent analogue\nLifespan\nWhere it lives\n\n\n\n\nWorking memory\nContext window\nThis turn\nLLM input tokens\n\n\nShort-term memory\nSession state\nThis conversation\nIn-process object / DB\n\n\nEpisodic memory (events)\nPast trajectories\nForever\nVector DB / SQLite\n\n\nSemantic memory (facts)\nProject knowledge\nForever\nFiles / vector DB\n\n\nProcedural memory (skills)\nReusable workflows\nForever\nParams / SKILL.md files"
   },
   {
     "objectID": "agents/07_memory/slides.html#working-memory-context-window",
@@ -3833,7 +3966,7 @@
     "href": "agents/07_memory/slides.html#hybrid-hermes-agent-mem0-etc",
     "title": "LLM Agents : Memory Systems",
     "section": "Hybrid (Hermes Agent, Mem0 etc)",
-    "text": "Hybrid (Hermes Agent, Mem0 etc)\n\nFiles for human-curated, structural knowledge (preferences, project notes).\nVector DB for retrieved, contextual knowledge (past traces, observations)\n\nConceptual Implementation\nclass MemorySystem:\n    def __init__(self):\n        self.files = FileMemory(\"./memory/\")\n        self.vectors = VectorMemory(\"./vectors/\")\n        self.fts = SQLiteFTS5(\"./memory.db\")\n\n    def store(self, m: Memory):\n        self.files.write(m)\n        self.vectors.embed_and_store(m)\n        self.fts.index(m)\n\n    def recall(self, query, top_k=5):\n        return dedupe_and_rank(\n            self.files.keyword_search(query)\n            + self.vectors.semantic_search(query, top_k)\n            + self.fts.search(query, top_k)\n        )\n\nFIGURE TO ADD — images/hybrid-memory-architecture.png (source notes §7, figure 5)\nWrite path: observation → extract → fan-out to all three stores (markdown file = text of record; vector index = embedding; FTS5 = keywords). Read path: query → three retrievers in parallel → merge/dedupe → rank → top-k into context. Show the file store as the source of truth and the two indexes as derived and rebuildable — that asymmetry is the point of the whole slide."
+    "text": "Hybrid (Hermes Agent, Mem0 etc)\n\nFiles for human-curated, structural knowledge (preferences, project notes).\nVector DB for retrieved, contextual knowledge (past traces, observations)\n\nConceptual Implementation\nclass MemorySystem:\n    def __init__(self):\n        self.files = FileMemory(\"./memory/\")\n        self.vectors = VectorMemory(\"./vectors/\")\n        self.fts = SQLiteFTS5(\"./memory.db\")\n\n    def store(self, m: Memory):\n        self.files.write(m)\n        self.vectors.embed_and_store(m)\n        self.fts.index(m)\n\n    def recall(self, query, top_k=5):\n        return dedupe_and_rank(\n            self.files.keyword_search(query)\n            + self.vectors.semantic_search(query, top_k)\n            + self.fts.search(query, top_k)\n        )"
   },
   {
     "objectID": "agents/07_memory/slides.html#mem0-demo",
@@ -3847,21 +3980,14 @@
     "href": "agents/07_memory/slides.html#when-to-fetch-memory",
     "title": "LLM Agents : Memory Systems",
     "section": "When to Fetch Memory?",
-    "text": "When to Fetch Memory?\n\nEager injection - load relevant memory at the start of each session (Claude Code’s CLAUDE.md, OpenClaw’s SOUL.md)\nOn-demand tool - expose memory as a tool the agent calls (recall_memory(query))\n\n\nFIGURE TO ADD — images/eager-vs-ondemand.png\nTwo timelines side by side. Eager: memory block sits in the context of turn 1, 2, 3 … (shade it in every turn — the cost is recurring, and most of it is unused). On-demand: turns 1-2 have no memory; turn 3 issues a recall tool call and only the retrieved slice enters turn 4. Caption the trade: eager pays tokens every turn; on-demand pays a round-trip when it is wrong about needing nothing."
-  },
-  {
-    "objectID": "agents/07_memory/slides.html#demo-memory-that-helps-vs.-memory-that-hurts",
-    "href": "agents/07_memory/slides.html#demo-memory-that-helps-vs.-memory-that-hurts",
-    "title": "LLM Agents : Memory Systems",
-    "section": "Demo — Memory that helps vs. memory that hurts",
-    "text": "Demo — Memory that helps vs. memory that hurts\n\nDEMO TO BUILD — spec in demos/README.md (Demo 1); notebook not yet written.\nSetup. One task, five memory entries: 3 relevant, 1 stale (was true, now false), 1 semantically near but wrong. Three runs. (a) all five injected, (b) top-relevant only, (c) no memory. Measure. Correctness, tool calls, tokens. The result to protect: run (a) is worse than run (c). The stale and near-miss entries do not merely waste tokens — they change the answer. More memory is not better memory."
+    "text": "When to Fetch Memory?\n\nEager injection - load relevant memory at the start of each session (Claude Code’s CLAUDE.md, OpenClaw’s SOUL.md)\nOn-demand tool - expose memory as a tool the agent calls (recall_memory(query))"
   },
   {
     "objectID": "agents/07_memory/slides.html#episodic-memory",
     "href": "agents/07_memory/slides.html#episodic-memory",
     "title": "LLM Agents : Memory Systems",
     "section": "Episodic Memory",
-    "text": "Episodic Memory\n\nA structured record of what the agent tried, what worked, and what failed.\nPioneered by Hermes Agent and formalized in A-MEM (NeurIPS 2025, Xu et al.)\nAfter completing a task, the agent writes an episode\n\n\nFIGURE TO ADD — images/semantic-vs-episodic.png (source notes §7, figure 3)\nSame incident, two rows. Semantic: “Auth uses JWKS.” Episodic: “Last time auth tests failed it was a stale JWKS cache, not token parsing — clear the cache before touching validation logic.” Caption: a fact tells you what is true; an episode tells you what fooled you last time."
+    "text": "Episodic Memory\n\nA structured record of what the agent tried, what worked, and what failed.\nPioneered by Hermes Agent and formalized in A-MEM (NeurIPS 2025, Xu et al.)\nAfter completing a task, the agent writes an episode"
   },
   {
     "objectID": "agents/07_memory/slides.html#episodic-memory-1",
@@ -3875,28 +4001,14 @@
     "href": "agents/07_memory/slides.html#episodic-memory-2",
     "title": "LLM Agents : Memory Systems",
     "section": "Episodic Memory",
-    "text": "Episodic Memory\n\nLearning from mistakes without retraining\nTransfer learning across similar tasks\nContinuous improvement - the agent gets better at recurring tasks\nTransparency - you can inspect why the agent chose a particular approach\n\nObservational Memory [Mastra] - extracts discrete facts and stores them\n\nFIGURE TO ADD — images/episodic-loop.png\nA closed cycle: Task → Execute → Write episode → (later, similar task) → Recall top-k → Inject before execution → Adjust approach → Execute better → Write episode. Draw the loop closing on itself and label the closing arrow “improvement without retraining” — that arrow is the claim of this slide."
+    "text": "Episodic Memory\n\nLearning from mistakes without retraining\nTransfer learning across similar tasks\nContinuous improvement - the agent gets better at recurring tasks\nTransparency - you can inspect why the agent chose a particular approach\n\nObservational Memory [Mastra] - extracts discrete facts and stores them"
   },
   {
     "objectID": "agents/07_memory/slides.html#procedural-memory-agents-write-their-own-skills",
     "href": "agents/07_memory/slides.html#procedural-memory-agents-write-their-own-skills",
     "title": "LLM Agents : Memory Systems",
     "section": "Procedural memory: Agents write their own skills",
-    "text": "Procedural memory: Agents write their own skills\n\nHermes’ pattern: after a complex task succeeds, the agent is prompted: “Write a SKILL.md that future-you could use to do this faster.”\n\n\nFIGURE TO ADD — images/procedural-memory-loop.png\nSuccessful complex task → gate: “could this become a skill?” → if yes, agent writes SKILL.md → skill lands in the catalog from deck 05 → surfaces on future runs → catalog grows. Draw the gate as a diamond and label the reject path “most tasks stop here” — the gate is what keeps the catalog from filling with junk."
-  },
-  {
-    "objectID": "agents/07_memory/slides.html#memory-lifecycle",
-    "href": "agents/07_memory/slides.html#memory-lifecycle",
-    "title": "LLM Agents : Memory Systems",
-    "section": "Memory Lifecycle",
-    "text": "Memory Lifecycle\n\nSLIDE TO WRITE — source notes §2.4. The deck’s largest content gap: it teaches storage without a lifecycle, so nothing ever gets corrected or removed.\nLoop figure to add (images/memory-lifecycle.png, source notes §7, figure 4): Observe → Extract → Store → Retrieve → Apply → Update → Consolidate → Forget/Archive, drawn as a cycle with the last two highlighted as the steps everyone omits.\nConsolidation — raw trace (ran pytest → InvalidSignature → read jwks.py → cleared cache → passed) becomes one durable line: “Auth tests fail on stale JWKS cache; clear before touching validation.” Session-end reflection prompt is in source notes §2.4.\nForgetting is not just deletion: archive · lower retrieval priority · mark stale · merge duplicates · replace with a summary. Policies: time decay, usefulness score, contradiction detection, scope restriction, human review."
-  },
-  {
-    "objectID": "agents/07_memory/slides.html#demo-what-should-the-agent-have-remembered",
-    "href": "agents/07_memory/slides.html#demo-what-should-the-agent-have-remembered",
-    "title": "LLM Agents : Memory Systems",
-    "section": "Demo — What should the agent have remembered?",
-    "text": "Demo — What should the agent have remembered?\n\nDEMO TO BUILD — spec in demos/README.md (Demo 2); notebook not yet written.\nHand out a short raw agent trace. In pairs, students sort it into four buckets: semantic (durable facts) · episodic (lessons with a scar) · procedural (a candidate SKILL.md) · nothing-to-store (most of it). Then run an actual reflection pass over the same trace and diff the two.\nExpected disagreement: students over-store. The reflection prompt from source notes §2.4 is the answer key."
+    "text": "Procedural memory: Agents write their own skills\n\nHermes’ pattern: after a complex task succeeds, the agent is prompted: “Write a SKILL.md that future-you could use to do this faster.”"
   },
   {
     "objectID": "agents/07_memory/slides.html#user-modeling-a-special-case-of-memory",
@@ -3911,20 +4023,6 @@
     "title": "LLM Agents : Memory Systems",
     "section": "Memory Comparison",
     "text": "Memory Comparison"
-  },
-  {
-    "objectID": "agents/07_memory/slides.html#does-the-memory-actually-help",
-    "href": "agents/07_memory/slides.html#does-the-memory-actually-help",
-    "title": "LLM Agents : Memory Systems",
-    "section": "Does the memory actually help?",
-    "text": "Does the memory actually help?\n\nSLIDE TO WRITE — source notes §2.5. The deck currently ships a memory system with no way to tell whether it works.\nSix axes: recall (found it) · precision (avoided junk) · application (used it correctly) · freshness (preferred current over stale) · safety (stored nothing it shouldn’t) · efficiency (fewer steps/tokens/failures).\nBenchmark shape — the two-session test. Session 1 creates the knowledge. Session 2 needs it. Compare against a no-memory baseline on: success rate, steps, tool calls, tokens, repeated failed actions, correct vs. incorrect memory writes.\nNegative tests (the part everyone skips): change a convention after memory was written · plant a misleading old memory · give a task where memory is irrelevant — and check the agent does not force-fit it."
-  },
-  {
-    "objectID": "agents/07_memory/slides.html#lab-episode-4-persistent-project-memory",
-    "href": "agents/07_memory/slides.html#lab-episode-4-persistent-project-memory",
-    "title": "LLM Agents : Memory Systems",
-    "section": "Lab — Episode 4: persistent project memory",
-    "text": "Lab — Episode 4: persistent project memory\n\nLAB TO BUILD — spec in demos/README.md; full framing in source notes §9 “Memory Lab”. Chains from Episode 3 (deck 03); chains to Episode 5 (deck 08).\nGive the coding agent all three memory types on one repo: semantic → PROJECT_NOTES.md (conventions, architecture, where things live) · episodic → append-only log of what was tried and why · procedural → the agent writes its own SKILL.md.\nAdd a session-end reflection step, a retrieval step, and a memory budget. Two sessions, same repo — session 2 is designed so session-1 knowledge accelerates it. Measure: session-2 step count with vs. without memory, against a no-memory baseline."
   },
   {
     "objectID": "agents/05_mcp_skills/slides.html#recap",
@@ -4844,18 +4942,18 @@
     "text": "Further Reading\n\n\nAnthropic Engineering - Effective context engineering for AI agents\nChroma - Context Rot: How Increasing Input Tokens Impacts LLM Performance\nLiu et al. - Lost in the Middle: How Language Models Use Long Contexts\nAnthropic Docs - Context editing and compaction\nAnthropic Docs - Prompt caching\nAnthropic Docs - Tool search tool\nAnthropic Engineering - Code execution with MCP\nZhang & Khattab - Recursive Language Models"
   },
   {
-    "objectID": "agents/08_multiagents/slides.html#multi-agent-systems",
-    "href": "agents/08_multiagents/slides.html#multi-agent-systems",
-    "title": "LLM Agents : Multi-Agent Systems",
-    "section": "MULTI-AGENT SYSTEMS",
-    "text": "MULTI-AGENT SYSTEMS"
-  },
-  {
     "objectID": "agents/08_multiagents/slides.html#why-multi-agent",
     "href": "agents/08_multiagents/slides.html#why-multi-agent",
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "Why Multi-Agent?",
-    "text": "Why Multi-Agent?\n\nSpecialized agents win, like specialized humans. A coder, a reviewer, a tester - clean division of labor"
+    "text": "Why Multi-Agent?"
+  },
+  {
+    "objectID": "agents/08_multiagents/slides.html#why-multi-agent-1",
+    "href": "agents/08_multiagents/slides.html#why-multi-agent-1",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Why Multi-Agent?",
+    "text": "Why Multi-Agent?\n\nSome work is genuinely parallel - five bugs, five agents\nSome work is noisy to READ but cheap to REPORT - let a subagent run its own context and hand back a paragraph\nSome work is better judged than produced - a critic that never saw the author’s reasoning catches what the author cannot\nSpecialized agents win, like specialized humans. A coder, a reviewer, a tester - clean division of labor"
   },
   {
     "objectID": "agents/08_multiagents/slides.html#multi-agent-system-benefits",
@@ -4869,7 +4967,7 @@
     "href": "agents/08_multiagents/slides.html#multi-agent-systems-drawbacks",
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "Multi-Agent Systems Drawbacks",
-    "text": "Multi-Agent Systems Drawbacks\n\nCoordination cost - each handoff is a token tax + a latency tax.\nError compounding - a 90%-reliable agent chained 5 times is 0.9^5 ≈ 59% reliable.\nContext fragmentation - agent B doesn’t have what agent A knew.\nDebug nightmare - failures cross agent boundaries; root cause analysis is hard."
+    "text": "Multi-Agent Systems Drawbacks\n\nCoordination cost - each handoff is a token tax + a latency tax.\nError compounding - a 90%-reliable agent chained 5 times is 0.9^5 ≈ 59% reliable.\nContext fragmentation - agent B doesn’t have what agent A knew.\nDebug nightmare - failures cross agent boundaries; root cause analysis is hard.\n\n\n\nSo: do not add an agent unless it buys isolation, parallelism, or disagreement."
   },
   {
     "objectID": "agents/08_multiagents/slides.html#multi-agent-frameworks",
@@ -4879,11 +4977,18 @@
     "text": "Multi-Agent Frameworks\nThe current multi-agent framework landscape"
   },
   {
+    "objectID": "agents/08_multiagents/slides.html#multi-agent-system-checklist",
+    "href": "agents/08_multiagents/slides.html#multi-agent-system-checklist",
+    "title": "LLM Agents : Multi-Agent Systems",
+    "section": "Multi-Agent System Checklist",
+    "text": "Multi-Agent System Checklist\n\nIdentity prompt - who this agent is.\nScope - what it does AND what it doesn’t.\nTools - its specific (narrow!) tool set.\nInputs - what shape of state it consumes.\nOutputs - what shape of artifact it produces.\nHandoff rules - when does it pass to another agent?\nFailure mode - what happens if it fails? Retry? Escalate?\nTermination- a step cap, a token budget, and what happens when it is hit (return partial work, escalate, or fail loudly)"
+  },
+  {
     "objectID": "agents/08_multiagents/slides.html#orchestration-patterns",
     "href": "agents/08_multiagents/slides.html#orchestration-patterns",
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "Orchestration Patterns",
-    "text": "Orchestration Patterns"
+    "text": "Orchestration Patterns\n\nwho decides what is next? (supervisor)\nwhat if the order is fixed?(pipeline)\nwhat if it loops? (graph)\nwhat if nothing depends on anything? (fleet)."
   },
   {
     "objectID": "agents/08_multiagents/slides.html#pattern-1-supervisor-manager-hub-and-spoke",
@@ -4897,7 +5002,7 @@
     "href": "agents/08_multiagents/slides.html#pattern-2-sequential-pipeline",
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "Pattern 2 : Sequential Pipeline",
-    "text": "Pattern 2 : Sequential Pipeline\n\nUsed by:\nMetaGPT (PM -&gt; Architect -&gt; PM -&gt; Engineer -&gt; QA), Aider (architect -&gt; editor)."
+    "text": "Pattern 2 : Sequential Pipeline\n\nUsed by:\nMetaGPT (PM -&gt; Architect -&gt; PM -&gt; Engineer -&gt; QA), Aider (architect -&gt; editor).\n\n\nPros - deterministic, debuggable, no routing failures, easy to eval stage by stage.\nCons - cannot react, a bad stage-1 output poisons everything downstream, no recovery."
   },
   {
     "objectID": "agents/08_multiagents/slides.html#pattern-3-graph-with-conditional-edges",
@@ -4914,25 +5019,18 @@
     "text": "Pattern 4 : Parallel Fleet\n\nIndependent agents in isolated workspaces ( eg git worktrees!) work in parallel on parallelizable subtasks\nPros: massive parallelism, isolated workspaces (no merge conflicts mid-execution).\nCons: orchestration is complex, merge conflicts etc"
   },
   {
-    "objectID": "agents/08_multiagents/slides.html#multi-agent-system-checklist",
-    "href": "agents/08_multiagents/slides.html#multi-agent-system-checklist",
+    "objectID": "agents/08_multiagents/slides.html#langgraph-supervisor-tiered-models",
+    "href": "agents/08_multiagents/slides.html#langgraph-supervisor-tiered-models",
     "title": "LLM Agents : Multi-Agent Systems",
-    "section": "Multi-Agent System Checklist",
-    "text": "Multi-Agent System Checklist\n\nIdentity prompt - who this agent is.\nScope - what it does AND what it doesn’t.\nTools - its specific (narrow!) tool set.\nInputs - what shape of state it consumes.\nOutputs - what shape of artifact it produces.\nHandoff rules - when does it pass to another agent?\nFailure mode - what happens if it fails? Retry? Escalate?"
+    "section": "LangGraph supervisor + tiered models",
+    "text": "LangGraph supervisor + tiered models\nTiered model strategy - Gemini Flash routes, Flash-Lite executes.\n# pip install langgraph langgraph-supervisor langchain-google-genai\nfrom langgraph_supervisor import create_supervisor\nfrom langgraph.prebuilt import create_react_agent\nfrom langchain_google_genai import ChatGoogleGenerativeAI\n\n# Tiered strategy: pay for judgment (routing), not for volume (execution).\n# `-latest` tracks the current Flash; pin a dated version for reproducible evals.\nsupervisor_llm = ChatGoogleGenerativeAI(model=\"gemini-flash-latest\")       # routing\nworker_llm     = ChatGoogleGenerativeAI(model=\"gemini-flash-lite-latest\")  # execution\n\nresearcher = create_react_agent(\n    worker_llm, tools=[web_search], name=\"researcher\",\n    prompt=\"You research topics. Return facts only.\"\n)\ncoder = create_react_agent(\n    worker_llm, tools=[run_python], name=\"coder\",\n    prompt=\"You write Python. Return code only.\"\n)\nreviewer = create_react_agent(\n    worker_llm, tools=[], name=\"reviewer\",\n    prompt=\"You review code for bugs. Return issues found or 'OK'.\"\n)\n\nsupervisor = create_supervisor(\n    [researcher, coder, reviewer],\n    model=supervisor_llm,\n    prompt=\"Route work between researcher, coder, reviewer. Reply 'DONE' when complete.\"\n).compile(checkpointer=MemorySaver())  # durable execution"
   },
   {
-    "objectID": "agents/08_multiagents/slides.html#demo-langgraph-supervisor-tiered-models",
-    "href": "agents/08_multiagents/slides.html#demo-langgraph-supervisor-tiered-models",
+    "objectID": "agents/08_multiagents/slides.html#claude-agent-sdk-subagents",
+    "href": "agents/08_multiagents/slides.html#claude-agent-sdk-subagents",
     "title": "LLM Agents : Multi-Agent Systems",
-    "section": "[DEMO] LangGraph supervisor + tiered models",
-    "text": "[DEMO] LangGraph supervisor + tiered models\nTiered model strategy — Claude Opus 5 routes, Haiku 4.5 executes.\n# pip install langgraph langgraph-supervisor langchain-anthropic\nfrom langgraph_supervisor import create_supervisor\nfrom langgraph.prebuilt import create_react_agent\nfrom langchain_anthropic import ChatAnthropic\n\n# Tiered model strategy (cuts cost 60–70% vs. all-Opus):\nsupervisor_llm = ChatAnthropic(model=\"claude-opus-5\")     # reasoning for routing\nworker_llm     = ChatAnthropic(model=\"claude-haiku-4-5\")  # execution\n\nresearcher = create_react_agent(\n    worker_llm, tools=[web_search], name=\"researcher\",\n    prompt=\"You research topics. Return facts only.\"\n)\ncoder = create_react_agent(\n    worker_llm, tools=[run_python], name=\"coder\",\n    prompt=\"You write Python. Return code only.\"\n)\nreviewer = create_react_agent(\n    worker_llm, tools=[], name=\"reviewer\",\n    prompt=\"You review code for bugs. Return issues found or 'OK'.\"\n)\n\nsupervisor = create_supervisor(\n    [researcher, coder, reviewer],\n    model=supervisor_llm,\n    prompt=\"Route work between researcher, coder, reviewer. Reply 'DONE' when complete.\"\n).compile(checkpointer=MemorySaver())  # durable execution"
-  },
-  {
-    "objectID": "agents/08_multiagents/slides.html#demo-claude-agent-sdk-subagents",
-    "href": "agents/08_multiagents/slides.html#demo-claude-agent-sdk-subagents",
-    "title": "LLM Agents : Multi-Agent Systems",
-    "section": "[DEMO] Claude Agent SDK subagents",
-    "text": "[DEMO] Claude Agent SDK subagents\nNote the two levers: a read-only tool set so the reviewer cannot break anything, and a per-subagent model so high-stakes work gets the bigger model.\nfrom claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition\n\nasync for message in query(\n    prompt=\"Review the authentication module for security issues\",\n    options=ClaudeAgentOptions(\n        allowed_tools=[\"Read\", \"Grep\", \"Glob\", \"Agent\"],  # 'Agent' is required to spawn subagents\n        agents={\n            \"code-reviewer\": AgentDefinition(\n                description=\"Expert reviewer. Use for security/quality reviews.\",\n                prompt=\"Review code for security issues. Be concise.\",\n                tools=[\"Read\", \"Grep\", \"Glob\"],   # read-only — can't break things\n                model=\"opus\",                      # high-stakes → bigger model\n            ),\n            \"test-runner\": AgentDefinition(\n                description=\"Runs and analyzes test suites.\",\n                prompt=\"Run tests, summarize failures.\",\n                tools=[\"Bash\", \"Read\", \"Grep\"],\n                model=\"sonnet\",                    # cheap model, can execute\n            ),\n        },\n    ),\n):\n    if hasattr(message, \"result\"): print(message.result)"
+    "section": "Claude Agent SDK subagents",
+    "text": "Claude Agent SDK subagents\nNote the two levers: a read-only tool set so the reviewer cannot break anything, and a per-subagent model so high-stakes work gets the bigger model.\nfrom claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition\n\nasync for message in query(\n    prompt=\"Review the authentication module for security issues\",\n    options=ClaudeAgentOptions(\n        allowed_tools=[\"Read\", \"Grep\", \"Glob\", \"Agent\"],  # 'Agent' is required to spawn subagents\n        agents={\n            \"code-reviewer\": AgentDefinition(\n                description=\"Expert reviewer. Use for security/quality reviews.\",\n                prompt=\"Review code for security issues. Be concise.\",\n                tools=[\"Read\", \"Grep\", \"Glob\"],   # read-only — can't break things\n                model=\"opus\",                      # high-stakes → bigger model\n            ),\n            \"test-runner\": AgentDefinition(\n                description=\"Runs and analyzes test suites.\",\n                prompt=\"Run tests, summarize failures.\",\n                tools=[\"Bash\", \"Read\", \"Grep\"],\n                model=\"sonnet\",                    # cheap model, can execute\n            ),\n        },\n    ),\n):\n    if hasattr(message, \"result\"): print(message.result)"
   },
   {
     "objectID": "agents/08_multiagents/slides.html#state-passing-communication",
@@ -4953,7 +5051,7 @@
     "href": "agents/08_multiagents/slides.html#method-2-artifact-passing-metagpt",
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "Method 2 : Artifact passing (MetaGPT)",
-    "text": "Method 2 : Artifact passing (MetaGPT)\nclass PRD(BaseModel):\n    goals: list[str]\n    user_stories: list[str]\n    requirements: list[str]\n\nclass SystemDesign(BaseModel):\n    architecture: str\n    api_specs: list[APISpec]\n\nprd: PRD = product_manager.generate(requirement)\ndesign: SystemDesign = architect.generate(prd)\ncode: CodeOutput = engineer.generate(design)\n\nEach agent produces a typed artifact. Next agent consumes it. Pros: type-safe contracts between agents. Cons: rigid (changing the artifact format ripples)."
+    "text": "Method 2 : Artifact passing (MetaGPT)\nclass PRD(BaseModel):\n    goals: list[str]\n    user_stories: list[str]\n    requirements: list[str]\n\nclass SystemDesign(BaseModel):\n    architecture: str\n    api_specs: list[APISpec]\n\nprd: PRD = product_manager.generate(requirement)\ndesign: SystemDesign = architect.generate(prd)\ncode: CodeOutput = engineer.generate(design)\n\nEach agent produces a typed artifact. Next agent consumes it.\nPros: type-safe contracts between agents.\nCons: rigid (changing the artifact format ripples)."
   },
   {
     "objectID": "agents/08_multiagents/slides.html#method-3-message-passing-ag2-style",
@@ -4974,21 +5072,21 @@
     "href": "agents/08_multiagents/slides.html#a2a-agent-to-agent-protocol",
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "A2A (Agent-to-Agent Protocol)",
-    "text": "A2A (Agent-to-Agent Protocol)\n\nA2A developed by Google, contributed to the Linux Foundation\nIt’s becoming the agent-mesh standard.\nSupported by most of agent frameworks"
+    "text": "A2A (Agent-to-Agent Protocol)\n\nA2A developed by Google, contributed to the Linux Foundation\nIt’s becoming the agent-mesh standard.\nSupported by most of agent frameworks (a2a-protocol.org)"
   },
   {
     "objectID": "agents/08_multiagents/slides.html#a2a-agent-to-agent-protocol-1",
     "href": "agents/08_multiagents/slides.html#a2a-agent-to-agent-protocol-1",
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "A2A (Agent-to-Agent Protocol)",
-    "text": "A2A (Agent-to-Agent Protocol)\nVideo"
+    "text": "A2A (Agent-to-Agent Protocol)"
   },
   {
     "objectID": "agents/08_multiagents/slides.html#a2a-agent-to-agent-protocol-2",
     "href": "agents/08_multiagents/slides.html#a2a-agent-to-agent-protocol-2",
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "A2A (Agent-to-Agent Protocol)",
-    "text": "A2A (Agent-to-Agent Protocol)\nArchitecture:\n\nTransport: HTTP + Server-Sent Events + JSON-RPC 2.0.\nAgent Cards: Eeach agent publishes what it can do, what it requires, auth scheme.\nTasks: The primary unit, long-running, with state transitions (submitted -&gt; working -&gt; completed / failed / canceled).\nModalities: Multimodal (text, audio, video streaming)\nSecurity: parity with OpenAPI auth schemes; enterprise SSO + RBAC"
+    "text": "A2A (Agent-to-Agent Protocol)\nArchitecture:\n\nTransport: HTTP + Server-Sent Events + JSON-RPC 2.0.\nAgent Cards: Each agent publishes what it can do, what it requires, auth scheme.\nTasks: The primary unit, long-running, with state transitions (submitted -&gt; working -&gt; completed / failed / canceled).\nModalities: Multimodal (text, audio, video streaming)\nSecurity: parity with OpenAPI auth schemes; enterprise SSO + RBAC"
   },
   {
     "objectID": "agents/08_multiagents/slides.html#a2a-agent-to-agent-protocol-3",
@@ -5002,14 +5100,14 @@
     "href": "agents/08_multiagents/slides.html#why-multi-agent-systems-win",
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "Why Multi-Agent systems win",
-    "text": "Why Multi-Agent systems win\n\nMulti-agent systems usually win through context isolation, not through role specialization."
+    "text": "Why Multi-Agent systems win\n\n\n\nMulti-agent systems usually win through context isolation, not through role specialization."
   },
   {
     "objectID": "agents/08_multiagents/slides.html#case-study-anthropics-multi-agent-research-system",
     "href": "agents/08_multiagents/slides.html#case-study-anthropics-multi-agent-research-system",
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "Case study: Anthropic’s multi-agent research system",
-    "text": "Case study: Anthropic’s multi-agent research system\nHow we built our multi-agent research system\n\nArchitecture: Lead Researcher (Claude Opus 4) + parallel Sonnet 4 subagents + a Citation Agent that runs after the research loop closes.\nPerformance: +90.2% over single-agent Opus 4 on Anthropic’s internal research eval.\n\n\nModel names are as published — the result was measured on the Claude 4 generation. The architecture is what transfers, not the numbers.\n\n\nCost: approximately 15× the tokens of a chat interaction (vs. ~4× for a single agent). Multi-agent is economically viable only for high-value tasks."
+    "text": "Case study: Anthropic’s multi-agent research system\nHow we built our multi-agent research system\n\n\n\n\nArchitecture: Lead Researcher (Claude Opus 4) + parallel Sonnet 4 subagents + a Citation Agent that runs after the research loop closes.\nPerformance: +90.2% over single-agent Opus 4 on Anthropic’s internal research eval.\nCost: approximately 15× the tokens of a chat interaction (vs. ~4× for a single agent). Multi-agent is economically viable only for high-value tasks."
   },
   {
     "objectID": "agents/08_multiagents/slides.html#anthropic-sizing-recommendations",
@@ -5023,7 +5121,7 @@
     "href": "agents/08_multiagents/slides.html#more-case-studies",
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "More Case Studies",
-    "text": "More Case Studies\n\n\n\n\n\n\n\n\n\nSystem\nMemory\nMulti-agent\nStance\n\n\n\n\nPi\nMinimal (in-prompt)\nNone\nMinimal\n\n\nClaude Code\nFile-based + user model\nSub-agents (Task)\nPolished baseline\n\n\nHermes\nEpisodic + observational + user model\nProvider/backend isolation\nSelf-improving\n\n\nOpenClaw\nFile-based + dated folders\nDelegates to sub-agents\nHeavy infra"
+    "text": "More Case Studies\n\n\n\n\n\n\n\n\nSystem\nMemory\nMulti-agent\n\n\n\n\nPi\nMinimal (in-prompt)\nNone\n\n\nClaude Code\nFile-based + user model\nSub-agents (Task)\n\n\nHermes\nEpisodic + observational + user model\nSelf-improving\n\n\nOpenClaw\nFile-based + dated folders\nDelegates to sub-agents"
   },
   {
     "objectID": "agents/08_multiagents/slides.html#appendix",
@@ -5051,7 +5149,7 @@
     "href": "agents/08_multiagents/slides.html#default-stack-for-a-new-custom-enterprise-agent",
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "Default stack for a new custom enterprise agent",
-    "text": "Default stack for a new custom enterprise agent\n\n\n\n\n\n\n\n\nLayer\nDefault pick\nWhen to deviate\n\n\n\n\nLLM provider\nClaude (Sonnet 5 default, Opus 5 for orchestrator) OR GPT-5/o-series\nCost-sensitive → Haiku 4.5 for workers; data-residency → on-prem via vLLM\n\n\nOrchestration\nLangGraph if you want graphs; Claude Agent SDK if Claude-native + want subagents primitive; Microsoft Agent Framework if Azure shop\nCrewAI for quick prototypes; OpenAI Agents SDK if OpenAI-native\n\n\nMemory\nMem0 (fastest path)\nZep if you need temporal audit; Cognee if you need graph over docs; Letta if you want explicit OS-style paging\n\n\nTools\nMCP servers behind an enterprise gateway\nInline tools only for in-process logic\n\n\nInter-agent\nA2A for cross-team / cross-vendor; in-process handoffs within one team\nMCP-wrapping if the other agent is logically a tool\n\n\nObservability\nLangSmith (if LangGraph) OR Langfuse (if framework-agnostic)\nArize Phoenix if eval rigor is the priority\n\n\nSandbox\nDocker containers + git worktrees per parallel agent\nfirejail / gVisor / E2B for stricter isolation\n\n\nGovernance\nAEGIS-aligned policy registry; per-agent identity; least-privilege\nIf the org has a CISO, they already have requirements — use theirs"
+    "text": "Default stack for a new custom enterprise agent\n\n\n\n\n\n\n\n\n\nLayer\nDefault pick\nWhen to deviate\n\n\n\n\nLLM provider\nClaude (Sonnet 5 default, Opus 5 for orchestrator) OR GPT-5/o-series\nCost-sensitive → Haiku 4.5 for workers; data-residency → on-prem via vLLM\n\n\nOrchestration\nLangGraph if you want graphs; Claude Agent SDK if Claude-native + want subagents primitive; Microsoft Agent Framework if Azure shop\nCrewAI for quick prototypes; OpenAI Agents SDK if OpenAI-native\n\n\nMemory\nMem0 (fastest path)\nZep if you need temporal audit; Cognee if you need graph over docs; Letta if you want explicit OS-style paging\n\n\nTools\nMCP servers behind an enterprise gateway\nInline tools only for in-process logic\n\n\nInter-agent\nA2A for cross-team / cross-vendor; in-process handoffs within one team\nMCP-wrapping if the other agent is logically a tool\n\n\nObservability\nLangSmith (if LangGraph) OR Langfuse (if framework-agnostic)\nArize Phoenix if eval rigor is the priority\n\n\nSandbox\nDocker containers + git worktrees per parallel agent\nfirejail / gVisor / E2B for stricter isolation\n\n\nGovernance\nAEGIS-aligned policy registry; per-agent identity; least-privilege\nIf the org has a CISO, they already have requirements — use theirs"
   },
   {
     "objectID": "agents/08_multiagents/slides.html#build-order",
@@ -5065,7 +5163,7 @@
     "href": "agents/08_multiagents/slides.html#build-order-1",
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "Build Order",
-    "text": "Build Order\n\nEval harness - golden outputs, LLM-as-judge with calibrated rubric (Class 1/2 work).\nSingle-agent prototype - one LLM, one prompt, two tools, no memory. Measure baseline cost/latency/quality.\nTrajectory logging via OpenTelemetry - Every tool call, every cost, every latency.\nMemory layer - (4-scope: tenant/user/agent/run). Re-run eval\nCompaction + structured note-taking - PROJECT_NOTES.md-style external scratchpad for any task &gt;10 turns.\nSub-agent for one noisy subtask - pick the highest-token sub-task (file exploration, web search, debugging) and isolate it. Re-run eval under equal budget.\nMCP gateway in front of tools - even if it’s just one tool. The gateway is the audit + RBAC point; never let agents talk to tools directly in prod.\nHITL approval gate for one high-stakes action - destructive writes, financial transactions, customer-visible outputs. Build the human-in-the-loop UI before you need it.\nEval in CI - small (20 prompt) eval suite runs on every PR. Alert on regression. Drift detection in production.\nFailure taxonomy + runbook - after 50 production traces, categorize failures (wrong tool, infinite loop, context overflow, hallucinated API, permission denial, memory miss). One mitigation per category."
+    "text": "Build Order\n\n\nEval harness - golden outputs, LLM-as-judge with calibrated rubric (Class 1/2 work).\nSingle-agent prototype - one LLM, one prompt, two tools, no memory. Measure baseline cost/latency/quality.\nTrajectory logging via OpenTelemetry - Every tool call, every cost, every latency.\nMemory layer - (4-scope: tenant/user/agent/run). Re-run eval\nCompaction + structured note-taking - PROJECT_NOTES.md-style external scratchpad for any task &gt;10 turns.\nSub-agent for one noisy subtask - pick the highest-token sub-task (file exploration, web search, debugging) and isolate it. Re-run eval under equal budget.\nMCP gateway in front of tools - even if it’s just one tool. The gateway is the audit + RBAC point; never let agents talk to tools directly in prod.\nHITL approval gate for one high-stakes action - destructive writes, financial transactions, customer-visible outputs. Build the human-in-the-loop UI before you need it.\nEval in CI - small (20 prompt) eval suite runs on every PR. Alert on regression. Drift detection in production.\nFailure taxonomy + runbook - after 50 production traces, categorize failures (wrong tool, infinite loop, context overflow, hallucinated API, permission denial, memory miss). One mitigation per category."
   },
   {
     "objectID": "agents/08_multiagents/slides.html#questions-to-answer-about-an-enterprise-agent",
@@ -5073,6 +5171,181 @@
     "title": "LLM Agents : Multi-Agent Systems",
     "section": "Questions to answer about an Enterprise Agent",
     "text": "Questions to answer about an Enterprise Agent\n\nWhat does the agent actually do? - one user-visible workflow, end-to-end.\nHow do we know it works? - eval numbers on a documented golden set.\nWhat does it cost per user per month? - token cost + memory cost + observability cost.\nWhat gets affected if the agent goes wrong? - sandbox, permissions, HITL gates.\nVendor Portability? - abstractions over MCP/A2A so a memory provider swap is one config change."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#agent-evaluation",
+    "href": "agents/09_agent_eval/slides_kimi.html#agent-evaluation",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "AGENT EVALUATION",
+    "text": "AGENT EVALUATION\nDecks 01-08 built the agent:\n\nTools, MCP, skills\nContext engineering\nMemory\nMulti-agent systems\n\n\n\nHow do we know any of it works?"
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#bridge-from-output-eval-to-agent-eval",
+    "href": "agents/09_agent_eval/slides_kimi.html#bridge-from-output-eval-to-agent-eval",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Bridge: From Output Eval to Agent Eval",
+    "text": "Bridge: From Output Eval to Agent Eval\nEarlier eval classes (eval module) covered single LLM calls:\n\nGolden sets, reference-based metrics, LLM-as-judge\nOne prompt in, one answer out, score the answer\n\n\nAgents break that assumption:\n\nOne task in, a sequence of steps out\nThe final answer is only the last frame of the film\n\n\n\n\nOutput eval scores an answer. Agent eval must score a path."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#why-agent-eval-is-different",
+    "href": "agents/09_agent_eval/slides_kimi.html#why-agent-eval-is-different",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Why Agent Eval Is Different",
+    "text": "Why Agent Eval Is Different\n\nNon-determinism: same task, same agent, different runs\nBranching trajectories: many paths reach the goal; some paths reach it by accident\nCompounding errors: a step-2 mistake poisons every step after it\nSide effects: the agent changed the world (files, databases, emails) along the way\nPartial completion: 9 of 10 subtasks done is not 90% credit — and sometimes it is\n\n\n\nThere is no single “output” to grade. There is a trace, an environment diff, and an outcome."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#compounding-errors-revisited",
+    "href": "agents/09_agent_eval/slides_kimi.html#compounding-errors-revisited",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Compounding Errors, Revisited",
+    "text": "Compounding Errors, Revisited\nFrom deck 08: if each step succeeds with probability \\(p\\), an \\(n\\)-step chain succeeds with \\(p^n\\).\n\\[0.9^5 \\approx 59\\% \\qquad 0.9^{20} \\approx 12\\%\\]\n\nImplications for eval:\n\nPer-step accuracy and end-to-end success are different numbers\nLong-horizon tasks fail even when every individual step “looks fine”\nAn eval that only checks the final state hides where the chain broke\n\n\n\n\nTrajectory eval exists to find the broken link, not just the broken chain."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#outcome-vs-trajectory-evaluation",
+    "href": "agents/09_agent_eval/slides_kimi.html#outcome-vs-trajectory-evaluation",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Outcome vs Trajectory Evaluation",
+    "text": "Outcome vs Trajectory Evaluation\n\n\n\n\n\n\n\n\n\n\nOutcome eval\nTrajectory eval\n\n\n\n\nWhat is scored\nFinal answer / final environment state\nEvery intermediate step\n\n\nQuestion asked\n“Did it succeed?”\n“Did it succeed the right way?”\n\n\nCost\nCheap, often automatable\nExpensive; needs traces + judges\n\n\nBlind spot\nLucky wrong paths\nOver-penalizes valid detours\n\n\nTypical use\nBenchmarks (SWE-bench)\nDebugging, safety, policy checks\n\n\n\n\n\n\nOutcome eval tells you that the agent failed. Trajectory eval tells you why — and catches the runs that “succeeded” but should not have."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#when-outcome-only-is-enough",
+    "href": "agents/09_agent_eval/slides_kimi.html#when-outcome-only-is-enough",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "When Outcome-Only Is Enough",
+    "text": "When Outcome-Only Is Enough\nOutcome eval suffices when:\n\nThe answer is verifiable: unit tests pass, exact match, numeric equality\nSide effects don’t matter or are sandboxed away\nYou need a leaderboard number, not a debug signal\n\n\nTrajectory eval becomes mandatory when:\n\nSafety/policy: agent must not call certain tools, exfiltrate data, or exceed budget — even if the answer is right\nCost: a 200-step success and a 10-step success are not the same product\nDebugging: you cannot fix what you cannot localize\n\n\n\n\nRule of thumb: outcome eval for reporting, trajectory eval for engineering."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#the-lucky-wrong-path-problem",
+    "href": "agents/09_agent_eval/slides_kimi.html#the-lucky-wrong-path-problem",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "The Lucky-Wrong-Path Problem",
+    "text": "The Lucky-Wrong-Path Problem\nAn agent asked to fix a bug:\n\nReads the wrong file\nMisdiagnoses the cause\nEdits a test instead of the source\nTests pass — because the test was weakened\n\n\n\nOutcome eval: PASS\nAny human reviewing the trace: FAIL\n\n\n\nThese “false successes” are the most dangerous eval result: they inflate your metrics and teach you the wrong lessons about your agent.\n\nEvery outcome-only score is an upper bound on true quality. The gap is the lucky-wrong-path rate."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#outcome-evaluation-methods",
+    "href": "agents/09_agent_eval/slides_kimi.html#outcome-evaluation-methods",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Outcome Evaluation Methods",
+    "text": "Outcome Evaluation Methods\n\nVerifiable checks (gold standard when available)\n\nUnit tests, type checks, exact match, database state diff\nSWE-bench: the patch must make failing tests pass without breaking others\n\nLLM-as-judge on the final answer\n\nReuse the Class 2 judge harness; rubric scores correctness/completeness\nWorks for open-ended tasks (research summaries, plans)\n\nHuman grading\n\nExpensive; reserve for calibration and high-stakes tasks\n\n\n\n\nPrefer verifiable checks whenever the task admits them. A judge is a proxy; a test is ground truth."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#trajectory-evaluation-what-to-score",
+    "href": "agents/09_agent_eval/slides_kimi.html#trajectory-evaluation-what-to-score",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Trajectory Evaluation: What to Score",
+    "text": "Trajectory Evaluation: What to Score\nFor each step in the trace:\n\nTool selection: right tool for this subtask?\nTool arguments: well-formed, grounded in evidence, not hallucinated?\nInformation use: did the agent use what the tool returned, or ignore it?\nOrdering: exploration before edits, tests after changes?\nRecovery: after an error, did it adapt or repeat the same call?\n\nAnd across the whole trace:\n\nProgress: does each step reduce distance to the goal?\nTermination: stopped when done — not early, not looping\n\n\n\nA trajectory rubric is a checklist of failure modes you have actually seen."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#step-level-judging-and-process-rewards",
+    "href": "agents/09_agent_eval/slides_kimi.html#step-level-judging-and-process-rewards",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Step-Level Judging and Process Rewards",
+    "text": "Step-Level Judging and Process Rewards\nTwo families:\n\nProcess Reward Models (PRMs): a model scores each reasoning step; used heavily in math/reasoning RL\nLLM judge over the trace: feed the full trajectory (or a compressed view) to a strong model with a rubric\n\n\nPractical issues:\n\nFull traces are long — judges need trace compression or per-step windows\nJudges inherit the same biases as output-level judges (verbosity, sycophancy)\nJudging a trajectory costs more than producing one sometimes\n\n\n\n\nMeta-eval applies here too: hand-label a small set of traces, measure judge–human agreement before trusting the judge at scale."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#reference-based-vs-reference-free-trajectories",
+    "href": "agents/09_agent_eval/slides_kimi.html#reference-based-vs-reference-free-trajectories",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Reference-Based vs Reference-Free Trajectories",
+    "text": "Reference-Based vs Reference-Free Trajectories\n\nReference-based: compare against a gold trajectory (canonical tool sequence)\n\nPrecise, but penalizes valid alternative paths — agents rarely match the reference exactly\n\nReference-free: judge the trace on its own merits against a rubric\n\nFlexible, but noisier and judge-dependent\n\n\n\nMiddle path used in practice:\n\nScore milestones, not steps: did it find the right file? reproduce the bug? run the tests?\nMilestones are path-independent but still trajectory-aware\n\n\n\n\nDon’t grade the footsteps; grade whether it passed through the checkpoints."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#efficiency-as-a-first-class-metric",
+    "href": "agents/09_agent_eval/slides_kimi.html#efficiency-as-a-first-class-metric",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Efficiency as a First-Class Metric",
+    "text": "Efficiency as a First-Class Metric\nTwo agents, same success rate. One uses 10 steps and 40k tokens; the other 200 steps and 2M tokens.\nThey are not the same agent.\n\nTrack per run:\n\nSteps / tool calls to solution\nInput + output tokens (and $ cost)\nWall-clock latency\nTokens-per-success and cost-adjusted success: the numbers a product team actually budgets against\n\n\n\n\nSuccess rate is a research metric. Success rate at a cost is an engineering metric."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#reliability-passk-and-passk",
+    "href": "agents/09_agent_eval/slides_kimi.html#reliability-passk-and-passk",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Reliability: pass@k and pass^k",
+    "text": "Reliability: pass@k and pass^k\nA single run proves almost nothing about a stochastic agent.\n\npass@k: probability that at least one of \\(k\\) independent runs succeeds\n\nThe right metric when you can try many times and keep the best (code with tests)\n\npass^k (τ-bench): probability that all \\(k\\) runs succeed\n\nThe right metric when the agent faces real users and must work every time\n\n\n\n\\[pass@k = 1 - (1-p)^k \\qquad pass^k = p^k\\]\npass@k rises with retries; pass^k collapses. A demo is a pass@1 sample of size one.\n\n\n\nReport variance across seeds, not the best run. An agent that works “sometimes” is a property of \\(p\\), not of your luck."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#agent-benchmarks-the-landscape",
+    "href": "agents/09_agent_eval/slides_kimi.html#agent-benchmarks-the-landscape",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Agent Benchmarks: The Landscape",
+    "text": "Agent Benchmarks: The Landscape\n\n\n\n\n\n\n\n\n\n\nBenchmark\nDomain\nWhat it measures\nScoring\n\n\n\n\nSWE-bench (Verified/Lite)\nGitHub issue fixing\nReal repo patches\nTests pass/fail\n\n\nGAIA\nGeneral assistant tasks\nMulti-step tool use, web, files\nExact match\n\n\nτ-bench\nTool-agent-user dialogues\nPolicy adherence under conversation\npass^k on env state\n\n\nAgentBench\n8 environments (OS, web, DB, …)\nBroad agent capability\nTask-specific\n\n\nWebArena / OSWorld\nWeb / full OS control\nGUI action sequences, task completion\nEnv state checks\n\n\n\n\n\n\nNo benchmark measures “agenticness”. Each measures success in one environment, with one action space, under one scoring rule."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#swe-bench",
+    "href": "agents/09_agent_eval/slides_kimi.html#swe-bench",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "SWE-bench",
+    "text": "SWE-bench\n\nReal GitHub issues from popular Python repos; the agent must produce a patch\nScored by running the repo’s test suite: FAIL_TO_PASS tests flip, PASS_TO_PASS stay green\nSWE-bench Verified: 500 human-validated, non-broken tasks (OpenAI, 2024)\nSWE-bench Lite: 300-task cheaper subset for iteration\n\n\nWhy it became the standard:\n\nVerifiable scoring — no judge needed\nLong-horizon: real repos, real context management, real tool use\nDirectly matches the coding-agent spine of this course\n\n\n\nCaveats: solutions leak into pretraining data; top systems tune scaffolds to the benchmark; resolved-rate gains increasingly reflect scaffolding, not reasoning."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#gaia-and-τ-bench",
+    "href": "agents/09_agent_eval/slides_kimi.html#gaia-and-τ-bench",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "GAIA and τ-bench",
+    "text": "GAIA and τ-bench\nGAIA (Meta/HF, 2023): 466 assistant tasks with short verifiable answers\n\nRequires web browsing, file handling, code execution, multimodality\n“Easy for humans, hard for agents” — humans ~92%, early GPT-4 agents ~15%\nLevel 1/2/3 by number of steps and tools needed\n\n\nτ-bench (Sierra, 2024): tool-agent-user conversation in retail/airline domains\n\nA simulated user (LLM) converses with the agent; scored on final database state + policy adherence\nIntroduced pass^k to measure consistency — SOTA agents then scored below 50% at pass^8\nExposed that benchmark success and production reliability are different quantities\n\n\n\n\nGAIA measures capability breadth; τ-bench measures reliability under interaction. You need both kinds of number."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#webarena-osworld-agentbench",
+    "href": "agents/09_agent_eval/slides_kimi.html#webarena-osworld-agentbench",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "WebArena, OSWorld, AgentBench",
+    "text": "WebArena, OSWorld, AgentBench\nWebArena: self-hosted realistic websites (shopping, forums, GitLab, maps)\n\nTask success checked against environment state, not textual answers\nHard: SOTA success rates stayed below ~60% long after text benchmarks saturated\n\nOSWorld: full desktop control (Ubuntu, real apps) — the computer-use benchmark\nAgentBench: 8 diverse environments (OS shell, database, web shopping, card games…), a capability profile rather than a single score\n\n\nEnvironment-state scoring is the common thread: as agents act in the world, evals must check the world, not the transcript."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#reading-benchmark-numbers-responsibly",
+    "href": "agents/09_agent_eval/slides_kimi.html#reading-benchmark-numbers-responsibly",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Reading Benchmark Numbers Responsibly",
+    "text": "Reading Benchmark Numbers Responsibly\nBefore trusting any leaderboard number, ask:\n\nContamination: were the tasks (or their solutions) in pretraining data?\nScaffold vs model: how much of the gain is the harness, retries, and prompt engineering around the model?\nSaturation: is headroom left, or is everyone at 90%+ arguing about noise?\nCost: what did each solved task cost in tokens and wall-clock?\nSelection: was the benchmark chosen because the system does well on it?\n\n\n\nA benchmark is a proxy for a distribution of real tasks. Proxies get gamed — Goodhart applies to agents with extra force."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#failure-taxonomies",
+    "href": "agents/09_agent_eval/slides_kimi.html#failure-taxonomies",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Failure Taxonomies",
+    "text": "Failure Taxonomies\nThe deliverable of an eval campaign is not the score — it is the failure analysis.\nA working taxonomy for coding-agent failures (from the course spine, Class 8):\n\nWrong localization — edited the wrong file / wrong function\nTest-gaming regression — made tests pass by weakening them\nInfinite loop — repeated identical failing tool calls\nContext overflow — lost the task during compaction\nHallucinated API — called functions/flags that don’t exist\nPremature stop — declared done with subtasks open\nSandbox/policy violation — attempted disallowed actions\n\n\n\nTaxonomy categories should come from your traces, not from this slide. This list is a starting point, not a constant."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#observability-traces-are-the-raw-material",
+    "href": "agents/09_agent_eval/slides_kimi.html#observability-traces-are-the-raw-material",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Observability: Traces Are the Raw Material",
+    "text": "Observability: Traces Are the Raw Material\nYou cannot evaluate what you did not record.\n\nTrace: one full agent run — every LLM call, tool call, observation, decision\nSpan: a unit inside the trace (one tool call, one retry, one sub-agent run)\nLog inputs, outputs, token counts, latency, cost, and environment diffs per span\n\n\nTooling (all span-based, all have free tiers):\n\nLangfuse — open source, self-hostable\nWeave (W&B), LangSmith (LangChain) — hosted, framework-adjacent\n\n\n\n\nTracing is not a production luxury. It is the dataset your evals run on."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#offline-vs-online-eval-for-agents",
+    "href": "agents/09_agent_eval/slides_kimi.html#offline-vs-online-eval-for-agents",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Offline vs Online Eval for Agents",
+    "text": "Offline vs Online Eval for Agents\nOffline (before deployment):\n\nBenchmark suites (SWE-bench slice, GAIA subset, your own task set)\nRegression suite built from past failures — every production failure becomes a test case\nRun per change: model swap, prompt edit, tool change\n\nOnline (in production):\n\nSampled trace review (judge or human) on live traffic\nUser signals: task abandonment, retries, corrections, thumbs\nGuardrail metrics: policy violations, budget overruns, loop detection\n\n\n\nSame three-regime structure as output eval (offline / online / guardrails) — but the unit is now a trace, not a response."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#eval-driven-agent-development",
+    "href": "agents/09_agent_eval/slides_kimi.html#eval-driven-agent-development",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Eval-Driven Agent Development",
+    "text": "Eval-Driven Agent Development\nThe loop that actually improves agents:\n\nRun the agent on a task set; record full traces\nFailure analysis: label failures into your taxonomy\nTurn top failure categories into regression evals\nFix the agent (prompt, tool, scaffold)\nRe-run; confirm the fix; check for regressions elsewhere\nRepeat\n\n\n\nResist prompt-tweaking against vibes; every change is validated against the suite\nThe eval suite is the product spec for agent behavior\n\n\n\n\nEval-driven development: you don’t have an agent quality problem, you have a measurement pipeline that produces fixes."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#modality-changes-the-eval",
+    "href": "agents/09_agent_eval/slides_kimi.html#modality-changes-the-eval",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Modality Changes the Eval",
+    "text": "Modality Changes the Eval\nThe action space defines the metrics:\n\nText agents (this course): trajectory quality, task success, tokens-per-success\nVoice agents: latency as a first-class metric (time-to-first-token, interruption handling), WER of the ASR leg, user satisfaction over time within one call\nComputer-use agents: action correctness (right click, right element), recovery from failed clicks, completion on GUI benchmarks (WebArena, VisualWebArena, OSWorld)\n\n\n\nEval methodology is not portable across modalities. When you get to voice or computer use, expect to rebuild the rubric around the new action space."
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#open-problems",
+    "href": "agents/09_agent_eval/slides_kimi.html#open-problems",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Open Problems",
+    "text": "Open Problems\n\nLong-horizon eval: tasks spanning hours/days; how do you grade a 10,000-step trace?\nJudging the judges of trajectories: meta-eval for step-level judges is nearly unsolved\nEval cost: a full agent eval run can cost more than a day of production traffic\nSelf-generated evals: agents writing their own regression tests — promising and circular\nSecurity evals: prompt injection, tool abuse, sandbox escapes need adversarial benchmarks, not just accuracy benchmarks"
+  },
+  {
+    "objectID": "agents/09_agent_eval/slides_kimi.html#takeaways",
+    "href": "agents/09_agent_eval/slides_kimi.html#takeaways",
+    "title": "LLM Agents : Agent Evaluation",
+    "section": "Takeaways",
+    "text": "Takeaways\n\nAgents produce paths, not answers — evaluate the path\nOutcome eval for reporting; trajectory eval for engineering\nMilestones over footsteps; verifiable checks over judges\nReport pass^k and cost-per-success, not one lucky run\nThe failure taxonomy — built from your traces — is the real deliverable\nTracing is eval infrastructure, not observability garnish\n\n\n\nYou can’t improve what you can’t measure — and for agents, measuring means recording."
   },
   {
     "objectID": "arch/01_transformers/slides.html#topics-covered",
@@ -7326,20 +7599,6 @@
     "text": "Total Inference Memory\ntotal_memory = model_weights + kv_cache + activations (small)\nLLaMA-2 7B, BF16, S=1024, B=1:\n\\[13.4 \\text{ GB} + 0.9 \\text{ GB} \\approx 14.3 \\text{ GB}\\]\n==&gt; Fits on a single RTX 4090 (24 GB) or A100 40GB\n\n\n\n\n\n\n\n\n\n\n\n\nModel\nParams\nBF16 Size\nKV Cache (S=4K, B=1)\nGPUs Needed\n\n\n\n\nLLaMA-2 7B\n6.7B\n13.4 GB\n2.1 GB - MHA (32 KV heads)\n1× A100 40GB\n\n\nLLaMA-2 13B\n13B\n26 GB\n3.4 GB - MHA (40 KV heads)\n1× A100 40GB\n\n\nLLaMA-2 70B\n70B\n140 GB\n1.3 GB - GQA (8 KV heads)\n2× A100 80GB\n\n\nLLaMA-3.1 405B\n405B\n810 GB\n2.1 GB - GQA (8 KV heads)\n12× A100 80GB\n\n\nDeepSeek-V3\n671B (37B act.)\n1,342 GB\n0.29 GB - MLA (\\(d_c+d_r\\)=576)\n17× A100 80GB\n\n\n\n\n\n\n\n\n\n\n\n\nImportant\n\n\nThe 70B caches less than the 13B (1.3 vs 3.4 GB) - the attention variant, not the parameter count, sets KV cost. DeepSeek-V3 has 100× the parameters of LLaMA-2 7B and caches 7× less."
   },
   {
-    "objectID": "inference/knowdis_discussion/slides.html#which-cost-center-does-it-attack",
-    "href": "inference/knowdis_discussion/slides.html#which-cost-center-does-it-attack",
-    "title": "LLM Inference Math and Efficient Attention",
-    "section": "Which Cost Center Does It Attack?",
-    "text": "Which Cost Center Does It Attack?\nEvery variant so far shrinks something. The useful question is which bill it reduces - and that follows from the two regimes.\n\n\nTraining & Prefill\n\nParallel over the sequence\nCompute-bound (high AI)\nWhat hurts: the \\(O(S^2)\\) term\n\n\nDecode\n\nSerial, one token at a time\nBandwidth-bound (AI &lt; 1)\nWhat hurts: bytes read per token\n\n\n\n\n\n\n\n\n\nImportant\n\n\nShrink the cache \\(\\rightarrow\\) helps decode only. Training never reads a KV cache - it recomputes in parallel.\nShrink the interaction pattern \\(\\rightarrow\\) attacks \\(S^2\\), which appears in training, prefill and decode.\n\n\n\n\n\nTwo sentences that partition the entire taxonomy."
-  },
-  {
-    "objectID": "inference/knowdis_discussion/slides.html#which-cost-center-does-it-attack-1",
-    "href": "inference/knowdis_discussion/slides.html#which-cost-center-does-it-attack-1",
-    "title": "LLM Inference Math and Efficient Attention",
-    "section": "Which Cost Center Does It Attack?",
-    "text": "Which Cost Center Does It Attack?\n\n\n\n\n\n\n\n\n\n\nMethod\nTraining / Prefill\nDecode\nMotivated by\n\n\n\n\nMQA\n—\nlarge\ninference only\n\n\nGQA\n—\nlarge\ninference only\n\n\nMLA\nneutral / worse\nlarge\ninference only\n\n\nSliding window\nreduces \\(S^2\\)\nbounds cache\nboth\n\n\nDSA (V3.2)\nreduces \\(S^2\\)\nreads fewer entries\nboth\n\n\nCSA / HCA (V4)\nreduces \\(S^2\\)\nfewer stored entries\nboth\n\n\nLinear / GDN / KDA\n\\(O(S)\\) training\nconstant state\nboth, sold on inference\n\n\nFlashAttention\nlarge\nmodest\ntraining first\n\n\n\n\n\n\n\nMQA/GQA change nothing at training : with \\(N\\) query heads you compute \\(N\\) heads’ worth of scores no matter how many KV heads feed them\nMLA is not fewer FLOPs at decode : it attends in the 512-dim latent for all heads. It trades FLOPs for bandwidth - deliberately moving right on the roofline, into headroom that was idle anyway\nLinear attention’s pitch migrated : 2020 sold \\(O(S)\\) training; 2025 sells constant-state decode\n\n\n\n\n\n\n\n\n\n\nTip\n\n\nTraining is capex the lab pays once. Inference is opex that scales with every user, forever. That asymmetry is why architecture changes have drifted toward decode - and why inference is 80-90% of compute spend.\n\n\n\nEverything so far made each remembered token cheaper. At 1M context that is no longer enough \\(\\rightarrow\\) stop remembering most of them."
-  },
-  {
     "objectID": "inference/knowdis_discussion/slides.html#deepseek-sparse-attention-v3.2-glm5",
     "href": "inference/knowdis_discussion/slides.html#deepseek-sparse-attention-v3.2-glm5",
     "title": "LLM Inference Math and Efficient Attention",
@@ -7347,11 +7606,53 @@
     "text": "DeepSeek Sparse Attention (v3.2, GLM5)\nIdea: at long context a query doesn’t need every past token - attend only to the most relevant ones."
   },
   {
+    "objectID": "inference/knowdis_discussion/slides.html#deepseek-sparse-attention-v3.2-glm5-1",
+    "href": "inference/knowdis_discussion/slides.html#deepseek-sparse-attention-v3.2-glm5-1",
+    "title": "LLM Inference Math and Efficient Attention",
+    "section": "DeepSeek Sparse Attention (v3.2, GLM5)",
+    "text": "DeepSeek Sparse Attention (v3.2, GLM5)\nIdea: at long context a query doesn’t need every past token - attend only to the most relevant ones."
+  },
+  {
+    "objectID": "inference/knowdis_discussion/slides.html#dsa-top-k-2048-in-practice",
+    "href": "inference/knowdis_discussion/slides.html#dsa-top-k-2048-in-practice",
+    "title": "LLM Inference Math and Efficient Attention",
+    "section": "DSA : top-k = 2048 in Practice",
+    "text": "DSA : top-k = 2048 in Practice\n\n\n\n\n\n\nContext\nAttended\nFraction\n\n\n\n\n4K\n2,048\n50%\n\n\n32K\n2,048\n6.3%\n\n\n128K\n2,048\n1.6%\n\n\n1M\n2,048\n0.2%\n\n\n\n\n\n\nDeepSeek-V3.2-Exp config.json :\nindex_topk = 2048 · index_n_heads = 64 · index_head_dim = 128\n\nCore attention : \\(O(S^2) \\rightarrow O(S \\cdot k)\\), with \\(k\\) fixed\nIndexer key cache : 128/token on top of MLA’s 576 - a ~22% increase, not a doubling\nIndexer runs in FP8, no value projection, no output path\nMLA fields unchanged from V3 - DSA sits on top of MLA, it does not replace it"
+  },
+  {
+    "objectID": "inference/knowdis_discussion/slides.html#deepseek-v4",
+    "href": "inference/knowdis_discussion/slides.html#deepseek-v4",
+    "title": "LLM Inference Math and Efficient Attention",
+    "section": "DeepSeek V4",
+    "text": "DeepSeek V4"
+  },
+  {
     "objectID": "inference/knowdis_discussion/slides.html#deepseek-v4-csa-and-hca",
     "href": "inference/knowdis_discussion/slides.html#deepseek-v4-csa-and-hca",
     "title": "LLM Inference Math and Efficient Attention",
     "section": "DeepSeek V4: CSA and HCA",
-    "text": "DeepSeek V4: CSA and HCA\n\n\n\n\nCSA - Compressed Sparse Attention (V4-Pro)\nDSA (V3.2): store all S, attend to top-k -&gt; read less\nCSA (V4-Pro): compress S -&gt; S/m, THEN top-k over that -&gt; store less AND read less\n\n\n\n\nHCA : Heavily Compressed Attention (V4-Flash)\nTOKEN-LEVEL COMPRESSOR - it merges the KV entries of m consecutive tokens into a single compressed KV entry\ncompress much harder (m’ &gt;&gt; m), no top-k -&gt; store far less"
+    "text": "DeepSeek V4: CSA and HCA\n\n\n\n\nCSA - Compressed Sparse Attention (\\(m\\) = 4)\nDSA (V3.2): store all S, attend to top-k -&gt; read less\nCSA: compress S -&gt; S/m, THEN top-k over that -&gt; store less AND read less\n\n\n\nHCA : Heavily Compressed Attention (\\(m'\\) = 128)\nTOKEN-LEVEL COMPRESSOR - it merges the KV entries of m consecutive tokens into a single compressed KV entry\ncompress much harder (m’ &gt;&gt; m), no top-k -&gt; store far less"
+  },
+  {
+    "objectID": "inference/knowdis_discussion/slides.html#deepseek-v4-csa-and-hca-1",
+    "href": "inference/knowdis_discussion/slides.html#deepseek-v4-csa-and-hca-1",
+    "title": "LLM Inference Math and Efficient Attention",
+    "section": "DeepSeek V4: CSA and HCA",
+    "text": "DeepSeek V4: CSA and HCA\n\n\n\n\nCSA - Compressed Sparse Attention (\\(m\\) = 4)\nDSA (V3.2): store all S, attend to top-k -&gt; read less\nCSA: compress S -&gt; S/m, THEN top-k over that -&gt; store less AND read less\n\n\n\n\nHCA : Heavily Compressed Attention (\\(m'\\) = 128)\nTOKEN-LEVEL COMPRESSOR - it merges the KV entries of m consecutive tokens into a single compressed KV entry\ncompress much harder (m’ &gt;&gt; m), no top-k -&gt; store far less\n\n\n\nBoth V4-Pro and V4-Flash use both mechanisms, interleaved ~1:1 layer by layer."
+  },
+  {
+    "objectID": "inference/knowdis_discussion/slides.html#deepseek-v4-pro-and-flash",
+    "href": "inference/knowdis_discussion/slides.html#deepseek-v4-pro-and-flash",
+    "title": "LLM Inference Math and Efficient Attention",
+    "section": "DeepSeek V4 : Pro and Flash",
+    "text": "DeepSeek V4 : Pro and Flash\n\n\n\ncompress_ratios, per layer, from config.json :\n[128, 128, 4, 128, 4, 128, 4, … , 4, 0]\n\n\n\n\nV4-Pro\nV4-Flash\n\n\n\n\nLayers\n61\n43\n\n\nCSA layers (\\(m\\)=4)\n30\n21\n\n\nHCA layers (\\(m'\\)=128)\n31\n20\n\n\nindex_topk\n1024\n512\n\n\nsliding_window\n128\n128\n\n\nParams (active)\n1.6T (49B)\n284B (13B)\n\n\n\n\n\n\nAt 1M context, per layer:\n\nCSA - compress 4:1 → 262,144 entries, read 1,024 (sparse read, fine resolution)\nHCA - compress 128:1 → 8,192 entries, read all of them (dense read, coarse resolution)\n\nPlus a 128-token uncompressed sliding window in both."
+  },
+  {
+    "objectID": "inference/knowdis_discussion/slides.html#deepseek-v3-and-v4-kv-cache",
+    "href": "inference/knowdis_discussion/slides.html#deepseek-v3-and-v4-kv-cache",
+    "title": "LLM Inference Math and Efficient Attention",
+    "section": "DeepSeek V3 and V4 KV Cache",
+    "text": "DeepSeek V3 and V4 KV Cache\n\n\n\n\n\n\nModel\nKV / token\n@ 1M ctx\n\n\n\n\nV3.2\n83.9 KiB\n83.9 GiB\n\n\nV4-Pro\n9.6 KiB\n9.6 GiB\n\n\nV4-Flash\n6.7 KiB\n6.7 GiB\n\n\n\n(B/token ÷ 1024 = GiB per 1M-token sequence)\n\nV3.2 entry = 576 (MLA) + 128 (indexer) = 704\nV4 entry = 512; CSA layers add extra 128 (indexer)\nWhy 512, not 1024? V4 shares K and V as one vector - the output is then un-rotated by \\(R(-i)\\) (inverse RoPE) to restore relative position\n\n8.7× smaller (Pro), 12.5× (Flash). Paper: ~2% of a BF16 GQA-8 baseline at 1M."
   },
   {
     "objectID": "inference/knowdis_discussion/slides.html#ds4-inference-economics",
