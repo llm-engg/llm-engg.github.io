@@ -213,71 +213,12 @@ CCE, IISc
 </section>
 <section id="recap" class="slide level2">
 <h2>RECAP</h2>
-<!-- NOTES-BLOCK :: DECK REVIEW SUMMARY
-[FLOW] (must-fix) The deck teaches memory as a *catalogue of storage types* but never as a
-       *lifecycle*. Sections 2.4 and 2.5 of the source notes
-       (agents/source-notes/06-memory-multiagent_notes_codex.md) — consolidation, forgetting,
-       and memory evaluation — have no slide at all. As it stands the deck answers "what kinds
-       of memory exist and where do I put them?" but not "how does a memory store stay correct
-       as it grows?" That is the part students will actually get wrong in the lab. Two
-       placeholder slides for this are inserted below ("Memory Lifecycle", "Does the memory
-       help?"); fill them in or explicitly cut them.
-[FLOW] (should-fix) Ordering. Current order is taxonomy -> working -> session -> long-term ->
-       *implementations* -> *retrieval timing* -> episodic -> procedural. So episodic and
-       procedural memory (two of the four taxonomy rows) arrive AFTER the storage-engine and
-       comparison material that is supposed to summarise them. Suggested reorder:
-       (1) why memory / costs, (2) taxonomy, (3) working+session, (4) semantic, (5) episodic,
-       (6) procedural, (7) storage engines: files / vector / hybrid, (8) when to fetch,
-       (9) lifecycle: consolidate + forget, (10) evaluation, (11) framework comparison.
-       That way every column in the final comparison table has already been defined.
-[FLOW] (should-fix) Semantic memory is the one taxonomy row with no slide of its own. It is
-       named in the table, then silently folded into "Long-Term Memory". Give it a slide with
-       the memory-record frontmatter example (type/scope/source/date/confidence) from source
-       notes §2.2 — that record format is what makes the lab tractable.
-[FLOW] (nice) Overlap with deck 06. Three consecutive "Working Memory (Context Window)" slides
-       re-teach compaction, JIT tool loading and system-prompt assembly, all of which deck 06
-       covers at length (06_context/slides.qmd: "Compaction Strategies", "Solving Tool
-       Sprawl", "Assembling System Prompt"). Compress to one bridge slide and spend the
-       recovered time on the lifecycle/evaluation gap above.
-[INTUITION] (should-fix) The deck never states the single sentence that makes the whole
-       taxonomy click. Put it on the taxonomy slide:
-       "Working memory is the desk. Long-term memory is the filing cabinet. The skill being
-        taught is not 'own a bigger desk' — it is knowing what to file, what to fetch back,
-        and what to throw away."
-       Then the four types answer four different questions: working = what am I doing right
-       now; semantic = what is true about this world; episodic = what happened when I tried;
-       procedural = how do I do this.
-[INTUITION] (should-fix) State the counter-thesis early, because every student arrives
-       assuming more memory is better: "A memory system is a *retrieval precision* problem
-       wearing a *storage* costume. Storing is cheap and nearly always works. Retrieving the
-       right three things and not the wrong two is the entire engineering problem."
-       The deck already has the raw material for this on the "bad memory" slide — promote it.
-[INSTRUCTOR] Through-line to state once and return to: memory is the second answer to the same
-       question deck 06 asked. Deck 06 shrank context by *compressing*; deck 07 shrinks it by
-       *externalising*; deck 08 shrinks it by *partitioning* across agents. Same constraint,
-       three different moves.
-[DEMO] (must-fix) The deck currently has no runnable student moment — "Mem0 Demo" is a code
-       read, not a demo. agents/07_memory/demos/README.md already fully specifies two, and
-       flags Demo 1 as "the falsification demo for this deck — protect it". Both are now
-       stubbed in as visible slides below; wire them to real notebooks before class.
-[IMAGE] (should-fix) Four of the twelve figures in source notes §7 that belong to this deck do
-       not exist yet: memory lifecycle loop, semantic-vs-episodic side by side, hybrid
-       file+vector architecture, episodic self-improvement loop. Visible placeholders are
-       inserted at the right slides below.
-[READING] Core set for this deck, in teaching order:
-       - Packer et al., "MemGPT: Towards LLMs as Operating Systems" (arXiv 2310.08560) §3
-         "Memory Hierarchy" — the source of the OS framing the deck opens with.
-       - Park et al., "Generative Agents" (UIST 2023, arXiv 2304.03442) §4 "Memory and
-         Retrieval" — memory stream, and the recency+importance+relevance retrieval score.
-       - Xu et al., "A-MEM: Agentic Memory for LLM Agents" (arXiv 2502.12110) — the
-         Zettelkasten link/evolve mechanism the deck name-drops.
-       - Rasmussen et al., "Zep: A Temporal Knowledge Graph Architecture for Agent Memory"
-         (arXiv 2501.13956) — bitemporal validity; the answer to "what about facts that expire".
-       - Chhikara et al., "Mem0: Building Production-Ready AI Agents with Scalable Long-Term
-         Memory" (arXiv 2504.19413) — matches the SDK snippet in this deck.
-       - Anthropic engineering blog, "Effective context engineering for AI agents" (2025) —
-         the just-in-time / file-system-as-memory argument.
--->
+<ul>
+<li>Tool Use</li>
+<li>MCP</li>
+<li>Skills</li>
+<li>Context Engineering</li>
+</ul>
 </section>
 <section id="memory" class="slide level2">
 <h2>Memory</h2>
@@ -660,78 +601,12 @@ CCE, IISc
 <li>Transparency - you can inspect why the agent chose a particular approach</li>
 </ul>
 <p><strong>Observational Memory</strong> [Mastra] - extracts discrete facts and stores them</p>
-<!-- NOTES-BLOCK
-[FLOW] (must-fix) Four benefits, zero caveats — directly after a code example whose stored
-     episode is a *failure*. The deck has consistently paired each mechanism with its failure
-     mode; this slide breaks that pattern at the point where it matters most. Add the caveats:
-     episodes can encode spurious lessons; a superficially similar task with a different root
-     cause makes retrieval actively harmful; environments change and yesterday's correct lesson
-     becomes today's stale instruction. Source notes §2.2 lists these under "When episodic
-     memory hurts" — put them on the slide.
-[CORRECTNESS] (should-fix) "Continuous improvement" is stated as a property. It is a property
-     *conditional on outcome verification*. Without a reliable success signal the loop is just
-     as good at compounding mistakes as at compounding learning — that is the same mechanism
-     running in the wrong direction. Say the condition out loud.
-[FLOW] (must-fix) "**Observational Memory** [Mastra]" is a nine-word orphan glued to the bottom
-     of a slide about something else — and yet "Observational" is a whole column in the
-     comparison table at the end of the deck. Students meet the term twice, defined neither
-     time. Give it its own slide with the contrast that makes it click (source notes,
-     claude §4.2):
-       raw turn: "Can you help me set up the project? I use TypeScript and deploy to Vercel.
-                  The database is Supabase."   -> ~47 tokens stored
-       observational: [PREFERENCE] language: TypeScript / [ARCHITECTURE] deploy: Vercel /
-                      [DATABASE] Supabase      -> ~12 tokens, ~4x compression
-[TERM] (must-fix) Gloss it in one line wherever it lands: "Episodic = what trajectories I had.
-     Observational = what discrete facts I extracted from them." Observational memory is closer
-     to semantic memory than to episodic — it is continuous automatic fact extraction from
-     conversation, which is also exactly what Mem0's pipeline does. Worth connecting.
-[Q-ADVANCED] "Is this just RAG over your own history?" — Mechanically yes, and admitting that
-     is clarifying. The differences are all in the write path, which is where the difficulty
-     actually lives: RAG indexes documents someone else authored and curated; episodic memory
-     indexes records the agent authored about itself, unsupervised, with no ground truth, where
-     a bad write silently poisons every future retrieval. Retrieval is the easy half.
--->
 </section>
 <section id="procedural-memory-agents-write-their-own-skills" class="slide level2">
 <h2>Procedural memory: Agents write their own skills</h2>
 <ul>
 <li>Hermes’ pattern: after a <em>complex</em> task succeeds, the agent is prompted: <em>“Write a <code>SKILL.md</code> that future-you could use to do this faster.”</em></li>
 </ul>
-<!-- NOTES-BLOCK
-[FLOW] (must-fix) This is the deck's most striking idea — an agent that writes its own tools —
-     and it gets two lines. It also has the strongest callback available: the class *hand-wrote*
-     `SKILL.md` files in deck 05. Make the connection explicit and it becomes the payoff of the
-     module: "In deck 05 you wrote the skills. Here the agent writes them, in the same format,
-     into the same catalog."
-[INTUITION] (must-fix) The mental model to state: procedural memory is the agent's own tooling
-     accreting over time. Semantic memory changes what the agent *knows*; procedural memory
-     changes what the agent *can do quickly*. It is the difference between remembering that the
-     office has a coffee machine and having written the instructions for the temperamental one.
-[CORRECTNESS] (must-fix) The word "complex" is italicised on the slide but its significance is
-     never explained, and it is the whole design. If every successful task produced a skill, the
-     catalog fills with single-use noise and skill *selection* becomes the new context problem —
-     precisely the tool-sprawl failure from deck 06, self-inflicted. State the gating criteria:
-     the task was non-trivial, it is plausibly recurring, and the outcome was *verified*, not
-     merely self-reported.
-[INSTRUCTOR] Give the review question that makes this safe in production: who reviews an
-     agent-authored skill before it is trusted? The source-notes rule is worth putting on the
-     slide — "only promote a procedure into long-term procedural memory if it was used
-     successfully and verified." An unreviewed agent-written skill is a persistent instruction
-     that will be followed by every future run, which makes it strictly more dangerous than a
-     wrong semantic memory.
-[Q-ADVANCED] "Isn't a self-authored skill just a cached plan, and won't it go stale exactly like
-     any other memory?" — Yes, and procedural memory goes stale *worse*, because it encodes
-     assumptions about an environment (paths, commands, API shapes) rather than a single fact.
-     The mitigation that distinguishes it from other memory types is that a procedure is
-     testable: give every generated skill a verification command, run it before trusting the
-     skill, and demote on failure. That is a real advantage — you cannot unit-test a belief.
-[READING] Wang et al., "Voyager: An Open-Ended Embodied Agent with Large Language Models"
-     (arXiv 2305.16291) — the skill library is the canonical prior result for agents that write
-     and reuse their own procedures, with an ablation showing the library is what drives the
-     improvement. It is the single best paper to assign alongside this slide.
-[TERM] (nice) "Hermes' pattern" — say once what Hermes Agent is; it is named four times across
-     this deck and the comparison table and never introduced.
--->
 </section>
 <section id="user-modeling-a-special-case-of-memory" class="slide level2">
 <h2>User modeling : A special case of memory</h2>
@@ -756,42 +631,36 @@ CCE, IISc
 <section id="memory-comparison" class="slide level2">
 <h2>Memory Comparison</h2>
 
-<!-- NOTES-BLOCK
-[CORRECTNESS] (must-fix) The LangGraph row is all ✗, which is wrong as printed and contradicts
-     this deck's own source notes (§11.1, "LangGraph Memory and Persistence"): LangGraph ships
-     short-term thread state with checkpointers, a long-term `BaseStore` / `InMemoryStore` that
-     persists across threads, and optional semantic search over it — plus LangMem as a dedicated
-     memory package. A row of crosses tells students it has no memory at all.
-[FIX] Either caption the table honestly — "✗ = not provided as an opinionated default; the
-     framework expects you to build it" — or correct the row: LangGraph should read ✅ for
-     vector/store-based long-term memory. The CrewAI row understates similarly (it has
-     short-term, long-term and entity memory built in). Recommended: add the caption, since the
-     table's real thesis is about *opinionatedness*, not capability.
-[CORRECTNESS] (must-fix) "Self-Nudging" is a column heading in this figure and the term appears
-     nowhere in the deck, the source notes, or the wider literature — students cannot decode
-     the column. Either define it on-slide (the intended meaning: the agent writes notes or
-     reminders addressed to its own future self, rather than to the user) or drop the column.
-[TERM] (should-fix) "Observational" is a column here and was a nine-word orphan on the episodic
-     slide. If you take the earlier suggestion and give it a slide, this column becomes legible;
-     if not, gloss it in the caption.
-[INSTRUCTOR] The insight to state, because it is not visible in the ticks: the richest memory
-     systems (Hermes, OpenClaw, Claude Code) are all *personal* agents where a long-running
-     relationship with one user is the product. General frameworks leave memory to the developer
-     because memory policy is application-specific — what to store and what to forget is a
-     product decision, not an infrastructure one. That is a defensible design choice, not a gap.
-[FLOW] (should-fix) Do not end the deck on a vendor table. It answers "who has what" when the
-     course question is "what should I build?" Close instead with the decision rule the deck has
-     earned: start with files; add an index when you can name retrievals that files missed; add
-     episodes when the same class of task recurs; add a lifecycle before you add scale.
-[Q-ADVANCED] "This table will be wrong in six months — how do I evaluate a memory framework
-     myself?" — Give them the durable questions instead of the ticks: What is the *write* policy
-     — who decides what gets stored? Can I read the store with `cat`, or only through an API?
-     What happens on contradiction? Is there any forgetting mechanism? Can I rebuild the indexes
-     from a source of truth? Those five outlive any specific product.
--->
-
-
 <img data-src="images/memory-implmentations.png" class="r-stretch"></section>
+<section id="further-reading" class="slide level2">
+<h2>Further Reading</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li>Packer et al.&nbsp;- <a href="https://huggingface.co/papers/2310.08560"><em>MemGPT: Towards LLMs as Operating Systems</em></a></li>
+<li>Park et al.&nbsp;- <a href="https://huggingface.co/papers/2304.03442"><em>Generative Agents: Interactive Simulacra of Human Behavior</em></a> (UIST 2023)</li>
+<li>Wang et al.&nbsp;- <em>Voyager: An Open-Ended Embodied Agent with Large Language Models</em> (arXiv 2305.16291)</li>
+<li>Xu et al.&nbsp;- <em>A-MEM: Agentic Memory for LLM Agents</em> (NeurIPS 2025, arXiv 2502.12110)</li>
+<li>Rasmussen et al.&nbsp;- <a href="https://huggingface.co/papers/2501.13956"><em>Zep: A Temporal Knowledge Graph Architecture for Agent Memory</em></a></li>
+<li>Chhikara et al.&nbsp;- <a href="https://huggingface.co/papers/2504.19413"><em>Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory</em></a></li>
+<li>Chip Huyen - <em>AI Engineering</em>, memory chapter</li>
+</ul>
+</div>
+</section>
+<section id="further-reading---systems-and-docs" class="slide level2">
+<h2>Further Reading - Systems and Docs</h2>
+<div style="font-size: 0.8em;">
+<ul>
+<li><a href="https://docs.mem0.ai/">Mem0 documentation</a></li>
+<li><a href="https://help.getzep.com/v2/concepts">Zep concepts</a></li>
+<li>Letta - <a href="https://docs.letta.com/guides/agents/memory">Memory</a>, <a href="https://docs.letta.com/guides/agents/memory-blocks/">Memory blocks</a>, <a href="https://docs.letta.com/guides/agents/archival-memory">Archival memory</a></li>
+<li>LangGraph - <a href="https://docs.langchain.com/oss/python/langgraph/persistence">Persistence</a>, <a href="https://docs.langchain.com/oss/javascript/langgraph/add-memory">Add memory</a></li>
+<li><a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a></li>
+<li><a href="https://github.com/openclaw/openclaw">OpenClaw</a></li>
+</ul>
+</div>
+
+
+</section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
