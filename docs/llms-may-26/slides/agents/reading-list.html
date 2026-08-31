@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-<script src="../../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../../site_libs/quarto-html/tabby.min.js"></script>
-<script src="../../site_libs/quarto-html/popper.min.js"></script>
-<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
-<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-73db7b5a953198da8f17fc5313e632aa.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-73db7b5a953198da8f17fc5313e632aa.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.34">
 
   <meta name="author" content="CCE, IISc">
-  <title>Large Language Models : A Hands-On Approach - May, 2026 – LLM Agents : Agent Evaluation</title>
+  <title>Large Language Models : A Hands-On Approach - May, 2026 – LLM Agents : Reading List</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="../../site_libs/revealjs/dist/reset.css">
-  <link rel="stylesheet" href="../../site_libs/revealjs/dist/reveal.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -32,14 +32,14 @@
       vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
-  <link rel="stylesheet" href="../../styles.css">
-  <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
-  <link href="../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
-  <link href="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
-  <link href="../../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
-  <link href="../../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
-  <link href="../../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+  <link rel="stylesheet" href="../styles.css">
+  <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
     .reveal div.sourceCode {
       margin: 0;
@@ -133,7 +133,7 @@
     <div class="slides">
 
 <section id="title-slide" data-state="title-slide" class="quarto-title-block center">
-  <h1 class="title">LLM Agents : Agent Evaluation</h1>
+  <h1 class="title">LLM Agents : Reading List</h1>
   <p class="subtitle">Large Language Models : A Hands-on Approach</p>
 
 <div class="quarto-title-authors">
@@ -145,315 +145,121 @@ CCE, IISc
 </div>
 
 </section>
-<section id="agent-evaluation" class="slide level2">
-<h2>AGENT EVALUATION</h2>
-<p>Previous classes built the agent:</p>
-<ul>
-<li>Tools, MCP, skills</li>
-<li>Context engineering</li>
-<li>Memory</li>
-<li>Multi-agent systems</li>
-</ul>
-<div class="fragment">
-<blockquote>
-<p>How do we know any of it <em>works</em>?</p>
-</blockquote>
-</div>
-</section>
-<section id="evaluating-agents" class="slide level2">
-<h2>Evaluating Agents</h2>
-
-<img data-src="images/agent-harness.png" class="r-stretch"><ul>
-<li><p>Earlier eval classes (eval module) covered <strong>single LLM calls</strong></p></li>
-<li><p>Agents break that assumption:</p>
-<ul>
-<li>One task in, a <strong>sequence</strong> of steps out</li>
-</ul></li>
-</ul>
-<div class="fragment">
-<blockquote>
-<p>LLM eval scores an answer. Agent eval must score a <em>path</em>.</p>
-</blockquote>
-<ul>
-<li>When we evaluate an agent, we are evaluating the ability of the model and scaffold to work together to solve a task.</li>
-</ul>
-</div>
-</section>
-<section id="outcome-vs-trajectory-evaluation" class="slide level2">
-<h2>Outcome vs Trajectory Evaluation</h2>
-<div class="columns">
-<div class="column">
-<div style="font-size: 0.8em;">
-<table class="caption-top">
-<colgroup>
-<col style="width: 16%">
-<col style="width: 41%">
-<col style="width: 41%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th>Outcome eval</th>
-<th>Trajectory eval</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>What is scored</td>
-<td>Final answer / final environment state</td>
-<td>Every intermediate step</td>
-</tr>
-<tr class="even">
-<td>Question asked</td>
-<td>“Did it succeed?”</td>
-<td>“Did it succeed <em>the right way</em>?”</td>
-</tr>
-<tr class="odd">
-<td>Cost</td>
-<td>Cheap, often automatable</td>
-<td>Expensive; needs traces + judges</td>
-</tr>
-<tr class="even">
-<td>Blind spot</td>
-<td>Lucky wrong paths</td>
-<td>Over-penalizes valid detours</td>
-</tr>
-<tr class="odd">
-<td>Typical use</td>
-<td>Benchmarks (SWE-bench)</td>
-<td>Debugging, safety, policy checks</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div><div class="column">
-<p><img data-src="images/outcome-vs-traj.png"></p>
-</div></div>
-</section>
-<section id="agent-evaluation-harness" class="slide level2">
-<h2>Agent Evaluation Harness</h2>
-
-<img data-src="images/eval-patterns.png" class="r-stretch"><div style="font-size:0.8em">
-<ul>
-<li>Evaluation : Set of tests that provide inputs to our agent system, collect outputs, and apply grading logic to determine whether the agent was successful</li>
-<li>Agent evaluations are different : mutlitple chat turns, involve interacting with tools and the external environment</li>
-<li>Evaluation harness : Similar to agent harness, manages the entire end-to-end process of evaluation.</li>
-</ul>
-</div>
-</section>
-<section id="evaluation-components" class="slide level2">
-<h2>Evaluation Components</h2>
-<div class="columns">
-<div class="column">
-<p><img data-src="images/evail-components.png"></p>
-</div><div class="column">
-<div style="font-size:0.8em">
-<ul>
-<li><p><strong>Tasks</strong> - Individual test cases for the agent with predefined input and output criteria.</p></li>
-<li><p><strong>Trials</strong> - Each attempt at solving a task, we often run several trials for each task to ensure consistent results.</p></li>
-<li><p><strong>Trace / Trajectory</strong> - Complete transcript that includes outputs, tool calls, reasoning steps, intermediate outputs, or any other interactions from the agent during the trial.</p></li>
-<li><p><strong>Outcome</strong> - The final state of the external environment after a trial completes</p></li>
-<li><p><strong>Grader</strong> - Verifies the agent’s transcript or outcome by applying checks.</p></li>
-<li><p><strong>Metrics</strong> - what you record on every trial whether or not it passed, because “it worked” and “it worked in 4 turns for $0.02” are different results.</p></li>
-</ul>
-</div>
-</div></div>
-<div class="fragment">
-<blockquote>
-<p>There may be multiple graders, compute performance metrics by aggregating across tasks and trials. Consider the outcome not just model outputs.</p>
-</blockquote>
-</div>
-</section>
-<section id="do-we-need-evals" class="slide level2">
-<h2>Do we need Evals</h2>
-<ul>
-<li><p><strong>You can get surprisingly far without them</strong> - manual testing, dogfooding and intuition carry a prototype a long way. Early on, rigorous evals genuinely <em>do</em> feel like overhead that slows shipping.</p></li>
-<li><p><strong>The breaking point is production + scale</strong> - users report the agent “feels worse” after a change, and the team has no way to check but guess-and-check.</p></li>
-<li><p><strong>Without evals, debugging is reactive</strong> - wait for complaints, reproduce by hand, fix, hope nothing else regressed.</p></li>
-</ul>
-<div class="fragment">
-<ul>
-<li><strong>What you cannot do without them</strong> - tell a real regression from noise, test a change against hundreds of scenarios <em>before</em> shipping, or prove an improvement actually improved something.</li>
-</ul>
-</div>
-</section>
-<section id="why-build-evals-beyond-catching-regressions" class="slide level2">
-<h2>Why Build Evals : Beyond Catching Regressions</h2>
-<ul>
-<li><p><strong>They force you to define success</strong> - two engineers read the same spec and handle edge cases differently. The eval suite is where that ambiguity gets resolved, in writing.</p></li>
-<li><p><strong>They set your speed of model adoption</strong> - when a stronger model ships, teams without evals spend weeks testing; teams with evals tune prompts and upgrade in days.</p></li>
-<li><p><strong>Baselines come free</strong> - latency, token usage, cost per task and error rate, all tracked on a static bank of tasks.</p></li>
-<li><p><strong>Highest-bandwidth channel between product and research</strong> - an eval turns “make it better” into a metric someone can optimize against.</p></li>
-</ul>
-<div class="fragment">
-<blockquote>
-<p>Useful at <em>every</em> stage: early they encode what the agent is supposed to do; later they hold the quality bar while it changes.</p>
-</blockquote>
-</div>
-</section>
-<section id="example-eval-setups" class="slide level2">
-<h2>Example Eval Setups</h2>
-<ul>
-<li><p><strong>Claude Code</strong> - shipped first on employee and user feedback, then added evals for narrow behaviours (concision, file edits), then for hard ones (over-engineering). Evals sit <em>alongside</em> production monitoring, A/B tests and user research - not instead of them.</p></li>
-<li><p><strong>Descript</strong> (video editing) - three dimensions of a good edit: <em>don’t break things, do what I asked, do it well</em>. Evolved manual grading -&gt; LLM graders with product-written criteria + periodic human calibration. Runs two suites: quality benchmarking and regression.</p></li>
-<li><p><strong>Bolt</strong> - started late, on an agent already widely used. Three months to build a system that runs the agent, grades with static analysis, drives the app with browser agents, and uses LLM judges for instruction following.</p></li>
-</ul>
-<div class="fragment">
-<blockquote>
-<p>Some teams start with evals; others add them once the absence becomes the bottleneck. Both paths work - the mistake is assuming you will never need them.</p>
-</blockquote>
-<div style="font-size: 0.7em;">
-<p><em>Examples from Anthropic, “Demystifying evals for AI agents” (see Further Reading).</em></p>
-</div>
-</div>
-</section>
-<section id="human-graders" class="slide level2">
-<h2>Human Graders</h2>
-<div style="font-size: 0.8em;">
-<ul>
-<li><p>BEST source of truth for measuring quality.</p></li>
-<li><p>Start with manual inspections performed by developers, researchers or by internal users</p></li>
-<li><p>Create detailed rubric to define the key quality dimensions and how these criteria should be evaluated</p></li>
-<li><p>Claude Code mention that their evaluation process began with human evaluation trials with internal Anthropic employees</p></li>
-</ul>
-</div>
-
-<img data-src="images/human-grader.png" class="r-stretch"></section>
-<section id="human-grading-calibration" class="slide level2">
-<h2>Human Grading Calibration</h2>
-
-<img data-src="images/human-calibration.png" class="r-stretch"></section>
-<section id="code-based-graders" class="slide level2">
-<h2>Code-based Graders</h2>
-<ul>
-<li>Heuristic checks that can be captured in code</li>
-<li>Reference-based (i.e.&nbsp;require ground truth), inflexible and can lack nuance, making them somewhat limited.</li>
-</ul>
-<div class="columns">
-<div class="column">
-<p><img data-src="images/code-grader.png"></p>
-</div><div class="column">
-<p><img data-src="images/code-assert.png"></p>
-</div></div>
-</section>
-<section id="model-based-graders" class="slide level2">
-<h2>Model-based Graders</h2>
-<ul>
-<li>Prompt an LLM to evaluate some aspect of quality for us using LLM-as-a-Judge</li>
-</ul>
-<div class="columns">
-<div class="column">
-<p><img data-src="images/model-grader.png"></p>
-</div><div class="column">
-<p><img data-src="images/llm-judge.png"></p>
-</div></div>
-</section>
-<section id="holistic-approach-to-evaluation" class="slide level2">
-<h2>Holistic Approach to Evaluation</h2>
-<ul>
-<li>Combine methods: automated evals for fast iteration, production monitoring for ground truth, and periodic human review for calibration</li>
-</ul>
-
-<img data-src="images/combined_evals.png" class="r-stretch"></section>
-<section id="case-study---the-τ-bench-series" class="slide level2">
-<h2>Case Study - The τ-bench Series</h2>
-<ul>
-<li><p>τ -bench (<a href="https://github.com/sierra-research/tau-bench/tree/main">V1</a>, <a href="https://github.com/sierra-research/tau2-bench">V3</a>), a benchmark emulating dynamic conversations between a user (simulated by language models) and a language agent provided with domain-specific API tools and policy guidelines</p></li>
-<li><p>Agents are expected to do the following:</p>
-<ul>
-<li><p>Interact with the user and resolve intent.</p></li>
-<li><p>Adhere to a set of written policies or rules for each domain.</p></li>
-<li><p>Use tools to retrieve data and modify the external environment.</p></li>
-</ul></li>
-</ul>
-
-<img data-src="images/tau-bench.png" class="r-stretch"></section>
-<section id="the-τ-bench---agent-interaction" class="slide level2">
-<h2>The τ-bench - Agent Interaction</h2>
-
-<img data-src="images/tau-agent.png" class="r-stretch"></section>
-<section id="handling-non-determinism" class="slide level2">
-<h2>Handling Non-Determinism</h2>
-<div class="columns">
-<div class="column">
-<ul>
-<li>pass @ K</li>
-</ul>
-<p><img data-src="images/pass-at-k.png"></p>
-</div><div class="column">
-<ul>
-<li>pass ^ K</li>
-</ul>
-<p><img data-src="images/pass-hat-k.png"></p>
-<p><img data-src="images/pass-rate.png"></p>
-</div></div>
-</section>
-<section id="terminal-bench" class="slide level2">
-<h2>Terminal Bench</h2>
-<p><img data-src="images/term-bench-tasks.png"> <img data-src="images/termbench-curation.png"> <img data-src="images/termbench-results.png"></p>
-</section>
-<section id="roadmap-for-agent-evaluation---i" class="slide level2">
-<h2>Roadmap for Agent Evaluation - I</h2>
-<p>Step by step process for evals:</p>
-<ul>
-<li><ol type="1">
-<li>Define success : Deatiled criteria on what it means for the agent to succeed</li>
+<section id="most-important" class="slide level2">
+<h2>Most Important</h2>
+<ol type="1">
+<li>Yao et al., <em>ReAct: Synergizing Reasoning and Acting in Language Models</em> (ICLR 2023)</li>
+<li>Anthropic, <a href="https://www.anthropic.com/engineering/building-effective-agents">Building Effective Agents</a></li>
+<li>Anthropic, <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Effective Context Engineering for AI Agents</a></li>
+<li>Packer et al., <em>MemGPT: Towards LLMs as Operating Systems</em> (<a href="https://huggingface.co/papers/2310.08560">2310.08560</a>)</li>
+<li>Anthropic, <a href="https://www.anthropic.com/engineering/multi-agent-research-system">How we built our multi-agent research system</a></li>
+<li>Cognition / Walden Yan, <a href="https://diff.blog/post/dont-build-multi-agents-305601">Don’t Build Multi-Agents</a></li>
 </ol>
-<ul>
-<li><p>Outcome goals that verify aspects of the outcome (e.g., whether the expected database entries for the task were created).</p></li>
-<li><p>Process goals that verify components of the transcript (e.g., whether certain tools were called).</p></li>
-</ul></li>
-<li><ol start="2" type="1">
-<li>Collect a small task set -manually curate 10 to 20 initial tasks by considering realistic use cases</li>
-</ol></li>
-<li><ol start="3" type="1">
-<li>Create useful tasks - create high-quality tasks that test important aspects of agent behavior</li>
-</ol></li>
-<li><ol start="4" type="1">
-<li>Provide ground truth and reference - reference solution or known-good trajectory that proves the task is solvable and verifies that the grader is checking the right behavior</li>
-</ol></li>
-</ul>
-
-<img data-src="images/eval-cycle.png" class="r-stretch"><p>&lt;</p>
 </section>
-<section id="roadmap-for-agent-evaluation---ii" class="slide level2">
-<h2>Roadmap for Agent Evaluation - II</h2>
-<p>Step by step process for evals …:</p>
+<section id="class-1---foundations-reasoning-to-agents" class="slide level2">
+<h2>Class 1 - Foundations: reasoning to agents</h2>
 <ul>
-<li><ol start="5" type="1">
-<li>Configure graders</li>
-</ol></li>
-<li><ol start="6" type="1">
-<li>Build the evaluation harness -</li>
-</ol>
-<ul>
-<li><p>Runs the agent in a realistic (but controlled) setup.</p></li>
-<li><p>Collects the transcript, including tool calls and intermediate outputs.</p></li>
-<li><p>Captures the final outcome.</p></li>
-</ul></li>
-<li><ol start="7" type="1">
-<li>Inspect, iterate, and maintain the benchmark</li>
-</ol></li>
+<li><strong>[Important]</strong> Yao et al., <em>ReAct: Synergizing Reasoning and Acting in Language Models</em> (ICLR 2023)</li>
+<li><strong>[Important]</strong> Lilian Weng, <a href="https://lilianweng.github.io/posts/2023-06-23-agent/">LLM Powered Autonomous Agents</a> (2023)</li>
+<li><strong>[Important]</strong> Anthropic, <a href="https://www.anthropic.com/engineering/building-effective-agents">Building Effective Agents</a></li>
+<li><strong>[Important]</strong> Wei et al., <em>Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</em> (NeurIPS 2022)</li>
+<li><strong>[Optional]</strong> Yao et al., <em>Tree of Thoughts: Deliberate Problem Solving with Large Language Models</em> (NeurIPS 2023)</li>
 </ul>
-
-<img data-src="images/eval-cycle.png" class="r-stretch"></section>
-<section id="further-reading" class="slide level2">
-<h2>Further Reading</h2>
-<div style="font-size: 0.8em;">
-<ul>
-<li>Anthropic - <em>Demystifying evals for AI agents</em></li>
-<li><a href="https://aiwiki.ai/wiki/swe-bench_verified">SWE-bench Verified</a></li>
-<li>Yao et al.&nbsp;- <em>τ-bench</em> - <a href="https://github.com/sierra-research/tau-bench/tree/main">V1</a>, <a href="https://github.com/sierra-research/tau2-bench">τ²-bench</a></li>
-<li>Terminal-Bench</li>
-</ul>
-</div>
 </section>
-<section id="agents-module---reading-list" class="slide level2">
-<h2>Agents Module - Reading List</h2>
-<p>The full reading list for all seven classes - papers, engineering posts, specs, framework docs, and agent implementations to read:</p>
-<div style="font-size: 1.2em;">
-<p><strong><a href="../reading-list.html">LLM Agents : Reading List</a></strong></p>
-</div>
+<section id="class-2---agent-loop-patterns-tool-use-04_tools" class="slide level2">
+<h2>Class 2 - Agent loop, patterns, tool use (<code>04_tools</code>)</h2>
+<ul>
+<li><strong>[Important]</strong> Schick et al., <em>Toolformer: Language Models Can Teach Themselves to Use Tools</em> (NeurIPS 2023)</li>
+<li><strong>[Important]</strong> Anthropic docs, <a href="https://docs.claude.com/en/docs/agents-and-tools/tool-use/overview">Tool use</a></li>
+<li><strong>[Important]</strong> Shinn et al., <em>Reflexion: Language Agents with Verbal Reinforcement Learning</em> (NeurIPS 2023)</li>
+<li><strong>[Important]</strong> Madaan et al., <em>Self-Refine: Iterative Refinement with Self-Feedback</em> (NeurIPS 2023)</li>
+<li><strong>[Optional]</strong> Anthropic, <a href="https://www.anthropic.com/engineering/advanced-tool-use">Introducing advanced tool use</a></li>
+<li><strong>[Optional]</strong> Anthropic, <a href="https://www.anthropic.com/engineering/writing-tools-for-agents">Writing tools for agents</a></li>
+<li><strong>[Optional]</strong> <a href="https://github.com/huggingface/smolagents">smolagents</a></li>
+</ul>
+</section>
+<section id="class-3---mcp-and-skills-05_mcp_skills" class="slide level2">
+<h2>Class 3 - MCP and Skills (<code>05_mcp_skills</code>)</h2>
+<ul>
+<li><strong>[Important]</strong> Anthropic, <a href="https://www.anthropic.com/engineering/code-execution-with-mcp">Code execution with MCP: building more efficient agents</a></li>
+<li><strong>[Important]</strong> Anthropic, <a href="https://www.anthropic.com/news/model-context-protocol">Introducing the Model Context Protocol</a></li>
+<li><strong>[Important]</strong> MCP spec <code>2025-11-25</code> — <a href="https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle">Lifecycle</a>, <a href="https://modelcontextprotocol.io/specification/2025-11-25/basic/transports">Transports</a></li>
+<li><strong>[Important]</strong> Anthropic, <a href="https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills">Equipping agents for the real world with Agent Skills</a></li>
+<li><strong>[Optional]</strong> MCP spec <a href="https://modelcontextprotocol.io/specification/2026-07-28"><code>2026-07-28</code></a></li>
+<li><strong>[Optional]</strong> <a href="https://github.com/anthropics/skills">anthropics/skills</a> — <a href="https://github.com/anthropics/skills/blob/main/skills/docx/SKILL.md">DOCX SKILL.md</a></li>
+<li><strong>[Optional]</strong> <a href="https://agentman.ai/blog/agent-skills-ecosystem-report-2026">Agent Skills ecosystem report 2026</a></li>
+<li><strong>[Optional]</strong> <a href="https://gofastmcp.com">FastMCP documentation</a></li>
+<li><strong>[Optional]</strong> <a href="https://github.com/punkpeye/awesome-mcp-servers">Awesome MCP Servers</a></li>
+</ul>
+</section>
+<section id="class-4---context-engineering-06_context" class="slide level2">
+<h2>Class 4 - Context engineering (<code>06_context</code>)</h2>
+<ul>
+<li><strong>[Important]</strong> Anthropic, <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Effective context engineering for AI agents</a></li>
+<li><strong>[Important]</strong> Chroma, <a href="https://research.trychroma.com/context-rot">Context Rot: How Increasing Input Tokens Impacts LLM Performance</a></li>
+<li><strong>[Important]</strong> Anthropic docs, <a href="https://docs.claude.com/en/docs/build-with-claude/context-editing">Context editing and compaction</a></li>
+<li><strong>[Important]</strong> Anthropic docs, <a href="https://docs.claude.com/en/docs/build-with-claude/prompt-caching">Prompt caching</a></li>
+<li><strong>[Important]</strong> Anthropic docs, <a href="https://docs.claude.com/en/docs/agents-and-tools/tool-use/tool-search-tool">Tool search tool</a></li>
+<li><strong>[Optional]</strong> Zhang &amp; Khattab, <a href="https://alexzhang13.github.io/blog/2025/rlm/">Recursive Language Models</a></li>
+</ul>
+</section>
+<section id="class-5---memory-systems-07_memory" class="slide level2">
+<h2>Class 5 - Memory systems (<code>07_memory</code>)</h2>
+<ul>
+<li><strong>[Important]</strong> Packer et al., <em>MemGPT: Towards LLMs as Operating Systems</em> (<a href="https://huggingface.co/papers/2310.08560">2310.08560</a>)</li>
+<li><strong>[Optional]</strong> Xu et al., <em>A-MEM: Agentic Memory for LLM Agents</em> (NeurIPS 2025, arXiv 2502.12110)</li>
+<li><strong>[Optional]</strong> Chhikara et al., <em>Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory</em> (<a href="https://huggingface.co/papers/2504.19413">2504.19413</a>)</li>
+<li><strong>[Optional]</strong> Chip Huyen, <em>AI Engineering</em> - memory chapter</li>
+<li><strong>[Optional]</strong> <a href="https://docs.mem0.ai/">Mem0 documentation</a></li>
+<li><strong>[Optional]</strong> <a href="https://help.getzep.com/v2/concepts">Zep concepts</a></li>
+<li><strong>[Optional]</strong> LangGraph — <a href="https://docs.langchain.com/oss/python/langgraph/persistence">Persistence</a>, <a href="https://docs.langchain.com/oss/javascript/langgraph/add-memory">Add memory</a></li>
+<li><strong>[Optional]</strong> <a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a></li>
+<li><strong>[Optional]</strong> <a href="https://github.com/openclaw/openclaw">OpenClaw</a></li>
+</ul>
+</section>
+<section id="class-6---multi-agent-systems-08_multiagents" class="slide level2">
+<h2>Class 6 - Multi-agent systems (<code>08_multiagents</code>)</h2>
+<ul>
+<li><strong>[Important]</strong> Anthropic, <a href="https://www.anthropic.com/engineering/multi-agent-research-system">How we built our multi-agent research system</a></li>
+<li><strong>[Important]</strong> Cognition / Walden Yan, <a href="https://diff.blog/post/dont-build-multi-agents-305601">Don’t Build Multi-Agents</a></li>
+</ul>
+</section>
+<section id="class-7---agent-evaluation-09_agent_eval" class="slide level2">
+<h2>Class 7 - Agent evaluation (<code>09_agent_eval</code>)</h2>
+<ul>
+<li><strong>[Important]</strong> Anthropic, <em>Demystifying evals for AI agents</em></li>
+<li><strong>[Important]</strong> <a href="https://aiwiki.ai/wiki/swe-bench_verified">SWE-bench Verified</a></li>
+<li><strong>[Important]</strong> Yao et al., <em>τ-bench</em> — <a href="https://github.com/sierra-research/tau-bench/tree/main">V1</a>, <a href="https://github.com/sierra-research/tau2-bench">τ²-bench</a></li>
+<li><strong>[Optional]</strong> Terminal-Bench</li>
+</ul>
+</section>
+<section id="case-studies" class="slide level2">
+<h2>Case studies</h2>
+<ul>
+<li><a href="https://github.com/badlogic/pi-mono">Pi (pi-mono)</a></li>
+<li><a href="https://docs.claude.com/en/docs/claude-code/overview">Claude Code</a></li>
+<li><a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a></li>
+<li><a href="https://github.com/openclaw/openclaw">OpenClaw</a></li>
+<li><a href="https://github.com/SWE-agent/SWE-agent">SWE-agent</a></li>
+<li><a href="https://github.com/OpenHands/OpenHands">OpenHands</a></li>
+<li><a href="https://github.com/Aider-AI/aider">Aider</a></li>
+<li><a href="https://github.com/cline/cline">cline</a></li>
+<li><a href="https://github.com/block/goose">goose</a></li>
+<li><a href="https://github.com/huggingface/smolagents">smolagents</a></li>
+</ul>
+</section>
+<section id="frameworks" class="slide level2">
+<h2>Frameworks</h2>
+<ul>
+<li><a href="https://www.langchain.com/langgraph">LangGraph</a></li>
+<li><a href="https://ai.pydantic.dev">Pydantic AI</a></li>
+<li><a href="https://crewai.com">CrewAI</a></li>
+<li><a href="https://google.github.io/adk-docs/">Google ADK</a></li>
+<li><a href="https://mastra.ai">Mastra</a></li>
+<li><a href="https://github.com/anthropics/claude-agent-sdk-python">Claude Agent SDK</a></li>
+<li><a href="https://n8n.io">n8n</a>, <a href="https://dify.ai">Dify</a>, <a href="https://langflow.org">Langflow</a></li>
+<li><a href="https://ecorpit.com/ai-agent-framework-production-langgraph-crewai-microsoft-pydantic-2026/">AI agent frameworks compared, mid-2026</a></li>
+</ul>
 
 
 </section>
@@ -465,20 +271,20 @@ CCE, IISc
 </div></div>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script>
-  <script src="../../site_libs/revealjs/dist/reveal.js"></script>
+  <script src="../site_libs/revealjs/dist/reveal.js"></script>
   <!-- reveal.js plugins -->
-  <script src="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
-  <script src="../../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
-  <script src="../../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
-  <script src="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
-  <script src="../../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
-  <script src="../../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  <script src="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="../site_libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
-  <script src="../../site_libs/revealjs/plugin/notes/notes.js"></script>
-  <script src="../../site_libs/revealjs/plugin/search/search.js"></script>
-  <script src="../../site_libs/revealjs/plugin/zoom/zoom.js"></script>
-  <script src="../../site_libs/revealjs/plugin/math/math.js"></script>
+  <script src="../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../site_libs/revealjs/plugin/math/math.js"></script>
   <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
 
   <script>
