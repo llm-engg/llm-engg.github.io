@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-73db7b5a953198da8f17fc5313e632aa.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.9.34">
+
+  <meta name="author" content="CCE, IISc">
+  <title>Large Language Models : A Hands-On Approach - May, 2026 – LLM Agents : Agent Evaluation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+  <link rel="stylesheet" href="../../styles.css">
+  <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="../../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-state="title-slide" class="quarto-title-block center">
+  <h1 class="title">LLM Agents : Agent Evaluation</h1>
+  <p class="subtitle">Large Language Models : A Hands-on Approach</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+CCE, IISc 
+</div>
+</div>
+</div>
+
+</section>
+<section id="agent-evaluation" class="slide level2">
+<h2>AGENT EVALUATION</h2>
+<p>Decks 01-08 built the agent:</p>
+<ul>
+<li>Tools, MCP, skills</li>
+<li>Context engineering</li>
+<li>Memory</li>
+<li>Multi-agent systems</li>
+</ul>
+<div class="fragment">
+<blockquote>
+<p>How do we know any of it <em>works</em>?</p>
+</blockquote>
+</div>
+</section>
+<section id="bridge-from-output-eval-to-agent-eval" class="slide level2">
+<h2>Bridge: From Output Eval to Agent Eval</h2>
+<p>Earlier eval classes (eval module) covered <strong>single LLM calls</strong>:</p>
+<ul>
+<li>Golden sets, reference-based metrics, LLM-as-judge</li>
+<li>One prompt in, one answer out, score the answer</li>
+</ul>
+<div class="fragment">
+<p>Agents break that assumption:</p>
+<ul>
+<li>One task in, a <strong>sequence</strong> of steps out</li>
+<li>The final answer is only the last frame of the film</li>
+</ul>
+</div>
+<div class="fragment">
+<blockquote>
+<p>Output eval scores an answer. Agent eval must score a <em>path</em>.</p>
+</blockquote>
+</div>
+</section>
+<section id="why-agent-eval-is-different" class="slide level2">
+<h2>Why Agent Eval Is Different</h2>
+<ul>
+<li><strong>Non-determinism</strong>: same task, same agent, different runs</li>
+<li><strong>Branching trajectories</strong>: many paths reach the goal; some paths reach it by accident</li>
+<li><strong>Compounding errors</strong>: a step-2 mistake poisons every step after it</li>
+<li><strong>Side effects</strong>: the agent changed the world (files, databases, emails) along the way</li>
+<li><strong>Partial completion</strong>: 9 of 10 subtasks done is not 90% credit — and sometimes it is</li>
+</ul>
+<div class="fragment">
+<blockquote>
+<p>There is no single “output” to grade. There is a trace, an environment diff, and an outcome.</p>
+</blockquote>
+</div>
+</section>
+<section id="compounding-errors-revisited" class="slide level2">
+<h2>Compounding Errors, Revisited</h2>
+<p>From deck 08: if each step succeeds with probability <span class="math inline">\(p\)</span>, an <span class="math inline">\(n\)</span>-step chain succeeds with <span class="math inline">\(p^n\)</span>.</p>
+<p><span class="math display">\[0.9^5 \approx 59\% \qquad 0.9^{20} \approx 12\%\]</span></p>
+<div class="fragment">
+<p>Implications for eval:</p>
+<ul>
+<li>Per-step accuracy and end-to-end success are <strong>different numbers</strong></li>
+<li>Long-horizon tasks fail even when every individual step “looks fine”</li>
+<li>An eval that only checks the final state hides <em>where</em> the chain broke</li>
+</ul>
+</div>
+<div class="fragment">
+<blockquote>
+<p>Trajectory eval exists to find the broken link, not just the broken chain.</p>
+</blockquote>
+<!-- NOTES-BLOCK :: IMAGE-PLACEHOLDER
+[FILE]   images/compounding-error-chain.png
+[WHY]    The p^n math was asserted in deck 08 (images/reliability-decay.png covers
+         chain-of-agents). Here the same curve should be redrawn for STEPS WITHIN
+         ONE AGENT, with annotations marking where trajectory eval instruments
+         each link. Students should see that "score the final answer" measures
+         only the rightmost point.
+[SPEC]   Line chart, X = steps in trajectory (1-30), Y = end-to-end success.
+         Three curves p=0.90/0.95/0.99. Mark n=20 on the p=0.9 curve (12%).
+         Below the chart, a horizontal strip of 20 step-boxes colored
+         green/red for one sampled run, captioned "trajectory eval sees this;
+         outcome eval sees only the last box".
+[RENDER] Uncomment once images/compounding-error-chain.png exists:
+         ![](images/compounding-error-chain.png)
+-->
+</div>
+</section>
+<section id="outcome-vs-trajectory-evaluation" class="slide level2">
+<h2>Outcome vs Trajectory Evaluation</h2>
+<div style="font-size: 0.8em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Outcome eval</th>
+<th>Trajectory eval</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>What is scored</td>
+<td>Final answer / final environment state</td>
+<td>Every intermediate step</td>
+</tr>
+<tr class="even">
+<td>Question asked</td>
+<td>“Did it succeed?”</td>
+<td>“Did it succeed <em>the right way</em>?”</td>
+</tr>
+<tr class="odd">
+<td>Cost</td>
+<td>Cheap, often automatable</td>
+<td>Expensive; needs traces + judges</td>
+</tr>
+<tr class="even">
+<td>Blind spot</td>
+<td>Lucky wrong paths</td>
+<td>Over-penalizes valid detours</td>
+</tr>
+<tr class="odd">
+<td>Typical use</td>
+<td>Benchmarks (SWE-bench)</td>
+<td>Debugging, safety, policy checks</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fragment">
+<blockquote>
+<p>Outcome eval tells you <em>that</em> the agent failed. Trajectory eval tells you <em>why</em> — and catches the runs that “succeeded” but should not have.</p>
+</blockquote>
+</div>
+</section>
+<section id="when-outcome-only-is-enough" class="slide level2">
+<h2>When Outcome-Only Is Enough</h2>
+<p>Outcome eval suffices when:</p>
+<ul>
+<li>The answer is <strong>verifiable</strong>: unit tests pass, exact match, numeric equality</li>
+<li>Side effects don’t matter or are sandboxed away</li>
+<li>You need a leaderboard number, not a debug signal</li>
+</ul>
+<div class="fragment">
+<p>Trajectory eval becomes mandatory when:</p>
+<ul>
+<li><strong>Safety/policy</strong>: agent must not call certain tools, exfiltrate data, or exceed budget — even if the answer is right</li>
+<li><strong>Cost</strong>: a 200-step success and a 10-step success are not the same product</li>
+<li><strong>Debugging</strong>: you cannot fix what you cannot localize</li>
+</ul>
+</div>
+<div class="fragment">
+<blockquote>
+<p>Rule of thumb: outcome eval for reporting, trajectory eval for engineering.</p>
+</blockquote>
+</div>
+</section>
+<section id="the-lucky-wrong-path-problem" class="slide level2">
+<h2>The Lucky-Wrong-Path Problem</h2>
+<p>An agent asked to fix a bug:</p>
+<ol type="1">
+<li>Reads the wrong file</li>
+<li>Misdiagnoses the cause</li>
+<li>Edits a test instead of the source</li>
+<li>Tests pass — because the test was weakened</li>
+</ol>
+<div class="fragment">
+<ul>
+<li>Outcome eval: <strong>PASS</strong></li>
+<li>Any human reviewing the trace: <strong>FAIL</strong></li>
+</ul>
+</div>
+<div class="fragment">
+<p>These “false successes” are the most dangerous eval result: they inflate your metrics and teach you the wrong lessons about your agent.</p>
+<blockquote>
+<p>Every outcome-only score is an upper bound on true quality. The gap is the lucky-wrong-path rate.</p>
+</blockquote>
+<!-- NOTES-BLOCK :: DEMO-PLACEHOLDER
+[FILE]   demos/ (spec: demos/README.md Demo 1, "Right answer, bad path")
+[SLIDE]  Attach here, right after the lucky-wrong-path example.
+[RUN]    Two pre-recorded trajectories of the same task: one clean, one that
+         stumbles into the correct answer. Students score both with an
+         outcome-only judge, then with a trajectory-aware judge.
+[SHOW]   The score flip. The clean run wins only when the judge can see the
+         steps. This is the falsification demo for the whole deck — do not cut.
+-->
+</div>
+</section>
+<section id="outcome-evaluation-methods" class="slide level2">
+<h2>Outcome Evaluation Methods</h2>
+<ol type="1">
+<li><strong>Verifiable checks</strong> (gold standard when available)
+<ul>
+<li>Unit tests, type checks, exact match, database state diff</li>
+<li>SWE-bench: the patch must make failing tests pass without breaking others</li>
+</ul></li>
+<li><strong>LLM-as-judge on the final answer</strong>
+<ul>
+<li>Reuse the Class 2 judge harness; rubric scores correctness/completeness</li>
+<li>Works for open-ended tasks (research summaries, plans)</li>
+</ul></li>
+<li><strong>Human grading</strong>
+<ul>
+<li>Expensive; reserve for calibration and high-stakes tasks</li>
+</ul></li>
+</ol>
+<div class="fragment">
+<blockquote>
+<p>Prefer verifiable checks whenever the task admits them. A judge is a proxy; a test is ground truth.</p>
+</blockquote>
+</div>
+</section>
+<section id="trajectory-evaluation-what-to-score" class="slide level2">
+<h2>Trajectory Evaluation: What to Score</h2>
+<p>For each step in the trace:</p>
+<ul>
+<li><strong>Tool selection</strong>: right tool for this subtask?</li>
+<li><strong>Tool arguments</strong>: well-formed, grounded in evidence, not hallucinated?</li>
+<li><strong>Information use</strong>: did the agent <em>use</em> what the tool returned, or ignore it?</li>
+<li><strong>Ordering</strong>: exploration before edits, tests after changes?</li>
+<li><strong>Recovery</strong>: after an error, did it adapt or repeat the same call?</li>
+</ul>
+<p>And across the whole trace:</p>
+<ul>
+<li><strong>Progress</strong>: does each step reduce distance to the goal?</li>
+<li><strong>Termination</strong>: stopped when done — not early, not looping</li>
+</ul>
+<div class="fragment">
+<blockquote>
+<p>A trajectory rubric is a checklist of failure modes you have actually seen.</p>
+</blockquote>
+</div>
+</section>
+<section id="step-level-judging-and-process-rewards" class="slide level2">
+<h2>Step-Level Judging and Process Rewards</h2>
+<p>Two families:</p>
+<ul>
+<li><strong>Process Reward Models (PRMs)</strong>: a model scores each reasoning step; used heavily in math/reasoning RL</li>
+<li><strong>LLM judge over the trace</strong>: feed the full trajectory (or a compressed view) to a strong model with a rubric</li>
+</ul>
+<div class="fragment">
+<p>Practical issues:</p>
+<ul>
+<li>Full traces are long — judges need trace compression or per-step windows</li>
+<li>Judges inherit the same biases as output-level judges (verbosity, sycophancy)</li>
+<li>Judging a trajectory costs more than producing one sometimes</li>
+</ul>
+</div>
+<div class="fragment">
+<blockquote>
+<p>Meta-eval applies here too: hand-label a small set of traces, measure judge–human agreement before trusting the judge at scale.</p>
+</blockquote>
+</div>
+</section>
+<section id="reference-based-vs-reference-free-trajectories" class="slide level2">
+<h2>Reference-Based vs Reference-Free Trajectories</h2>
+<ul>
+<li><strong>Reference-based</strong>: compare against a gold trajectory (canonical tool sequence)
+<ul>
+<li>Precise, but penalizes valid alternative paths — agents rarely match the reference exactly</li>
+</ul></li>
+<li><strong>Reference-free</strong>: judge the trace on its own merits against a rubric
+<ul>
+<li>Flexible, but noisier and judge-dependent</li>
+</ul></li>
+</ul>
+<div class="fragment">
+<p>Middle path used in practice:</p>
+<ul>
+<li>Score <strong>milestones</strong>, not steps: did it find the right file? reproduce the bug? run the tests?</li>
+<li>Milestones are path-independent but still trajectory-aware</li>
+</ul>
+</div>
+<div class="fragment">
+<blockquote>
+<p>Don’t grade the footsteps; grade whether it passed through the checkpoints.</p>
+</blockquote>
+</div>
+</section>
+<section id="efficiency-as-a-first-class-metric" class="slide level2">
+<h2>Efficiency as a First-Class Metric</h2>
+<p>Two agents, same success rate. One uses 10 steps and 40k tokens; the other 200 steps and 2M tokens.</p>
+<p>They are not the same agent.</p>
+<div class="fragment">
+<p>Track per run:</p>
+<ul>
+<li>Steps / tool calls to solution</li>
+<li>Input + output tokens (and $ cost)</li>
+<li>Wall-clock latency</li>
+<li><strong>Tokens-per-success</strong> and <strong>cost-adjusted success</strong>: the numbers a product team actually budgets against</li>
+</ul>
+</div>
+<div class="fragment">
+<blockquote>
+<p>Success rate is a research metric. Success rate <em>at a cost</em> is an engineering metric.</p>
+</blockquote>
+</div>
+</section>
+<section id="reliability-passk-and-passk" class="slide level2">
+<h2>Reliability: pass@k and pass^k</h2>
+<p>A single run proves almost nothing about a stochastic agent.</p>
+<ul>
+<li><strong>pass@k</strong>: probability that <em>at least one</em> of <span class="math inline">\(k\)</span> independent runs succeeds
+<ul>
+<li>The right metric when you can try many times and keep the best (code with tests)</li>
+</ul></li>
+<li><strong>pass^k</strong> (τ-bench): probability that <em>all</em> <span class="math inline">\(k\)</span> runs succeed
+<ul>
+<li>The right metric when the agent faces real users and must work <em>every time</em></li>
+</ul></li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[pass@k = 1 - (1-p)^k \qquad pass^k = p^k\]</span></p>
+<p>pass@k rises with retries; pass^k collapses. A demo is a pass@1 sample of size one.</p>
+</div>
+<div class="fragment">
+<blockquote>
+<p>Report variance across seeds, not the best run. An agent that works “sometimes” is a property of <span class="math inline">\(p\)</span>, not of your luck.</p>
+</blockquote>
+<!-- NOTES-BLOCK :: IMAGE-PLACEHOLDER
+[FILE]   images/pass-at-k-vs-hat-k.png
+[WHY]    The two formulas move in opposite directions as k grows and students
+         conflate them constantly. One picture fixes it.
+[SPEC]   Two-panel line chart, shared X = k (1..16). LEFT: pass@k for
+         p=0.3/0.5/0.7 rising toward 1. RIGHT: pass^k for the same p values
+         falling toward 0. Title LEFT "you can retry (code+tests)", title
+         RIGHT "it must work every time (production)". Mark k=8, p=0.5 on both:
+         pass@8 = 99.6%, pass^8 = 0.4%.
+[RENDER] Uncomment once images/pass-at-k-vs-hat-k.png exists:
+         ![](images/pass-at-k-vs-hat-k.png)
+-->
+</div>
+</section>
+<section id="agent-benchmarks-the-landscape" class="slide level2">
+<h2>Agent Benchmarks: The Landscape</h2>
+<div style="font-size: 0.8em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Benchmark</th>
+<th>Domain</th>
+<th>What it measures</th>
+<th>Scoring</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SWE-bench (Verified/Lite)</td>
+<td>GitHub issue fixing</td>
+<td>Real repo patches</td>
+<td>Tests pass/fail</td>
+</tr>
+<tr class="even">
+<td>GAIA</td>
+<td>General assistant tasks</td>
+<td>Multi-step tool use, web, files</td>
+<td>Exact match</td>
+</tr>
+<tr class="odd">
+<td>τ-bench</td>
+<td>Tool-agent-user dialogues</td>
+<td>Policy adherence under conversation</td>
+<td>pass^k on env state</td>
+</tr>
+<tr class="even">
+<td>AgentBench</td>
+<td>8 environments (OS, web, DB, …)</td>
+<td>Broad agent capability</td>
+<td>Task-specific</td>
+</tr>
+<tr class="odd">
+<td>WebArena / OSWorld</td>
+<td>Web / full OS control</td>
+<td>GUI action sequences, task completion</td>
+<td>Env state checks</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fragment">
+<blockquote>
+<p>No benchmark measures “agenticness”. Each measures success in one environment, with one action space, under one scoring rule.</p>
+</blockquote>
+</div>
+</section>
+<section id="swe-bench" class="slide level2">
+<h2>SWE-bench</h2>
+<ul>
+<li>Real GitHub issues from popular Python repos; the agent must produce a patch</li>
+<li>Scored by running the repo’s test suite: <strong>FAIL_TO_PASS</strong> tests flip, <strong>PASS_TO_PASS</strong> stay green</li>
+<li><strong>SWE-bench Verified</strong>: 500 human-validated, non-broken tasks (OpenAI, 2024)</li>
+<li><strong>SWE-bench Lite</strong>: 300-task cheaper subset for iteration</li>
+</ul>
+<div class="fragment">
+<p>Why it became the standard:</p>
+<ul>
+<li>Verifiable scoring — no judge needed</li>
+<li>Long-horizon: real repos, real context management, real tool use</li>
+<li>Directly matches the coding-agent spine of this course</li>
+</ul>
+</div>
+<div class="fragment">
+<p>Caveats: solutions leak into pretraining data; top systems tune scaffolds <em>to</em> the benchmark; resolved-rate gains increasingly reflect scaffolding, not reasoning.</p>
+</div>
+</section>
+<section id="gaia-and-τ-bench" class="slide level2">
+<h2>GAIA and τ-bench</h2>
+<p><strong>GAIA</strong> (Meta/HF, 2023): 466 assistant tasks with short verifiable answers</p>
+<ul>
+<li>Requires web browsing, file handling, code execution, multimodality</li>
+<li>“Easy for humans, hard for agents” — humans ~92%, early GPT-4 agents ~15%</li>
+<li>Level 1/2/3 by number of steps and tools needed</li>
+</ul>
+<div class="fragment">
+<p><strong>τ-bench</strong> (Sierra, 2024): tool-agent-user conversation in retail/airline domains</p>
+<ul>
+<li>A simulated user (LLM) converses with the agent; scored on final database state + policy adherence</li>
+<li>Introduced <strong>pass^k</strong> to measure <em>consistency</em> — SOTA agents then scored below 50% at pass^8</li>
+<li>Exposed that benchmark success and production reliability are different quantities</li>
+</ul>
+</div>
+<div class="fragment">
+<blockquote>
+<p>GAIA measures capability breadth; τ-bench measures reliability under interaction. You need both kinds of number.</p>
+</blockquote>
+</div>
+</section>
+<section id="webarena-osworld-agentbench" class="slide level2">
+<h2>WebArena, OSWorld, AgentBench</h2>
+<p><strong>WebArena</strong>: self-hosted realistic websites (shopping, forums, GitLab, maps)</p>
+<ul>
+<li>Task success checked against environment state, not textual answers</li>
+<li>Hard: SOTA success rates stayed below ~60% long after text benchmarks saturated</li>
+</ul>
+<p><strong>OSWorld</strong>: full desktop control (Ubuntu, real apps) — the computer-use benchmark</p>
+<p><strong>AgentBench</strong>: 8 diverse environments (OS shell, database, web shopping, card games…), a capability <em>profile</em> rather than a single score</p>
+<div class="fragment">
+<blockquote>
+<p>Environment-state scoring is the common thread: as agents act in the world, evals must check the world, not the transcript.</p>
+</blockquote>
+</div>
+</section>
+<section id="reading-benchmark-numbers-responsibly" class="slide level2">
+<h2>Reading Benchmark Numbers Responsibly</h2>
+<p>Before trusting any leaderboard number, ask:</p>
+<ol type="1">
+<li><strong>Contamination</strong>: were the tasks (or their solutions) in pretraining data?</li>
+<li><strong>Scaffold vs model</strong>: how much of the gain is the harness, retries, and prompt engineering around the model?</li>
+<li><strong>Saturation</strong>: is headroom left, or is everyone at 90%+ arguing about noise?</li>
+<li><strong>Cost</strong>: what did each solved task cost in tokens and wall-clock?</li>
+<li><strong>Selection</strong>: was the benchmark chosen because the system does well on it?</li>
+</ol>
+<div class="fragment">
+<blockquote>
+<p>A benchmark is a proxy for a distribution of real tasks. Proxies get gamed — Goodhart applies to agents with extra force.</p>
+</blockquote>
+</div>
+</section>
+<section id="failure-taxonomies" class="slide level2">
+<h2>Failure Taxonomies</h2>
+<p>The deliverable of an eval campaign is not the score — it is the <strong>failure analysis</strong>.</p>
+<p>A working taxonomy for coding-agent failures (from the course spine, Class 8):</p>
+<ul>
+<li><strong>Wrong localization</strong> — edited the wrong file / wrong function</li>
+<li><strong>Test-gaming regression</strong> — made tests pass by weakening them</li>
+<li><strong>Infinite loop</strong> — repeated identical failing tool calls</li>
+<li><strong>Context overflow</strong> — lost the task during compaction</li>
+<li><strong>Hallucinated API</strong> — called functions/flags that don’t exist</li>
+<li><strong>Premature stop</strong> — declared done with subtasks open</li>
+<li><strong>Sandbox/policy violation</strong> — attempted disallowed actions</li>
+</ul>
+<div class="fragment">
+<blockquote>
+<p>Taxonomy categories should come from <em>your</em> traces, not from this slide. This list is a starting point, not a constant.</p>
+</blockquote>
+<!-- NOTES-BLOCK :: IMAGE-PLACEHOLDER
+[FILE]   images/failure-taxonomy.png
+[WHY]    A visual taxonomy anchors Demo 2 (students will label 20 real traces
+         into these buckets) and gives the deck a figure it references twice.
+[SPEC]   Horizontal funnel/tree. Root: "Failed run". First split: outcome-visible
+         (wrong answer) vs trajectory-visible only (lucky success, policy
+         violation on a passing run). Leaves: the seven categories listed on
+         this slide, each with a one-line example in small text. Use the site
+         palette (styles.css accent #e7298a for the trajectory-only branch).
+[RENDER] Uncomment once images/failure-taxonomy.png exists:
+         ![](images/failure-taxonomy.png)
+-->
+<!-- NOTES-BLOCK :: DEMO-PLACEHOLDER
+[FILE]   demos/ (spec: demos/README.md Demo 2, "Failure taxonomy labeling")
+[SLIDE]  Attach here.
+[RUN]    Students receive ~20 real failed traces from coding-agent spine runs,
+         label each into the taxonomy, then compare their labels against an
+         LLM judge's labels.
+[SHOW]   Human–judge disagreement, especially on "premature stop" vs "wrong
+         localization". Motivates rubric refinement before trusting automated
+         trajectory judges.
+-->
+</div>
+</section>
+<section id="observability-traces-are-the-raw-material" class="slide level2">
+<h2>Observability: Traces Are the Raw Material</h2>
+<p>You cannot evaluate what you did not record.</p>
+<ul>
+<li><strong>Trace</strong>: one full agent run — every LLM call, tool call, observation, decision</li>
+<li><strong>Span</strong>: a unit inside the trace (one tool call, one retry, one sub-agent run)</li>
+<li>Log inputs, outputs, token counts, latency, cost, and environment diffs per span</li>
+</ul>
+<div class="fragment">
+<p>Tooling (all span-based, all have free tiers):</p>
+<ul>
+<li><strong>Langfuse</strong> — open source, self-hostable</li>
+<li><strong>Weave</strong> (W&amp;B), <strong>LangSmith</strong> (LangChain) — hosted, framework-adjacent</li>
+</ul>
+</div>
+<div class="fragment">
+<blockquote>
+<p>Tracing is not a production luxury. It is the dataset your evals run on.</p>
+</blockquote>
+<!-- NOTES-BLOCK :: IMAGE-PLACEHOLDER
+[FILE]   images/trace-span-anatomy.png
+[WHY]    Students conflate "the log" with "the trace". A labeled anatomy of one
+         trace makes the offline/online eval discussion concrete.
+[SPEC]   A vertical timeline of one agent run. Top: task in. Nested boxes:
+         LLM call spans (with token counts), tool call spans (with args and
+         latency), a retry loop shown as two stacked spans, environment diff
+         at the end. Right gutter shows which spans feed which eval: outcome,
+         tool-call correctness, cost, latency.
+[RENDER] Uncomment once images/trace-span-anatomy.png exists:
+         ![](images/trace-span-anatomy.png)
+-->
+</div>
+</section>
+<section id="offline-vs-online-eval-for-agents" class="slide level2">
+<h2>Offline vs Online Eval for Agents</h2>
+<p><strong>Offline</strong> (before deployment):</p>
+<ul>
+<li>Benchmark suites (SWE-bench slice, GAIA subset, your own task set)</li>
+<li>Regression suite built from past failures — every production failure becomes a test case</li>
+<li>Run per change: model swap, prompt edit, tool change</li>
+</ul>
+<p><strong>Online</strong> (in production):</p>
+<ul>
+<li>Sampled trace review (judge or human) on live traffic</li>
+<li>User signals: task abandonment, retries, corrections, thumbs</li>
+<li>Guardrail metrics: policy violations, budget overruns, loop detection</li>
+</ul>
+<div class="fragment">
+<blockquote>
+<p>Same three-regime structure as output eval (offline / online / guardrails) — but the unit is now a trace, not a response.</p>
+</blockquote>
+</div>
+</section>
+<section id="eval-driven-agent-development" class="slide level2">
+<h2>Eval-Driven Agent Development</h2>
+<p>The loop that actually improves agents:</p>
+<ol type="1">
+<li>Run the agent on a task set; record full traces</li>
+<li>Failure analysis: label failures into your taxonomy</li>
+<li>Turn top failure categories into <strong>regression evals</strong></li>
+<li>Fix the agent (prompt, tool, scaffold)</li>
+<li>Re-run; confirm the fix; check for regressions elsewhere</li>
+<li>Repeat</li>
+</ol>
+<div class="fragment">
+<ul>
+<li>Resist prompt-tweaking against vibes; every change is validated against the suite</li>
+<li>The eval suite <em>is</em> the product spec for agent behavior</li>
+</ul>
+</div>
+<div class="fragment">
+<blockquote>
+<p>Eval-driven development: you don’t have an agent quality problem, you have a measurement pipeline that produces fixes.</p>
+</blockquote>
+<!-- NOTES-BLOCK :: DEMO-PLACEHOLDER
+[FILE]   demos/ (spec: demos/README.md Demo 3, "pass^k measurement")
+[SLIDE]  Attach here as the quantitative leg of the loop.
+[RUN]    One agent config, k runs on a small task set; compute pass@1, pass@k,
+         pass^k, and cost per success.
+[SHOW]   The spread across seeds. A "working" agent at pass@1 = 60% is a
+         pass^5 ≈ 8% product. This ends the deck on the number that matters.
+-->
+</div>
+</section>
+<section id="modality-changes-the-eval" class="slide level2">
+<h2>Modality Changes the Eval</h2>
+<p>The action space defines the metrics:</p>
+<ul>
+<li><strong>Text agents</strong> (this course): trajectory quality, task success, tokens-per-success</li>
+<li><strong>Voice agents</strong>: latency as a first-class metric (time-to-first-token, interruption handling), WER of the ASR leg, user satisfaction <em>over time within one call</em></li>
+<li><strong>Computer-use agents</strong>: action correctness (right click, right element), recovery from failed clicks, completion on GUI benchmarks (WebArena, VisualWebArena, OSWorld)</li>
+</ul>
+<div class="fragment">
+<blockquote>
+<p>Eval methodology is not portable across modalities. When you get to voice or computer use, expect to rebuild the rubric around the new action space.</p>
+</blockquote>
+</div>
+</section>
+<section id="open-problems" class="slide level2">
+<h2>Open Problems</h2>
+<ul>
+<li><strong>Long-horizon eval</strong>: tasks spanning hours/days; how do you grade a 10,000-step trace?</li>
+<li><strong>Judging the judges of trajectories</strong>: meta-eval for step-level judges is nearly unsolved</li>
+<li><strong>Eval cost</strong>: a full agent eval run can cost more than a day of production traffic</li>
+<li><strong>Self-generated evals</strong>: agents writing their own regression tests — promising and circular</li>
+<li><strong>Security evals</strong>: prompt injection, tool abuse, sandbox escapes need adversarial benchmarks, not just accuracy benchmarks</li>
+</ul>
+</section>
+<section id="takeaways" class="slide level2">
+<h2>Takeaways</h2>
+<ol type="1">
+<li>Agents produce paths, not answers — evaluate the path</li>
+<li>Outcome eval for reporting; trajectory eval for engineering</li>
+<li>Milestones over footsteps; verifiable checks over judges</li>
+<li>Report pass^k and cost-per-success, not one lucky run</li>
+<li>The failure taxonomy — built from <em>your</em> traces — is the real deliverable</li>
+<li>Tracing is eval infrastructure, not observability garnish</li>
+</ol>
+<div class="fragment">
+<blockquote>
+<p>You can’t improve what you can’t measure — and for agents, measuring means recording.</p>
+</blockquote>
+
+
+</div>
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p><a href="https://llm-engg.github.io/">Large Language Models : A Hands-on Approach</a></p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="../../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': false,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
